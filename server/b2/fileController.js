@@ -3,6 +3,7 @@ const axios = require('axios');
 const crypto = require('crypto');
 const path = require('path');
 const fs = require('fs');
+const { Readable, Writable } = require('stream');
 
 let filePath = '/Users/Jake/Coding Projects/family-photos/server/b2/testFile.txt';
 
@@ -85,3 +86,38 @@ module.exports.upload = (req, res, next) => {
       console.log(err); // an error occurred
     });
 };
+
+
+module.exports.download = (req, res) => {
+  const credentials = res.locals.credentials;
+  const bucketName = process.env.VUE_APP_BUCKET_NAME;
+  let fileName = 'testFile.txt';
+  let saveToPath = '/Users/Jake/downloads/' + fileName;
+
+  axios
+    .get(credentials.downloadUrl + '/file/' + bucketName + '/' + fileName, {
+      headers: { Authorization: credentials.authorizationToken },
+    })
+    .then(function(response) {
+      var source = new Readable();
+      source._read = function noop() {};
+      source.push(response.data);
+      source.push(null);
+
+      var destination = fs.createWriteStream(saveToPath);
+
+      source.on('end', function() {
+        console.log('File successfully downloaded');
+        res.send(`Success - ${fileName} downloaded`); // successful response
+      });
+      source.pipe(destination);
+    })
+    .catch(function(err) {
+      console.log(err); // an error occurred
+    });
+};
+
+
+// TODO - file deletion
+// TODO - list all files
+// TODO - enable user to choose file with file picker

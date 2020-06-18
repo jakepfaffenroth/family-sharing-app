@@ -10,5 +10,6 @@ router.post('/create-user', userController.create);
 
 router.get('/b2/auth', fileController.auth);
 router.post('/b2/upload', fileController.auth, fileController.upload);
+router.get('/b2/download', fileController.auth, fileController.download);
 
 module.exports = router;
