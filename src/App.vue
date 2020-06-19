@@ -8,6 +8,16 @@
   </div>
 </template>
 
+<script>
+export default {
+  data() {
+    return {
+      server: process.env.VUE_APP_SERVER,
+    };
+  },
+};
+</script>
+
 <style>
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;

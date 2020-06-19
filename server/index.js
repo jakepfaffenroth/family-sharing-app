@@ -6,6 +6,7 @@ const passport = require('passport');
 const LocalStrategy = require('passport-local');
 const session = require('express-session');
 const bcrypt = require('bcryptjs');
+const cors = require('cors');
 
 const app = express();
 
@@ -56,6 +57,7 @@ passport.deserializeUser((id, done) => {
   });
 });
 
+app.use(cors());
 app.use(session({ secret: 'gus', resave: false, saveUninitialized: true }));
 app.use(passport.initialize());
 app.use(passport.session());
@@ -64,15 +66,41 @@ app.use(express.json());
 
 //add routes
 app.use('/api', apiRoutes);
+
+// Login, Logout routes
 app.post(
   '/api/login',
-  passport.authenticate('local', {
-    successRedirect: CLIENT + '/private-space',
-    failureRedirect: '/login',
+  function (req, res, next) {
+  console.log('attempting login...')
+  passport.authenticate('local', 
+  function (err, user, info) {
+    if (err) {
+      return next(err);
+    }
+    if (!user) {
+      return res.redirect(CLIENT + '/login');
+    }
+    req.logIn(user, function(err) {
+      if (err) {
+        return next(err);
+      }
+      res.json(req.user)
+      // return res.redirect(CLIENT + '/private-space');
+    });
+  })(req, res, next)
+
+  // {
+  //   failureRedirect: CLIENT + '/login',
+  //   successRedirect: CLIENT + '/private-space',
     // failureFlash: 'Invalid username or password.',
     // successFlash: 'Welcome!',
-  })
+  }
 );
+
+app.get('/logout', function(req, res) {
+  req.logout();
+  res.redirect(CLIENT);
+});
 
 app.listen(PORT, function() {
   console.log(`🌎  ==> API Server now listening on PORT ${PORT}!`);
