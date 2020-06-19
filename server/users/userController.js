@@ -8,14 +8,6 @@ const User = require('./userModel.js');
 
 passport.initialize();
 
-module.exports.findUsers = (req, res) => {
-  return User.find({}).then(foundUsers => {
-    if (foundUsers) {
-      return res.json(foundUsers);
-    }
-  });
-};
-
 module.exports.create = [
   // VALIDATE FIELDS
   // username and password must not be empty
@@ -99,3 +91,15 @@ module.exports.create = [
     }
   },
 ];
+
+module.exports.login = (req, res) => {
+
+};
+
+module.exports.findUsers = (req, res) => {
+  return User.find({}).then((foundUsers) => {
+    if (foundUsers) {
+      return res.json(foundUsers);
+    }
+  });
+};
