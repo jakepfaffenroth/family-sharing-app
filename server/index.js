@@ -80,11 +80,16 @@ app.post(
     if (!user) {
       return res.redirect(CLIENT + '/login');
     }
+    // Success; log in
     req.logIn(user, function(err) {
       if (err) {
         return next(err);
       }
-      res.json(req.user)
+// TODO - Get B2 file list and add to the response object to send back to client
+      
+      const response = { user, /*B2 file list here */ }
+      // Send user info back to client as JSON
+      res.json(response)
       // return res.redirect(CLIENT + '/private-space');
     });
   })(req, res, next)

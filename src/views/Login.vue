@@ -44,8 +44,10 @@ export default {
         };
         try {
           let response = await axios.post(this.server + '/api/login', body);
+          // Login on server successful
           console.log('Logged in');
-          let user = response.data;
+          let user = response.data.user;
+          // open PrivateSpace page with user info as prop
           this.$router.push({ name: 'PrivateSpace', params: user });
         } catch (error) {
           console.log('error: ', error);
