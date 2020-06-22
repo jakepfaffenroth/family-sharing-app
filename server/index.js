@@ -12,6 +12,7 @@ const app = express();
 
 const User = require('./users/userModel');
 const apiRoutes = require('./routes/apiRoutes');
+const fileController = require('./b2/fileController');
 
 const CLIENT = process.env.VUE_APP_CLIENT;
 
@@ -68,12 +69,9 @@ app.use(express.json());
 app.use('/api', apiRoutes);
 
 // Login, Logout routes
-app.post(
-  '/api/login',
-  function (req, res, next) {
-  console.log('attempting login...')
-  passport.authenticate('local', 
-  function (err, user, info) {
+app.post('/api/login', fileController.auth, function(req, res, next) {
+  console.log('attempting login...');
+  passport.authenticate('local', function(err, user, info) {
     if (err) {
       return next(err);
     }
@@ -85,22 +83,21 @@ app.post(
       if (err) {
         return next(err);
       }
-// TODO - Get B2 file list and add to the response object to send back to client
-      
-      const response = { user, /*B2 file list here */ }
+      // TODO - Get B2 file list and add to the response object to send back to client
+      const response = { user: user, credentials: res.locals.credentials };
+      console.log('response: ', response);
       // Send user info back to client as JSON
-      res.json(response)
+      res.json(response);
       // return res.redirect(CLIENT + '/private-space');
     });
-  })(req, res, next)
+  })(req, res, next);
 
   // {
   //   failureRedirect: CLIENT + '/login',
   //   successRedirect: CLIENT + '/private-space',
-    // failureFlash: 'Invalid username or password.',
-    // successFlash: 'Welcome!',
-  }
-);
+  // failureFlash: 'Invalid username or password.',
+  // successFlash: 'Welcome!',
+});
 
 app.get('/logout', function(req, res) {
   req.logout();

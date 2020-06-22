@@ -15,10 +15,10 @@ const routes = [
     component: Login,
   },
   {
-    path: '/:_id/private-space',
+    path: '/:userId/private-space',
     name: 'PrivateSpace',
     component: PrivateSpace,
-    props: false,
+    props: { default: true },
   },
   {
     path: '/about',

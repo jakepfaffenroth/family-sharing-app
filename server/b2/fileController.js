@@ -19,6 +19,7 @@ const bucketId = process.env.VUE_APP_BUCKET_ID;
 const encodedBase64 = new Buffer(appKeyId + ':' + applicationKey).toString('base64');
 
 module.exports.auth = (req, res, next) => {
+  console.log('getting B2 credentials');
   let credentials;
   axios
     .post(
@@ -52,6 +53,8 @@ module.exports.upload = (req, res, next) => {
   console.log('  STARTING IMAGE UPLOAD  ');
   console.log('-------------------------');
   console.log('Uploading', req.files.length, 'images');
+  
+  console.log('test', req.body.userId)
 
   const credentials = res.locals.credentials;
   const files = req.files;
@@ -143,6 +146,30 @@ module.exports.upload = (req, res, next) => {
       console.log('⚠️ Error in upload process: ', err);
     }
   })();
+};
+
+module.exports.listFiles = async (req, res, next) => {
+  const apiUrl = res.locals.credentials.apiUrl;
+  const authToken = res.locals.credentials.authorizationToken;
+  const filePrefix = req.body.filePrefix
+  try {
+    const response = await axios({
+      method: 'POST',
+      url: apiUrl + '/b2api/v2/b2_list_file_names',
+      headers: {
+        Authorization: authToken,
+        'Content-Type': 'application/json; charset=utf-8',
+      },
+      data: {
+        bucketId: bucketId,
+        prefix: filePrefix+'/'
+      },
+    });
+
+    res.json(response.data);
+  } catch (err) {
+    console.log('listFiles error: ', err);
+  }
 };
 
 // TODO - Downloads corrupt file - encoding problem?

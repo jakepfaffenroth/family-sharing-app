@@ -22,6 +22,7 @@
 <script>
 // import router from '../router/index';
 import axios from 'axios';
+import store from '../store/index';
 
 export default {
   name: 'Login',
@@ -46,9 +47,12 @@ export default {
           let response = await axios.post(this.server + '/api/login', body);
           // Login on server successful
           console.log('Logged in');
-          let user = response.data.user;
-          // open PrivateSpace page with user info as prop
-          this.$router.push({ name: 'PrivateSpace', params: user });
+          // console.log(response.data)
+          let userId = response.data.user._id;
+          store.commit('setCredentials', response.data.credentials);
+          store.commit('setUser', response.data.user);
+          // open PrivateSpace page
+          this.$router.push({ name: 'PrivateSpace', params: { userId } });
         } catch (error) {
           console.log('error: ', error);
           console.log('Cannot log in');

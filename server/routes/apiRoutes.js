@@ -28,6 +28,9 @@ router.post(
   multer({ storage: tempStorage }).array('myFiles'),
   fileController.upload
 );
+
+router.post('/b2/list-files', fileController.auth, fileController.listFiles);
+
 router.get('/b2/download', fileController.auth, fileController.download);
 
 module.exports = router;
