@@ -4,10 +4,11 @@
     <a :href="server + '/logout'">Log out</a>
     <form :action="'http://localhost:3050/api/b2/upload'" enctype="multipart/form-data" method="POST">
       <input type="file" name="myFiles" multiple />
-      <input type="hidden" name="userId" :value="$store.getters.user._id" />
+      <!-- <input type="hidden" name="userId" :value="user._id" /> -->
       <input type="submit" value="Upload" />
     </form>
     <div v-if="fileList.length > 0" class="image-grid">
+      <!-- <p>Showing images from folder {{}}</p> -->
       <img v-for="(image, index) in fileList" :key="index.fileId" :src="basePath + image.fileName" class="image" />
     </div>
   </div>
@@ -41,6 +42,17 @@ export default {
     // },
   },
   async created() {
+    // try {
+    //   const response = await axios.get(this.server + '/user-auth', {withCredentials: true});
+    //   if (!response.data.user) {
+    //     this.$router.push({ name: 'Login' });
+    //     console.log('round trip from login to user-area back to login')
+    //   }
+    //   console.log('response: ', response);
+    // } catch (err) {
+    //   console.log(err);
+    // }
+
     this.b2Credentials = this.$store.getters.b2Credentials;
     this.user = this.$store.getters.user;
     try {

@@ -13,13 +13,7 @@ export default Vuex.createStore({
       state.user = user;
     },
   },
-  actions: {
-    setCredentials({ commit }) {
-      console.log('cred from action 1: ', this.state.b2Credentials);
-      commit('setCredentials');
-      console.log('cred from action 2: ', this.state.b2Credentials);
-    },
-  },
+  actions: {},
   getters: {
     b2Credentials: (state) => state.b2Credentials,
     user: (state) => state.user,

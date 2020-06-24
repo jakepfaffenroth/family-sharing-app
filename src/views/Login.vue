@@ -29,8 +29,8 @@ export default {
   data() {
     return {
       server: process.env.VUE_APP_SERVER,
-      username: '',
-      password: '',
+      username: 'TestTesterson',
+      password: '1234',
       incorrectCred: false,
     };
   },
@@ -51,8 +51,9 @@ export default {
           let userId = response.data.user._id;
           store.commit('setCredentials', response.data.credentials);
           store.commit('setUser', response.data.user);
+          // document.cookie = "userId="+userId
           // open PrivateSpace page
-          this.$router.push({ name: 'PrivateSpace', params: { userId } });
+          this.$router.push({ name: 'UserArea', params: { userId } });
         } catch (error) {
           console.log('error: ', error);
           console.log('Cannot log in');
@@ -62,6 +63,19 @@ export default {
 
       login();
     },
+  },
+  async created() {
+    try {
+      const response = await axios.get(this.server + '/user-auth', { withCredentials: true });
+      if (!response.data.user) {
+        console.log('Not logged in yet')
+        // this.$router.push({ name: 'Login' });
+      }
+      console.log('response: ', response);
+      // this.$router.push({ name: 'UserArea' });
+    } catch (err) {
+      console.log(err);
+    }
   },
 };
 </script>

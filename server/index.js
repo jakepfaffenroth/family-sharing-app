@@ -4,20 +4,22 @@ const PORT = process.env.PORT || 3050;
 const mongoose = require('mongoose');
 const passport = require('passport');
 const LocalStrategy = require('passport-local');
-const session = require('express-session');
 const bcrypt = require('bcryptjs');
+const session = require('express-session');
+const MongoStore = require('connect-mongo')(session);
 const cors = require('cors');
 
 const app = express();
 
 const User = require('./users/userModel');
-const apiRoutes = require('./routes/apiRoutes');
-const fileController = require('./b2/fileController');
+const fileRoutes = require('./fileServer/fileRouter');
+const fileController = require('./fileServer/fileController');
 
 const CLIENT = process.env.VUE_APP_CLIENT;
+const MONGO = 'mongodb://localhost/familyapp';
 
 //connect to mongoDB
-mongoose.connect('mongodb://localhost/familyapp', {
+mongoose.connect(MONGO, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
@@ -25,9 +27,7 @@ mongoose.connect('mongodb://localhost/familyapp', {
 // Auth
 passport.use(
   new LocalStrategy((username, password, done) => {
-    console.log('username: ', username);
     User.findOne({ username: username }, function(err, user) {
-      console.log('user: ', user);
       if (err) return done(err);
       if (!user) {
         return done(null, false, { msg: 'Incorrect username' });
@@ -48,28 +48,42 @@ passport.use(
   })
 );
 
-passport.serializeUser((user, done) => {
-  done(null, user.id);
-});
+app.use(cors({ origin: CLIENT, credentials: true }));
 
-passport.deserializeUser((id, done) => {
-  User.findById(id, (err, user) => {
-    done(err, user);
-  });
-});
-
-app.use(cors());
-app.use(session({ secret: 'gus', resave: false, saveUninitialized: true }));
-app.use(passport.initialize());
-app.use(passport.session());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
 //add routes
-app.use('/api', apiRoutes);
+app.use('/api', fileRoutes);
+
+const sessionStore = new MongoStore({ url: MONGO, collection: 'sessions' });
+
+app.use(
+  session({
+    secret: 'gus',
+    store: sessionStore,
+    cookie: {
+      maxAge: 1000 * 60 * 60 * 24 * 7,
+    },
+  })
+);
+app.use(passport.initialize());
+app.use(passport.session());
+
+passport.serializeUser(function(user, done) {
+  console.log('serialize user: ', user);
+  done(null, user);
+});
+
+passport.deserializeUser(function(user, done) {
+  console.log('deserialize user: ', user);
+  User.findById(user._id, function(err, user) {
+    done(err, user);
+  });
+});
 
 // Login, Logout routes
-app.post('/api/login', fileController.auth, function(req, res, next) {
+app.post('/api/login', function(req, res, next) {
   console.log('attempting login...');
   passport.authenticate('local', function(err, user, info) {
     if (err) {
@@ -83,15 +97,13 @@ app.post('/api/login', fileController.auth, function(req, res, next) {
       if (err) {
         return next(err);
       }
-      // TODO - Get B2 file list and add to the response object to send back to client
-      const response = { user: user, credentials: res.locals.credentials };
-      console.log('response: ', response);
+      const response = { user: user, b2Credentials: res.locals.credentials };
       // Send user info back to client as JSON
-      res.json(response);
+      res.status(200).json(response);
       // return res.redirect(CLIENT + '/private-space');
+      console.log('req.session (inside login logic): ', req.session);
     });
   })(req, res, next);
-
   // {
   //   failureRedirect: CLIENT + '/login',
   //   successRedirect: CLIENT + '/private-space',
@@ -100,8 +112,18 @@ app.post('/api/login', fileController.auth, function(req, res, next) {
 });
 
 app.get('/logout', function(req, res) {
+  req.session.destroy();
   req.logout();
   res.redirect(CLIENT);
+  console.log('Logged out');
+});
+
+app.get('/user-auth', (req, res) => {
+  console.log('/user-auth req.session: ', req.session);
+  if (req.session.passport) {
+    return res.json({ user: req.session.passport.user });
+  }
+  res.json('session not found');
 });
 
 app.listen(PORT, function() {

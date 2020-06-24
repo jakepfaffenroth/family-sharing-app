@@ -16,9 +16,9 @@ const appKeyId = process.env.VUE_APP_APP_KEY_ID;
 const applicationKey = process.env.VUE_APP_APPLICATION_KEY;
 const bucketId = process.env.VUE_APP_BUCKET_ID;
 
-const encodedBase64 = new Buffer(appKeyId + ':' + applicationKey).toString('base64');
+const encodedBase64 = Buffer.from(appKeyId + ':' + applicationKey).toString('base64');
 
-module.exports.auth = (req, res, next) => {
+module.exports.b2Auth = (req, res, next) => {
   console.log('getting B2 credentials');
   let credentials;
   axios
@@ -40,7 +40,7 @@ module.exports.auth = (req, res, next) => {
         recommendedPartSize: data.recommendedPartSize,
       };
       res.locals.credentials = credentials;
-      console.log('credentials: ', credentials);
+      console.log('B2 credentials retrieved');
       next();
     })
     .catch(function(err) {
@@ -53,8 +53,6 @@ module.exports.upload = (req, res, next) => {
   console.log('  STARTING IMAGE UPLOAD  ');
   console.log('-------------------------');
   console.log('Uploading', req.files.length, 'images');
-  
-  console.log('test', req.body.userId)
 
   const credentials = res.locals.credentials;
   const files = req.files;
@@ -75,7 +73,9 @@ module.exports.upload = (req, res, next) => {
 
         // Uploads images
         let source = fs.readFileSync(imagePath);
-        let fileName = path.basename(imagePath);
+        let fileSize = fs.statSync(imagePath).size;
+        console.log('fileSize: ', fileSize);
+        let fileName = req.body.userId + '/' + path.basename(imagePath);
         let sha1 = crypto
           .createHash('sha1')
           .update(source)
@@ -86,7 +86,7 @@ module.exports.upload = (req, res, next) => {
             Authorization: uploadAuthorizationToken,
             'X-Bz-File-Name': fileName,
             'Content-Type': 'b2/x-auto',
-            // 'Content-Length': fileSize,
+            'Content-Length': fileSize,
             'X-Bz-Content-Sha1': sha1,
             'X-Bz-Info-Author': 'unknown',
           },
@@ -151,7 +151,7 @@ module.exports.upload = (req, res, next) => {
 module.exports.listFiles = async (req, res, next) => {
   const apiUrl = res.locals.credentials.apiUrl;
   const authToken = res.locals.credentials.authorizationToken;
-  const filePrefix = req.body.filePrefix
+  const filePrefix = req.body.filePrefix;
   try {
     const response = await axios({
       method: 'POST',
@@ -162,7 +162,7 @@ module.exports.listFiles = async (req, res, next) => {
       },
       data: {
         bucketId: bucketId,
-        prefix: filePrefix+'/'
+        prefix: filePrefix + '/',
       },
     });
 
