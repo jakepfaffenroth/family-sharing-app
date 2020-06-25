@@ -1,8 +1,8 @@
 <template>
-  <div>
-    <h1>Welcome Back, {{ user }}</h1>
-    <a :href="server + '/logout'">Log out</a>
-    <form :action="'http://localhost:3050/api/b2/upload'" enctype="multipart/form-data" method="POST">
+  <div v-if='isReadyToRender'>
+    <h1>Welcome Back, {{ user.firstName }}</h1>
+    <button @click="logout" class='link'>Log out</button>
+    <form :action="server + '/files/upload'" enctype="multipart/form-data" method="POST">
       <input type="file" name="myFiles" multiple />
       <!-- <input type="hidden" name="userId" :value="user._id" /> -->
       <input type="submit" value="Upload" />
@@ -25,6 +25,7 @@ export default {
   data() {
     return {
       server: process.env.VUE_APP_SERVER,
+      isReadyToRender: false,
       user: {},
       b2Credentials: {},
       filePrefix: 'test',
@@ -34,16 +35,32 @@ export default {
     };
   },
   methods: {
+    logout() {
+      axios.get(this.server + '/logout');
+      this.$cookies.remove('user._id')
+      this.$cookies.remove('connect.sid')
+      window.location = this.server + '/login';
+    },
     // async uploadFiles() {
     //   await axios.post(this.server + '/api/b2/upload', {
     //     data: this.fileSelection,
     //   });
     // },
   },
+  async beforeCreate() {},
   async created() {
-    this.$cookie.set('test', 'Hello World!')
-    console.log(this.$cookie.get('connect.sid', { domain: 'localhost:3400' }));
-    console.log(this.$cookie.get('test', { domain: 'localhost' }));
+    let userId;
+    userId = this.$cookies.get('user._id');
+    const response = await axios({
+      url: this.server + '/auth/check-session',
+      method: 'post',
+      data: { userId: userId },
+    });
+    if (!response.data.isLoggedIn) {
+      window.location = this.server + '/login';
+    }
+    this.user.firstName = response.data.user.firstName
+    this.isReadyToRender = true
     // try {
     //   const response = await axios.get(this.server + '/user-auth', {withCredentials: true});
     //   if (!response.data.user) {
@@ -58,7 +75,11 @@ export default {
     // this.b2Credentials = this.$store.getters.b2Credentials;
     // this.user = this.$store.getters.user;
     try {
-      const response = await axios.post(this.server + '/files/list-files', { data: { filePrefix: this.filePrefix } });
+      const response = await axios({
+        url: this.server + '/files/list-files',
+        method: 'post',
+        data: { filePrefix: this.filePrefix },
+      });
       this.fileList = response.data.files;
     } catch (err) {
       console.log(err);
@@ -68,6 +89,16 @@ export default {
 </script>
 
 <style>
+
+.link {
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+.link:hover {
+  color:blue;
+}
+
 .image-grid {
   display: flex;
   flex-wrap: wrap;

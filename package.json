@@ -12,8 +12,9 @@
     "core-js": "^3.6.5",
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
+    "vue": "^2.6.11",
     "vue-cookie": "^1.1.4",
-    "vue": "^2.6.11"
+    "vue-cookies": "^1.7.0"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.4.0",

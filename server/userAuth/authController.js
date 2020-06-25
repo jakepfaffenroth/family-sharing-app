@@ -54,6 +54,9 @@ module.exports.login = (req, res, next) => {
       // return res.redirect(client + '/private-space');
       console.log('req.session (inside login logic): ', req.session);
 
+      const userId = JSON.stringify(req.session.passport.user._id).replace(/"/g, '');
+      console.log('userId: ', userId);
+      res.cookie('user._id', userId);
       res.redirect(process.env.CLIENT);
     });
   })(req, res, next);
@@ -69,6 +72,24 @@ module.exports.logout = (req, res) => {
   req.logout();
   res.redirect(process.env.CLIENT);
   console.log('Logged out');
+};
+
+module.exports.checkSession = (req, res, next) => {
+  const userId = req.body.userId;
+  console.log('userId: ', userId);
+  console.log('Checking for user session');
+  // passport.deserializeUser(function(userId, done) {
+  //   console.log('deserialize user: ', user);
+  User.findById(userId, function(err, user) {
+    // done(err, user);
+    if (err || !user) {
+      console.log('Could not find user logged in');
+      return res.json({ isLoggedIn: false });
+    }
+    console.log('User is logged in');
+    return res.json({ isLoggedIn: true, user: { firstName: user.firstName } });
+  });
+  // });
 };
 
 // ----- Session logic -----
