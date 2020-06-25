@@ -1,10 +1,10 @@
 <template>
-  <div v-if='isReadyToRender'>
+  <div v-if="isReadyToRender">
     <h1>Welcome Back, {{ user.firstName }}</h1>
-    <button @click="logout" class='link'>Log out</button>
+    <button @click="logout" class="link">Log out</button>
     <form :action="server + '/files/upload'" enctype="multipart/form-data" method="POST">
       <input type="file" name="myFiles" multiple />
-      <!-- <input type="hidden" name="userId" :value="user._id" /> -->
+      <input type="hidden" name="userId" :value="user._id" />
       <input type="submit" value="Upload" />
     </form>
     <div v-if="fileList.length > 0" class="image-grid">
@@ -37,8 +37,8 @@ export default {
   methods: {
     logout() {
       axios.get(this.server + '/logout');
-      this.$cookies.remove('user._id')
-      this.$cookies.remove('connect.sid')
+      this.$cookies.remove('user._id');
+      this.$cookies.remove('connect.sid');
       window.location = this.server + '/login';
     },
     // async uploadFiles() {
@@ -59,8 +59,9 @@ export default {
     if (!response.data.isLoggedIn) {
       window.location = this.server + '/login';
     }
-    this.user.firstName = response.data.user.firstName
-    this.isReadyToRender = true
+    this.user._id = response.data.user._id;
+    this.user.firstName = response.data.user.firstName;
+    this.isReadyToRender = true;
     // try {
     //   const response = await axios.get(this.server + '/user-auth', {withCredentials: true});
     //   if (!response.data.user) {
@@ -89,14 +90,13 @@ export default {
 </script>
 
 <style>
-
 .link {
   border: none;
   background: none;
   cursor: pointer;
 }
 .link:hover {
-  color:blue;
+  color: blue;
 }
 
 .image-grid {

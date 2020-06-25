@@ -60,7 +60,7 @@ module.exports.upload = (req, res, next) => {
   const uploadImage = async (compressedImagePaths) => {
     await compressedImagePaths.forEach(async (imagePath) => {
       try {
-        // Gets auth token
+        // Gets B2 auth token
         const authToken = await axios.post(
           credentials.apiUrl + '/b2api/v2/b2_get_upload_url',
           {
@@ -74,12 +74,13 @@ module.exports.upload = (req, res, next) => {
         // Uploads images
         let source = fs.readFileSync(imagePath);
         let fileSize = fs.statSync(imagePath).size;
-        console.log('fileSize: ', fileSize);
         let fileName = req.body.userId + '/' + path.basename(imagePath);
+        fileName = encodeURI(fileName);
         let sha1 = crypto
           .createHash('sha1')
           .update(source)
           .digest('hex');
+        console.log('filename: ', fileName);
 
         const uploadResponse = await axios.post(uploadUrl, source, {
           headers: {
@@ -106,7 +107,7 @@ module.exports.upload = (req, res, next) => {
       }
     });
     // successful response
-    res.send(`Success - ${compressedImagePaths} uploaded`);
+    res.json({ msg: `Success - ${compressedImagePaths} uploaded` });
   };
 
   // Compress image and save to temp folder
