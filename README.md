@@ -1,24 +1,9 @@
-# new
+# "Family Sharing App"
+Jake Pfaffenroth
 
-## Project setup
-```
-npm install
-```
+A privacy-first tool for families to share photos, video, and stories about their kids with people they invite. No face-scanning, no ads.
 
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
+## Stack
+Vue/Express/Node/Mongo
 
-### Compiles and minifies for production
-```
-npm run build
-```
-
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+B2 cloud storage
