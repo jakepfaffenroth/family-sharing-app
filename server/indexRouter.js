@@ -1,11 +1,12 @@
 const express = require('express');
-const session = require('express-session');
-const passport = require('passport');
+// const session = require('express-session');
+// const passport = require('passport');
 const router = express.Router();
 require('dotenv').config();
 
 /* GET home page. */
 router.get('/', (req, res, next) => {
+  console.log('test')
   res.render('index', { title: 'Family Sharing App' });
 });
 

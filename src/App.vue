@@ -1,43 +1,87 @@
 <template>
-  <div id="app">
-    <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/login">Login</router-link>
-      <!-- <router-link to="/log-in">About</router-link> -->
+  <div>
+    <h1>Welcome Back, {{ user }}</h1>
+    <a :href="server + '/logout'">Log out</a>
+    <form :action="'http://localhost:3050/api/b2/upload'" enctype="multipart/form-data" method="POST">
+      <input type="file" name="myFiles" multiple />
+      <!-- <input type="hidden" name="userId" :value="user._id" /> -->
+      <input type="submit" value="Upload" />
+    </form>
+    <div v-if="fileList.length > 0" class="image-grid">
+      <!-- <p>Showing images from folder {{}}</p> -->
+      <img v-for="(image, index) in fileList" :key="index.fileId" :src="basePath + image.fileName" class="image" />
     </div>
-    <router-view />
   </div>
 </template>
 
 <script>
+import axios from 'axios';
+
 export default {
+  props: {
+    // user: { type: Object, required: true },
+    // credentials: { type: Object, required: true },
+  },
   data() {
     return {
       server: process.env.VUE_APP_SERVER,
+      user: {},
+      b2Credentials: {},
+      filePrefix: 'test',
+      // userId: this.$store.getters.user._id,
+      fileList: [],
+      basePath: 'https://f000.backblazeb2.com/file/JFP001/',
     };
+  },
+  methods: {
+    // async uploadFiles() {
+    //   await axios.post(this.server + '/api/b2/upload', {
+    //     data: this.fileSelection,
+    //   });
+    // },
+  },
+  async created() {
+    this.$cookie.set('test', 'Hello World!')
+    console.log(this.$cookie.get('connect.sid', { domain: 'localhost:3400' }));
+    console.log(this.$cookie.get('test', { domain: 'localhost' }));
+    // try {
+    //   const response = await axios.get(this.server + '/user-auth', {withCredentials: true});
+    //   if (!response.data.user) {
+    //     this.$router.push({ name: 'Login' });
+    //     console.log('round trip from login to user-area back to login')
+    //   }
+    //   console.log('response: ', response);
+    // } catch (err) {
+    //   console.log(err);
+    // }
+
+    // this.b2Credentials = this.$store.getters.b2Credentials;
+    // this.user = this.$store.getters.user;
+    try {
+      const response = await axios.post(this.server + '/files/list-files', { data: { filePrefix: this.filePrefix } });
+      this.fileList = response.data.files;
+    } catch (err) {
+      console.log(err);
+    }
   },
 };
 </script>
 
 <style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
+.image-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 1rem;
 }
 
-#nav {
-  padding: 30px;
+.image {
+  max-width: 400px;
+  margin: 0.5rem;
+  transition: opacity 0.1s ease-in-out;
 }
-
-#nav a {
-  font-weight: bold;
-  color: #2c3e50;
-}
-
-#nav a.router-link-exact-active {
-  color: #42b983;
+.image:hover {
+  opacity: 0.7;
+  overlay: black;
 }
 </style>

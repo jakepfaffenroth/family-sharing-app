@@ -4,6 +4,7 @@ const path = require('path');
 // const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 
+const cors = require('cors');
 const axios = require('axios');
 const mongoose = require('mongoose');
 const passport = require('passport');
@@ -17,11 +18,11 @@ const client = process.env.CLIENT;
 const indexRouter = require('./indexRouter');
 const authRouter = require('./userAuth/authRouter');
 const fileRouter = require('./fileServer/fileRouter');
-const authController = require('./userAuth/authController');
-const fileController = require('./fileServer/fileController');
 const User = require('./users/userModel');
 
 const app = express();
+app.use(cors());
+
 
 const MongoStore = require('connect-mongo')(session);
 const mongoDb = process.env.MONGO;
@@ -66,16 +67,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 //add routes
 app.use('/', indexRouter);
 app.use('/auth', authRouter);
-
-app.use('/api', fileRouter);
-
-app.get('/user-auth', (req, res) => {
-  console.log('/user-auth req.session: ', req.session);
-  if (req.session.passport) {
-    return res.json({ user: req.session.passport.user });
-  }
-  res.json('session not found');
-});
+app.use('/files', fileRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
