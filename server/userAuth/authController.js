@@ -56,7 +56,8 @@ module.exports.login = (req, res, next) => {
 
       const userId = JSON.stringify(req.session.passport.user._id).replace(/"/g, '');
       console.log('userId: ', userId);
-      res.cookie('user._id', userId);
+      // Set cookie on client with user._id
+      res.cookie('user._id', userId, { maxAge: 1000 * 60 * 60 * 24 * 7 });
       res.redirect(process.env.CLIENT);
     });
   })(req, res, next);
