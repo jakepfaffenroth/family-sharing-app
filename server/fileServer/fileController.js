@@ -7,10 +7,6 @@ const { Readable, Writable } = require('stream');
 const sharp = require('sharp');
 const imagemin = require('imagemin');
 const imageminMozjpeg = require('imagemin-mozjpeg');
-const multer = require('multer');
-
-// let files = '/Users/Jake/Coding Projects/family-photos/local_file_storage/testFile.txt';
-// let files = '/Users/Jake/Coding Projects/family-photos/local_file_storage/sunset.jpg';
 
 const appKeyId = process.env.VUE_APP_APP_KEY_ID;
 const applicationKey = process.env.VUE_APP_APPLICATION_KEY;

@@ -48,27 +48,19 @@ export default {
     };
   },
   methods: {
-    async submit() {
-      const files = this.$refs.form[0].files;
-      console.log('files: ', files);
-      const formData = new FormData();
-      for (var i = 0; i < files.length; i++) {
-        let file = files[i];
-        formData.append('files[' + i + ']', file);
-        console.log('formData: ', formData);
-      }
-      const response = await axios.post(this.server + '/files/upload', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
+    async getUserImages() {
+      const response = await axios({
+        url: this.server + '/files/list-files',
+        method: 'post',
+        data: { filePrefix: this.user._id },
       });
-      console.log('response.data: ', response.data);
+      this.fileList = response.data.files;
     },
-
     sendingEvent(file, xhr, formData) {
       if (!formData.get('userId')) {
         formData.append('userId', this.user._id);
       }
+      this.getUserImages()
     },
 
     logout() {
@@ -94,13 +86,7 @@ export default {
     this.user.firstName = response.data.user.firstName;
     this.isReadyToRender = true;
     try {
-      const response = await axios({
-        url: this.server + '/files/list-files',
-        method: 'post',
-        data: { filePrefix: this.user._id },
-      });
-      this.fileList = response.data.files;
-      // !this.fileList.length ? this.fileList.push("Upload your first images!") : this.fileList
+      this.getUserImages();
     } catch (err) {
       console.log(err);
     }
@@ -109,6 +95,11 @@ export default {
 </script>
 
 <style>
+#dropzone{
+width: 60vw;
+margin: auto;
+}
+
 .link {
   border: none;
   background: none;
@@ -127,7 +118,9 @@ export default {
 
 .image {
   max-width: 400px;
+  max-height: 400px;
   margin: 0.5rem;
+  object-fit: contain;
   transition: opacity 0.1s ease-in-out;
 }
 .image:hover {

@@ -13,8 +13,7 @@
         <input type="submit" value="Log In" />
       </div>
     </form>
-    <p>{{incorrectCred}}</p>
-    {{#if incorrectCred}}
-    <p>Incorrect username or password</p>
+    {{#if errMsg}}
+      <p>Incorrect username or password</p>
     {{/if}}
   </div>

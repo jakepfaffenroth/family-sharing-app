@@ -40,7 +40,7 @@ module.exports.login = (req, res, next) => {
     }
     if (!user) {
       res.locals.incorrectCred = true;
-      return res.render('/login', { incorrectCred: msg });
+      return res.redirect('../login?q=true');
     }
     // Success; log in
     req.logIn(user, function(err) {

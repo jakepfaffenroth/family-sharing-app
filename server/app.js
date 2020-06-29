@@ -17,6 +17,7 @@ const client = process.env.CLIENT;
 // const cors = require('cors');
 
 const indexRouter = require('./indexRouter');
+const userRouter = require('./users/userRouter');
 const authRouter = require('./userAuth/authRouter');
 const fileRouter = require('./fileServer/fileRouter');
 const User = require('./users/userModel');
@@ -68,6 +69,7 @@ app.use(express.urlencoded({ limit: '50mb', extended: true, parameterLimit: 5000
 
 //add routes
 app.use('/', indexRouter);
+app.use('/user', userRouter);
 app.use('/auth', authRouter);
 app.use('/files', fileRouter);
 

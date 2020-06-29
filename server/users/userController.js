@@ -56,6 +56,7 @@ module.exports.create = [
   //
 
   // Process request after validation and sanitization
+  
   (req, res, next) => {
     const errors = validationResult(req);
     // Print error messages to console
@@ -66,7 +67,7 @@ module.exports.create = [
           console.log('::' + errors.array()[i].param + ': ' + errors.array()[i].msg);
         }
       }
-      res.json(errors.array());
+      res.render('/signup', {errMsg: errors.array()});
 
       next();
     }
@@ -86,7 +87,9 @@ module.exports.create = [
         //   Hashing complete; save to DB
         User.create(newUser);
         //   Send success msg to client
-        res.send('User ' + newUser.username + ' created');
+        console.log('User ' + newUser.username + ' created');
+        // Account created; redirect to login screen
+        res.redirect('../login')
       });
     }
   },
