@@ -9,6 +9,9 @@
       <!-- <p>Showing images from folder {{}}</p> -->
       <img v-for="(image, index) in fileList" :key="index.fileId" :src="basePath + image.fileName" class="image" />
     </div>
+    <div v-if="fileList.length === 0">
+      <p>Upload your first images</p>
+    </div>
   </div>
 </template>
 
@@ -28,8 +31,6 @@ export default {
       isReadyToRender: false,
       user: {},
       files: '',
-      url:
-        'https://images.unsplash.com/photo-1559403835-749f5ef10e7f?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=400&ixid=eyJhcHBfaWQiOjF9&ixlib=rb-1.2.1&q=80&w=400',
       b2Credentials: {},
       filePrefix: 'test',
       // userId: this.$store.getters.user._id,
@@ -65,8 +66,9 @@ export default {
     },
 
     sendingEvent(file, xhr, formData) {
-      console.log('userId', this.user._id);
-      formData.append('userId', this.user._id);
+      if (!formData.get('userId')) {
+        formData.append('userId', this.user._id);
+      }
     },
 
     logout() {
@@ -91,27 +93,14 @@ export default {
     this.user._id = response.data.user._id;
     this.user.firstName = response.data.user.firstName;
     this.isReadyToRender = true;
-    console.log('response.data.user: ', response.data.user);
-    // try {
-    //   const response = await axios.get(this.server + '/user-auth', {withCredentials: true});
-    //   if (!response.data.user) {
-    //     this.$router.push({ name: 'Login' });
-    //     console.log('round trip from login to user-area back to login')
-    //   }
-    //   console.log('response: ', response);
-    // } catch (err) {
-    //   console.log(err);
-    // }
-
-    // this.b2Credentials = this.$store.getters.b2Credentials;
-    // this.user = this.$store.getters.user;
     try {
       const response = await axios({
         url: this.server + '/files/list-files',
         method: 'post',
-        data: { filePrefix: this.filePrefix },
+        data: { filePrefix: this.user._id },
       });
       this.fileList = response.data.files;
+      // !this.fileList.length ? this.fileList.push("Upload your first images!") : this.fileList
     } catch (err) {
       console.log(err);
     }

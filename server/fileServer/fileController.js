@@ -74,6 +74,8 @@ module.exports.upload = (req, res, next) => {
         let source = fs.readFileSync(imagePath);
         let fileSize = fs.statSync(imagePath).size;
         let fileName = req.body.userId + '/' + path.basename(imagePath);
+        console.log('after filename req.body.userId: ', req.body.userId);
+        console.log('fileName: ', fileName);
         fileName = encodeURI(fileName);
         let sha1 = crypto
           .createHash('sha1')

@@ -19,6 +19,10 @@ router.post(
   '/upload',
   fileController.b2Auth,
   multer({ storage: tempStorage }).any(),
+  (req, res, next) => {
+    console.log('req.body.userId am: ', req.body.userId);
+    next();
+  },
   fileController.upload
 );
 
