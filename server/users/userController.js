@@ -56,7 +56,7 @@ module.exports.create = [
   //
 
   // Process request after validation and sanitization
-  
+
   (req, res, next) => {
     const errors = validationResult(req);
     // Print error messages to console
@@ -67,9 +67,19 @@ module.exports.create = [
           console.log('::' + errors.array()[i].param + ': ' + errors.array()[i].msg);
         }
       }
-      res.render('/signup', {errMsg: errors.array()});
+      const username = req.body.username;
+      const password = req.body.password;
+      const firstName = req.body.firstName;
+      const lastName = req.body.lastName;
+      res.render('signup', {
+        errMsg: errors.array()[0].msg,
+        username: username,
+        password: password,
+        firstName: firstName,
+        lastName: lastName,
+      });
 
-      next();
+      // next();
     }
     if (errors.isEmpty()) {
       /**/ console.log('validation passed');
@@ -89,15 +99,13 @@ module.exports.create = [
         //   Send success msg to client
         console.log('User ' + newUser.username + ' created');
         // Account created; redirect to login screen
-        res.redirect('../login')
+        res.redirect('../login');
       });
     }
   },
 ];
 
-module.exports.login = (req, res) => {
-
-};
+module.exports.login = (req, res) => {};
 
 module.exports.findUsers = (req, res) => {
   return User.find({}).then((foundUsers) => {
