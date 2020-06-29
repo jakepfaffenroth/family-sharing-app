@@ -15,7 +15,12 @@ const tempStorage = multer.diskStorage({
   },
 });
 
-router.post('/upload', fileController.b2Auth, multer({ storage: tempStorage }).array('myFiles'), fileController.upload);
+router.post(
+  '/upload',
+  fileController.b2Auth,
+  multer({ storage: tempStorage }).any(),
+  fileController.upload
+);
 
 router.post('/list-files', fileController.b2Auth, fileController.listFiles);
 

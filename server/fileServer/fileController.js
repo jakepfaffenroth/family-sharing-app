@@ -70,7 +70,6 @@ module.exports.upload = (req, res, next) => {
         );
         let uploadUrl = authToken.data.uploadUrl;
         let uploadAuthorizationToken = authToken.data.authorizationToken;
-
         // Uploads images
         let source = fs.readFileSync(imagePath);
         let fileSize = fs.statSync(imagePath).size;
@@ -80,7 +79,6 @@ module.exports.upload = (req, res, next) => {
           .createHash('sha1')
           .update(source)
           .digest('hex');
-        console.log('filename: ', fileName);
 
         const uploadResponse = await axios.post(uploadUrl, source, {
           headers: {
@@ -103,11 +101,11 @@ module.exports.upload = (req, res, next) => {
 
         console.log(`✅ Status: ${uploadResponse.status} - ${uploadResponse.data.fileName} uploaded`);
       } catch (err) {
-        console.log('⚠️ Error: ', err);
+        console.log('⚠️ Error: ', err.response.data);
       }
     });
     // successful response
-    res.json({ msg: `Success - ${compressedImagePaths} uploaded` });
+    res.status(200).json( `Success - ${compressedImagePaths} uploaded` );
   };
 
   // Compress image and save to temp folder

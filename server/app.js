@@ -2,6 +2,7 @@ const createError = require('http-errors');
 const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
+const bodyParser = require('body-parser');
 const logger = require('morgan');
 
 const cors = require('cors');
@@ -22,7 +23,6 @@ const User = require('./users/userModel');
 
 const app = express();
 app.use(cors());
-
 
 const MongoStore = require('connect-mongo')(session);
 const mongoDb = process.env.MONGO;
@@ -63,6 +63,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ limit: '50mb', extended: true, parameterLimit: 50000 }));
 
 //add routes
 app.use('/', indexRouter);
