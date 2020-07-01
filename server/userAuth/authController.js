@@ -87,7 +87,7 @@ module.exports.checkSession = (req, res, next) => {
       return res.json({ isLoggedIn: false });
     }
     console.log('User is logged in');
-    return res.json({ isLoggedIn: true, user: { firstName: user.firstName, _id: user._id } });
+    return res.json({ isLoggedIn: true, user: { firstName: user.firstName, _id: user._id, images: user.images } });
   });
 };
 

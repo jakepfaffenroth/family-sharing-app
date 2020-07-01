@@ -91,15 +91,12 @@ module.exports.upload = (req, res, next) => {
               'X-Bz-Info-Author': 'unknown',
             },
           });
-          console.log('uploadResponse: ', uploadResponse);
 
           // Save B2 fileId to user doc in database
           let fileId = uploadResponse.data.fileId;
           User.findOneAndUpdate({ _id: req.body.userId }, { $push: { images: fileId } }, function(error, success) {
             if (error) {
               console.log('error: ',error);
-            } else {
-              console.log('success: ', success);
             }
           });
 

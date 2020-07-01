@@ -29,7 +29,7 @@
       </div>
       <div v-if="fileList.length > 0" class="image-grid">
         <!-- <p>Showing images from folder {{}}</p> -->
-        <img v-for="(image, index) in fileList" :key="index.fileId" :src="basePath + image.fileName" class="image" />
+        <img v-for="(image, index) in fileList" :key="index" :src="image" class="image" />
       </div>
     </div>
     <div></div>
@@ -72,19 +72,23 @@ export default {
   },
   methods: {
     async getUserImages() {
-      const response = await axios({
-        url: this.server + '/files/list-files',
-        method: 'post',
-        data: { filePrefix: this.user._id },
+      // const response = await axios({
+      //   url: this.server + '/files/list-files',
+      //   method: 'post',
+      //   data: { filePrefix: this.user._id },
+      // });
+      // this.fileList = response.data.files;
+      const basePath = 'https://f000.backblazeb2.com/b2api/v1/b2_download_file_by_id?fileId=';
+      this.user.images.forEach((fileId) => {
+        this.fileList.push(basePath + fileId);
       });
-      this.fileList = response.data.files;
     },
 
     sendingEvent(file, xhr, formData) {
       if (!formData.get('userId')) {
         formData.append('userId', this.user._id);
       }
-      this.getUserImages();
+      // this.getUserImages();
     },
 
     ownerShare() {
@@ -98,7 +102,6 @@ export default {
       window.location = this.server + '/login';
     },
   },
-  async beforeCreate() {},
   async created() {
     const ownerId = this.$cookies.get('ownerId');
     const guestId = this.$cookies.get('guestId');
@@ -117,6 +120,8 @@ export default {
       this.userType = 'owner';
       this.user._id = response.data.user._id;
       this.user.firstName = response.data.user.firstName;
+      this.user.images = response.data.user.images;
+      // this.getUserImages()
       this.isReadyToRender = true;
     }
     if (guestId && !ownerId) {
