@@ -4,9 +4,16 @@
       <div v-if="userType == 'owner'">
         <h1>Welcome Back, {{ user.firstName }}</h1>
         <button @click="logout" class="link">Log out</button>
+        <button @click="ownerShare" class="link">Share</button>
+        <div v-if="shareUrl" class="share-modal">
+          <h3>Your personal link to share:</h3>
+          <p>{{ shareUrl }}</p>
+          <button @click="shareUrl = ''">Close</button>
+        </div>
       </div>
+
       <div v-if="userType == 'guest'">
-        <h1>You are a guest of {{ user.firstName }} {{user.lastName}}</h1>
+        <h1>You are a guest of {{ user.firstName }} {{ user.lastName }}</h1>
       </div>
 
       <vue-dropzone
@@ -17,12 +24,12 @@
         @vdropzone-sending="sendingEvent"
       />
 
+      <div v-if="fileList.length === 0 && userType === 'owner' && user._id">
+        <p>Upload your first images!</p>
+      </div>
       <div v-if="fileList.length > 0" class="image-grid">
         <!-- <p>Showing images from folder {{}}</p> -->
         <img v-for="(image, index) in fileList" :key="index.fileId" :src="basePath + image.fileName" class="image" />
-      </div>
-      <div v-if="fileList.length === 0">
-        <p>Upload your first images</p>
       </div>
     </div>
     <div></div>
@@ -45,6 +52,7 @@ export default {
       isReadyToRender: false,
       userType: 'guest',
       user: {},
+      shareUrl: '',
       files: '',
       b2Credentials: {},
       filePrefix: 'test',
@@ -71,11 +79,16 @@ export default {
       });
       this.fileList = response.data.files;
     },
+
     sendingEvent(file, xhr, formData) {
       if (!formData.get('userId')) {
         formData.append('userId', this.user._id);
       }
       this.getUserImages();
+    },
+
+    ownerShare() {
+      this.shareUrl = `${this.server}/${this.user._id}/guest`;
     },
 
     logout() {
@@ -160,6 +173,18 @@ export default {
 }
 .image:hover {
   opacity: 0.7;
-  overlay: black;
+}
+
+.skeleton-image {
+  background-color: gray;
+}
+
+.share-modal {
+  position: absolute;
+  z-index: 1000;
+  padding: 200px;
+  margin: auto;
+  background-color: white;
+  border: 1px solid black;
 }
 </style>
