@@ -57,7 +57,7 @@ module.exports.login = (req, res, next) => {
       const userId = JSON.stringify(req.session.passport.user._id).replace(/"/g, '');
       console.log('userId: ', userId);
       // Set cookie on client with user._id
-      res.cookie('user._id', userId, { maxAge: 1000 * 60 * 60 * 24 * 7 });
+      res.cookie('ownerId', userId, { maxAge: 1000 * 60 * 60 * 24 * 7 });
       res.redirect(process.env.CLIENT);
     });
   })(req, res, next);
@@ -82,7 +82,6 @@ module.exports.checkSession = (req, res, next) => {
   // passport.deserializeUser(function(userId, done) {
   //   console.log('deserialize user: ', user);
   User.findById(userId, function(err, user) {
-    // done(err, user);
     if (err || !user) {
       console.log('Could not find user logged in');
       return res.json({ isLoggedIn: false });
@@ -90,7 +89,6 @@ module.exports.checkSession = (req, res, next) => {
     console.log('User is logged in');
     return res.json({ isLoggedIn: true, user: { firstName: user.firstName, _id: user._id } });
   });
-  // });
 };
 
 // ----- Session logic -----

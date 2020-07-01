@@ -105,12 +105,11 @@ module.exports.create = [
   },
 ];
 
-module.exports.login = (req, res) => {};
-
-module.exports.findUsers = (req, res) => {
-  return User.find({}).then((foundUsers) => {
-    if (foundUsers) {
-      return res.json(foundUsers);
+module.exports.getUser = (req, res) => {
+  const userId = req.body.userId
+  return User.findById(userId).then((foundUser) => {
+    if (foundUser) {
+      return res.json(foundUser);
     }
   });
 };

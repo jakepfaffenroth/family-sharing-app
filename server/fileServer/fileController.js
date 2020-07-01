@@ -7,6 +7,8 @@ const { Readable, Writable } = require('stream');
 const sharp = require('sharp');
 const imagemin = require('imagemin');
 const imageminMozjpeg = require('imagemin-mozjpeg');
+const User = require('../users/userModel');
+const authController = require('../userAuth/authController');
 
 const appKeyId = process.env.VUE_APP_APP_KEY_ID;
 const applicationKey = process.env.VUE_APP_APPLICATION_KEY;
@@ -66,11 +68,11 @@ module.exports.upload = (req, res, next) => {
         );
         let uploadUrl = authToken.data.uploadUrl;
         let uploadAuthorizationToken = authToken.data.authorizationToken;
+
         // Uploads images
         let source = fs.readFileSync(imagePath);
         let fileSize = fs.statSync(imagePath).size;
         let fileName = req.body.userId + '/' + path.basename(imagePath);
-        console.log('after filename req.body.userId: ', req.body.userId);
         console.log('fileName: ', fileName);
         fileName = encodeURI(fileName);
         let sha1 = crypto
@@ -78,32 +80,36 @@ module.exports.upload = (req, res, next) => {
           .update(source)
           .digest('hex');
 
-        const uploadResponse = await axios.post(uploadUrl, source, {
-          headers: {
-            Authorization: uploadAuthorizationToken,
-            'X-Bz-File-Name': fileName,
-            'Content-Type': 'b2/x-auto',
-            'Content-Length': fileSize,
-            'X-Bz-Content-Sha1': sha1,
-            'X-Bz-Info-Author': 'unknown',
-          },
-        });
+        try {
+          const uploadResponse = await axios.post(uploadUrl, source, {
+            headers: {
+              Authorization: uploadAuthorizationToken,
+              'X-Bz-File-Name': fileName,
+              'Content-Type': 'b2/x-auto',
+              'Content-Length': fileSize,
+              'X-Bz-Content-Sha1': sha1,
+              'X-Bz-Info-Author': 'unknown',
+            },
+          });
 
-        // Delete temp file after successful upload
-        fs.unlink(imagePath, (err) => {
-          if (err) {
-            throw err;
-          }
-          console.log('❌ Deleted ' + imagePath);
-        });
+          // Delete temp file after successful upload
+          fs.unlink(imagePath, (err) => {
+            if (err) {
+              throw err;
+            }
+            console.log('❌ Deleted ' + imagePath);
+          });
 
-        console.log(`✅ Status: ${uploadResponse.status} - ${uploadResponse.data.fileName} uploaded`);
+          console.log(`✅ Status: ${uploadResponse.status} - ${uploadResponse.data.fileName} uploaded`);
+        } catch (err) {
+          console.log('uploadResponse err: ', err);
+        }
       } catch (err) {
-        console.log('⚠️ Error: ', err.response.data);
+        console.log('⚠️ Error: ', err);
       }
     });
     // successful response
-    res.status(200).json( `Success - ${compressedImagePaths} uploaded` );
+    res.status(200).json(`Success - ${compressedImagePaths} uploaded`);
   };
 
   // Compress image and save to temp folder

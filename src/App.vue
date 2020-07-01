@@ -1,17 +1,31 @@
 <template>
-  <div v-if="isReadyToRender">
-    <h1>Welcome Back, {{ user.firstName }}</h1>
-    <button @click="logout" class="link">Log out</button>
+  <div>
+    <div v-if="isReadyToRender">
+      <div v-if="userType == 'owner'">
+        <h1>Welcome Back, {{ user.firstName }}</h1>
+        <button @click="logout" class="link">Log out</button>
+      </div>
+      <div v-if="userType == 'guest'">
+        <h1>You are a guest of {{ user.firstName }} {{user.lastName}}</h1>
+      </div>
 
-    <vue-dropzone ref="myVueDropzone" id="dropzone" :options="dropzoneOptions" @vdropzone-sending="sendingEvent" />
+      <vue-dropzone
+        v-if="userType == 'owner'"
+        ref="myVueDropzone"
+        id="dropzone"
+        :options="dropzoneOptions"
+        @vdropzone-sending="sendingEvent"
+      />
 
-    <div v-if="fileList.length > 0" class="image-grid">
-      <!-- <p>Showing images from folder {{}}</p> -->
-      <img v-for="(image, index) in fileList" :key="index.fileId" :src="basePath + image.fileName" class="image" />
+      <div v-if="fileList.length > 0" class="image-grid">
+        <!-- <p>Showing images from folder {{}}</p> -->
+        <img v-for="(image, index) in fileList" :key="index.fileId" :src="basePath + image.fileName" class="image" />
+      </div>
+      <div v-if="fileList.length === 0">
+        <p>Upload your first images</p>
+      </div>
     </div>
-    <div v-if="fileList.length === 0">
-      <p>Upload your first images</p>
-    </div>
+    <div></div>
   </div>
 </template>
 
@@ -29,6 +43,7 @@ export default {
     return {
       server: process.env.VUE_APP_SERVER,
       isReadyToRender: false,
+      userType: 'guest',
       user: {},
       files: '',
       b2Credentials: {},
@@ -60,31 +75,51 @@ export default {
       if (!formData.get('userId')) {
         formData.append('userId', this.user._id);
       }
-      this.getUserImages()
+      this.getUserImages();
     },
 
     logout() {
       axios.get(this.server + '/logout');
-      this.$cookies.remove('user._id');
+      this.$cookies.remove('ownerId');
       this.$cookies.remove('connect.sid');
       window.location = this.server + '/login';
     },
   },
   async beforeCreate() {},
   async created() {
-    let userId;
-    userId = this.$cookies.get('user._id');
-    const response = await axios({
-      url: this.server + '/auth/check-session',
-      method: 'post',
-      data: { userId: userId },
-    });
-    if (!response.data.isLoggedIn) {
-      window.location = this.server + '/login';
+    const ownerId = this.$cookies.get('ownerId');
+    const guestId = this.$cookies.get('guestId');
+    // if (!ownerId && !guestId) {
+    //   window.location = this.server;
+    // }
+    if (ownerId) {
+      const response = await axios({
+        url: this.server + '/auth/check-session',
+        method: 'post',
+        data: { userId: ownerId },
+      });
+      if (!response.data.isLoggedIn) {
+        window.location = this.server + '/login';
+      }
+      this.userType = 'owner';
+      this.user._id = response.data.user._id;
+      this.user.firstName = response.data.user.firstName;
+      this.isReadyToRender = true;
     }
-    this.user._id = response.data.user._id;
-    this.user.firstName = response.data.user.firstName;
-    this.isReadyToRender = true;
+    if (guestId && !ownerId) {
+      console.log('ownerId: ', ownerId);
+      console.log('guestId: ', guestId);
+
+      const response = await axios({
+        url: this.server + '/user/get-user',
+        method: 'post',
+        data: { userId: guestId },
+      });
+
+      console.log('response: ', response);
+      this.user = response.data;
+      this.isReadyToRender = true;
+    }
     try {
       this.getUserImages();
     } catch (err) {
@@ -95,9 +130,9 @@ export default {
 </script>
 
 <style>
-#dropzone{
-width: 60vw;
-margin: auto;
+#dropzone {
+  width: 60vw;
+  margin: auto;
 }
 
 .link {
