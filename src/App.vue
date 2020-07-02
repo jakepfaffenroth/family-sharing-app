@@ -24,12 +24,20 @@
         @vdropzone-sending="sendingEvent"
       />
 
-      <div v-if="fileList.length === 0 && userType === 'owner' && user._id">
+      <div v-if="user.images.length === 0 && userType === 'owner' && user._id">
         <p>Upload your first images!</p>
       </div>
-      <div v-if="fileList.length > 0" class="image-grid">
+      <div v-if="user.images.length > 0" class="image-grid">
         <!-- <p>Showing images from folder {{}}</p> -->
-        <img v-for="(image, index) in fileList" :key="index" :src="image" class="image" />
+        <div v-for="(image, index) in user.images" :key="index" class="image-container">
+          <img :src="'https://f000.backblazeb2.com/b2api/v1/b2_download_file_by_id?fileId=' + image.fileId" class="image" />
+          <form :action="server + '/files/delete-image'" method='post'>
+            <input type="hidden" name='fileId' :value="image.fileId" />
+            <input type="hidden" name='fileName' :value="image.fileName" />
+            <input type="hidden" name='userId' :value="user._id" />
+            <input type='submit' class="delete-btn" value='Delete'>
+          </form>
+        </div>
       </div>
     </div>
     <div></div>
@@ -71,17 +79,11 @@ export default {
     };
   },
   methods: {
-    async getUserImages() {
-      // const response = await axios({
-      //   url: this.server + '/files/list-files',
-      //   method: 'post',
-      //   data: { filePrefix: this.user._id },
+    getUserImages() {
+      // const basePath = 'https://f000.backblazeb2.com/b2api/v1/b2_download_file_by_id?fileId=';
+      // this.user.images.forEach((fileId) => {
+      //   this.fileList.push(basePath + fileId);
       // });
-      // this.fileList = response.data.files;
-      const basePath = 'https://f000.backblazeb2.com/b2api/v1/b2_download_file_by_id?fileId=';
-      this.user.images.forEach((fileId) => {
-        this.fileList.push(basePath + fileId);
-      });
     },
 
     sendingEvent(file, xhr, formData) {
@@ -94,6 +96,8 @@ export default {
     ownerShare() {
       this.shareUrl = `${this.server}/${this.user._id}/guest`;
     },
+
+    deleteImage() {},
 
     logout() {
       axios.get(this.server + '/logout');
@@ -169,6 +173,10 @@ export default {
   margin-top: 1rem;
 }
 
+.image-container {
+  /* display: flex; */
+}
+
 .image {
   max-width: 400px;
   max-height: 400px;
@@ -180,8 +188,9 @@ export default {
   opacity: 0.7;
 }
 
-.skeleton-image {
-  background-color: gray;
+.delete-btn {
+  /* position: relative; */
+  margin: auto;
 }
 
 .share-modal {

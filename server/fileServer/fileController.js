@@ -94,11 +94,16 @@ module.exports.upload = (req, res, next) => {
 
           // Save B2 fileId to user doc in database
           let fileId = uploadResponse.data.fileId;
-          User.findOneAndUpdate({ _id: req.body.userId }, { $push: { images: fileId } }, function(error, success) {
-            if (error) {
-              console.log('error: ',error);
+          fileName = uploadResponse.data.fileName;
+          User.findOneAndUpdate(
+            { _id: req.body.userId },
+            { $push: { images: { fileId: fileId, fileName: fileName } } },
+            function(error, success) {
+              if (error) {
+                console.log('error: ', error);
+              }
             }
-          });
+          );
 
           // Delete temp file after successful upload
           fs.unlink(imagePath, (err) => {
@@ -180,6 +185,34 @@ module.exports.listFiles = async (req, res, next) => {
     res.json(response.data);
   } catch (err) {
     console.log('listFiles error: ', err);
+  }
+};
+
+module.exports.deleteImage = async (req, res, next) => {
+  const credentials = res.locals.credentials;
+  const fileId = req.body.fileId;
+  const fileName = req.body.fileName;
+  const userId = req.body.userId;
+
+  try {
+    // Delete image file from B2
+    await axios.post(
+      credentials.apiUrl + '/b2api/v1/b2_delete_file_version',
+      {
+        fileName: fileName,
+        fileId: fileId,
+      },
+      { headers: { Authorization: credentials.authorizationToken } }
+    );
+    // Remove image info from database
+    User.findOneAndUpdate({ _id: userId }, { $pull: { images: { fileId: fileId } } }, function(error, success) {
+      if (error) {
+        console.log('error: ', error);
+      }
+    });
+    console.log('File was successfully deleted');
+  } catch (err) {
+    console.log('Deletion error: ', err); // an error occurred
   }
 };
 
