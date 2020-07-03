@@ -211,8 +211,10 @@ module.exports.deleteImage = async (req, res, next) => {
       }
     });
     console.log('File was successfully deleted');
+    res.json('File successfully deleted');
   } catch (err) {
     console.log('Deletion error: ', err); // an error occurred
+    res.json('An error occurred during file deletion');
   }
 };
 
