@@ -106,7 +106,7 @@ module.exports.create = [
 ];
 
 module.exports.getUser = (req, res) => {
-  const userId = req.body.userId
+  const userId = req.body.userId;
   return User.findById(userId).then((foundUser) => {
     if (foundUser) {
       return res.json(foundUser);

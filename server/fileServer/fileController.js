@@ -114,6 +114,8 @@ module.exports.upload = (req, res, next) => {
           });
 
           console.log(`✅ Status: ${uploadResponse.status} - ${uploadResponse.data.fileName} uploaded`);
+          // successful response
+          res.status(200).json({ fileId: fileId, fileName: fileName });
         } catch (err) {
           console.log('uploadResponse err: ', err);
         }
@@ -121,8 +123,6 @@ module.exports.upload = (req, res, next) => {
         console.log('⚠️ Error: ', err);
       }
     });
-    // successful response
-    res.status(200).json(`Success - ${compressedImagePaths} uploaded`);
   };
 
   // Compress image and save to temp folder

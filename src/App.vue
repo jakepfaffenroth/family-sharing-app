@@ -22,20 +22,24 @@
         id="dropzone"
         :options="dropzoneOptions"
         @vdropzone-sending="sendingEvent"
+        @vdropzone-success="updateImages"
       />
 
-      <div v-if="user.images.length === 0 && userType === 'owner' && user._id">
+      <div v-if="images.length === 0 && userType === 'owner' && user._id">
         <p>Upload your first images!</p>
       </div>
-      <div v-if="user.images.length > 0" class="image-grid">
+      <div v-if="images.length > 0" class="image-grid">
         <!-- <p>Showing images from folder {{}}</p> -->
-        <div v-for="(image, index) in user.images" :key="index" class="image-container">
-          <img :src="'https://f000.backblazeb2.com/b2api/v1/b2_download_file_by_id?fileId=' + image.fileId" class="image" />
-          <form :action="server + '/files/delete-image'" method='post'>
-            <input type="hidden" name='fileId' :value="image.fileId" />
-            <input type="hidden" name='fileName' :value="image.fileName" />
-            <input type="hidden" name='userId' :value="user._id" />
-            <input type='submit' class="delete-btn" value='Delete'>
+        <div v-for="(image, index) in images" :key="index" class="image-container">
+          <img
+            :src="'https://f000.backblazeb2.com/b2api/v1/b2_download_file_by_id?fileId=' + image.fileId"
+            class="image"
+          />
+          <form @submit.prevent="deleteImage(image.fileId, image.fileName, user._id, index)">
+            <input type="hidden" name="fileId" :value="image.fileId" />
+            <input type="hidden" name="fileName" :value="image.fileName" />
+            <input type="hidden" name="userId" :value="user._id" />
+            <input type="submit" class="delete-btn" value="Delete" />
           </form>
         </div>
       </div>
@@ -60,6 +64,7 @@ export default {
       isReadyToRender: false,
       userType: 'guest',
       user: {},
+      images: [],
       shareUrl: '',
       files: '',
       b2Credentials: {},
@@ -81,7 +86,7 @@ export default {
   methods: {
     getUserImages() {
       // const basePath = 'https://f000.backblazeb2.com/b2api/v1/b2_download_file_by_id?fileId=';
-      // this.user.images.forEach((fileId) => {
+      // this.images.forEach((fileId) => {
       //   this.fileList.push(basePath + fileId);
       // });
     },
@@ -93,11 +98,19 @@ export default {
       // this.getUserImages();
     },
 
+    updateImages(file, response) {
+      this.images.unshift(response);
+      this.$refs.myVueDropzone.removeFile(file);
+    },
+
     ownerShare() {
       this.shareUrl = `${this.server}/${this.user._id}/guest`;
     },
 
-    deleteImage() {},
+    deleteImage(fileId, fileName, userId, index) {
+      axios.post(this.server + '/files/delete-image', { fileId: fileId, fileName: fileName, userId: userId });
+      this.images.splice(index, 1);
+    },
 
     logout() {
       axios.get(this.server + '/logout');
@@ -124,7 +137,7 @@ export default {
       this.userType = 'owner';
       this.user._id = response.data.user._id;
       this.user.firstName = response.data.user.firstName;
-      this.user.images = response.data.user.images;
+      this.images = response.data.user.images.reverse();
       // this.getUserImages()
       this.isReadyToRender = true;
     }
