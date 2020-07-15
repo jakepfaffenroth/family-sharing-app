@@ -5,6 +5,7 @@
         <h1>Welcome Back, {{ user.firstName }}</h1>
         <button @click="logout" class="link">Log out</button>
         <button @click="ownerShare" class="link">Share</button>
+        <button @click="nuke" class="link">Nuke</button>
         <div v-if="shareUrl" class="share-modal">
           <h3>Your personal link to share:</h3>
           <p>{{ shareUrl }}</p>
@@ -16,7 +17,7 @@
         <h1>You are a guest of {{ user.firstName }} {{ user.lastName }}</h1>
       </div>
 
-      <div id="progress" v-if="progress!=='0%'">
+      <div id="progress" v-if="progress !== '0%'">
         <div id="progress-bar" :style="{ width: progress }">
           <span id="progress-label">{{ progress }}</span>
         </div>
@@ -98,6 +99,11 @@ export default {
     },
   },
   methods: {
+    nuke() {
+      this.images.forEach((image) => {
+        this.deleteImage(image.fileId, image.fileName, this.user._id, 0);
+      });
+    },
     getUserImages() {
       // const basePath = 'https://f000.backblazeb2.com/b2api/v1/b2_download_file_by_id?fileId=';
       // this.images.forEach((fileId) => {
@@ -130,8 +136,8 @@ export default {
       this.shareUrl = `${this.server}/${this.user._id}/guest`;
     },
 
-    deleteImage(fileId, fileName, userId, index) {
-      axios.post(this.server + '/files/delete-image', { fileId: fileId, fileName: fileName, userId: userId });
+    async deleteImage(fileId, fileName, userId, index) {
+      await axios.post(this.server + '/files/delete-image', { fileId: fileId, fileName: fileName, userId: userId });
       this.images.splice(index, 1);
     },
 
