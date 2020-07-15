@@ -109,26 +109,18 @@ export default {
       if (!formData.get('userId')) {
         formData.append('userId', this.user._id);
       }
-      // this.getUserImages();
     },
 
     updateImages(file, response) {
       for (let i = 0; i < response.length; i++) {
-        console.log('response.i: ', response[i]);
         this.images.unshift(response[i]);
         response.splice(i, 1);
       }
-      // response.forEach((image) => {this.images.unshift(image);});
-      // console.log('file: ', file);
-      // console.log('response: ', response);
       this.$refs.myVueDropzone.removeFile(file);
       this.progress = '0%';
     },
 
     uploadProgress(progress, totalBytes, bytesSent) {
-      console.log('progress: ', progress);
-      console.log('bytesSent: ', bytesSent);
-      console.log('totalBytes: ', totalBytes);
       this.progress = `${progress.toFixed(2)}%`;
       this.bytesSent = bytesSent;
       this.progress >= 100 ? (this.progress = 0) : null;
