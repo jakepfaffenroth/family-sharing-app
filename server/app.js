@@ -25,6 +25,7 @@ const User = require('./users/userModel');
 const app = express();
 app.use(cors());
 
+mongoose.set('useFindAndModify', false);
 const MongoStore = require('connect-mongo')(session);
 const mongoDb = process.env.MONGO;
 const sessionStore = new MongoStore({ url: mongoDb, collection: 'sessions' });

@@ -5,16 +5,106 @@ const path = require('path');
 const fs = require('fs');
 const { Readable, Writable } = require('stream');
 const sharp = require('sharp');
-const imagemin = require('imagemin');
-const imageminMozjpeg = require('imagemin-mozjpeg');
 const User = require('../users/userModel');
-const authController = require('../userAuth/authController');
 
 const appKeyId = process.env.VUE_APP_APP_KEY_ID;
 const applicationKey = process.env.VUE_APP_APPLICATION_KEY;
 const bucketId = process.env.VUE_APP_BUCKET_ID;
 
 const encodedBase64 = Buffer.from(appKeyId + ':' + applicationKey).toString('base64');
+
+// ---- File compression and upload functions
+const compressImages = async (files) => {
+  let compFiles = 0;
+  files.forEach((fileObject) => {
+    const output = sharp(fileObject.buffer);
+    output
+      .metadata()
+      .then(function(metadata) {
+        return output.jpeg({ quality: 80 }).toBuffer();
+      })
+      .then(function(data) {
+        fileObject.buffer = data;
+        fileObject.size = data.length;
+        compFiles++;
+        console.log('result: ', files);
+        console.log('✅ ' + compFiles + ' images optimized');
+        return files;
+      });
+  });
+};
+const getB2Auth = async (res) => {
+  // Get B2 upload auth
+  const credentials = res.locals.credentials;
+  let authToken;
+  let auth = {
+    uploadAuthorizationToken: '',
+    uploadUrl: '',
+  };
+  try {
+    // Gets B2 auth token
+    authToken = await axios.post(
+      credentials.apiUrl + '/b2api/v2/b2_get_upload_url',
+      {
+        bucketId: bucketId,
+      },
+      {
+        headers: {
+          Authorization: credentials.authorizationToken,
+        },
+      }
+    );
+    auth.uploadUrl = authToken.data.uploadUrl;
+    auth.uploadAuthorizationToken = authToken.data.authorizationToken;
+  } catch (err) {
+    console.log('Error getting B2 upload token');
+  }
+  return auth;
+};
+const uploadFiles = async (auth, fileObject, req) => {
+  // Uploads images to B2 storage
+  let source = fileObject.buffer;
+  let fileSize = fileObject.size;
+  let fileName = req.body.userId + '/' + path.basename(fileObject.originalname);
+  fileName = encodeURI(fileName);
+  let sha1 = crypto
+    .createHash('sha1')
+    .update(source)
+    .digest('hex');
+
+  const uploadResponse = await axios.post(auth.uploadUrl, source, {
+    headers: {
+      Authorization: auth.uploadAuthorizationToken,
+      'X-Bz-File-Name': fileName,
+      'Content-Type': 'b2/x-auto',
+      'Content-Length': fileSize,
+      'X-Bz-Content-Sha1': sha1,
+      'X-Bz-Info-Author': 'unknown',
+    },
+  });
+  console.log(`✅ Status: ${uploadResponse.status} - ${uploadResponse.data.fileName} uploaded`);
+  return uploadResponse;
+};
+const addToDb = async (uploadResponse, req) => {
+  // Save B2 fileId to user doc in database
+  let fileId = uploadResponse.data.fileId;
+  let fileName = uploadResponse.data.fileName;
+  User.findOneAndUpdate(
+    { _id: req.body.userId },
+    {
+      $push: {
+        images: { fileId: fileId, fileName: fileName },
+      },
+    },
+    function(error, success) {
+      if (error) {
+        console.log('error: ', error);
+      }
+    }
+  );
+  return { fileId: fileId, fileName: fileName };
+};
+// ------------------------------------------
 
 module.exports.b2Auth = (req, res, next) => {
   console.log('getting B2 credentials');
@@ -46,122 +136,25 @@ module.exports.b2Auth = (req, res, next) => {
     });
 };
 
-module.exports.upload = (req, res, next) => {
+module.exports.upload = async (req, res) => {
+  const files = req.files;
+  const finishedFiles = [];
+
   console.log('-------------------------');
   console.log('  STARTING IMAGE UPLOAD  ');
   console.log('-------------------------');
   console.log('Uploading', req.files.length, 'images');
 
-  const credentials = res.locals.credentials;
-  const files = req.files;
+  await compressImages(files);
 
-  const uploadImage = async (compressedImagePaths) => {
-    await compressedImagePaths.forEach(async (imagePath) => {
-      try {
-        // Gets B2 auth token
-        const authToken = await axios.post(
-          credentials.apiUrl + '/b2api/v2/b2_get_upload_url',
-          {
-            bucketId: bucketId,
-          },
-          { headers: { Authorization: credentials.authorizationToken } }
-        );
-        let uploadUrl = authToken.data.uploadUrl;
-        let uploadAuthorizationToken = authToken.data.authorizationToken;
+  for (const fileObject of files) {
+    const auth = await getB2Auth(res);
+    const uploadResponse = await uploadFiles(auth, fileObject, req);
+    const fileInfo = await addToDb(uploadResponse, req);
+    finishedFiles.push(fileInfo);
+  }
 
-        // Uploads images
-        let source = fs.readFileSync(imagePath);
-        let fileSize = fs.statSync(imagePath).size;
-        let fileName = req.body.userId + '/' + path.basename(imagePath);
-        console.log('fileName: ', fileName);
-        fileName = encodeURI(fileName);
-        let sha1 = crypto
-          .createHash('sha1')
-          .update(source)
-          .digest('hex');
-
-        try {
-          const uploadResponse = await axios.post(uploadUrl, source, {
-            headers: {
-              Authorization: uploadAuthorizationToken,
-              'X-Bz-File-Name': fileName,
-              'Content-Type': 'b2/x-auto',
-              'Content-Length': fileSize,
-              'X-Bz-Content-Sha1': sha1,
-              'X-Bz-Info-Author': 'unknown',
-            },
-          });
-
-          // Save B2 fileId to user doc in database
-          let fileId = uploadResponse.data.fileId;
-          fileName = uploadResponse.data.fileName;
-          User.findOneAndUpdate(
-            { _id: req.body.userId },
-            { $push: { images: { fileId: fileId, fileName: fileName } } },
-            function(error, success) {
-              if (error) {
-                console.log('error: ', error);
-              }
-            }
-          );
-
-          // Delete temp file after successful upload
-          fs.unlink(imagePath, (err) => {
-            if (err) {
-              throw err;
-            }
-            console.log('❌ Deleted ' + imagePath);
-          });
-
-          console.log(`✅ Status: ${uploadResponse.status} - ${uploadResponse.data.fileName} uploaded`);
-          // successful response
-          res.status(200).json({ fileId: fileId, fileName: fileName });
-        } catch (err) {
-          console.log('uploadResponse err: ', err);
-        }
-      } catch (err) {
-        console.log('⚠️ Error: ', err);
-      }
-    });
-  };
-
-  // Compress image and save to temp folder
-  (async () => {
-    const compressedImagePaths = [];
-    // Push the path of each uploaded file to an array
-    const uploadsPaths = [];
-    files.forEach((fileObject) => {
-      uploadsPaths.push(fileObject.path);
-    });
-
-    // Compress the images
-    const output = await imagemin(uploadsPaths, {
-      destination: 'temp/compressed',
-      plugins: [imageminMozjpeg()],
-    });
-    // Gets path of each compressed image and saves to an array
-    output.forEach((compImage) => {
-      let path = compImage.destinationPath;
-      compressedImagePaths.push('./' + path);
-    });
-    uploadsPaths.forEach((path) => {
-      fs.unlink(path, (err) => {
-        if (err) {
-          throw err;
-        }
-        console.log('❌ Deleted ' + path);
-      });
-    });
-
-    console.log('✅ ' + output.length + ' images optimized');
-
-    // Upload to B2, delete temp files
-    try {
-      await uploadImage(compressedImagePaths);
-    } catch (err) {
-      console.log('⚠️ Error in upload process: ', err);
-    }
-  })();
+  res.status(200).json(finishedFiles);
 };
 
 module.exports.listFiles = async (req, res, next) => {
@@ -253,5 +246,3 @@ module.exports.download = async (req, res) => {
 };
 
 // TODO - file deletion
-// TODO - list all files
-// TODO - enable user to choose file with file picker

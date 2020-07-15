@@ -31,10 +31,7 @@
       <div v-if="images.length > 0" class="image-grid">
         <!-- <p>Showing images from folder {{}}</p> -->
         <div v-for="(image, index) in images" :key="index" class="image-container">
-          <img
-            :src="'https://f000.backblazeb2.com/b2api/v1/b2_download_file_by_id?fileId=' + image.fileId"
-            class="image"
-          />
+          <img :src="basePath + image.fileName" class="image" />
           <form @submit.prevent="deleteImage(image.fileId, image.fileName, user._id, index)">
             <input type="hidden" name="fileId" :value="image.fileId" />
             <input type="hidden" name="fileName" :value="image.fileName" />
@@ -76,8 +73,10 @@ export default {
         url: process.env.VUE_APP_SERVER + '/files/upload',
         paramName: 'myFiles',
         uploadMultiple: true,
-        parallelUploads: 5,
+        parallelUploads: 6,
         thumbnailWidth: 150,
+        thumbnailHeight: 150,
+        thumbnailMethod: 'contain',
         // headers: { 'My-Awesome-Header': 'header value' },
         addRemoveLinks: true,
       },
@@ -99,7 +98,7 @@ export default {
     },
 
     updateImages(file, response) {
-      this.images.unshift(response);
+      response.forEach((image) => {this.images.unshift(image);});
       this.$refs.myVueDropzone.removeFile(file);
     },
 
