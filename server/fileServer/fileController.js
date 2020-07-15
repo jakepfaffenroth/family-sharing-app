@@ -152,7 +152,6 @@ module.exports.upload = async (req, res) => {
     const fileInfo = await addToDb(uploadResponse, req);
     finishedFiles.push(fileInfo);
   }
-
   res.status(200).json(finishedFiles);
 };
 

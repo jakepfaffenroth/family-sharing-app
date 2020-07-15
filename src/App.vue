@@ -16,6 +16,12 @@
         <h1>You are a guest of {{ user.firstName }} {{ user.lastName }}</h1>
       </div>
 
+      <div id="progress" v-if="progress!=='0%'">
+        <div id="progress-bar" :style="{ width: progress }">
+          <span id="progress-label">{{ progress }}</span>
+        </div>
+      </div>
+
       <vue-dropzone
         v-if="userType == 'owner'"
         ref="myVueDropzone"
@@ -23,6 +29,7 @@
         :options="dropzoneOptions"
         @vdropzone-sending="sendingEvent"
         @vdropzone-success="updateImages"
+        @vdropzone-total-upload-progress="uploadProgress"
       />
 
       <div v-if="images.length === 0 && userType === 'owner' && user._id">
@@ -72,15 +79,23 @@ export default {
       dropzoneOptions: {
         url: process.env.VUE_APP_SERVER + '/files/upload',
         paramName: 'myFiles',
+        acceptedFiles: 'image/*',
         uploadMultiple: true,
-        parallelUploads: 6,
+        parallelUploads: 1,
         thumbnailWidth: 150,
         thumbnailHeight: 150,
         thumbnailMethod: 'contain',
         // headers: { 'My-Awesome-Header': 'header value' },
         addRemoveLinks: true,
       },
+      progress: '0%',
+      bytesSent: 0,
     };
+  },
+  computed: {
+    progressLabel: function() {
+      return this.progress;
+    },
   },
   methods: {
     getUserImages() {
@@ -98,8 +113,25 @@ export default {
     },
 
     updateImages(file, response) {
-      response.forEach((image) => {this.images.unshift(image);});
+      for (let i = 0; i < response.length; i++) {
+        console.log('response.i: ', response[i]);
+        this.images.unshift(response[i]);
+        response.splice(i, 1);
+      }
+      // response.forEach((image) => {this.images.unshift(image);});
+      // console.log('file: ', file);
+      // console.log('response: ', response);
       this.$refs.myVueDropzone.removeFile(file);
+      this.progress = '0%';
+    },
+
+    uploadProgress(progress, totalBytes, bytesSent) {
+      console.log('progress: ', progress);
+      console.log('bytesSent: ', bytesSent);
+      console.log('totalBytes: ', totalBytes);
+      this.progress = `${progress.toFixed(2)}%`;
+      this.bytesSent = bytesSent;
+      this.progress >= 100 ? (this.progress = 0) : null;
     },
 
     ownerShare() {
@@ -167,6 +199,17 @@ export default {
 #dropzone {
   width: 60vw;
   margin: auto;
+}
+
+#progress {
+  width: 100%;
+  background-color: grey;
+  border: 1px solid black;
+}
+
+#progress-bar {
+  height: 30px;
+  background-color: green;
 }
 
 .link {
