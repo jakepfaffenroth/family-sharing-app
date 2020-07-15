@@ -21,7 +21,10 @@ const compressImages = async (files) => {
     output
       .metadata()
       .then(function(metadata) {
-        return output.jpeg({ quality: 80 }).toBuffer();
+        return output
+          .resize({ width: 1200, height: 1200, fit: sharp.fit.inside, withoutEnlargement: true })
+          .jpeg({ quality: 80 })
+          .toBuffer();
       })
       .then(function(data) {
         fileObject.buffer = data;
@@ -29,7 +32,8 @@ const compressImages = async (files) => {
         compFiles++;
         console.log('✅ ' + compFiles + ' images optimized');
         return files;
-      });
+      })
+    .catch((err, info) => { console.log('compression error: ', err, info) })
   });
 };
 const getB2Auth = async (res) => {

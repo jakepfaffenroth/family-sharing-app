@@ -6,6 +6,7 @@
         <button @click="logout" class="link">Log out</button>
         <button @click="ownerShare" class="link">Share</button>
         <button @click="nuke" class="link">Nuke</button>
+
         <div v-if="shareUrl" class="share-modal">
           <h3>Your personal link to share:</h3>
           <p>{{ shareUrl }}</p>
@@ -16,7 +17,7 @@
       <div v-if="userType == 'guest'">
         <h1>You are a guest of {{ user.firstName }} {{ user.lastName }}</h1>
       </div>
-
+      <p>Image count: {{ images.length }}</p>
       <div id="progress" v-if="progress !== '0%'">
         <div id="progress-bar" :style="{ width: progress }">
           <span id="progress-label">{{ progress }}</span>
@@ -31,6 +32,7 @@
         @vdropzone-sending="sendingEvent"
         @vdropzone-success="updateImages"
         @vdropzone-total-upload-progress="uploadProgress"
+        @vdropzone-error="uploadError"
       />
 
       <div v-if="images.length === 0 && userType === 'owner' && user._id">
@@ -41,10 +43,15 @@
         <div v-for="(image, index) in images" :key="index" class="image-container">
           <img :src="basePath + image.fileName" class="image" />
           <form @submit.prevent="deleteImage(image.fileId, image.fileName, user._id, index)">
-            <input type="hidden" name="fileId" :value="image.fileId" />
+            <!-- <input type="hidden" name="fileId" :value="image.fileId" />
             <input type="hidden" name="fileName" :value="image.fileName" />
-            <input type="hidden" name="userId" :value="user._id" />
-            <input type="submit" class="delete-btn" value="Delete" />
+            <input type="hidden" name="userId" :value="user._id" /> -->
+            <input
+              type="submit"
+              class="delete-btn"
+              value="Delete"
+              v-if="images.length === 0 && userType === 'owner' && user._id"
+            />
           </form>
         </div>
       </div>
@@ -82,9 +89,9 @@ export default {
         paramName: 'myFiles',
         acceptedFiles: 'image/*',
         uploadMultiple: true,
-        parallelUploads: 1,
-        thumbnailWidth: 150,
-        thumbnailHeight: 150,
+        parallelUploads: 6,
+        thumbnailWidth: 120,
+        thumbnailHeight: 120,
         thumbnailMethod: 'contain',
         // headers: { 'My-Awesome-Header': 'header value' },
         addRemoveLinks: true,
@@ -132,6 +139,10 @@ export default {
       this.progress >= 100 ? (this.progress = 0) : null;
     },
 
+    uploadError(file, message, xhr) {
+      console.log('Upload Error: ', message, xhr);
+    },
+
     ownerShare() {
       this.shareUrl = `${this.server}/${this.user._id}/guest`;
     },
@@ -151,9 +162,7 @@ export default {
   async created() {
     const ownerId = this.$cookies.get('ownerId');
     const guestId = this.$cookies.get('guestId');
-    // if (!ownerId && !guestId) {
-    //   window.location = this.server;
-    // }
+
     if (ownerId) {
       const response = await axios({
         url: this.server + '/auth/check-session',
@@ -167,28 +176,26 @@ export default {
       this.user._id = response.data.user._id;
       this.user.firstName = response.data.user.firstName;
       this.images = response.data.user.images.reverse();
-      // this.getUserImages()
       this.isReadyToRender = true;
     }
     if (guestId && !ownerId) {
-      console.log('ownerId: ', ownerId);
-      console.log('guestId: ', guestId);
-
       const response = await axios({
         url: this.server + '/user/get-user',
         method: 'post',
         data: { userId: guestId },
       });
 
-      console.log('response: ', response);
       this.user = response.data;
+      this.images = response.data.images.reverse();
       this.isReadyToRender = true;
+    } else {
+      window.location = this.server;
     }
-    try {
-      this.getUserImages();
-    } catch (err) {
-      console.log(err);
-    }
+    // try {
+    //   this.getUserImages();
+    // } catch (err) {
+    //   console.log(err);
+    // }
   },
 };
 </script>
