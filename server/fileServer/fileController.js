@@ -27,7 +27,6 @@ const compressImages = async (files) => {
         fileObject.buffer = data;
         fileObject.size = data.length;
         compFiles++;
-        console.log('result: ', files);
         console.log('✅ ' + compFiles + ' images optimized');
         return files;
       });
