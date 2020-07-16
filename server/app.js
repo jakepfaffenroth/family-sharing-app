@@ -45,12 +45,10 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 passport.serializeUser(function (user, done) {
-  console.log('serialize user: ', user);
   done(null, user);
 });
 
 passport.deserializeUser(function (user, done) {
-  console.log('deserialize user: ', user);
   User.findById(user._id, function (err, user) {
     done(err, user);
   });

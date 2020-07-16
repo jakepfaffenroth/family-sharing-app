@@ -159,10 +159,30 @@ export default {
       window.location = this.server + '/login';
     },
   },
+  beforeCreate() {
+    // user id is passed as query param from server after login
+    // set cookie with id and clear query from url & history
+    // if there's no query param (user went to site directly) then
+    // don't change the cookie
+    const params = new URLSearchParams(window.location.search);
+    const uId = params.get('user');
+    const gId = params.get('guest')
+    if (uId) {
+      this.$cookies.set('ownerId', uId);
+      window.history.replaceState(null, '', '/');
+    }
+    // Same for guestId
+    if (gId) {
+      this.$cookies.set('guestId', gId)
+      window.history.replaceState(null, '', '/')
+    }
+  },
+
   async created() {
     const ownerId = this.$cookies.get('ownerId');
     const guestId = this.$cookies.get('guestId');
 
+    // if logged in as an owner, directs to owner home
     if (ownerId) {
       const response = await axios({
         url: this.server + '/auth/check-session',
@@ -178,6 +198,9 @@ export default {
       this.images = response.data.user.images.reverse();
       this.isReadyToRender = true;
     }
+
+    // If NOT logged in as owner, but has a guestId (from owner's share URL)
+    // then direct to owner's guest page
     if (guestId && !ownerId) {
       const response = await axios({
         url: this.server + '/user/get-user',
@@ -188,10 +211,12 @@ export default {
       this.user = response.data;
       this.images = response.data.images.reverse();
       this.isReadyToRender = true;
-    } 
-    // else {
-    //   window.location = this.server;
-    // }
+    }
+
+    // Prevent users from viewing app without login or guestId
+    if (!guestId && !ownerId) {
+      window.location = this.server;
+    }
     // try {
     //   this.getUserImages();
     // } catch (err) {
