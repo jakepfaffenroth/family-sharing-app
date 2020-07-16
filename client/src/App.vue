@@ -89,7 +89,7 @@ export default {
         paramName: 'myFiles',
         acceptedFiles: 'image/*',
         uploadMultiple: true,
-        parallelUploads: 6,
+        parallelUploads: 2,
         thumbnailWidth: 120,
         thumbnailHeight: 120,
         thumbnailMethod: 'contain',
