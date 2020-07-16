@@ -44,14 +44,14 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
-passport.serializeUser(function(user, done) {
+passport.serializeUser(function (user, done) {
   console.log('serialize user: ', user);
   done(null, user);
 });
 
-passport.deserializeUser(function(user, done) {
+passport.deserializeUser(function (user, done) {
   console.log('deserialize user: ', user);
-  User.findById(user._id, function(err, user) {
+  User.findById(user._id, function (err, user) {
     done(err, user);
   });
 });
@@ -75,12 +75,12 @@ app.use('/auth', authRouter);
 app.use('/files', fileRouter);
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
   next(createError(404));
 });
 
 // error handler
-app.use(function(err, req, res, next) {
+app.use(function (err, req, res, next) {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
