@@ -188,9 +188,10 @@ export default {
       this.user = response.data;
       this.images = response.data.images.reverse();
       this.isReadyToRender = true;
-    } else {
-      window.location = this.server;
-    }
+    } 
+    // else {
+    //   window.location = this.server;
+    // }
     // try {
     //   this.getUserImages();
     // } catch (err) {
