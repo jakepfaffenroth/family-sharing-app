@@ -42,17 +42,16 @@
         <!-- <p>Showing images from folder {{}}</p> -->
         <div v-for="(image, index) in images" :key="index" class="image-container">
           <img :src="basePath + image.fileName" class="image" />
-          <form @submit.prevent="deleteImage(image.fileId, image.fileName, user._id, index)">
-            <!-- <input type="hidden" name="fileId" :value="image.fileId" />
-            <input type="hidden" name="fileName" :value="image.fileName" />
-            <input type="hidden" name="userId" :value="user._id" /> -->
-            <input
-              type="submit"
-              class="delete-btn"
-              value="Delete"
-              v-if="images.length >= 0 && userType === 'owner' && user._id"
-            />
-          </form>
+          <div class="image-overlay">
+            <form @submit.prevent="deleteImage(image.fileId, image.fileName, user._id, index)">
+              <input
+                type="submit"
+                class="delete-btn"
+                value="Delete"
+                v-if="images.length >= 0 && userType === 'owner' && user._id"
+              />
+            </form>
+          </div>
         </div>
       </div>
     </div>
@@ -166,15 +165,15 @@ export default {
     // don't change the cookie
     const params = new URLSearchParams(window.location.search);
     const uId = params.get('user');
-    const gId = params.get('guest')
+    const gId = params.get('guest');
     if (uId) {
       this.$cookies.set('ownerId', uId);
       window.history.replaceState(null, '', '/');
     }
     // Same for guestId
     if (gId) {
-      this.$cookies.set('guestId', gId)
-      window.history.replaceState(null, '', '/')
+      this.$cookies.set('guestId', gId);
+      window.history.replaceState(null, '', '/');
     }
   },
 
@@ -260,23 +259,39 @@ export default {
 }
 
 .image-container {
-  /* display: flex; */
+  position: relative;
 }
 
 .image {
-  max-width: 400px;
-  max-height: 400px;
-  margin: 0.5rem;
+  max-width: 360px;
+  max-height: 360px;
+  margin: 0.25rem;
   object-fit: contain;
-  transition: opacity 0.1s ease-in-out;
 }
 .image:hover {
   opacity: 0.7;
 }
 
+.image-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  z-index: 1000;
+}
+
+.image-container:hover .image-overlay {
+  opacity: 1;
+  z-index: 1000;
+  transition: opacity 0.1s ease-in-out;
+}
+
 .delete-btn {
-  /* position: relative; */
-  margin: auto;
+  position: absolute;
+  top: 10px;
+  right: 10px;
 }
 
 .share-modal {
