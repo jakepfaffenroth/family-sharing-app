@@ -50,7 +50,7 @@
               type="submit"
               class="delete-btn"
               value="Delete"
-              v-if="images.length === 0 && userType === 'owner' && user._id"
+              v-if="images.length >= 0 && userType === 'owner' && user._id"
             />
           </form>
         </div>
@@ -83,7 +83,7 @@ export default {
       filePrefix: 'test',
       // userId: this.$store.getters.user._id,
       fileList: [],
-      basePath: 'https://f000.backblazeb2.com/file/JFP001/',
+      basePath: process.env.VUE_APP_STORAGE,
       dropzoneOptions: {
         url: process.env.VUE_APP_SERVER + '/files/upload',
         paramName: 'myFiles',
