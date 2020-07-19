@@ -78,8 +78,7 @@ module.exports.checkSession = (req, res, next) => {
   const userId = req.body.userId;
   console.log('userId: ', userId);
   console.log('Checking for user session');
-  // passport.deserializeUser(function(userId, done) {
-  //   console.log('deserialize user: ', user);
+  
   User.findById(userId, function(err, user) {
     if (err || !user) {
       console.log('Could not find user logged in');
