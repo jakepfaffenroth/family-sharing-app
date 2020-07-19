@@ -20,20 +20,25 @@ const compressImages = async (files) => {
     const output = sharp(fileObject.buffer);
     output
       .metadata()
-      .then(function(metadata) {
-        return output
-          .resize({ width: 1200, height: 1200, fit: sharp.fit.inside, withoutEnlargement: true })
-          .jpeg({ quality: 80 })
-          .toBuffer();
+      .then(function () {
+        return (
+          output
+            .resize({ width: 1200, height: 1200, fit: sharp.fit.inside, withoutEnlargement: true })
+            // .sharpen()
+            .jpeg({ quality: 80 })
+            .toBuffer()
+        );
       })
-      .then(function(data) {
+      .then(function (data) {
         fileObject.buffer = data;
         fileObject.size = data.length;
         compFiles++;
         console.log('✅ ' + compFiles + ' images optimized');
         return files;
       })
-    .catch((err, info) => { console.log('compression error: ', err, info) })
+      .catch((err, info) => {
+        console.log('compression error: ', err, info);
+      });
   });
 };
 const getB2Auth = async (res) => {
@@ -70,10 +75,7 @@ const uploadFiles = async (auth, fileObject, req) => {
   let fileSize = fileObject.size;
   let fileName = req.body.userId + '/' + path.basename(fileObject.originalname);
   fileName = encodeURI(fileName);
-  let sha1 = crypto
-    .createHash('sha1')
-    .update(source)
-    .digest('hex');
+  let sha1 = crypto.createHash('sha1').update(source).digest('hex');
 
   const uploadResponse = await axios.post(auth.uploadUrl, source, {
     headers: {
@@ -88,7 +90,7 @@ const uploadFiles = async (auth, fileObject, req) => {
   console.log(`✅ Status: ${uploadResponse.status} - ${uploadResponse.data.fileName} uploaded`);
   return uploadResponse;
 };
-const addToDb = async (uploadResponse, req) => {
+const addToDb = async (uploadResponse, dimensions, req) => {
   // Save B2 fileId to user doc in database
   let fileId = uploadResponse.data.fileId;
   let fileName = uploadResponse.data.fileName;
@@ -96,16 +98,31 @@ const addToDb = async (uploadResponse, req) => {
     { _id: req.body.userId },
     {
       $push: {
-        images: { fileId: fileId, fileName: fileName },
+        images: {
+          fileId: fileId,
+          fileName: fileName,
+          src: process.env.CDN_PATH + fileName,
+          thumbnail: process.env.CDN_PATH + fileName,
+          w: dimensions.w,
+          h: dimensions.h,
+        },
       },
     },
-    function(error, success) {
+    function (error, success) {
       if (error) {
         console.log('error: ', error);
       }
     }
   );
   return { fileId: fileId, fileName: fileName };
+};
+const getImageDimensions = async (file) => {
+  const output = sharp(file.buffer);
+  let dimensions;
+  return output.metadata().then(function (metadata) {
+    dimensions = { w: metadata.width, h: metadata.height };
+    return { w: metadata.width, h: metadata.height };
+  });
 };
 // ------------------------------------------
 
@@ -120,7 +137,7 @@ module.exports.b2Auth = (req, res, next) => {
         headers: { Authorization: 'Basic ' + encodedBase64 },
       }
     )
-    .then(function(response) {
+    .then(function (response) {
       const data = response.data;
       credentials = {
         appKeyId: appKeyId,
@@ -134,7 +151,7 @@ module.exports.b2Auth = (req, res, next) => {
       console.log('B2 credentials retrieved');
       next();
     })
-    .catch(function(err) {
+    .catch(function (err) {
       console.log('err: ', err.response.data); // an error occurred
     });
 };
@@ -153,7 +170,12 @@ module.exports.upload = async (req, res) => {
   for (const fileObject of files) {
     const auth = await getB2Auth(res);
     const uploadResponse = await uploadFiles(auth, fileObject, req);
-    const fileInfo = await addToDb(uploadResponse, req);
+    const dimensions = await getImageDimensions(fileObject);
+    const fileInfo = await addToDb(uploadResponse, dimensions, req);
+    fileInfo.w = dimensions.w;
+    fileInfo.h = dimensions.h;
+    fileInfo.src = process.env.CDN_PATH + fileInfo.fileName;
+    console.log('fileInfo: ', fileInfo);
     finishedFiles.push(fileInfo);
   }
   res.status(200).json(finishedFiles);
@@ -200,7 +222,7 @@ module.exports.deleteImage = async (req, res, next) => {
       { headers: { Authorization: credentials.authorizationToken } }
     );
     // Remove image info from database
-    User.findOneAndUpdate({ _id: userId }, { $pull: { images: { fileId: fileId } } }, function(error, success) {
+    User.findOneAndUpdate({ _id: userId }, { $pull: { images: { fileId: fileId } } }, function (error, success) {
       if (error) {
         console.log('error: ', error);
       }
@@ -228,7 +250,7 @@ module.exports.download = async (req, res) => {
       responseType: 'stream',
     });
     // Write image file
-    (function() {
+    (function () {
       const source = new Readable();
       source._read = function noop() {};
       source.push(downloadResponse.data);
@@ -236,7 +258,7 @@ module.exports.download = async (req, res) => {
 
       const destination = fs.createWriteStream(saveToPath);
 
-      source.on('end', function() {
+      source.on('end', function () {
         console.log('File successfully downloaded');
         res.send(`Success - ${fileName} downloaded`); // successful response
       });

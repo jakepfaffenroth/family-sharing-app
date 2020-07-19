@@ -23,6 +23,14 @@
           <span id="progress-label">{{ progress }}</span>
         </div>
       </div>
+      <!-- <p>photoswipe:</p>
+      <vue-picture-swipe :items="images"></vue-picture-swipe> -->
+
+      <!-- <button @click="toggler = !toggler">
+        Toggle Lightbox
+      </button>
+
+      <FsLightbox :toggler="toggler" :sources="images" /> -->
 
       <vue-dropzone
         v-if="userType == 'owner'"
@@ -39,8 +47,27 @@
         <p>Upload your first images!</p>
       </div>
       <div v-if="images.length > 0" class="image-grid">
+        <silent-box :gallery="images">
+          <template v-slot:silentbox-item="{ silentboxItem }">
+            <div class="image-container">
+              <img :src="silentboxItem.src" class="image" />
+              <div class="image-overlay">
+                <form @submit.prevent="deleteImage(image.fileId, image.fileName, user._id, index)">
+                  <input
+                    type="submit"
+                    class="delete-btn"
+                    value="Delete"
+                    v-if="images.length >= 0 && userType === 'owner' && user._id"
+                  />
+                </form>
+              </div>
+            </div>
+          </template>
+        </silent-box>
+
         <!-- <p>Showing images from folder {{}}</p> -->
-        <div v-for="(image, index) in images" :key="index" class="image-container">
+
+        <!-- <div v-for="(image, index) in images" :key="index" class="image-container">
           <img :src="basePath + image.fileName" class="image" />
           <div class="image-overlay">
             <form @submit.prevent="deleteImage(image.fileId, image.fileName, user._id, index)">
@@ -52,7 +79,7 @@
               />
             </form>
           </div>
-        </div>
+        </div> -->
       </div>
     </div>
     <div></div>
@@ -63,14 +90,19 @@
 import axios from 'axios';
 import vue2Dropzone from 'vue2-dropzone';
 import 'vue2-dropzone/dist/vue2Dropzone.min.css';
+// import VuePictureSwipe from 'vue-picture-swipe';
+// import FsLightbox from 'fslightbox-vue';
 
 export default {
   props: {},
   components: {
     vueDropzone: vue2Dropzone,
+    // VuePictureSwipe,
+    // FsLightbox,
   },
   data() {
     return {
+      // toggler: false,
       server: process.env.VUE_APP_SERVER,
       isReadyToRender: false,
       userType: 'guest',
@@ -252,24 +284,28 @@ export default {
 }
 
 .image-grid {
+  margin-top: 1rem;
+}
+
+#silentbox-gallery {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  margin-top: 1rem;
 }
 
 .image-container {
   position: relative;
+  margin: 0.25rem;
+  overflow: hidden;
+  height:250px;
 }
 
 .image {
-  max-width: 360px;
-  max-height: 360px;
-  margin: 0.25rem;
+  flex: auto;
+  height: 250px;
+  min-width: 100px;
   object-fit: contain;
-}
-.image:hover {
-  opacity: 0.7;
+  transition: 0.2s ease-in-out;
 }
 
 .image-overlay {
@@ -279,15 +315,20 @@ export default {
   width: 100%;
   height: 100%;
   opacity: 0;
-  z-index: 1000;
+  /* z-index: 1000; */
+}
+
+.image-container:hover .image {
+  scale: 1.1;
+  object-fit: cover;
+  /* z-index: 1000; */
 }
 
 .image-container:hover .image-overlay {
   opacity: 1;
-  z-index: 1000;
-  transition: opacity 0.1s ease-in-out;
+  /* z-index: 1000; */
+  transition: all 0.2s ease-in-out;
 }
-
 .delete-btn {
   position: absolute;
   top: 10px;
