@@ -23,8 +23,8 @@
           <span id="progress-label">{{ progress }}</span>
         </div>
       </div>
-      <!-- <p>photoswipe:</p>
-      <vue-picture-swipe :items="images"></vue-picture-swipe> -->
+      <p>photoswipe:</p>
+      <vue-picture-swipe :items="images"></vue-picture-swipe>
 
       <!-- <button @click="toggler = !toggler">
         Toggle Lightbox
@@ -90,14 +90,14 @@
 import axios from 'axios';
 import vue2Dropzone from 'vue2-dropzone';
 import 'vue2-dropzone/dist/vue2Dropzone.min.css';
-// import VuePictureSwipe from 'vue-picture-swipe';
+import VuePictureSwipe from './components/VuePictureSwipe';
 // import FsLightbox from 'fslightbox-vue';
 
 export default {
   props: {},
   components: {
     vueDropzone: vue2Dropzone,
-    // VuePictureSwipe,
+    VuePictureSwipe,
     // FsLightbox,
   },
   data() {
