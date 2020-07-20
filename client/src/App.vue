@@ -77,7 +77,7 @@
 
 <script scoped>
 import axios from 'axios';
-import vue2Dropzone from 'vue2-dropzone';
+import vue2Dropzone from './components/VueDropzone';
 import 'vue2-dropzone/dist/vue2Dropzone.min.css';
 import VuePictureSwipe from './components/VuePictureSwipe';
 
@@ -133,10 +133,14 @@ export default {
   },
   methods: {
     nuke() {
-      let images = this.images
-      this.images = []
+      let images = this.images;
+      this.images = [];
       images.forEach((image) => {
-      axios.post(this.server + '/files/delete-image', { fileId: image.fileId, fileName: image.fileName, userId: this.user._id });
+        axios.post(this.server + '/files/delete-image', {
+          fileId: image.fileId,
+          fileName: image.fileName,
+          userId: this.user._id,
+        });
       });
     },
     getUserImages() {
@@ -173,6 +177,8 @@ export default {
 
     ownerShare() {
       this.shareUrl = `${this.server}/${this.user._id}/guest`;
+      const result = this.$window.navigator.clipboard.writeText(this.shareUrl);
+      console.log('result: ', result);
     },
 
     async deleteImage(fileId, fileName, userId, index) {
@@ -182,8 +188,8 @@ export default {
 
     logout() {
       axios.get(this.server + '/logout');
-      this.$cookies.remove('ownerId');
-      this.$cookies.remove('connect.sid');
+      document.cookie = "ownerId=; max-age=0"
+      document.cookie = "connect.sid=; max-age=0"
       window.location = this.server + '/login';
     },
   },
@@ -196,19 +202,38 @@ export default {
     const uId = params.get('user');
     const gId = params.get('guest');
     if (uId) {
-      this.$cookies.set('ownerId', uId);
+      document.cookie = 'ownerId=' + uId;
       window.history.replaceState(null, '', '/');
     }
     // Same for guestId
     if (gId) {
-      this.$cookies.set('guestId', gId);
+      document.cookie = 'guestId=' + gId;
       window.history.replaceState(null, '', '/');
     }
   },
 
   async created() {
-    const ownerId = this.$cookies.get('ownerId');
-    const guestId = this.$cookies.get('guestId');
+    const getCookie = (userType) => {
+      const cookieArr = document.cookie.split(';');
+
+      // Loop through the array elements
+      for (let i = 0; i < cookieArr.length; i++) {
+        const cookiePair = cookieArr[i].split('=');
+
+        /* Removing whitespace at the beginning of the cookie name
+        and compare it with the given string */
+        if (userType == cookiePair[0].trim()) {
+          // Decode the cookie value and return
+          return decodeURIComponent(cookiePair[1]);
+        }
+      }
+    };
+
+    const ownerId = getCookie('ownerId');
+    const guestId = getCookie('guestId');
+
+console.log('ownerId: ', ownerId);
+console.log('guestId: ', guestId);
 
     // if logged in as an owner, directs to owner home
     if (ownerId) {

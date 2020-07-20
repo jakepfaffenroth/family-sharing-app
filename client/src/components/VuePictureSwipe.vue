@@ -24,7 +24,7 @@
           class="delete-btn"
           value="Delete"
           v-if="items.length >= 0 && userType === 'owner' && user._id"
-          @click.stop="$emit('deleteImage', item.fileId, item.fileName, user._id, index)"
+          @click.stop="$emit('delete-image', item.fileId, item.fileName, user._id, index)"
         />
       </figure>
     </div>
