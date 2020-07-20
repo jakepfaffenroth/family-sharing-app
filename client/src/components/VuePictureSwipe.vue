@@ -1,5 +1,6 @@
 <template>
   <div>
+    <!-- <masonry class /="my-gallery" /> -->
     <div class="my-gallery" itemscope itemtype="http://schema.org/ImageGallery">
       <figure
         itemprop="associatedMedia"
@@ -8,10 +9,23 @@
         v-for="(item, index) in items"
         :src="item.src"
         v-bind:key="index"
+        class="image-container"
       >
-        <a :href="item.src" itemprop="contentUrl" :data-size="'' + item.w + 'x' + item.h" :title="item.title">
-          <img :src="item.thumbnail" :alt="item.alt" itemprop="thumbnail" class="thumbnail" />
+        <a
+          :href="item.src"
+          itemprop="contentUrl"
+          :data-size="'' + item.w + 'x' + item.h"
+          :title="item.title"
+        >
+          <img :src="item.src" :alt="item.alt" itemprop="thumbnail" class="image" />
         </a>
+        <input
+          type="button"
+          class="delete-btn"
+          value="Delete"
+          v-if="items.length >= 0 && userType === 'owner' && user._id"
+          @click.stop="$emit('deleteImage', item.fileId, item.fileName, user._id, index)"
+        />
       </figure>
     </div>
 
@@ -71,9 +85,15 @@ import PhotoSwipe from 'photoswipe/dist/photoswipe';
 import PhotoSwipeUI_Default from 'photoswipe/dist/photoswipe-ui-default';
 import 'photoswipe/dist/photoswipe.css';
 import 'photoswipe/dist/default-skin/default-skin.css';
+// import Masonry from './Masonry';
 
 export default {
+  components: {
+    // Masonry,
+  },
   props: {
+    user: Object,
+    userType: String,
     items: {
       default: function() {
         return [];
@@ -318,7 +338,7 @@ export default {
   },
 };
 </script>
-<style>
+<style scoped>
 @import 'https://fonts.googleapis.com/icon?family=Material+Icons';
 .pswp__top-bar {
   text-align: right;
@@ -331,12 +351,58 @@ export default {
   position: relative;
   top: 10px;
 }
+
 figure {
   display: inline;
   margin: 5px;
 }
 
-.thumbnail {
+.my-gallery {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.image-container {
+  position: relative;
+  margin: 0.25rem;
+  overflow: hidden;
   height: 250px;
 }
+
+.image {
+  flex: auto;
+  height: 250px;
+  min-width: 100px;
+  object-fit: contain;
+  transition: all 0.2s ease-in-out;
+}
+
+.image-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+}
+
+.image-container:hover .image {
+  scale: 1.05;
+  object-fit: cover;
+}
+
+.image-container:hover .delete-btn {
+  opacity: 1;
+  transition: all 0.2s ease-in-out;
+}
+
+.delete-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  opacity: 0;
+  z-index: 1000;
+}
+
 </style>

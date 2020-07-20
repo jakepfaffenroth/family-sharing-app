@@ -23,14 +23,6 @@
           <span id="progress-label">{{ progress }}</span>
         </div>
       </div>
-      <p>photoswipe:</p>
-      <vue-picture-swipe :items="images"></vue-picture-swipe>
-
-      <!-- <button @click="toggler = !toggler">
-        Toggle Lightbox
-      </button>
-
-      <FsLightbox :toggler="toggler" :sources="images" /> -->
 
       <vue-dropzone
         v-if="userType == 'owner'"
@@ -43,31 +35,18 @@
         @vdropzone-error="uploadError"
       />
 
+      <vue-picture-swipe
+        :items="images"
+        :user="user"
+        :userType="userType"
+        v-on:deleteImage="deleteImage"
+      ></vue-picture-swipe>
+
       <div v-if="images.length === 0 && userType === 'owner' && user._id">
         <p>Upload your first images!</p>
       </div>
-      <div v-if="images.length > 0" class="image-grid">
-        <silent-box :gallery="images">
-          <template v-slot:silentbox-item="{ silentboxItem }">
-            <div class="image-container">
-              <img :src="silentboxItem.src" class="image" />
-              <div class="image-overlay">
-                <form @submit.prevent="deleteImage(image.fileId, image.fileName, user._id, index)">
-                  <input
-                    type="submit"
-                    class="delete-btn"
-                    value="Delete"
-                    v-if="images.length >= 0 && userType === 'owner' && user._id"
-                  />
-                </form>
-              </div>
-            </div>
-          </template>
-        </silent-box>
-
-        <!-- <p>Showing images from folder {{}}</p> -->
-
-        <!-- <div v-for="(image, index) in images" :key="index" class="image-container">
+      <!-- <div v-if="images.length > 0" class="image-grid">
+        <div v-for="(image, index) in images" :key="index" class="image-container">
           <img :src="basePath + image.fileName" class="image" />
           <div class="image-overlay">
             <form @submit.prevent="deleteImage(image.fileId, image.fileName, user._id, index)">
@@ -79,19 +58,28 @@
               />
             </form>
           </div>
-        </div> -->
-      </div>
+        </div>        
+            </div>
+        </div>        
+            </div>
+        </div>        
+            </div>
+        </div>        
+          </div>
+        </div>        
+          </div>
+        </div>        
+      </div> -->
     </div>
     <div></div>
   </div>
 </template>
 
-<script>
+<script scoped>
 import axios from 'axios';
 import vue2Dropzone from 'vue2-dropzone';
 import 'vue2-dropzone/dist/vue2Dropzone.min.css';
 import VuePictureSwipe from './components/VuePictureSwipe';
-// import FsLightbox from 'fslightbox-vue';
 
 export default {
   props: {},
@@ -99,6 +87,13 @@ export default {
     vueDropzone: vue2Dropzone,
     VuePictureSwipe,
     // FsLightbox,
+  },
+  provide() {
+    return {
+      userType: 'guest',
+      user: {},
+      images: this.images,
+    };
   },
   data() {
     return {
@@ -138,8 +133,10 @@ export default {
   },
   methods: {
     nuke() {
-      this.images.forEach((image) => {
-        this.deleteImage(image.fileId, image.fileName, this.user._id, 0);
+      let images = this.images
+      this.images = []
+      images.forEach((image) => {
+      axios.post(this.server + '/files/delete-image', { fileId: image.fileId, fileName: image.fileName, userId: this.user._id });
       });
     },
     getUserImages() {
@@ -179,8 +176,8 @@ export default {
     },
 
     async deleteImage(fileId, fileName, userId, index) {
-      await axios.post(this.server + '/files/delete-image', { fileId: fileId, fileName: fileName, userId: userId });
       this.images.splice(index, 1);
+      axios.post(this.server + '/files/delete-image', { fileId: fileId, fileName: fileName, userId: userId });
     },
 
     logout() {
@@ -297,7 +294,7 @@ export default {
   position: relative;
   margin: 0.25rem;
   overflow: hidden;
-  height:250px;
+  height: 250px;
 }
 
 .image {
@@ -315,18 +312,15 @@ export default {
   width: 100%;
   height: 100%;
   opacity: 0;
-  /* z-index: 1000; */
 }
 
 .image-container:hover .image {
   scale: 1.1;
   object-fit: cover;
-  /* z-index: 1000; */
 }
 
 .image-container:hover .image-overlay {
   opacity: 1;
-  /* z-index: 1000; */
   transition: all 0.2s ease-in-out;
 }
 .delete-btn {
