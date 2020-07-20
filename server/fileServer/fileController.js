@@ -175,7 +175,7 @@ module.exports.upload = async (req, res) => {
     fileInfo.w = dimensions.w;
     fileInfo.h = dimensions.h;
     fileInfo.src = process.env.CDN_PATH + fileInfo.fileName;
-    console.log('fileInfo: ', fileInfo);
+    // console.log('fileInfo: ', fileInfo);
     finishedFiles.push(fileInfo);
   }
   res.status(200).json(finishedFiles);
