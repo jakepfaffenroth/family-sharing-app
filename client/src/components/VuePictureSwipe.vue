@@ -11,21 +11,19 @@
         v-bind:key="index"
         class="image-container"
       >
-        <a
-          :href="item.src"
-          itemprop="contentUrl"
-          :data-size="'' + item.w + 'x' + item.h"
-          :title="item.title"
-        >
+        <a :href="item.src" itemprop="contentUrl" :data-size="'' + item.w + 'x' + item.h" :title="item.title">
           <img :src="item.src" :alt="item.alt" itemprop="thumbnail" class="image" />
         </a>
         <input
           type="button"
-          class="delete-btn"
+          class="delete-btn image-info"
           value="Delete"
           v-if="items.length >= 0 && userType === 'owner' && user._id"
           @click.stop="$emit('delete-image', item.fileId, item.fileName, user._id, index)"
         />
+        <p class="image-timestamp image-info" v-if="item.exif.exif.DateTimeOriginal">
+          {{ item.exif.exif.DateTimeOriginal ? format(new Date(item.exif.exif.DateTimeOriginal), 'MM/dd/yyyy') : null }}
+        </p>
       </figure>
     </div>
 
@@ -85,7 +83,7 @@ import PhotoSwipe from 'photoswipe/dist/photoswipe';
 import PhotoSwipeUI_Default from 'photoswipe/dist/photoswipe-ui-default';
 import 'photoswipe/dist/photoswipe.css';
 import 'photoswipe/dist/default-skin/default-skin.css';
-// import Masonry from './Masonry';
+import format from 'date-fns/format';
 
 export default {
   components: {
@@ -109,6 +107,7 @@ export default {
     return {
       pswp: null,
       angle: 0,
+      format,
     };
   },
   mounted() {
@@ -392,17 +391,31 @@ figure {
   object-fit: cover;
 }
 
-.image-container:hover .delete-btn {
+.image-container:hover .image-info {
   opacity: 1;
-  transition: all 0.2s ease-in-out;
+}
+
+.image-info {
+  position: absolute;
+  opacity: 0;
+  z-index: 1000;
+  transition: opacity 0.1s ease-in-out;
 }
 
 .delete-btn {
-  position: absolute;
   top: 10px;
   right: 10px;
-  opacity: 0;
-  z-index: 1000;
+}
+.delete-btn:hover {
+  background-color: aquamarine;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
 }
 
+.image-timestamp {
+  bottom: 0;
+  margin: 0 auto;
+  color: white;
+}
 </style>

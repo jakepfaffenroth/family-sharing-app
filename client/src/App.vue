@@ -9,7 +9,10 @@
 
         <div v-if="shareUrl" class="share-modal">
           <h3>Your personal link to share:</h3>
-          <p>{{ shareUrl }}</p>
+          <div>
+            <p id="share-url">{{ shareUrl }}</p>
+            <!-- <button @click="copyLink">{{ copyLinkText }}</button> -->
+          </div>
           <button @click="shareUrl = ''">Close</button>
         </div>
       </div>
@@ -34,6 +37,7 @@
         @vdropzone-total-upload-progress="uploadProgress"
         @vdropzone-error="uploadError"
       />
+      <image-sorter v-on:sort-images="sortImages" />
 
       <vue-picture-swipe
         :items="images"
@@ -80,13 +84,14 @@ import axios from 'axios';
 import vue2Dropzone from './components/VueDropzone';
 import 'vue2-dropzone/dist/vue2Dropzone.min.css';
 import VuePictureSwipe from './components/VuePictureSwipe';
+import ImageSorter from './components/ImageSorter';
 
 export default {
   props: {},
   components: {
     vueDropzone: vue2Dropzone,
     VuePictureSwipe,
-    // FsLightbox,
+    ImageSorter,
   },
   provide() {
     return {
@@ -124,6 +129,7 @@ export default {
       },
       progress: '0%',
       bytesSent: 0,
+      // copyLinkText: 'Copy link',
     };
   },
   computed: {
@@ -171,14 +177,42 @@ export default {
       this.progress >= 100 ? (this.progress = 0) : null;
     },
 
+    sortImages(sortParameter) {
+      if (sortParameter === 'reverse') {
+        this.images.reverse();
+        return;
+      }
+
+      const compare = (a, b) => {
+        let fileA, fileB;
+
+        if (sortParameter === 'captureTime') {
+          fileA = a.exif.exif.DateTimeOriginal || null;
+          fileB = b.exif.exif.DateTimeOriginal || null;
+        }
+        if (sortParameter === 'uploadTime') {
+          fileA = a.uploadTime;
+          fileB = b.uploadTime;
+        }
+
+        let comparison = 0;
+        if (fileA > fileB) {
+          comparison = 1;
+        } else if (fileA < fileB) {
+          comparison = -1;
+        }
+        return comparison;
+      };
+
+      this.images.sort(compare);
+    },
+
     uploadError(file, message, xhr) {
       console.log('Upload Error: ', message, xhr);
     },
 
     ownerShare() {
       this.shareUrl = `${this.server}/${this.user._id}/guest`;
-      const result = this.$window.navigator.clipboard.writeText(this.shareUrl);
-      console.log('result: ', result);
     },
 
     async deleteImage(fileId, fileName, userId, index) {
@@ -188,11 +222,12 @@ export default {
 
     logout() {
       axios.get(this.server + '/logout');
-      document.cookie = "ownerId=; max-age=0"
-      document.cookie = "connect.sid=; max-age=0"
+      document.cookie = 'ownerId=; max-age=0';
+      document.cookie = 'connect.sid=; max-age=0';
       window.location = this.server + '/login';
     },
   },
+
   beforeCreate() {
     // user id is passed as query param from server after login
     // set cookie with id and clear query from url & history
@@ -231,9 +266,6 @@ export default {
 
     const ownerId = getCookie('ownerId');
     const guestId = getCookie('guestId');
-
-console.log('ownerId: ', ownerId);
-console.log('guestId: ', guestId);
 
     // if logged in as an owner, directs to owner home
     if (ownerId) {

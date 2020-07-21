@@ -420,6 +420,11 @@ export default {
   color: #ccc;
 }
 
+.dz-button{
+  border: none;
+  background: none;
+}
+
 .vue-dropzone > .dz-preview .dz-image {
   border-radius: 0;
   width: 100%;
