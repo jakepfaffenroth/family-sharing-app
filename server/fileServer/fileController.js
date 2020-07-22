@@ -117,7 +117,7 @@ const addToDb = async (uploadResponse, exif, dimensions, req) => {
       }
     }
   );
-  return { fileId: fileId, fileName: fileName };
+  return { fileId: fileId, fileName: fileName, exif: exif };
 };
 const getImageDimensions = async (file) => {
   const output = sharp(file.buffer);

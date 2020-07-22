@@ -20,7 +20,7 @@ router.get('/login', (req, res) => {
   res.render('login', { loginUrl: process.env.SERVER + '/auth/login', errMsg: isErrVisible });
 });
 
-router.get('/:id/guest', guestController.mark)
+router.get('/:gId/guest', guestController.mark)
 
 router.get('/user/get-user', userController.getUser)
 

@@ -23,7 +23,7 @@
           v-if="items.length >= 0 && userType === 'owner' && user._id"
           @click.stop="$emit('delete-image', item.fileId, item.fileName, user._id, index)"
         />
-        <p class="image-timestamp image-info" v-if="item.exif.exif.DateTimeOriginal">
+        <p class="image-timestamp image-info" v-if="item.exif && item.exif.exif.DateTimeOriginal">
           {{ item.exif.exif.DateTimeOriginal ? format(new Date(item.exif.exif.DateTimeOriginal), 'MM/dd/yyyy') : null }}
         </p>
       </figure>
@@ -86,11 +86,11 @@ import PhotoSwipeUI_Default from 'photoswipe/dist/photoswipe-ui-default';
 import 'photoswipe/dist/photoswipe.css';
 import 'photoswipe/dist/default-skin/default-skin.css';
 import format from 'date-fns/format';
-import ImageGridControls from './ImageGridControls';
+// import ImageGridControls from './ImageGridControls';
 
 export default {
   components: {
-    ImageGridControls,
+    // ImageGridControls,
   },
   props: {
     user: Object,

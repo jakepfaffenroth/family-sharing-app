@@ -20,7 +20,7 @@
       <div v-if="userType == 'guest'">
         <h1>You are a guest of {{ user.firstName }} {{ user.lastName }}</h1>
       </div>
-      <p>Image count: {{ images.length }}</p>
+      <p>Image count: {{ user.images.length }}</p>
       <div id="progress" v-if="progress !== '0%'">
         <div id="progress-bar" :style="{ width: progress }">
           <span id="progress-label">{{ progress }}</span>
@@ -38,10 +38,9 @@
         @vdropzone-error="uploadError"
       />
       <image-sorter v-on:sort-images="sortImages" />
-      
 
       <vue-picture-swipe
-        :items="images"
+        :items="user.images"
         :user="user"
         :userType="userType"
         v-on:deleteImage="deleteImage"
@@ -68,7 +67,6 @@ export default {
     vueDropzone: vue2Dropzone,
     VuePictureSwipe,
     ImageSorter,
-    
   },
   provide() {
     return {
@@ -141,7 +139,7 @@ export default {
 
     updateImages(file, response) {
       for (let i = 0; i < response.length; i++) {
-        this.images.unshift(response[i]);
+        this.user.images.unshift(response[i]);
         response.splice(i, 1);
       }
       this.$refs.myVueDropzone.removeFile(file);
@@ -156,7 +154,7 @@ export default {
 
     sortImages(sortParameter) {
       if (sortParameter === 'reverse') {
-        this.images.reverse();
+        this.user.images.reverse();
         return;
       }
 
@@ -174,14 +172,14 @@ export default {
 
         let comparison = 0;
         if (fileA > fileB) {
-          comparison = 1;
-        } else if (fileA < fileB) {
           comparison = -1;
+        } else if (fileA < fileB) {
+          comparison = 1;
         }
         return comparison;
       };
 
-      this.images.sort(compare);
+      this.user.images.sort(compare);
     },
 
     uploadError(file, message, xhr) {
@@ -255,9 +253,9 @@ export default {
         window.location = this.server + '/login';
       }
       this.userType = 'owner';
-      this.user._id = response.data.user._id;
-      this.user.firstName = response.data.user.firstName;
-      this.images = response.data.user.images.reverse();
+      this.user = response.data.user;
+      this.sortImages('uploadTime');
+      // this.images = response.data.user.images.reverse();
       this.isReadyToRender = true;
     }
 
@@ -271,8 +269,8 @@ export default {
       });
 
       this.user = response.data;
-      this.images = response.data.images.reverse();
       this.isReadyToRender = true;
+      this.sortImages('uploadTime');
     }
 
     // Prevent users from viewing app without login or guestId

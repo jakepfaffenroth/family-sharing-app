@@ -11,7 +11,7 @@ const User = require('../users/userModel');
 // Passport config
 passport.use(
   new LocalStrategy((username, password, done) => {
-    User.findOne({ username: username }, function(err, user) {
+    User.findOne({ username: username }, function (err, user) {
       if (err) return done(err);
       if (!user) {
         return done(null, false, { msg: 'Incorrect username' });
@@ -34,7 +34,7 @@ passport.use(
 
 module.exports.login = (req, res, next) => {
   console.log('attempting login...');
-  passport.authenticate('local', function(err, user, info) {
+  passport.authenticate('local', function (err, user, info) {
     if (err) {
       return next(err);
     }
@@ -43,7 +43,7 @@ module.exports.login = (req, res, next) => {
       return res.redirect('../login?q=true');
     }
     // Success; log in
-    req.logIn(user, function(err) {
+    req.logIn(user, function (err) {
       if (err) {
         return next(err);
       }
@@ -78,14 +78,17 @@ module.exports.checkSession = (req, res, next) => {
   const userId = req.body.userId;
   console.log('userId: ', userId);
   console.log('Checking for user session');
-  
-  User.findById(userId, function(err, user) {
+
+  User.findById(userId, function (err, user) {
     if (err || !user) {
       console.log('Could not find user logged in');
       return res.json({ isLoggedIn: false });
     }
     console.log('User is logged in');
-    return res.json({ isLoggedIn: true, user: { firstName: user.firstName, _id: user._id, images: user.images } });
+    return res.json({
+      isLoggedIn: true,
+      user: { firstName: user.firstName, _id: user._id, images: user.images, guestId: user.guestId },
+    });
   });
 };
 
