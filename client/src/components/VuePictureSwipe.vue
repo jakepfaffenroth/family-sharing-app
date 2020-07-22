@@ -1,6 +1,6 @@
 <template>
   <div>
-    <image-grid-controls v-model:imageSize="imageSize" />
+    <!-- <image-grid-controls v-model:imageSize="imageSize" /> -->
 
     <div class="my-gallery" itemscope itemtype="http://schema.org/ImageGallery">
       <figure
