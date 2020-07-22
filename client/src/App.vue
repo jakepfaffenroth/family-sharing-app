@@ -114,8 +114,8 @@ export default {
   },
   methods: {
     nuke() {
-      let images = this.images;
-      this.images = [];
+      let images = this.user.images;
+      this.user.images = [];
       images.forEach((image) => {
         axios.post(this.server + '/files/delete-image', {
           fileId: image.fileId,
