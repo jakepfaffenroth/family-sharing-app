@@ -38,6 +38,7 @@
         @vdropzone-error="uploadError"
       />
       <image-sorter v-on:sort-images="sortImages" />
+      
 
       <vue-picture-swipe
         :items="images"
@@ -49,31 +50,6 @@
       <div v-if="images.length === 0 && userType === 'owner' && user._id">
         <p>Upload your first images!</p>
       </div>
-      <!-- <div v-if="images.length > 0" class="image-grid">
-        <div v-for="(image, index) in images" :key="index" class="image-container">
-          <img :src="basePath + image.fileName" class="image" />
-          <div class="image-overlay">
-            <form @submit.prevent="deleteImage(image.fileId, image.fileName, user._id, index)">
-              <input
-                type="submit"
-                class="delete-btn"
-                value="Delete"
-                v-if="images.length >= 0 && userType === 'owner' && user._id"
-              />
-            </form>
-          </div>
-        </div>        
-            </div>
-        </div>        
-            </div>
-        </div>        
-            </div>
-        </div>        
-          </div>
-        </div>        
-          </div>
-        </div>        
-      </div> -->
     </div>
     <div></div>
   </div>
@@ -92,6 +68,7 @@ export default {
     vueDropzone: vue2Dropzone,
     VuePictureSwipe,
     ImageSorter,
+    
   },
   provide() {
     return {
@@ -311,7 +288,7 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 #dropzone {
   width: 60vw;
   margin: auto;

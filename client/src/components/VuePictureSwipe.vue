@@ -1,6 +1,7 @@
 <template>
   <div>
-    <!-- <masonry class /="my-gallery" /> -->
+    <image-grid-controls v-model:imageSize="imageSize" />
+
     <div class="my-gallery" itemscope itemtype="http://schema.org/ImageGallery">
       <figure
         itemprop="associatedMedia"
@@ -10,9 +11,10 @@
         :src="item.src"
         v-bind:key="index"
         class="image-container"
+        :style="{ height: imageSize }"
       >
         <a :href="item.src" itemprop="contentUrl" :data-size="'' + item.w + 'x' + item.h" :title="item.title">
-          <img :src="item.src" :alt="item.alt" itemprop="thumbnail" class="image" />
+          <img :src="item.src" :alt="item.alt" itemprop="thumbnail" class="image" :style="{ height: imageSize }" />
         </a>
         <input
           type="button"
@@ -84,10 +86,11 @@ import PhotoSwipeUI_Default from 'photoswipe/dist/photoswipe-ui-default';
 import 'photoswipe/dist/photoswipe.css';
 import 'photoswipe/dist/default-skin/default-skin.css';
 import format from 'date-fns/format';
+import ImageGridControls from './ImageGridControls';
 
 export default {
   components: {
-    // Masonry,
+    ImageGridControls,
   },
   props: {
     user: Object,
@@ -108,6 +111,7 @@ export default {
       pswp: null,
       angle: 0,
       format,
+      imageSize: '250px',
     };
   },
   mounted() {
@@ -326,6 +330,10 @@ export default {
     initPhotoSwipeFromDOM('.my-gallery');
   },
   methods: {
+    resizeImages(sliderValue) {
+      console.log('sliderValue: ', sliderValue);
+      this.imageSize = sliderValue;
+    },
     rotate: function(newAngle) {
       this.angle = this.angle + newAngle;
       this.$el.querySelectorAll('.pswp__img').forEach((i) => (i.style.transform = `rotate(${this.angle}deg)`));
@@ -366,12 +374,10 @@ figure {
   position: relative;
   margin: 0.25rem;
   overflow: hidden;
-  height: 250px;
 }
 
 .image {
   flex: auto;
-  height: 250px;
   min-width: 100px;
   object-fit: contain;
   transition: all 0.2s ease-in-out;
