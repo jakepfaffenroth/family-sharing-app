@@ -46,7 +46,7 @@
         v-on:deleteImage="deleteImage"
       ></vue-picture-swipe>
 
-      <div v-if="images.length === 0 && userType === 'owner' && user._id">
+      <div v-if="user.images.length === 0 && userType === 'owner' && user._id">
         <p>Upload your first images!</p>
       </div>
     </div>
