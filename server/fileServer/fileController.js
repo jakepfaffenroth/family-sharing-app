@@ -95,6 +95,7 @@ const addToDb = async (uploadResponse, exif, dimensions, req) => {
   // Save B2 fileId to user doc in database
   let fileId = uploadResponse.data.fileId;
   let fileName = uploadResponse.data.fileName;
+  let uploadTime = Date.now();
   User.findOneAndUpdate(
     { _id: req.body.userId },
     {
@@ -107,7 +108,7 @@ const addToDb = async (uploadResponse, exif, dimensions, req) => {
           w: dimensions.w,
           h: dimensions.h,
           exif: exif,
-          uploadTime: Date.now()
+          uploadTime: uploadTime
         },
       },
     },
@@ -117,7 +118,7 @@ const addToDb = async (uploadResponse, exif, dimensions, req) => {
       }
     }
   );
-  return { fileId: fileId, fileName: fileName, exif: exif };
+  return { fileId: fileId, fileName: fileName, exif: exif, uploadTime: uploadTime };
 };
 const getImageDimensions = async (file) => {
   const output = sharp(file.buffer);
