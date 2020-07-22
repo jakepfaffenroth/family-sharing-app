@@ -172,7 +172,7 @@ export default {
     },
 
     ownerShare() {
-      this.shareUrl = `${this.server}/${this.user._id}/guest`;
+      this.shareUrl = `${this.server}/${this.user.guestId}/guest`;
     },
 
     async deleteImage(fileId, fileName, userId, index) {
@@ -233,7 +233,7 @@ export default {
       const response = await axios({
         url: this.server + '/user/get-user',
         method: 'post',
-        data: { userId: guestId },
+        data: { guestId: guestId },
       });
 
       this.user = response.data;

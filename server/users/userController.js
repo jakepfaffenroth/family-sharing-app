@@ -5,6 +5,7 @@ const { body, validationResult } = require('express-validator');
 const { sanitizeBody } = require('express-validator');
 // const async = require("async");
 const User = require('./userModel.js');
+const { v4: uuidv4 } = require('uuid');
 
 passport.initialize();
 
@@ -12,18 +13,10 @@ module.exports.create = [
   // VALIDATE FIELDS
   // username and password must not be empty
   // TODO - add stronger password requirements
-  body('username', 'Username must not be empty.')
-    .trim()
-    .isLength({ min: 1 }),
-  body('password', 'Password must not be empty.')
-    .trim()
-    .isLength({ min: 1, max: 64 }),
-  body('firstName', 'First Name must not be empty.')
-    .trim()
-    .isLength({ min: 1, max: 64 }),
-  body('lastName', 'Last Name must not be empty.')
-    .trim()
-    .isLength({ min: 1, max: 64 }),
+  body('username', 'Username must not be empty.').trim().isLength({ min: 1 }),
+  body('password', 'Password must not be empty.').trim().isLength({ min: 1, max: 64 }),
+  body('firstName', 'First Name must not be empty.').trim().isLength({ min: 1, max: 64 }),
+  body('lastName', 'Last Name must not be empty.').trim().isLength({ min: 1, max: 64 }),
 
   // Check if username already taken
   body('username')
@@ -37,10 +30,7 @@ module.exports.create = [
     .bail(),
 
   // Remove whitespace (sanitization)
-  body('*')
-    .escape()
-    .trim()
-    .bail(),
+  body('*').escape().trim().bail(),
 
   // TODO - Make sure password confirmation matches
   //   body('confirmPassword', 'Confirm your password.').trim().isLength({ min: 1 }).bail(),
@@ -71,6 +61,7 @@ module.exports.create = [
       const password = req.body.password;
       const firstName = req.body.firstName;
       const lastName = req.body.lastName;
+
       res.render('signup', {
         errMsg: errors.array()[0].msg,
         username: username,
@@ -88,11 +79,15 @@ module.exports.create = [
       bcrypt.hash(req.body.password, 10, (err, hashedPassword) => {
         /**/ console.log('hashing password...');
         if (err) return next(err);
+
+        const guestId = uuidv4();
+
         const newUser = new User({
           username: req.body.username,
           firstName: req.body.firstName,
           lastName: req.body.lastName,
           password: hashedPassword,
+          guestId: guestId,
         });
         //   Hashing complete; save to DB
         User.create(newUser);
@@ -106,8 +101,8 @@ module.exports.create = [
 ];
 
 module.exports.getUser = (req, res) => {
-  const userId = req.body.userId;
-  return User.findById(userId).then((foundUser) => {
+  const guestId = req.body.guestId;
+  return User.findOne({guestId: guestId}).then((foundUser) => {
     if (foundUser) {
       return res.json(foundUser);
     }
