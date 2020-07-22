@@ -5,6 +5,7 @@ const path = require('path');
 const fs = require('fs');
 const { Readable, Writable } = require('stream');
 const sharp = require('sharp');
+const exif = require('exif-reader');
 const User = require('../users/userModel');
 
 const appKeyId = process.env.VUE_APP_APP_KEY_ID;
@@ -18,27 +19,27 @@ const compressImages = async (files) => {
   let compFiles = 0;
   files.forEach((fileObject) => {
     const output = sharp(fileObject.buffer);
-    output
-      .metadata()
-      .then(function () {
-        return (
-          output
-            .resize({ width: 1200, height: 1200, fit: sharp.fit.inside, withoutEnlargement: true })
-            // .sharpen()
-            .jpeg({ quality: 80 })
-            .toBuffer()
-        );
-      })
-      .then(function (data) {
-        fileObject.buffer = data;
-        fileObject.size = data.length;
-        compFiles++;
-        console.log('✅ ' + compFiles + ' images optimized');
-        return files;
-      })
-      .catch((err, info) => {
-        console.log('compression error: ', err, info);
-      });
+
+    return (
+      output
+        .rotate()
+        .resize({ width: 1200, height: 1200, fit: sharp.fit.inside, withoutEnlargement: true })
+        // .sharpen()
+        .jpeg({ quality: 80 })
+        .withMetadata()
+        .toBuffer()
+
+        .then(function (data) {
+          fileObject.buffer = data;
+          fileObject.size = data.length;
+          compFiles++;
+          console.log('✅ ' + compFiles + ' images optimized');
+          return files;
+        })
+        .catch((err, info) => {
+          console.log('compression error: ', err, info);
+        })
+    );
   });
 };
 const getB2Auth = async (res) => {
@@ -90,7 +91,7 @@ const uploadFiles = async (auth, fileObject, req) => {
   console.log(`✅ Status: ${uploadResponse.status} - ${uploadResponse.data.fileName} uploaded`);
   return uploadResponse;
 };
-const addToDb = async (uploadResponse, dimensions, req) => {
+const addToDb = async (uploadResponse, exif, dimensions, req) => {
   // Save B2 fileId to user doc in database
   let fileId = uploadResponse.data.fileId;
   let fileName = uploadResponse.data.fileName;
@@ -105,6 +106,8 @@ const addToDb = async (uploadResponse, dimensions, req) => {
           thumbnail: process.env.CDN_PATH + fileName,
           w: dimensions.w,
           h: dimensions.h,
+          exif: exif,
+          uploadTime: Date.now()
         },
       },
     },
@@ -120,9 +123,22 @@ const getImageDimensions = async (file) => {
   const output = sharp(file.buffer);
   let dimensions;
   return output.metadata().then(function (metadata) {
-    dimensions = { w: metadata.width, h: metadata.height };
     return { w: metadata.width, h: metadata.height };
   });
+};
+
+const getExif = async (fileObject) => {
+  const output = sharp(fileObject.buffer);
+  return output
+    .metadata()
+    .then(function (metadata) {
+      const exifData = exif(metadata.exif);
+      console.log('exif: ', exifData);
+      return exifData;
+    })
+    .catch((err, info) => {
+      console.log('Exif read error: ', err, info);
+    });
 };
 // ------------------------------------------
 
@@ -171,7 +187,9 @@ module.exports.upload = async (req, res) => {
     const auth = await getB2Auth(res);
     const uploadResponse = await uploadFiles(auth, fileObject, req);
     const dimensions = await getImageDimensions(fileObject);
-    const fileInfo = await addToDb(uploadResponse, dimensions, req);
+    const exif = await getExif(fileObject);
+    const fileInfo = await addToDb(uploadResponse, exif, dimensions, req);
+
     fileInfo.w = dimensions.w;
     fileInfo.h = dimensions.h;
     fileInfo.src = process.env.CDN_PATH + fileInfo.fileName;

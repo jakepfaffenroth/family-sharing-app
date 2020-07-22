@@ -16,6 +16,7 @@
     "crypto": "^1.0.1",
     "debug": "~2.6.9",
     "dotenv": "^8.2.0",
+    "exif-reader": "^1.0.3",
     "express": "^4.16.4",
     "express-session": "^1.17.1",
     "express-validator": "^6.6.0",
