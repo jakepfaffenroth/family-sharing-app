@@ -87,6 +87,7 @@ const uploadFiles = async (auth, fileObject, req) => {
       'X-Bz-Content-Sha1': sha1,
       'X-Bz-Info-Author': 'unknown',
     },
+    maxBodyLength: Infinity,
   });
   console.log(`✅ Status: ${uploadResponse.status} - ${uploadResponse.data.fileName} uploaded`);
   return uploadResponse;
