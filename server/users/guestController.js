@@ -137,16 +137,14 @@ module.exports.emailNotification = async (req, res, next) => {
     const timeComparison = compareAsc(lastNotification, timeStamp);
 
     if (timeComparison > 0) {
-      updateTimestamp(guestId, timeStamp);
-      console.log('butt');
-      return;
+      // updateTimestamp(guestId, timeStamp);
+      console.log('🕑 Notification sent within last hour');
+      foundOwner = null;
     }
     owner = foundOwner;
   });
 
   if (owner) {
-    console.log('buttX');
-
     await updateTimestamp(guestId, timeStamp);
 
     //  ---- CODE BELOW SENDS EMAILS
