@@ -43,7 +43,7 @@
         :items="user.images"
         :user="user"
         :userType="userType"
-        v-on:deleteImage="deleteImage"
+        v-on:delete-image="deleteImage"
       ></vue-picture-swipe>
 
       <div v-if="user.images.length === 0 && userType === 'owner' && user._id">
@@ -135,6 +135,9 @@ export default {
       if (!formData.get('userId')) {
         formData.append('userId', this.user._id);
       }
+      if (!formData.get('guestId')) {
+        formData.append('userId', this.user.guestId);
+      }
     },
 
     updateImages(file, response) {
@@ -191,7 +194,7 @@ export default {
     },
 
     async deleteImage(fileId, fileName, userId, index) {
-      this.images.splice(index, 1);
+      this.user.images.splice(index, 1);
       axios.post(this.server + '/files/delete-image', { fileId: fileId, fileName: fileName, userId: userId });
     },
 

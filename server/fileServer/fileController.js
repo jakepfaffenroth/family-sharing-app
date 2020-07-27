@@ -108,7 +108,7 @@ const addToDb = async (uploadResponse, exif, dimensions, req) => {
           w: dimensions.w,
           h: dimensions.h,
           exif: exif,
-          uploadTime: uploadTime
+          uploadTime: uploadTime,
         },
       },
     },
@@ -134,7 +134,6 @@ const getExif = async (fileObject) => {
     .metadata()
     .then(function (metadata) {
       const exifData = exif(metadata.exif);
-      console.log('exif: ', exifData);
       return exifData;
     })
     .catch((err, info) => {
@@ -173,14 +172,19 @@ module.exports.b2Auth = (req, res, next) => {
     });
 };
 
-module.exports.upload = async (req, res) => {
+module.exports.upload = async (req, res, next) => {
   const files = req.files;
   const finishedFiles = [];
+
+  if (!files) {
+    console.log('no images uploaded');
+    return next();
+  }
 
   console.log('-------------------------');
   console.log('  STARTING IMAGE UPLOAD  ');
   console.log('-------------------------');
-  console.log('Uploading', req.files.length, 'images');
+  console.log('Uploading', req.files ? req.files.length : 0, 'images');
 
   await compressImages(files);
 
@@ -198,6 +202,7 @@ module.exports.upload = async (req, res) => {
     finishedFiles.push(fileInfo);
   }
   res.status(200).json(finishedFiles);
+  next();
 };
 
 module.exports.listFiles = async (req, res, next) => {
