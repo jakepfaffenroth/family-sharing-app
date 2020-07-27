@@ -136,7 +136,6 @@ const getExif = async (fileObject) => {
     .metadata()
     .then(function (metadata) {
       const exifData = exif(metadata.exif);
-      console.log('exif: ', exifData);
       return exifData;
     })
     .catch((err, info) => {
