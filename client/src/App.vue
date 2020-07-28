@@ -6,6 +6,7 @@
         <button @click="logout" class="link">Log out</button>
         <button @click="ownerShare" class="link">Share</button>
         <button @click="nuke" class="link">Nuke</button>
+        <button @click="triggerPushNotification" class="link">Subscribe</button>
 
         <div v-if="shareUrl" class="share-modal">
           <h3>Your personal link to share:</h3>
@@ -124,11 +125,89 @@ export default {
         });
       });
     },
-    getUserImages() {
-      // const basePath = 'https://f000.backblazeb2.com/b2api/v1/b2_download_file_by_id?fileId=';
-      // this.images.forEach((fileId) => {
-      //   this.fileList.push(basePath + fileId);
+
+    subscribeBrowser() {
+      // function to actually ask the permissions
+      const handlePermission = (permission) => {
+        // Whatever the user answers, we make sure Chrome stores the information
+        if (!('permission' in Notification)) {
+          Notification.permission = permission;
+        }
+
+        //   // set the button to shown or hidden, depending on what the user answers
+        //   if (Notification.permission === 'denied' || Notification.permission === 'default') {
+        //     notificationBtn.style.display = 'block';
+        //   } else {
+        //     notificationBtn.style.display = 'none';
+        //   }
+      };
+
+      const checkNotificationPromise = () => {
+        try {
+          Notification.requestPermission().then();
+        } catch (e) {
+          return false;
+        }
+
+        return true;
+      };
+
+      if (!('Notification' in window)) {
+        alert('Sorry, this browser does not support notifications.');
+      } else {
+        if (checkNotificationPromise()) {
+          Notification.requestPermission().then((permission) => {
+            handlePermission(permission);
+          });
+        } else {
+          Notification.requestPermission(function(permission) {
+            handlePermission(permission);
+          });
+        }
+      }
+
+      // Notification.requestPermission().then(function(result) {
+      //   console.log(result);
       // });
+    },
+
+    urlBase64ToUint8Array(base64String) {
+      const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
+      const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
+
+      const rawData = window.atob(base64);
+      const outputArray = new Uint8Array(rawData.length);
+
+      for (let i = 0; i < rawData.length; ++i) {
+        outputArray[i] = rawData.charCodeAt(i);
+      }
+      return outputArray;
+    },
+
+    async triggerPushNotification() {
+      const publicVapidKey = 'BIXOvprQOJRgsH4EHujdKRaOmrxCLTP5uKlrB_W-1pXEmCU9twuOgxIaFniDmLE8r4SAVmaTZOxOLsXdgAoWwpw';
+
+      if ('serviceWorker' in navigator) {
+        const register = await navigator.serviceWorker.register('/sw.js', {
+          scope: '/',
+        });
+
+        const subscription = await register.pushManager.subscribe({
+          userVisibleOnly: true,
+          applicationServerKey: this.urlBase64ToUint8Array(publicVapidKey),
+        });
+        console.log({message: JSON.stringify(subscription)});
+
+        await fetch(this.server + '/guest/subscribe-browser', {
+          method: 'POST',
+          body: JSON.stringify(subscription),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+      } else {
+        console.error('Service workers are not supported in this browser');
+      }
     },
 
     sendingEvent(file, xhr, formData) {

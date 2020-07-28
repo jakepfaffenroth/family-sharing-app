@@ -1,4 +1,9 @@
 const mongoose = require('mongoose');
+const crypto = require('crypto');
+const algorithm = 'aes-256-cbc';
+const key = crypto.randomBytes(32);
+const iv = crypto.randomBytes(16);
+const webPush = require('web-push')
 const add = require('date-fns/add');
 const toDate = require('date-fns/toDate');
 const compareAsc = require('date-fns/compareAsc');
@@ -13,6 +18,25 @@ const credentials = {
 const sns = new AWS.SNS({ credentials: credentials, region: 'us-west-2' });
 const ses = new AWS.SES({ credentials: credentials, region: 'us-west-2' });
 
+const encrypt = (object) => {
+  // convert object into string to be encrypted
+  let text = JSON.stringify(object);
+  let cipher = crypto.createCipheriv('aes-256-cbc', Buffer.from(key), iv);
+  let encrypted = cipher.update(text);
+  encrypted = Buffer.concat([encrypted, cipher.final()]);
+  return { iv: iv.toString('hex'), encryptedData: encrypted.toString('hex') };
+};
+
+const decrypt = (text) => {
+  let iv = Buffer.from(text.iv, 'hex');
+  let encryptedText = Buffer.from(text.encryptedData, 'hex');
+  let decipher = crypto.createDecipheriv('aes-256-cbc', Buffer.from(key), iv);
+  let decrypted = decipher.update(encryptedText);
+  decrypted = Buffer.concat([decrypted, decipher.final()]);
+  // Convert the decrypted string back into an object
+  return JSON.parse(decrypted.toString());
+};
+
 // Marks the user as a guest
 module.exports.mark = (req, res) => {
   // extracts guestId from path
@@ -22,40 +46,82 @@ module.exports.mark = (req, res) => {
   res.redirect(process.env.CLIENT + '?guest=' + guestId);
 };
 
-// Subscribes guest to new photos notifications (SMS, email, browser)
-module.exports.subscribe = async (req, res) => {
+// ---------------------------------------------------
+// ------- Guest Subscription and Verification -------
+
+// Sends guests subscription verification emails
+module.exports.subscribeEmail = async (req, res) => {
   const emailAddress = req.body.guest.email;
-
-  const params = {
-    EmailAddress: emailAddress,
-  };
-
-  // Add email to SES and send verification email
-  ses.verifyEmailIdentity(params, function (err, data) {
-    if (err) console.log('err: ', err, err.stack);
-    // an error occurred
-    else{
-      console.log('Success: ', data); // successful response
-    res.status(200);}
-    /*
-   data = {
-     
-   }
-   */
-  });
-
-  //  ---- CODE BELOW SENDS EMAIL NOTIFICATIONS
-  const owner = req.body.owner;
-  const sender = owner + ' (via Carousel) <notification@carousel.jakepfaf.dev>';
-  const recipient = req.body.email;
-  const subject = 'I just shared new photos!';
-  const body_text = 'Go see them! ' + req.body.shareUrl;
-};
-
-module.exports.verify = async (req, res) => {
   const firstName = req.body.guest.firstName;
   const lastName = req.body.guest.lastName;
-  const guestId = req.body.guestId;
+  const guestId = req.body.guest.guestId;
+
+  // First need to see if guest has already subscribed
+  User.findOne({ 'subscribers.email': emailAddress }).then((foundEmail) => {
+    if (foundEmail) {
+      console.log('foundEmail', foundEmail);
+      res.status(200);
+    } else {
+      // Email not found in DB
+      // Add email to SES and send verification email
+      const params = { EmailAddress: emailAddress };
+
+      ses.verifyEmailIdentity(params, function (err, data) {
+        if (err) console.log('err: ', err, err.stack);
+        // an error occurred
+        else {
+          console.log('Success: ', data); // successful response
+
+          // SEND CUSTOM VERIFICATION EMAIL VIA SES HERE
+          // Verification email includes verification link
+          // Verification link query param is stringified encrypted guest info object
+
+          let test = JSON.stringify(encrypt(req.body.guest))
+          let dTest = decrypt(JSON.parse(test));
+          // let test = encrypt(req.body.guest)
+          // let dTest = decrypt(test);
+          console.log( 'test', test, 'dTest', dTest );
+          res.status(200).send({ test: test, dTest: dTest });
+        }
+      });
+    }
+  });
+};
+ 
+
+module.exports.subscribeBrowser = (req, res) => {
+  console.log('req.body: ', req.body);
+  const publicVapidKey = process.env.PUBLIC_VAPID_KEY;
+  const privateVapidKey = process.env.PRIVATE_VAPID_KEY;
+  
+  webPush.setVapidDetails('mailto:hello@jakepfaf.dev', publicVapidKey, privateVapidKey);
+  const subscription = req.body;
+  
+  res.status(201).json({});
+  
+  const payload = JSON.stringify({
+    title: 'New photos were posted!',
+    body: 'Click to check them out',
+    icon:
+    'https://cdn.jakepfaf.dev/file/JFP001/5eebb6c17f71e3812d1e91ab/190822%20141057%20_JP12646%20190822%20141057%20_JP12646%20_.jpg',
+    guestId: 'd4607a48-d7b2-438d-9f09-f79476a49097',
+  });
+  
+  console.log('payload: ', payload);
+  webPush.sendNotification(subscription, payload).catch((error) => console.error(error));
+}
+
+// Guests routed here after clicking verification link
+// link query param decrypted into guest info object
+// Updates the owner doc in DB with guest info
+module.exports.verify = async (req, res) => {
+  let guest = JSON.parse(req.query.guest);
+  console.log('guest: ', guest);
+  guest = decrypt(guest)
+  const emailAddress = guest.email;
+  const firstName = guest.firstName;
+  const lastName = guest.lastName;
+  const guestId = guest.guestId;
 
   User.findOneAndUpdate(
     { guestId: guestId },
@@ -67,6 +133,7 @@ module.exports.verify = async (req, res) => {
         return;
       }
       console.log(foundDoc.subscribers);
+      res.status(200).send(guest)
     }
   );
 };
@@ -80,17 +147,22 @@ const updateTimestamp = async (guestId, timeStamp) => {
   });
 };
 
+// Send email notification
 module.exports.emailNotification = async (req, res, next) => {
+  // Get guestId out of url path
   const guestId = req.body.files[0].guestId.split('/')[3];
   let owner;
-  const timeStamp = toDate(Date.now());
+  const timeStamp = toDate(Date.now()); // Convert numerical date to human-readable
 
   await User.findOne({ guestId: guestId }).then((foundOwner) => {
     const lastNotification = add(foundOwner.lastNotification, { hours: 1 });
+
+    // If last notification +1hr is later than the current timestamp,
+    // timeComparison will equal 1 (else -1 or 0)
     const timeComparison = compareAsc(lastNotification, timeStamp);
 
+    // If less than one hour has passed since last notification, do not send another email
     if (timeComparison > 0) {
-      // updateTimestamp(guestId, timeStamp);
       console.log('🕑 Notification sent within last hour');
       foundOwner = null;
     }
@@ -118,9 +190,6 @@ module.exports.emailNotification = async (req, res, next) => {
 
     // The character encoding for the email.
     const charset = 'UTF-8';
-
-    // // Create a new SES object.
-    // var ses = new ses();
 
     // Specify the parameters to pass to the API.
     var params = {

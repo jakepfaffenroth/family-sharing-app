@@ -21,7 +21,6 @@ router.get('/login', (req, res) => {
 });
 
 router.get('/:gId/guest', guestController.mark)
-router.post('/guest/subscribe', guestController.subscribe)
 
 router.get('/user/get-user', userController.getUser)
 

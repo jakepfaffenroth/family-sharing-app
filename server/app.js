@@ -18,6 +18,7 @@ const client = process.env.CLIENT;
 
 const indexRouter = require('./indexRouter');
 const userRouter = require('./users/userRouter');
+const guestRouter = require('./users/guestRouter');
 const authRouter = require('./userAuth/authRouter');
 const fileRouter = require('./fileServer/fileRouter');
 const User = require('./users/userModel');
@@ -71,6 +72,7 @@ app.use('/', indexRouter);
 app.use('/user', userRouter);
 app.use('/auth', authRouter);
 app.use('/files', fileRouter);
+app.use('/guest', guestRouter)
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
