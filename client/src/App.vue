@@ -214,7 +214,7 @@ export default {
         formData.append('userId', this.user._id);
       }
       if (!formData.get('guestId')) {
-        formData.append('userId', this.user.guestId);
+        formData.append('guestId', this.user.guestId);
       }
     },
 

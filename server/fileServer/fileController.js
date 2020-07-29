@@ -1,6 +1,7 @@
 require('dotenv').config();
 const axios = require('axios');
 const crypto = require('crypto');
+const webPush = require('web-push');
 const path = require('path');
 const fs = require('fs');
 const { Readable, Writable } = require('stream');
@@ -16,7 +17,7 @@ const encodedBase64 = Buffer.from(appKeyId + ':' + applicationKey).toString('bas
 
 // ---- File compression and upload functions
 const compressImages = async (files) => {
-  let compFiles = 0;
+  let count = 0;
   files.forEach((fileObject) => {
     const output = sharp(fileObject.buffer);
 
@@ -32,8 +33,8 @@ const compressImages = async (files) => {
         .then(function (data) {
           fileObject.buffer = data;
           fileObject.size = data.length;
-          compFiles++;
-          console.log('✅ ' + compFiles + ' images optimized');
+          count++;
+          console.log('✅ ' + count + ' images optimized');
           return files;
         })
         .catch((err, info) => {
@@ -140,6 +141,40 @@ const getExif = async (fileObject) => {
       console.log('Exif read error: ', err, info);
     });
 };
+
+const sendBrowserNotifications = async (userId) => {
+  let subscriptions = [];
+  let guestId;
+
+  await User.findById(userId).then( (foundUser) => {
+    subscriptions = foundUser.subscribers.browser;
+    console.log('subs: ', subscriptions);
+    guestId = foundUser.guestId;
+  });
+
+  const payload = JSON.stringify({
+    title: 'New photos were posted!',
+    body: 'Click to check them out',
+    icon:
+      'https://cdn.jakepfaf.dev/file/JFP001/5eebb6c17f71e3812d1e91ab/190822%20141057%20_JP12646%20190822%20141057%20_JP12646%20_.jpg',
+    guestId: guestId,
+  });
+
+  subscriptions.forEach((obj) => {
+    const publicVapidKey = process.env.PUBLIC_VAPID_KEY;
+    const privateVapidKey = process.env.PRIVATE_VAPID_KEY;
+
+    webPush.setVapidDetails('mailto:hello@jakepfaf.dev', publicVapidKey, privateVapidKey);
+    
+    console.log('obj.subscription: ', obj.subscription);
+    webPush.sendNotification(obj.subscription, payload).catch((error) => console.error(error));
+  });
+};
+
+const sendNotifications = async (userId) => {
+  sendBrowserNotifications(userId);
+};
+
 // ------------------------------------------
 
 module.exports.b2Auth = (req, res, next) => {
@@ -173,6 +208,7 @@ module.exports.b2Auth = (req, res, next) => {
 };
 
 module.exports.upload = async (req, res, next) => {
+  const userId = req.body.userId;
   const files = req.files;
   const finishedFiles = [];
 
@@ -201,6 +237,9 @@ module.exports.upload = async (req, res, next) => {
     // console.log('fileInfo: ', fileInfo);
     finishedFiles.push(fileInfo);
   }
+
+  await sendNotifications(userId);
+
   res.status(200).json(finishedFiles);
   next();
 };

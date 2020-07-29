@@ -142,9 +142,10 @@ module.exports.subscribeBrowser = (req, res) => {
 
   webPush.setVapidDetails('mailto:hello@jakepfaf.dev', publicVapidKey, privateVapidKey);
 
-  const subscription = req.body.subscription;
+  const subscription = JSON.parse(req.body.subscription);
   const guestId = req.body.guestId;
   console.log('guestId: ', guestId);
+  console.log('subscription: ', subscription);
   // Save subscriptions info to owner doc in DB
   // First need to see if guest has already subscribed
   User.findOne({ guestId: guestId }).then(async (foundUser) => {
@@ -167,19 +168,6 @@ module.exports.subscribeBrowser = (req, res) => {
     console.log(foundUser);
     res.status(200).send(foundUser.subscribers);
   });
-
-// LOGIC BELOW - move to fileUpload (needs to fire after file uploaded)
-  // Will need to find subscription info in DB to populate payload
-
-  // const payload = JSON.stringify({
-  //   title: 'New photos were posted!',
-  //   body: 'Click to check them out',
-  //   icon:
-  //     'https://cdn.jakepfaf.dev/file/JFP001/5eebb6c17f71e3812d1e91ab/190822%20141057%20_JP12646%20190822%20141057%20_JP12646%20_.jpg',
-  //   guestId: 'd4607a48-d7b2-438d-9f09-f79476a49097',
-  // });
-
-  // webPush.sendNotification(subscription, payload).catch((error) => console.error(error));
 };
 
 const updateTimestamp = async (guestId, timeStamp) => {
@@ -194,7 +182,7 @@ const updateTimestamp = async (guestId, timeStamp) => {
 // Send email notification
 module.exports.emailNotification = async (req, res, next) => {
   // Get guestId out of url path
-  const guestId = req.body.files[0].guestId.split('/')[3];
+  const guestId = req.body.guestId;
   let owner;
   const timeStamp = toDate(Date.now()); // Convert numerical date to human-readable
 
@@ -207,7 +195,7 @@ module.exports.emailNotification = async (req, res, next) => {
 
     // If less than one hour has passed since last notification, do not send another email
     if (timeComparison > 0) {
-      console.log('🕑 Notification sent within last hour');
+      console.log('🕑 Email notification sent within last hour');
       foundOwner = null;
     }
     owner = foundOwner;
