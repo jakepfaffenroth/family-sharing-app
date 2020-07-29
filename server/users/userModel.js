@@ -6,10 +6,10 @@ const userSchema = new Schema({
   password: { type: String, required: true },
   firstName: { type: String, required: true },
   lastName: { type: String, required: true },
-  images: { type: Array },
+  images: { type: Array, required: true },
   guestId: { type: String, required: true },
-  lastNotification: { type: Date },
-  subscribers: { type: Object },
+  lastNotification: { type: Date, required: true },
+  subscribers: { type: Object, required: true },
 });
 
 const User = mongoose.model('User', userSchema);

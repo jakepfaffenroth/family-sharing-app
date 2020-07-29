@@ -3,7 +3,7 @@ const crypto = require('crypto');
 const algorithm = 'aes-256-cbc';
 const key = crypto.randomBytes(32);
 const iv = crypto.randomBytes(16);
-const webPush = require('web-push')
+const webPush = require('web-push');
 const add = require('date-fns/add');
 const toDate = require('date-fns/toDate');
 const compareAsc = require('date-fns/compareAsc');
@@ -11,6 +11,7 @@ require('dotenv').config();
 const User = require('../users/userModel');
 
 const AWS = require('aws-sdk');
+const { ForecastQueryService } = require('aws-sdk');
 const credentials = {
   accessKeyId: process.env.AWS_ACCESS_KEY_ID,
   secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
@@ -57,10 +58,10 @@ module.exports.subscribeEmail = async (req, res) => {
   const guestId = req.body.guest.guestId;
 
   // First need to see if guest has already subscribed
-  User.findOne({ 'subscribers.email': emailAddress }).then((foundEmail) => {
+  User.findOne({ 'subscribers.email.emailAddress': emailAddress }).then((foundEmail) => {
     if (foundEmail) {
       console.log('foundEmail', foundEmail);
-      res.status(200);
+      res.status(200).send('Already subscribed email');
     } else {
       // Email not found in DB
       // Add email to SES and send verification email
@@ -76,66 +77,109 @@ module.exports.subscribeEmail = async (req, res) => {
           // Verification email includes verification link
           // Verification link query param is stringified encrypted guest info object
 
-          let test = JSON.stringify(encrypt(req.body.guest))
+          let test = JSON.stringify(encrypt(req.body.guest));
           let dTest = decrypt(JSON.parse(test));
           // let test = encrypt(req.body.guest)
           // let dTest = decrypt(test);
-          console.log( 'test', test, 'dTest', dTest );
+          console.log('test', test, 'dTest', dTest);
           res.status(200).send({ test: test, dTest: dTest });
         }
       });
     }
   });
 };
- 
-
-module.exports.subscribeBrowser = (req, res) => {
-  console.log('req.body: ', req.body);
-  const publicVapidKey = process.env.PUBLIC_VAPID_KEY;
-  const privateVapidKey = process.env.PRIVATE_VAPID_KEY;
-  
-  webPush.setVapidDetails('mailto:hello@jakepfaf.dev', publicVapidKey, privateVapidKey);
-  const subscription = req.body;
-  
-  res.status(201).json({});
-  
-  const payload = JSON.stringify({
-    title: 'New photos were posted!',
-    body: 'Click to check them out',
-    icon:
-    'https://cdn.jakepfaf.dev/file/JFP001/5eebb6c17f71e3812d1e91ab/190822%20141057%20_JP12646%20190822%20141057%20_JP12646%20_.jpg',
-    guestId: 'd4607a48-d7b2-438d-9f09-f79476a49097',
-  });
-  
-  console.log('payload: ', payload);
-  webPush.sendNotification(subscription, payload).catch((error) => console.error(error));
-}
 
 // Guests routed here after clicking verification link
 // link query param decrypted into guest info object
 // Updates the owner doc in DB with guest info
-module.exports.verify = async (req, res) => {
+module.exports.verifyEmail = async (req, res, next) => {
   let guest = JSON.parse(req.query.guest);
   console.log('guest: ', guest);
-  guest = decrypt(guest)
+  guest = decrypt(guest);
   const emailAddress = guest.email;
   const firstName = guest.firstName;
   const lastName = guest.lastName;
   const guestId = guest.guestId;
 
-  User.findOneAndUpdate(
-    { guestId: guestId },
-    { $push: { subscribers: { firstName: firstName, lastName: lastName, email: emailAddress } } },
-    { new: true },
-    (err, foundDoc) => {
-      if (err) {
-        console.log('error: ', err);
-        return;
+  User.findOne({ guestId: guestId }).then(async (foundUser) => {
+    console.log('foundUser: ', foundUser);
+    foundUser.subscribers.email.push({
+      firstName: firstName,
+      lastName: lastName,
+      emailAddress: emailAddress,
+    });
+    foundUser.markModified('subscribers');
+    await foundUser.save(function (err, foundUser) {
+      if (err) return console.error(err);
+      console.log(foundUser + ' saved.');
+    });
+    console.log(foundUser);
+    res.status(200).send(foundUser.subscribers);
+  });
+
+  let model = {
+    subscribers: { email: [{}, {}, {}], browser: [{}, {}, {}] },
+  };
+
+  // User.findOneAndUpdate(
+  //   { guestId: guestId },
+  //   { $push: { subscribers: { email: [{ firstName: firstName, lastName: lastName, emailAddress: emailAddress }] } } },
+  //   { new: true, upsert: true },
+  //   (err, foundDoc) => {
+  //     if (err) {
+  //       console.log('error: ', err);
+  //       return;
+  //     }
+  //     console.log(foundDoc);
+  //     res.status(200).send(foundDoc);
+  //   }
+  // );
+};
+
+module.exports.subscribeBrowser = (req, res) => {
+  const publicVapidKey = process.env.PUBLIC_VAPID_KEY;
+  const privateVapidKey = process.env.PRIVATE_VAPID_KEY;
+
+  webPush.setVapidDetails('mailto:hello@jakepfaf.dev', publicVapidKey, privateVapidKey);
+
+  const subscription = req.body.subscription;
+  const guestId = req.body.guestId;
+  console.log('guestId: ', guestId);
+  // Save subscriptions info to owner doc in DB
+  // First need to see if guest has already subscribed
+  User.findOne({ guestId: guestId }).then(async (foundUser) => {
+    for (index of foundUser.subscribers.browser) {
+      if (index.subscription.keys.auth === subscription.keys.auth) {
+        // Subscription found in DB (guest has already subscribed)
+        console.log('foundSub', foundUser);
+        return res.status(200).send('Already subscribed to browser notifications');
       }
-      console.log(foundDoc.subscribers);
-      res.status(200).send(guest)
     }
-  );
+    // Subscription not found in DB; Add to DB
+    foundUser.subscribers.browser.push({
+      subscription: subscription,
+    }),
+      foundUser.markModified('subscribers');
+    await foundUser.save(function (err, foundUser) {
+      if (err) return console.error(err);
+      console.log(foundUser + ' saved.');
+    });
+    console.log(foundUser);
+    res.status(200).send(foundUser.subscribers);
+  });
+
+// LOGIC BELOW - move to fileUpload (needs to fire after file uploaded)
+  // Will need to find subscription info in DB to populate payload
+
+  // const payload = JSON.stringify({
+  //   title: 'New photos were posted!',
+  //   body: 'Click to check them out',
+  //   icon:
+  //     'https://cdn.jakepfaf.dev/file/JFP001/5eebb6c17f71e3812d1e91ab/190822%20141057%20_JP12646%20190822%20141057%20_JP12646%20_.jpg',
+  //   guestId: 'd4607a48-d7b2-438d-9f09-f79476a49097',
+  // });
+
+  // webPush.sendNotification(subscription, payload).catch((error) => console.error(error));
 };
 
 const updateTimestamp = async (guestId, timeStamp) => {

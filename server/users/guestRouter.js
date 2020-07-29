@@ -5,7 +5,7 @@ const guestController = require('./guestController');
 
 router.post('/subscribe-email', guestController.subscribeEmail);
 router.post('/subscribe-browser', guestController.subscribeBrowser);
-router.get('/verify', guestController.verify);
+router.get('/verify-email', guestController.verifyEmail);
 
 
 module.exports = router;

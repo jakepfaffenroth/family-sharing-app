@@ -6,7 +6,7 @@
         <button @click="logout" class="link">Log out</button>
         <button @click="ownerShare" class="link">Share</button>
         <button @click="nuke" class="link">Nuke</button>
-        <button @click="triggerPushNotification" class="link">Subscribe</button>
+        <button @click="subscribeBrowser" class="link">Subscribe</button>
 
         <div v-if="shareUrl" class="share-modal">
           <h3>Your personal link to share:</h3>
@@ -126,10 +126,9 @@ export default {
       });
     },
 
-    subscribeBrowser() {
-      // function to actually ask the permissions
+    XsubscribeBrowser() {
       const handlePermission = (permission) => {
-        // Whatever the user answers, we make sure Chrome stores the information
+        // Whatever the user answers, we make sure the browser stores the information
         if (!('permission' in Notification)) {
           Notification.permission = permission;
         }
@@ -148,7 +147,6 @@ export default {
         } catch (e) {
           return false;
         }
-
         return true;
       };
 
@@ -184,7 +182,7 @@ export default {
       return outputArray;
     },
 
-    async triggerPushNotification() {
+    async subscribeBrowser() {
       const publicVapidKey = 'BIXOvprQOJRgsH4EHujdKRaOmrxCLTP5uKlrB_W-1pXEmCU9twuOgxIaFniDmLE8r4SAVmaTZOxOLsXdgAoWwpw';
 
       if ('serviceWorker' in navigator) {
@@ -196,17 +194,18 @@ export default {
           userVisibleOnly: true,
           applicationServerKey: this.urlBase64ToUint8Array(publicVapidKey),
         });
-        console.log({message: JSON.stringify(subscription)});
+        // console.log({message: JSON.stringify(subscription)});
 
-        await fetch(this.server + '/guest/subscribe-browser', {
+        await axios({
+          url: this.server + '/guest/subscribe-browser',
           method: 'POST',
-          body: JSON.stringify(subscription),
+          data: { subscription: JSON.stringify(subscription), guestId: this.user.guestId },
           headers: {
             'Content-Type': 'application/json',
           },
         });
       } else {
-        console.error('Service workers are not supported in this browser');
+        alert('Sorry, notifications are not supported in this browser');
       }
     },
 
