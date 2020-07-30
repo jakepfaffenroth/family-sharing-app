@@ -219,9 +219,6 @@ export default {
     },
 
     async subscribe() {
-      console.log('this.user: ', this.user);
-      console.log('this.guest: ', this.guest);
-      console.log('this.subOptions: ', this.subOptions);
       const browser = this.subOptions.browser;
       const email = this.subOptions.email;
 
@@ -233,9 +230,8 @@ export default {
       };
 
       // Send subscription requests if checkboxes are checked
-      Promise.all(checkBrowser(), checkEmail())
-        .then((result) => {
-          console.log('result: ',result);
+      Promise.all([checkBrowser(), checkEmail()])
+        .then(() => {
           email || browser ? (this.guest.guestId = '') : null;
         })
         .catch((error) => console.log(`Error in promises ${error}`));
