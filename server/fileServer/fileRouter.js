@@ -22,6 +22,7 @@ router.post(
 router.post('/delete-image', fileController.b2Auth, fileController.deleteImage);
 
 router.post('/list-files', fileController.b2Auth, fileController.listFiles);
+router.post('/get-storage-size', fileController.b2Auth, fileController.getStorageSize);
 
 router.get('/download', fileController.b2Auth, fileController.download);
 

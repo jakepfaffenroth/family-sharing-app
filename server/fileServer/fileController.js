@@ -146,7 +146,7 @@ const sendBrowserNotifications = async (userId) => {
   let subscriptions = [];
   let guestId;
 
-  await User.findById(userId).then( (foundUser) => {
+  await User.findById(userId).then((foundUser) => {
     subscriptions = foundUser.subscribers.browser;
     guestId = foundUser.guestId;
   });
@@ -242,7 +242,7 @@ module.exports.upload = async (req, res, next) => {
   next();
 };
 
-module.exports.listFiles = async (req, res, next) => {
+module.exports.listFiles = async (req, res) => {
   const apiUrl = res.locals.credentials.apiUrl;
   const authToken = res.locals.credentials.authorizationToken;
   const filePrefix = req.body.filePrefix;
@@ -260,7 +260,8 @@ module.exports.listFiles = async (req, res, next) => {
       },
     });
 
-    res.json(response.data);
+    return response.data.files;
+    // res.json(response.data);
   } catch (err) {
     console.log('listFiles error: ', err);
   }
@@ -330,4 +331,14 @@ module.exports.download = async (req, res) => {
   }
 };
 
-// TODO - file deletion
+module.exports.getStorageSize = async (req, res) => {
+  const files = await this.listFiles(req, res);
+
+  let totalStorageUsed = files.reduce((accumulator, currentValue) => accumulator + currentValue.contentLength, 0);
+
+  let kilobytes = (totalStorageUsed / 1024).toFixed(2);
+  let megabytes = (kilobytes / 1024).toFixed(2);
+  let gigabytes = (megabytes / 1024).toFixed(2);
+
+  res.json([kilobytes + ' KB', megabytes + ' MB', gigabytes + ' GB']);
+};
