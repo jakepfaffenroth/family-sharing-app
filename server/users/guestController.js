@@ -20,6 +20,7 @@ const sns = new AWS.SNS({ credentials: credentials, region: 'us-west-2' });
 const ses = new AWS.SES({ credentials: credentials, region: 'us-west-2' });
 
 const encrypt = (object) => {
+  console.log('objectX: ', object);
   // convert object into string to be encrypted
   let text = JSON.stringify(object);
   let cipher = crypto.createCipheriv('aes-256-cbc', Buffer.from(key), iv);
@@ -28,14 +29,18 @@ const encrypt = (object) => {
   return { iv: iv.toString('hex'), encryptedData: encrypted.toString('hex') };
 };
 
-const decrypt = (text) => {
-  let iv = Buffer.from(text.iv, 'hex');
-  let encryptedText = Buffer.from(text.encryptedData, 'hex');
-  let decipher = crypto.createDecipheriv('aes-256-cbc', Buffer.from(key), iv);
-  let decrypted = decipher.update(encryptedText);
-  decrypted = Buffer.concat([decrypted, decipher.final()]);
-  // Convert the decrypted string back into an object
-  return JSON.parse(decrypted.toString());
+const decrypt = (guest) => {
+  try {
+    let iv = Buffer.from(guest.iv, 'hex');
+    let encryptedText = Buffer.from(guest.encryptedData, 'hex');
+    let decipher = crypto.createDecipheriv('aes-256-cbc', Buffer.from(key), iv);
+    let decrypted = decipher.update(encryptedText);
+    decrypted = Buffer.concat([decrypted, decipher.final()]);
+    // Convert the decrypted string back into an object
+    return JSON.parse(decrypted.toString());
+  } catch (err) {
+    return;
+  }
 };
 
 // Marks the user as a guest
@@ -52,39 +57,88 @@ module.exports.mark = (req, res) => {
 
 // Sends guests subscription verification emails
 module.exports.subscribeEmail = async (req, res) => {
-  const emailAddress = req.body.guest.email;
-  const firstName = req.body.guest.firstName;
-  const lastName = req.body.guest.lastName;
-  const guestId = req.body.guest.guestId;
+  let guest = req.body.guest
+
+  // Handle form data if coming from invalid link re-subscribe page
+  if (req.body && !req.body.guest) {
+    console.log('req.body: ', req.body);
+    guest = req.body;
+    console.log('guest: ', guest);
+  }
+
+  const emailAddress = guest.email;
+  const firstName = guest.firstName;
+  const lastName = guest.lastName;
+  const guestId = guest.guestId;
+  let owner;
+
+  User.findOne({ guestId: guestId }).then((foundOwner) => {
+    owner = foundOwner;
+  });
 
   // First need to see if guest has already subscribed
-  User.findOne({ 'subscribers.email.emailAddress': emailAddress }).then((foundEmail) => {
-    if (foundEmail) {
-      console.log('foundEmail', foundEmail);
+  User.findOne({ 'subscribers.email.emailAddress': emailAddress }).then((foundUser) => {
+    if (foundUser) {
+      console.log('foundEmail', foundUser.subscribers.email);
       res.status(200).send('Already subscribed email');
     } else {
-      // Email not found in DB
-      // Add email to SES and send verification email
-      const params = { EmailAddress: emailAddress };
+      // Email not found in DB (guest hasn't subscribed yet)
+      const sender = `Carousel Email Verification <notification@carousel.jakepfaf.dev>`;
+      const recipient = emailAddress;
+      const subject = `Verify your subscription to ${owner.firstName}'s photos`;
+      const queryParam = encodeURI(JSON.stringify(encrypt(guest)));
+      const verifyLink = `${process.env.SERVER}/guest/verify-email/?guest=${queryParam}&id=${guestId}`;
+      const body_text = 'Verify using this link: \n' + verifyLink;
 
-      ses.verifyEmailIdentity(params, function (err, data) {
-        if (err) console.log('err: ', err, err.stack);
-        // an error occurred
-        else {
-          console.log('Success: ', data); // successful response
+      // The HTML body of the email.
+      const body_html = `<html>
+    <head></head>
+    <body>
+      <h1>Verify your subscription to ${owner.firstName}'s photos</h1>
+      <p>Please verify your email subscription by clicking this link or pasting it into your browser:</p>
+        <a href='${verifyLink}'>${verifyLink}</a>
+    </body>
+    </html>`;
 
-          // SEND CUSTOM VERIFICATION EMAIL VIA SES HERE
-          // Verification email includes verification link
-          // Verification link query param is stringified encrypted guest info object
+      // The character encoding for the email.
+      const charset = 'UTF-8';
 
-          let test = JSON.stringify(encrypt(req.body.guest));
-          let dTest = decrypt(JSON.parse(test));
-          // let test = encrypt(req.body.guest)
-          // let dTest = decrypt(test);
-          console.log('test', test, 'dTest', dTest);
-          res.status(200).send({ test: test, dTest: dTest });
+      // Specify the parameters to pass to the API.
+      let params = {
+        Source: sender,
+        Destination: {
+          ToAddresses: [recipient],
+        },
+        Message: {
+          Subject: {
+            Data: subject,
+            Charset: charset,
+          },
+          Body: {
+            Text: {
+              Data: body_text,
+              Charset: charset,
+            },
+            Html: {
+              Data: body_html,
+              Charset: charset,
+            },
+          },
+        },
+      };
+
+      //Try to send the email.
+      ses.sendEmail(params, function (err, data) {
+        // If something goes wrong, print an error message.
+        if (err) {
+          console.log(err.message);
+        } else {
+          console.log('Email sent! Message ID: ', data.MessageId);
+          console.log('data: ', data);
         }
       });
+
+      res.status(200).render('verificationEmailSent');
     }
   });
 };
@@ -96,10 +150,23 @@ module.exports.verifyEmail = async (req, res, next) => {
   let guest = JSON.parse(req.query.guest);
   console.log('guest: ', guest);
   guest = decrypt(guest);
+  // If decrypt fails (node probably restarted) try subscribing again.
+  if (!guest) {
+    const gId = req.query.id;
+    const subscribeLink = `${process.env.SERVER}/guest/subscribe-email`;
+    return res.status(418).render('verificationError', { guestId: gId, subscribeLink: subscribeLink });
+  }
   const emailAddress = guest.email;
   const firstName = guest.firstName;
   const lastName = guest.lastName;
   const guestId = guest.guestId;
+
+  User.findOne({ 'subscribers.email.emailAddress': emailAddress }).then((foundUser) => {
+    if (foundUser) {
+      console.log('foundEmail', foundUser.subscribers.email);
+      res.status(200).send('Already verified email');
+    }
+  });
 
   User.findOne({ guestId: guestId }).then(async (foundUser) => {
     console.log('foundUser: ', foundUser);
@@ -113,27 +180,9 @@ module.exports.verifyEmail = async (req, res, next) => {
       if (err) return console.error(err);
       console.log(foundUser + ' saved.');
     });
-    console.log(foundUser);
-    res.status(200).send(foundUser.subscribers);
+    const guestLink = `${process.env.SERVER}/${guestId}/guest`;
+    res.status(200).render('emailVerified', {guestLink: guestLink});
   });
-
-  let model = {
-    subscribers: { email: [{}, {}, {}], browser: [{}, {}, {}] },
-  };
-
-  // User.findOneAndUpdate(
-  //   { guestId: guestId },
-  //   { $push: { subscribers: { email: [{ firstName: firstName, lastName: lastName, emailAddress: emailAddress }] } } },
-  //   { new: true, upsert: true },
-  //   (err, foundDoc) => {
-  //     if (err) {
-  //       console.log('error: ', err);
-  //       return;
-  //     }
-  //     console.log(foundDoc);
-  //     res.status(200).send(foundDoc);
-  //   }
-  // );
 };
 
 module.exports.subscribeBrowser = (req, res) => {
@@ -224,7 +273,7 @@ module.exports.emailNotification = async (req, res, next) => {
     const charset = 'UTF-8';
 
     // Specify the parameters to pass to the API.
-    var params = {
+    let params = {
       Source: sender,
       Destination: {
         ToAddresses: [recipient],
