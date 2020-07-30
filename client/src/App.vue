@@ -1,12 +1,12 @@
 <template>
   <div>
     <div v-if="isReadyToRender">
+      <!-- Owner header and navigation -->
       <div v-if="userType == 'owner'">
         <h1>Welcome Back, {{ user.firstName }}</h1>
         <button @click="logout" class="link">Log out</button>
         <button @click="ownerShare" class="link">Share</button>
         <button @click="nuke" class="link">Nuke</button>
-        <button @click="subscribeBrowser" class="link">Subscribe</button>
 
         <div v-if="shareUrl" class="share-modal">
           <h3>Your personal link to share:</h3>
@@ -18,9 +18,42 @@
         </div>
       </div>
 
+      <!-- Guest header and navigation -->
       <div v-if="userType == 'guest'">
         <h1>You are a guest of {{ user.firstName }} {{ user.lastName }}</h1>
+
+        <button @click="openSubscribeForm" class="link">Subscribe</button>
+
+        <div v-if="guest.guestId" class="share-modal">
+          <h3>Subscription methods</h3>
+          <div>
+            <p id="share-url">Choose at least one:</p>
+            <form @submit.prevent>
+              <div>
+                <input type="checkbox" name="browserSubscribe" v-model="subOptions.browser" />
+                <label for="browserSubscribe">Browser notifications</label>
+                <input type="checkbox" name="emailSubscribe" v-model="subOptions.email" />
+                <label for="emailSubscribe">Email notifications</label>
+              </div>
+              <div>
+                <input
+                  type="text"
+                  name="firstName"
+                  required="true"
+                  placeholder="First name"
+                  v-model="guest.firstName"
+                />
+                <input type="text" name="lastName" placeholder="Last name" v-model="guest.lastName" />
+                <input type="text" name="email" placeholder="email" v-model="guest.email" />
+                <input type="hidden" name="guestId" :value="guest.guestId" />
+              </div>
+            </form>
+          </div>
+          <button @click="subscribe">Subscribe</button>
+          <button @click="guest.guestId = ''">Cancel</button>
+        </div>
       </div>
+
       <p>Image count: {{ user.images.length }}</p>
       <div id="progress" v-if="progress !== '0%'">
         <div id="progress-bar" :style="{ width: progress }">
@@ -85,6 +118,16 @@ export default {
       user: {},
       images: [],
       shareUrl: '',
+      guest: {
+        firstName: null,
+        lastName: null,
+        email: null,
+        guestId: null,
+      },
+      subOptions: {
+        browser: null,
+        email: null,
+      },
       files: '',
       b2Credentials: {},
       filePrefix: 'test',
@@ -126,47 +169,8 @@ export default {
       });
     },
 
-    XsubscribeBrowser() {
-      const handlePermission = (permission) => {
-        // Whatever the user answers, we make sure the browser stores the information
-        if (!('permission' in Notification)) {
-          Notification.permission = permission;
-        }
-
-        //   // set the button to shown or hidden, depending on what the user answers
-        //   if (Notification.permission === 'denied' || Notification.permission === 'default') {
-        //     notificationBtn.style.display = 'block';
-        //   } else {
-        //     notificationBtn.style.display = 'none';
-        //   }
-      };
-
-      const checkNotificationPromise = () => {
-        try {
-          Notification.requestPermission().then();
-        } catch (e) {
-          return false;
-        }
-        return true;
-      };
-
-      if (!('Notification' in window)) {
-        alert('Sorry, this browser does not support notifications.');
-      } else {
-        if (checkNotificationPromise()) {
-          Notification.requestPermission().then((permission) => {
-            handlePermission(permission);
-          });
-        } else {
-          Notification.requestPermission(function(permission) {
-            handlePermission(permission);
-          });
-        }
-      }
-
-      // Notification.requestPermission().then(function(result) {
-      //   console.log(result);
-      // });
+    openSubscribeForm() {
+      this.guest.guestId = this.user.guestId;
     },
 
     urlBase64ToUint8Array(base64String) {
@@ -183,6 +187,7 @@ export default {
     },
 
     async subscribeBrowser() {
+      if (!this.guest.firstName || !this.guest.lastName || !this.guest.email) return;
       const publicVapidKey = 'BIXOvprQOJRgsH4EHujdKRaOmrxCLTP5uKlrB_W-1pXEmCU9twuOgxIaFniDmLE8r4SAVmaTZOxOLsXdgAoWwpw';
 
       if ('serviceWorker' in navigator) {
@@ -207,6 +212,33 @@ export default {
       } else {
         alert('Sorry, notifications are not supported in this browser');
       }
+    },
+
+    subscribeEmail() {
+      axios.post(this.server + '/guest/subscribe-email', this.guest);
+    },
+
+    async subscribe() {
+      console.log('this.user: ', this.user);
+      console.log('this.guest: ', this.guest);
+      console.log('this.subOptions: ', this.subOptions);
+      const browser = this.subOptions.browser;
+      const email = this.subOptions.email;
+
+      const checkBrowser = () => {
+        browser ? this.subscribeBrowser() : null;
+      };
+      const checkEmail = () => {
+        email ? this.subscribeEmail() : null;
+      };
+
+      // Send subscription requests if checkboxes are checked
+      Promise.all(checkBrowser(), checkEmail())
+        .then((result) => {
+          console.log('result: ',result);
+          email || browser ? (this.guest.guestId = '') : null;
+        })
+        .catch((error) => console.log(`Error in promises ${error}`));
     },
 
     sendingEvent(file, xhr, formData) {

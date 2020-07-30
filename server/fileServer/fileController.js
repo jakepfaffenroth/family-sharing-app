@@ -148,7 +148,6 @@ const sendBrowserNotifications = async (userId) => {
 
   await User.findById(userId).then( (foundUser) => {
     subscriptions = foundUser.subscribers.browser;
-    console.log('subs: ', subscriptions);
     guestId = foundUser.guestId;
   });
 
@@ -164,9 +163,8 @@ const sendBrowserNotifications = async (userId) => {
     const publicVapidKey = process.env.PUBLIC_VAPID_KEY;
     const privateVapidKey = process.env.PRIVATE_VAPID_KEY;
 
-    webPush.setVapidDetails('mailto:hello@jakepfaf.dev', publicVapidKey, privateVapidKey);
-    
-    console.log('obj.subscription: ', obj.subscription);
+    webPush.setVapidDetails('mailto:notification@carousel.jakepfaf.dev', publicVapidKey, privateVapidKey);
+
     webPush.sendNotification(obj.subscription, payload).catch((error) => console.error(error));
   });
 };

@@ -57,7 +57,7 @@ module.exports.mark = (req, res) => {
 
 // Sends guests subscription verification emails
 module.exports.subscribeEmail = async (req, res) => {
-  let guest = req.body.guest
+  let guest = req.body.guest;
 
   // Handle form data if coming from invalid link re-subscribe page
   if (req.body && !req.body.guest) {
@@ -181,7 +181,7 @@ module.exports.verifyEmail = async (req, res, next) => {
       console.log(foundUser + ' saved.');
     });
     const guestLink = `${process.env.SERVER}/${guestId}/guest`;
-    res.status(200).render('emailVerified', {guestLink: guestLink});
+    res.status(200).render('emailVerified', { guestLink: guestLink });
   });
 };
 
@@ -193,15 +193,14 @@ module.exports.subscribeBrowser = (req, res) => {
 
   const subscription = JSON.parse(req.body.subscription);
   const guestId = req.body.guestId;
-  console.log('guestId: ', guestId);
-  console.log('subscription: ', subscription);
+
   // Save subscriptions info to owner doc in DB
   // First need to see if guest has already subscribed
   User.findOne({ guestId: guestId }).then(async (foundUser) => {
     for (index of foundUser.subscribers.browser) {
       if (index.subscription.keys.auth === subscription.keys.auth) {
         // Subscription found in DB (guest has already subscribed)
-        console.log('foundSub', foundUser);
+        console.log('foundBrowserSub', foundUser.subscribers.browser);
         return res.status(200).send('Already subscribed to browser notifications');
       }
     }
@@ -238,7 +237,7 @@ module.exports.emailNotification = async (req, res, next) => {
   await User.findOne({ guestId: guestId }).then((foundOwner) => {
     const lastNotification = add(foundOwner.lastNotification, { hours: 1 });
 
-    // If last notification +1hr is later than the current timestamp,
+    // If last notification+1hr is later than the current timestamp,
     // timeComparison will equal 1 (else -1 or 0)
     const timeComparison = compareAsc(lastNotification, timeStamp);
 
@@ -255,10 +254,9 @@ module.exports.emailNotification = async (req, res, next) => {
 
     //  ---- CODE BELOW SENDS EMAILS
     const sender = `${owner.firstName} ${owner.lastName} (via Carousel) <notification@carousel.jakepfaf.dev>`;
-    const recipient = req.body.email || 'jakepfaffenroth@gmail.com';
+
     const subject = 'I just shared new photos!';
     const body_text = 'Go see them! ' + req.body.shareUrl;
-
     // The HTML body of the email.
     const body_html = `<html>
     <head></head>
@@ -276,7 +274,7 @@ module.exports.emailNotification = async (req, res, next) => {
     let params = {
       Source: sender,
       Destination: {
-        ToAddresses: [recipient],
+        ToAddresses: [],
       },
       Message: {
         Subject: {
@@ -296,16 +294,20 @@ module.exports.emailNotification = async (req, res, next) => {
       },
     };
 
-    //Try to send the email.
-    ses.sendEmail(params, function (err, data) {
-      // If something goes wrong, print an error message.
-      if (err) {
-        console.log(err.message);
-      } else {
-        console.log('Email sent! Message ID: ', data.MessageId);
-      }
+    // Loop through every subscriber and send an email
+    owner.subscribers.email.forEach((obj) => {
+      params.Destination.ToAddresses[0] = obj.emailAddress;
+
+      //Try to send the email.
+      ses.sendEmail(params, function (err, data) {
+        // If something goes wrong, print an error message.
+        if (err) {
+          console.log('err: ', err.message);
+        } else {
+          console.log('Email sent! Message ID: ', data.MessageId);
+        }
+      });
     });
-    console.log('sender: ', sender);
   }
   res.end();
 };
