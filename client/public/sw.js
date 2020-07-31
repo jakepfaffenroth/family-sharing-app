@@ -11,5 +11,5 @@ self.addEventListener('push', (event) => {
 });
 
 self.addEventListener('notificationclick', (event) => {
-  event.waitUntil(clients.openWindow('http://localhost:8080/' + guestId + '/guest'));
+  event.waitUntil(clients.openWindow(process.env.VUE_APP_SERVER + guestId + '/guest'));
 });
