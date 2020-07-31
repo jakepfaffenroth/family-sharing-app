@@ -69,7 +69,7 @@ module.exports.subscribeEmail = async (req, res) => {
   const guestId = guest.guestId;
   let owner;
 
-  User.findOne({ guestId: guestId }).then((foundOwner) => {
+  await User.findOne({ guestId: guestId }).then((foundOwner) => {
     owner = foundOwner;
   });
 
