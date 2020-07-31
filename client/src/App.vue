@@ -138,6 +138,7 @@ export default {
         url: process.env.VUE_APP_SERVER + '/files/upload',
         paramName: 'myFiles',
         acceptedFiles: 'image/*',
+        timeout: 60000,
         uploadMultiple: true,
         parallelUploads: 200,
         thumbnailWidth: 120,
