@@ -1,5 +1,3 @@
-require('dotenv').config()
-
 let guestId;
 
 self.addEventListener('push', (event) => {
@@ -13,5 +11,5 @@ self.addEventListener('push', (event) => {
 });
 
 self.addEventListener('notificationclick', (event) => {
-  event.waitUntil(clients.openWindow(process.env.VUE_APP_SERVER + '/' + guestId + '/guest'));
+  event.waitUntil(clients.openWindow('https://carousel.jakepfaf.dev/' + guestId + '/guest'));
 });
