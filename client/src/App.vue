@@ -1,6 +1,7 @@
 <template>
   <div>
     <div v-if="isReadyToRender">
+      <!-- Owner header and navigation -->
       <div v-if="userType == 'owner'">
         <h1>Welcome Back, {{ user.firstName }}</h1>
         <button @click="logout" class="link">Log out</button>
@@ -17,9 +18,42 @@
         </div>
       </div>
 
+      <!-- Guest header and navigation -->
       <div v-if="userType == 'guest'">
         <h1>You are a guest of {{ user.firstName }} {{ user.lastName }}</h1>
+
+        <button @click="openSubscribeForm" class="link">Subscribe</button>
+
+        <div v-if="guest.guestId" class="share-modal">
+          <h3>Subscription methods</h3>
+          <div>
+            <p id="share-url">Choose at least one:</p>
+            <form @submit.prevent>
+              <div>
+                <input type="checkbox" name="browserSubscribe" v-model="subOptions.browser" />
+                <label for="browserSubscribe">Browser notifications</label>
+                <input type="checkbox" name="emailSubscribe" v-model="subOptions.email" />
+                <label for="emailSubscribe">Email notifications</label>
+              </div>
+              <div>
+                <input
+                  type="text"
+                  name="firstName"
+                  required="true"
+                  placeholder="First name"
+                  v-model="guest.firstName"
+                />
+                <input type="text" name="lastName" placeholder="Last name" v-model="guest.lastName" />
+                <input type="text" name="email" placeholder="email" v-model="guest.email" />
+                <input type="hidden" name="guestId" :value="guest.guestId" />
+              </div>
+            </form>
+          </div>
+          <button @click="subscribe">Subscribe</button>
+          <button @click="guest.guestId = ''">Cancel</button>
+        </div>
       </div>
+
       <p>Image count: {{ user.images.length }}</p>
       <div id="progress" v-if="progress !== '0%'">
         <div id="progress-bar" :style="{ width: progress }">
@@ -43,7 +77,7 @@
         :items="user.images"
         :user="user"
         :userType="userType"
-        v-on:deleteImage="deleteImage"
+        v-on:delete-image="deleteImage"
       ></vue-picture-swipe>
 
       <div v-if="user.images.length === 0 && userType === 'owner' && user._id">
@@ -84,6 +118,16 @@ export default {
       user: {},
       images: [],
       shareUrl: '',
+      guest: {
+        firstName: null,
+        lastName: null,
+        email: null,
+        guestId: null,
+      },
+      subOptions: {
+        browser: null,
+        email: null,
+      },
       files: '',
       b2Credentials: {},
       filePrefix: 'test',
@@ -124,16 +168,81 @@ export default {
         });
       });
     },
-    getUserImages() {
-      // const basePath = 'https://f000.backblazeb2.com/b2api/v1/b2_download_file_by_id?fileId=';
-      // this.images.forEach((fileId) => {
-      //   this.fileList.push(basePath + fileId);
-      // });
+
+    openSubscribeForm() {
+      this.guest.guestId = this.user.guestId;
+    },
+
+    urlBase64ToUint8Array(base64String) {
+      const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
+      const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
+
+      const rawData = window.atob(base64);
+      const outputArray = new Uint8Array(rawData.length);
+
+      for (let i = 0; i < rawData.length; ++i) {
+        outputArray[i] = rawData.charCodeAt(i);
+      }
+      return outputArray;
+    },
+
+    async subscribeBrowser() {
+      if (!this.guest.firstName || !this.guest.lastName || !this.guest.email) return;
+      const publicVapidKey = 'BIXOvprQOJRgsH4EHujdKRaOmrxCLTP5uKlrB_W-1pXEmCU9twuOgxIaFniDmLE8r4SAVmaTZOxOLsXdgAoWwpw';
+
+      if ('serviceWorker' in navigator) {
+        const register = await navigator.serviceWorker.register('/sw.js', {
+          scope: '/',
+        });
+
+        const subscription = await register.pushManager.subscribe({
+          userVisibleOnly: true,
+          applicationServerKey: this.urlBase64ToUint8Array(publicVapidKey),
+        });
+        // console.log({message: JSON.stringify(subscription)});
+
+        await axios({
+          url: this.server + '/guest/subscribe-browser',
+          method: 'POST',
+          data: { subscription: JSON.stringify(subscription), guestId: this.user.guestId },
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+      } else {
+        alert('Sorry, notifications are not supported in this browser');
+      }
+    },
+
+    subscribeEmail() {
+      axios.post(this.server + '/guest/subscribe-email', this.guest);
+    },
+
+    async subscribe() {
+      const browser = this.subOptions.browser;
+      const email = this.subOptions.email;
+
+      const checkBrowser = () => {
+        browser ? this.subscribeBrowser() : null;
+      };
+      const checkEmail = () => {
+        email ? this.subscribeEmail() : null;
+      };
+
+      // Send subscription requests if checkboxes are checked
+      Promise.all([checkBrowser(), checkEmail()])
+        .then(() => {
+          email || browser ? (this.guest.guestId = '') : null;
+        })
+        .catch((error) => console.log(`Error in promises ${error}`));
     },
 
     sendingEvent(file, xhr, formData) {
       if (!formData.get('userId')) {
         formData.append('userId', this.user._id);
+      }
+      if (!formData.get('guestId')) {
+        formData.append('guestId', this.user.guestId);
       }
     },
 
@@ -191,7 +300,7 @@ export default {
     },
 
     async deleteImage(fileId, fileName, userId, index) {
-      this.images.splice(index, 1);
+      this.user.images.splice(index, 1);
       axios.post(this.server + '/files/delete-image', { fileId: fileId, fileName: fileName, userId: userId });
     },
 
