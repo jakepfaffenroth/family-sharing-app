@@ -262,7 +262,7 @@ module.exports.emailNotification = async (req, res, next) => {
       res.locals.fileCount === 1 ? 'a' : res.locals.fileCount
     } new photo${res.locals.fileCount > 1 ? 's' : ''}!</h1>
       <p>Go see ${res.locals.fileCount === 1 ? 'it' : 'them'} here:</p>
-        <a href='${process.env.CLIENT}/${owner.guestId}/guest'>View Photo${res.locals.fileCount === 1 ? '' : 's'}</a>
+        <a href='${process.env.SERVER}/${owner.guestId}/guest'>View Photo${res.locals.fileCount === 1 ? '' : 's'}</a>
         <img src=${res.locals.imgPath} />
     </body>
     </html>`;
