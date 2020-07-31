@@ -20,7 +20,6 @@ const sns = new AWS.SNS({ credentials: credentials, region: 'us-west-2' });
 const ses = new AWS.SES({ credentials: credentials, region: 'us-west-2' });
 
 const encrypt = (object) => {
-  console.log('objectX: ', object);
   // convert object into string to be encrypted
   let text = JSON.stringify(object);
   let cipher = crypto.createCipheriv('aes-256-cbc', Buffer.from(key), iv);
@@ -61,9 +60,7 @@ module.exports.subscribeEmail = async (req, res) => {
 
   // Handle form data if coming from invalid link re-subscribe page
   if (req.body && !req.body.guest) {
-    console.log('req.body: ', req.body);
     guest = req.body;
-    console.log('guest: ', guest);
   }
 
   const emailAddress = guest.email;
@@ -250,20 +247,23 @@ module.exports.emailNotification = async (req, res, next) => {
   });
 
   if (owner) {
-    await updateTimestamp(guestId, timeStamp);
+    // await updateTimestamp(guestId, timeStamp);
 
     //  ---- CODE BELOW SENDS EMAILS
     const sender = `${owner.firstName} ${owner.lastName} (via Carousel) <notification@carousel.jakepfaf.dev>`;
 
-    const subject = 'I just shared new photos!';
-    const body_text = 'Go see them! ' + req.body.shareUrl;
+    const subject = `New photo${res.locals.fileCount > 1 ? 's' : ''} shared!`;
+    const body_text = `Go see ${res.locals.fileCount === 1 ? 'it' : 'them'}!` + req.body.shareUrl;
     // The HTML body of the email.
     const body_html = `<html>
     <head></head>
     <body>
-      <h1>${owner.firstName} ${owner.lastName} just shared new photos!</h1>
-      <p>Go see them here:</p>
-        <a href='${process.env.CLIENT}/${owner.guestId}/guest'>View Photos</a>
+      <h1>${owner.firstName} ${owner.lastName} just shared ${
+      res.locals.fileCount === 1 ? 'a' : res.locals.fileCount
+    } new photo${res.locals.fileCount > 1 ? 's' : ''}!</h1>
+      <p>Go see ${res.locals.fileCount === 1 ? 'it' : 'them'} here:</p>
+        <a href='${process.env.CLIENT}/${owner.guestId}/guest'>View Photo${res.locals.fileCount === 1 ? '' : 's'}</a>
+        <img src=${res.locals.imgPath} />
     </body>
     </html>`;
 

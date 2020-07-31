@@ -144,20 +144,23 @@ const getExif = async (fileObject) => {
     });
 };
 
-const sendBrowserNotifications = async (userId) => {
+const sendBrowserNotifications = async (res, userId) => {
   let subscriptions = [];
   let guestId;
+  let owner;
 
   await User.findById(userId).then((foundUser) => {
     subscriptions = foundUser.subscribers.browser;
     guestId = foundUser.guestId;
+    owner = foundUser;
   });
 
   const payload = JSON.stringify({
-    title: 'New photos were posted!',
-    body: 'Click to check them out',
-    icon:
-      'https://cdn.jakepfaf.dev/file/JFP001/5eebb6c17f71e3812d1e91ab/190822%20141057%20_JP12646%20190822%20141057%20_JP12646%20_.jpg',
+    title: `${owner.firstName} just shared ${
+      res.locals.fileCount === 1 ? 'a' : res.locals.fileCount
+    } new photo${res.locals.fileCount > 1 ? 's' : ''}!`,
+    body: `Click to see ${res.locals.fileCount === 1 ? 'it' : 'them'}!`,
+    icon: res.locals.imgPath,
     guestId: guestId,
   });
 
@@ -171,8 +174,8 @@ const sendBrowserNotifications = async (userId) => {
   });
 };
 
-const sendNotifications = async (userId) => {
-  sendBrowserNotifications(userId);
+const sendNotifications = async (res, userId) => {
+  sendBrowserNotifications(res, userId);
 };
 
 // ------------------------------------------
@@ -211,6 +214,7 @@ module.exports.upload = async (req, res, next) => {
   const userId = req.body.userId;
   const files = req.files;
   const finishedFiles = [];
+  res.locals.fileCount = req.files.length;
 
   if (!files) {
     console.log('no images uploaded');
@@ -238,7 +242,9 @@ module.exports.upload = async (req, res, next) => {
     finishedFiles.push(fileInfo);
   }
 
-  await sendNotifications(userId);
+  res.locals.imgPath = finishedFiles[0].src;
+
+  await sendNotifications(res, userId);
 
   res.status(200).json(finishedFiles);
   next();
