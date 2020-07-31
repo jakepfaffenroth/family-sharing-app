@@ -89,7 +89,7 @@ module.exports.create = [
           password: hashedPassword,
           guestId: guestId,
           images: [],
-          lastNotification: null,
+          lastNotification: '2000-01-01T00:00:00.000+00:00',
           subscribers: { email: [], browser: [] },
         });
         //   Hashing complete; save to DB
