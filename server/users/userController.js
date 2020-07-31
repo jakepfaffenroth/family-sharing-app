@@ -88,6 +88,9 @@ module.exports.create = [
           lastName: req.body.lastName,
           password: hashedPassword,
           guestId: guestId,
+          images: [],
+          lastNotification: null,
+          subscribers: { email: [], browser: [] },
         });
         //   Hashing complete; save to DB
         User.create(newUser);
@@ -102,7 +105,7 @@ module.exports.create = [
 
 module.exports.getUser = (req, res) => {
   const guestId = req.body.guestId;
-  return User.findOne({guestId: guestId}).then((foundUser) => {
+  return User.findOne({ guestId: guestId }).then((foundUser) => {
     if (foundUser) {
       return res.json(foundUser);
     }

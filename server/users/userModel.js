@@ -9,7 +9,7 @@ const userSchema = new Schema({
   images: { type: Array, required: true },
   guestId: { type: String, required: true },
   lastNotification: { type: Date, required: true },
-  subscribers: { type: Object, required: true },
+  subscribers: { email: { type: Array, required: true }, browser: { type: Array, required: true } },
 });
 
 const User = mongoose.model('User', userSchema);
