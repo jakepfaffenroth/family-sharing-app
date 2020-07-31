@@ -1,3 +1,5 @@
+require('dotenv').config()
+
 let guestId;
 
 self.addEventListener('push', (event) => {
