@@ -192,9 +192,20 @@ export default {
       const publicVapidKey = 'BIXOvprQOJRgsH4EHujdKRaOmrxCLTP5uKlrB_W-1pXEmCU9twuOgxIaFniDmLE8r4SAVmaTZOxOLsXdgAoWwpw';
 
       if ('serviceWorker' in navigator) {
-        const register = await navigator.serviceWorker.register('/sw.js', {
-          scope: '/',
-        });
+        let register
+        // Add if/else statement to register production vs dev service workers conditional
+        // on whether process.env.VUE_APP_SERVER == localhost or carousel.jakepfaf.dev
+        console.log('process.env.SERVER: ', process.env.VUE_APP_SERVER);
+        if (process.env.VUE_APP_SERVER == 'http://localhost:3400') {
+          register = await navigator.serviceWorker.register('/devSw.js', {
+            scope: '/',
+          });
+        }
+        if (process.env.VUE_APP_SERVER == 'https://carousel.jakepfaf.dev') {
+          register = await navigator.serviceWorker.register('/sw.js', {
+            scope: '/',
+          });
+        }
 
         const subscription = await register.pushManager.subscribe({
           userVisibleOnly: true,
