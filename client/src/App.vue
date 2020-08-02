@@ -7,6 +7,7 @@
         <button @click="logout" class="link">Log out</button>
         <button @click="ownerShare" class="link">Share</button>
         <button @click="nuke" class="link">Nuke</button>
+        <download-zip :images='user.images'/>
 
         <div v-if="shareUrl" class="share-modal">
           <h3>Your personal link to share:</h3>
@@ -94,6 +95,7 @@ import vue2Dropzone from './components/VueDropzone';
 import 'vue2-dropzone/dist/vue2Dropzone.min.css';
 import VuePictureSwipe from './components/VuePictureSwipe';
 import ImageSorter from './components/ImageSorter';
+import DownloadZip from './components/DownloadZip';
 
 export default {
   props: {},
@@ -101,6 +103,7 @@ export default {
     vueDropzone: vue2Dropzone,
     VuePictureSwipe,
     ImageSorter,
+    DownloadZip,
   },
   provide() {
     return {
@@ -192,7 +195,7 @@ export default {
       const publicVapidKey = 'BIXOvprQOJRgsH4EHujdKRaOmrxCLTP5uKlrB_W-1pXEmCU9twuOgxIaFniDmLE8r4SAVmaTZOxOLsXdgAoWwpw';
 
       if ('serviceWorker' in navigator) {
-        let register
+        let register;
         // Add if/else statement to register production vs dev service workers conditional
         // on whether process.env.VUE_APP_SERVER == localhost or carousel.jakepfaf.dev
         console.log('process.env.SERVER: ', process.env.VUE_APP_SERVER);
