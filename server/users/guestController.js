@@ -246,7 +246,7 @@ module.exports.emailNotification = async (req, res, next) => {
   });
 
   if (owner) {
-    await updateTimestamp(guestId, timeStamp);
+    // await updateTimestamp(guestId, timeStamp);
 
     //  ---- CODE BELOW SENDS EMAILS
     const sender = `${owner.firstName} ${owner.lastName} (via Carousel) <notification@carousel.jakepfaf.dev>`;

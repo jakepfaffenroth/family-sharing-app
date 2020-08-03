@@ -4,6 +4,7 @@ const express = require('express');
 const router = express.Router();
 const userController = require('./users/userController');
 const guestController = require('./users/guestController');
+const notificationsController = require('./notifications/notificationsController');
 require('dotenv').config();
 
 /* GET home page. */
@@ -16,13 +17,13 @@ router.get('/signup', (req, res) => {
 });
 
 router.get('/login', (req, res) => {
-  req.query.q ? isErrVisible = true : isErrVisible = false
+  req.query.q ? (isErrVisible = true) : (isErrVisible = false);
   res.render('login', { loginUrl: process.env.SERVER + '/auth/login', errMsg: isErrVisible });
 });
 
-router.get('/:gId/guest', guestController.mark)
-
-router.get('/user/get-user', userController.getUser)
+router.get('/:gId/guest', guestController.mark);
+router.post('/notifications/bounce', notificationsController.removeBouncedEmail);
+router.get('/user/get-user', userController.getUser);
 
 router.get('/logout', (req, res) => {
   // req.session.destroy();
