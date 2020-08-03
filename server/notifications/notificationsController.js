@@ -1,6 +1,8 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const axios = require('axios');
+const User = require('../users/userModel');
+
 const app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
@@ -20,6 +22,13 @@ module.exports.removeBouncedEmail = async (req, res) => {
 
     if (message.notificationType === 'Bounce' && message.bounce.bounceType === 'Permanent') {
       console.log(`Now I remove the subscriber (${message.mail.destination}) from the DB`);
+      User.find({ emailAddress: message.mail.destination }).then((foundUser) => {
+        if (foundUser) {
+          console.log('foundUser.subscribers.email: ', foundUser.subscribers.email);
+        } else {
+          console.log('User not found')
+        }
+      });
     }
 
     // let payload = {Type:null}
