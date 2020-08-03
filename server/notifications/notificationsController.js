@@ -14,7 +14,7 @@ module.exports.removeBouncedEmail = async (req, res) => {
 
     req.on('end', () => {
       let payload = JSON.parse(body)
-      let message = JSON.parse(payload.message)
+      let message = JSON.parse(payload.Message)
       console.log('payload: ', payload);
       console.log('message: ', message);
       
