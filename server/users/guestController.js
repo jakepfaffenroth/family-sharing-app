@@ -208,9 +208,8 @@ module.exports.subscribeBrowser = (req, res) => {
       foundUser.markModified('subscribers');
     await foundUser.save(function (err, foundUser) {
       if (err) return console.error(err);
-      console.log(foundUser + ' saved.');
+      console.log(foundUser.subscribers.browser.subscription + ' saved.');
     });
-    console.log(foundUser);
     res.status(200).send(foundUser.subscribers);
   });
 };

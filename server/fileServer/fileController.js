@@ -155,9 +155,9 @@ const sendBrowserNotifications = async (res, userId) => {
   });
 
   const payload = JSON.stringify({
-    title: `${owner.firstName} just shared ${
-      res.locals.fileCount === 1 ? 'a' : res.locals.fileCount
-    } new photo${res.locals.fileCount > 1 ? 's' : ''}!`,
+    title: `${owner.firstName} just shared ${res.locals.fileCount === 1 ? 'a' : res.locals.fileCount} new photo${
+      res.locals.fileCount > 1 ? 's' : ''
+    }!`,
     body: `Click to see ${res.locals.fileCount === 1 ? 'it' : 'them'}!`,
     icon: res.locals.imgPath,
     guestId: guestId,
@@ -169,7 +169,23 @@ const sendBrowserNotifications = async (res, userId) => {
 
     webPush.setVapidDetails('mailto:notification@carousel.jakepfaf.dev', publicVapidKey, privateVapidKey);
 
-    webPush.sendNotification(obj.subscription, payload).catch((error) => console.error(error));
+    webPush.sendNotification(obj.subscription, payload).catch((error) => {
+      console.error(error);
+      // If 410 response (subscription no longer valid), remove from DB
+      if (error.statusCode == 410) {
+        console.log('Removing bad sub');
+        User.findById(userId).then(async (foundUser) => {
+          const base = foundUser.subscribers.browser;
+          base.splice(base.indexOf(obj.subscription), 1);
+          console.log('indexOf(obj.subscription): ', base.indexOf(obj.subscription));
+          foundUser.markModified('subscribers');
+          await foundUser.save(function (err, foundUser) {
+            if (err) return console.error(err);
+            console.log('Removed', obj.subscription);
+          });
+        });
+      }
+    });
   });
 };
 
