@@ -6,8 +6,6 @@ app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 
 module.exports.removeBouncedEmail = async (req, res) => {
-
-  (req, res) => {
     let body = ''
 
     req.on('data', (chunk) => {
@@ -41,4 +39,3 @@ module.exports.removeBouncedEmail = async (req, res) => {
     console.log('req: ', req);
 
   };
-}
