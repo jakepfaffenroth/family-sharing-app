@@ -14,10 +14,12 @@ module.exports.removeBouncedEmail = async (req, res) => {
 
     req.on('end', () => {
       let payload = JSON.parse(body)
+      let message = JSON.parse(body.message)
       console.log('payload: ', payload);
+      console.log('message: ', message);
       
-      if (payload.notificationType === 'Bounce' && payload.bounce.bounceType === 'Permanent') {
-  console.log(`Now I remove the subscriber (${payload.mail.destination}) from the DB`)
+      if (payload.message.notificationType === 'Bounce' && payload.message.bounce.bounceType === 'Permanent') {
+  console.log(`Now I remove the subscriber (${payload.message.mail.destination}) from the DB`)
 }
 
 // let payload = {Type:null}
