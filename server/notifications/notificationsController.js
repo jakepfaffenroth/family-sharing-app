@@ -14,7 +14,7 @@ module.exports.removeBouncedEmail = async (req, res) => {
 
     req.on('end', () => {
       let payload = JSON.parse(body)
-
+console.log('payload: ', payload);
       if (payload.Type === 'SubscriptionConfirmation') {
         const promise = new Promise((resolve, reject) => {
           const url = payload.SubscribeURL
@@ -24,6 +24,7 @@ module.exports.removeBouncedEmail = async (req, res) => {
               console.log('Yess! We have accepted the confirmation from AWS')
               return resolve()
             } else {
+              console.log('error!')
               return reject()
             }
           })
@@ -35,7 +36,5 @@ module.exports.removeBouncedEmail = async (req, res) => {
       }
     })
   
-    console.log('req: ', req.body.SubscribeURL);
-    console.log('req: ', req);
 
   };
