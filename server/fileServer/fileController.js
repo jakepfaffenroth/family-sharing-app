@@ -125,7 +125,6 @@ const addToDb = async (uploadResponse, exif, dimensions, req) => {
 };
 const getImageDimensions = async (file) => {
   const output = sharp(file.buffer);
-  let dimensions;
   return output.metadata().then(function (metadata) {
     return { w: metadata.width, h: metadata.height };
   });

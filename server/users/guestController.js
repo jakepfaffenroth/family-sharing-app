@@ -194,7 +194,7 @@ module.exports.subscribeBrowser = (req, res) => {
   // Save subscriptions info to owner doc in DB
   // First need to see if guest has already subscribed
   User.findOne({ guestId: guestId }).then(async (foundUser) => {
-    for (index of foundUser.subscribers.browser) {
+    for (const index of foundUser.subscribers.browser) {
       if (index.subscription.keys.auth === subscription.keys.auth) {
         // Subscription found in DB (guest has already subscribed)
         console.log('foundBrowserSub', foundUser.subscribers.browser);
@@ -247,7 +247,7 @@ module.exports.emailNotification = async (req, res, next) => {
   });
 
   if (owner) {
-    // await updateTimestamp(guestId, timeStamp);
+    await updateTimestamp(guestId, timeStamp);
 
     //  ---- CODE BELOW SENDS EMAILS
     const sender = `${owner.firstName} ${owner.lastName} (via Carousel) <notification@carousel.jakepfaf.dev>`;

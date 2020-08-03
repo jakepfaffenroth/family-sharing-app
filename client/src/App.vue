@@ -7,7 +7,7 @@
         <button @click="logout" class="link">Log out</button>
         <button @click="ownerShare" class="link">Share</button>
         <button @click="nuke" class="link">Nuke</button>
-        <download-zip :images='user.images'/>
+        <download-zip :images="user.images" />
 
         <div v-if="shareUrl" class="share-modal">
           <h3>Your personal link to share:</h3>
@@ -144,6 +144,7 @@ export default {
         timeout: 600000,
         uploadMultiple: true,
         parallelUploads: 200,
+        maxFilesize: 350,
         thumbnailWidth: 120,
         thumbnailHeight: 120,
         thumbnailMethod: 'contain',
@@ -196,8 +197,7 @@ export default {
 
       if ('serviceWorker' in navigator) {
         let register;
-        // Add if/else statement to register production vs dev service workers conditional
-        // on whether process.env.VUE_APP_SERVER == localhost or carousel.jakepfaf.dev
+        // If statement to conditionally register production vs dev service workers
         console.log('process.env.SERVER: ', process.env.VUE_APP_SERVER);
         if (process.env.VUE_APP_SERVER == 'http://localhost:3400') {
           register = await navigator.serviceWorker.register('/devSw.js', {
@@ -347,6 +347,13 @@ export default {
   },
 
   async created() {
+    // Prevent right clicking images
+    document.addEventListener('contextmenu', (event) => {
+      if (event.target.nodeName === 'IMG') {
+        event.preventDefault();
+      }
+    });
+
     const getCookie = (userType) => {
       const cookieArr = document.cookie.split(';');
 
