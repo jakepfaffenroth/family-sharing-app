@@ -8,7 +8,7 @@ const add = require('date-fns/add');
 const toDate = require('date-fns/toDate');
 const compareAsc = require('date-fns/compareAsc');
 require('dotenv').config();
-const User = require('../users/userModel');
+const { User } = require('../users/userModel');
 
 const AWS = require('aws-sdk');
 const { ForecastQueryService } = require('aws-sdk');
@@ -246,7 +246,7 @@ module.exports.emailNotification = async (req, res, next) => {
   });
 
   if (owner) {
-    // await updateTimestamp(guestId, timeStamp);
+    await updateTimestamp(guestId, timeStamp);
 
     //  ---- CODE BELOW SENDS EMAILS
     const sender = `${owner.firstName} ${owner.lastName} (via Carousel) <notification@carousel.jakepfaf.dev>`;

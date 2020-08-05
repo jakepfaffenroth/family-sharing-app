@@ -6,7 +6,7 @@ const session = require('express-session');
 const axios = require('axios');
 require('dotenv').config();
 
-const User = require('../users/userModel');
+const {User} = require('../users/userModel');
 
 // Passport config
 passport.use(
@@ -78,18 +78,21 @@ module.exports.checkSession = (req, res, next) => {
   const userId = req.body.userId;
   console.log('userId: ', userId);
   console.log('Checking for user session');
-
-  User.findById(userId, function (err, user) {
-    if (err || !user) {
-      console.log('Could not find user logged in');
-      return res.json({ isLoggedIn: false });
-    }
-    console.log('User is logged in');
-    return res.json({
-      isLoggedIn: true,
-      user: { firstName: user.firstName, _id: user._id, images: user.images, guestId: user.guestId },
+  try {
+    User.findById(userId, function (err, user) {
+      if (err || !user) {
+        console.log('Could not find user logged in');
+        return res.json({ isLoggedIn: false });
+      }
+      console.log('User is logged in');
+      return res.json({
+        isLoggedIn: true,
+        user: { firstName: user.firstName, _id: user._id, images: user.images, guestId: user.guestId },
+      });
     });
-  });
+  } catch (err) {
+    console.error(err)
+  }
 };
 
 // ----- Session logic -----

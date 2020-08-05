@@ -171,6 +171,11 @@ export default {
           fileName: image.fileName,
           userId: this.user._id,
         });
+        axios.post(this.server + '/files/delete-image', {
+          fileId: image.smallFileId,
+          fileName: image.fileName.replace('/full/', '/small/'),
+          userId: this.user._id,
+        });
       });
     },
 
@@ -262,7 +267,9 @@ export default {
     },
 
     updateImages(file, response) {
+      console.log('response: ', response);
       for (let i = 0; i < response.length; i++) {
+        response[i].thumbnail.replace(/\/full\//, '/small/');
         this.user.images.unshift(response[i]);
         response.splice(i, 1);
       }
@@ -314,9 +321,14 @@ export default {
       this.shareUrl = `${this.server}/${this.user.guestId}/guest`;
     },
 
-    async deleteImage(fileId, fileName, userId, index) {
+    async deleteImage(fileId, smallFileId, fileName, userId, index) {
       this.user.images.splice(index, 1);
       axios.post(this.server + '/files/delete-image', { fileId: fileId, fileName: fileName, userId: userId });
+      axios.post(this.server + '/files/delete-image', {
+        fileId: smallFileId,
+        fileName: fileName.replace('/full/', '/small/'),
+        userId: userId,
+      });
     },
 
     logout() {

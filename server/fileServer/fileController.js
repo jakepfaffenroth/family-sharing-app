@@ -7,7 +7,7 @@ const fs = require('fs');
 const { Readable, Writable } = require('stream');
 const sharp = require('sharp');
 const exif = require('exif-reader');
-const User = require('../users/userModel');
+const { User, Image } = require('../users/userModel');
 
 const appKeyId = process.env.VUE_APP_APP_KEY_ID;
 const applicationKey = process.env.VUE_APP_APPLICATION_KEY;
@@ -16,33 +16,6 @@ const bucketId = process.env.VUE_APP_BUCKET_ID;
 const encodedBase64 = Buffer.from(appKeyId + ':' + applicationKey).toString('base64');
 
 // ---- File compression and upload functions
-const compressImages = async (files) => {
-  let count = 0;
-  files.forEach((fileObject) => {
-    const output = sharp(fileObject.buffer);
-
-    return (
-      output
-        .rotate()
-        .resize({ width: 1200, height: 1200, fit: sharp.fit.inside, withoutEnlargement: true })
-        // .sharpen()
-        .jpeg({ quality: 80 })
-        .withMetadata()
-        .toBuffer()
-
-        .then(function (data) {
-          fileObject.buffer = data;
-          fileObject.size = data.length;
-          count++;
-          console.log('✅ ' + count + ' images optimized');
-          return files;
-        })
-        .catch((err, info) => {
-          console.log('compression error: ', err, info);
-        })
-    );
-  });
-};
 const getB2Auth = async (res) => {
   // Get B2 upload auth
   const credentials = res.locals.credentials;
@@ -71,11 +44,45 @@ const getB2Auth = async (res) => {
   }
   return auth;
 };
-const uploadFiles = async (auth, fileObject, req) => {
+
+const compressImages = async (files, sharpParams) => {
+  let count = 0;
+  files.files.forEach((fileObject) => {
+    const output = sharp(fileObject.buffer);
+
+    return (
+      output
+        .rotate()
+        .resize({
+          width: sharpParams.longEdge,
+          height: sharpParams.longEdge,
+          fit: sharp.fit.inside,
+          withoutEnlargement: true,
+        })
+        // .sharpen()
+        .jpeg({ quality: sharpParams.compression })
+        .withMetadata()
+        .toBuffer()
+
+        .then(function (data) {
+          fileObject.buffer = data;
+          fileObject.size = data.length;
+          count++;
+          console.log('✅ ' + count + ' images optimized');
+          return files;
+        })
+        .catch((err, info) => {
+          console.log('compression error: ', err, info);
+        })
+    );
+  });
+};
+
+const uploadFiles = async (auth, fileObject, req, lowRes) => {
   // Uploads images to B2 storage
   let source = fileObject.buffer;
   let fileSize = fileObject.size;
-  let fileName = req.body.userId + '/' + path.basename(fileObject.originalname);
+  let fileName = `${req.body.userId}/${lowRes ? 'small/' : 'full/'}${path.basename(fileObject.originalname)}`;
   fileName = encodeURI(fileName);
   let sha1 = crypto.createHash('sha1').update(source).digest('hex');
 
@@ -94,35 +101,7 @@ const uploadFiles = async (auth, fileObject, req) => {
   console.log(`✅ Status: ${uploadResponse.status} - ${uploadResponse.data.fileName} uploaded`);
   return uploadResponse;
 };
-const addToDb = async (uploadResponse, exif, dimensions, req) => {
-  // Save B2 fileId to user doc in database
-  let fileId = uploadResponse.data.fileId;
-  let fileName = uploadResponse.data.fileName;
-  let uploadTime = Date.now();
-  User.findOneAndUpdate(
-    { _id: req.body.userId },
-    {
-      $push: {
-        images: {
-          fileId: fileId,
-          fileName: fileName,
-          src: process.env.CDN_PATH + fileName,
-          thumbnail: process.env.CDN_PATH + fileName,
-          w: dimensions.w,
-          h: dimensions.h,
-          exif: exif,
-          uploadTime: uploadTime,
-        },
-      },
-    },
-    function (error, success) {
-      if (error) {
-        console.log('error: ', error);
-      }
-    }
-  );
-  return { fileId: fileId, fileName: fileName, exif: exif, uploadTime: uploadTime };
-};
+
 const getImageDimensions = async (file) => {
   const output = sharp(file.buffer);
   return output.metadata().then(function (metadata) {
@@ -141,6 +120,51 @@ const getExif = async (fileObject) => {
     .catch((err, info) => {
       console.log('Exif read error: ', err, info);
     });
+};
+
+const addToDb = async (uploadResponse, exif, dimensions, req, lowRes) => {
+  let fileName = uploadResponse.data.fileName;
+  let fileId = uploadResponse.data.fileId;
+  let smallFileId = '';
+
+  let uploadTime = Date.now();
+  if (lowRes) {
+    console.log('req.body: ', req.body);
+    const user = await Image.findOne({ _id: req.body.userId, 'images.fileName': fileName }, 'images.$');
+    console.log('user1: ', user);
+    user.images.$.smallFileId = uploadResponse.fileId;
+    console.log('user2: ', user);
+    return;
+  } // Don't add small versions to DB to avoid duplicates
+  const user = await User.findOne({ _id: req.body.userId });
+  if (!user.images) {
+    user.images = [];
+  }
+  console.log('user: ', user);
+  user.images.push({
+    fileId: fileId,
+    smallFileId: smallFileId,
+    fileName: fileName,
+    src: process.env.CDN_PATH + fileName,
+    thumbnail: process.env.CDN_PATH + fileName.replace('/full/', '/small/'),
+    w: dimensions.w,
+    h: dimensions.h,
+    exif: exif,
+    uploadTime: uploadTime,
+  });
+  user.markModified('images');
+  await user.save(function (err, foundUser) {
+    if (err) return console.error(err);
+    console.log('Success adding image subdoc to db');
+  });
+
+  return {
+    fileId: fileId,
+    smallFileId: smallFileId,
+    fileName: fileName,
+    exif: exif,
+    uploadTime: uploadTime,
+  };
 };
 
 const sendBrowserNotifications = async (res, userId) => {
@@ -193,6 +217,30 @@ const sendNotifications = async (res, userId) => {
   sendBrowserNotifications(res, userId);
 };
 
+const processImages = async (http, auth, files, sharpParams) => {
+  // If longEdge is null, image is full res
+  const lowRes = sharpParams.longEdge ? true : false;
+  await compressImages(files, sharpParams);
+
+  for (const fileObject of files.files) {
+    const uploadResponse = await uploadFiles(auth, fileObject, http.req, lowRes);
+    const dimensions = await getImageDimensions(fileObject);
+    const exif = await getExif(fileObject);
+    const fileInfo = await addToDb(uploadResponse, exif, dimensions, http.req, lowRes);
+
+    if (fileInfo) {
+      // fileInfo undefined for low res images
+      fileInfo.w = dimensions.w;
+      fileInfo.h = dimensions.h;
+      fileInfo.src = process.env.CDN_PATH + fileInfo.fileName;
+      fileInfo.thumbnail = process.env.CDN_PATH + fileInfo.fileName.replace('/full/', '/small/');
+      files.finished.push(fileInfo);
+    }
+  }
+
+  lowRes ? null : (http.res.locals.imgPath = files.finished[0].thumbnail); // store an example image path to use in notifications
+};
+
 // ------------------------------------------
 
 module.exports.b2Auth = (req, res, next) => {
@@ -241,23 +289,22 @@ module.exports.upload = async (req, res, next) => {
   console.log('-------------------------');
   console.log('Uploading', req.files ? req.files.length : 0, 'images');
 
-  await compressImages(files);
+  const auth = await getB2Auth(res);
 
-  for (const fileObject of files) {
-    const auth = await getB2Auth(res);
-    const uploadResponse = await uploadFiles(auth, fileObject, req);
-    const dimensions = await getImageDimensions(fileObject);
-    const exif = await getExif(fileObject);
-    const fileInfo = await addToDb(uploadResponse, exif, dimensions, req);
-
-    fileInfo.w = dimensions.w;
-    fileInfo.h = dimensions.h;
-    fileInfo.src = process.env.CDN_PATH + fileInfo.fileName;
-    // console.log('fileInfo: ', fileInfo);
-    finishedFiles.push(fileInfo);
-  }
-
-  res.locals.imgPath = finishedFiles[0].src;
+  // Process full res images if enabled
+  await processImages(
+    { req: req, res: res },
+    auth,
+    { files: files, finished: finishedFiles },
+    { longEdge: null, compression: 100 }
+  );
+  // Process small versions
+  await processImages(
+    { req: req, res: res },
+    auth,
+    { files: files, finished: finishedFiles },
+    { longEdge: 800, compression: 80 }
+  );
 
   await sendNotifications(res, userId);
 

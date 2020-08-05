@@ -8,6 +8,7 @@ const logger = require('morgan');
 const cors = require('cors');
 const axios = require('axios');
 const mongoose = require('mongoose');
+const ObjectId = mongoose.Types.ObjectId;
 const passport = require('passport');
 const session = require('express-session');
 require('dotenv').config();
@@ -21,7 +22,7 @@ const userRouter = require('./users/userRouter');
 const guestRouter = require('./users/guestRouter');
 const authRouter = require('./userAuth/authRouter');
 const fileRouter = require('./fileServer/fileRouter');
-const User = require('./users/userModel');
+const { User } = require('./users/userModel');
 
 const app = express();
 app.use(cors());
@@ -72,7 +73,7 @@ app.use('/', indexRouter);
 app.use('/user', userRouter);
 app.use('/auth', authRouter);
 app.use('/files', fileRouter);
-app.use('/guest', guestRouter)
+app.use('/guest', guestRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

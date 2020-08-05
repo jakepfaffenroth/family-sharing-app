@@ -4,7 +4,7 @@ const bcrypt = require('bcryptjs');
 const { body, validationResult } = require('express-validator');
 const { sanitizeBody } = require('express-validator');
 // const async = require("async");
-const User = require('./userModel.js');
+const { User } = require('./userModel.js');
 const { v4: uuidv4 } = require('uuid');
 
 passport.initialize();

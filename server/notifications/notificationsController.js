@@ -1,7 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const axios = require('axios');
-const User = require('../users/userModel');
+const { User } = require('../users/userModel');
 
 const app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
