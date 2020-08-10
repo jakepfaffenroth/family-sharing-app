@@ -114,7 +114,6 @@ export default {
   },
   data() {
     return {
-      // toggler: false,
       server: process.env.VUE_APP_SERVER,
       isReadyToRender: false,
       userType: 'guest',
@@ -131,12 +130,6 @@ export default {
         browser: null,
         email: null,
       },
-      files: '',
-      b2Credentials: {},
-      filePrefix: 'test',
-      // userId: this.$store.getters.user._id,
-      fileList: [],
-      basePath: process.env.VUE_APP_STORAGE,
       dropzoneOptions: {
         url: process.env.VUE_APP_SERVER + '/files/upload',
         paramName: 'myFiles',
@@ -148,7 +141,6 @@ export default {
         thumbnailWidth: 120,
         thumbnailHeight: 120,
         thumbnailMethod: 'contain',
-        // headers: { 'My-Awesome-Header': 'header value' },
         addRemoveLinks: true,
       },
       progress: '0%',
@@ -414,11 +406,6 @@ export default {
     if (!guestId && !ownerId) {
       window.location = this.server;
     }
-    // try {
-    //   this.getUserImages();
-    // } catch (err) {
-    //   console.log(err);
-    // }
   },
 };
 </script>
