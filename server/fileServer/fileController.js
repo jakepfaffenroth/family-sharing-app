@@ -7,7 +7,7 @@ const fs = require('fs');
 const { Readable, Writable } = require('stream');
 const sharp = require('sharp');
 const exif = require('exif-reader');
-const { User, Image } = require('../users/userModel');
+const db = require('../db').pgPromise;
 
 const appKeyId = process.env.VUE_APP_APP_KEY_ID;
 const applicationKey = process.env.VUE_APP_APPLICATION_KEY;
@@ -78,11 +78,11 @@ const compressImages = async (files, sharpParams) => {
   });
 };
 
-const uploadFiles = async (auth, fileObject, req, lowRes) => {
+const uploadFiles = async (auth, fileObject, req, isLowRes) => {
   // Uploads images to B2 storage
   let source = fileObject.buffer;
   let fileSize = fileObject.size;
-  let fileName = `${req.body.userId}/${lowRes ? 'small/' : 'full/'}${path.basename(fileObject.originalname)}`;
+  let fileName = `${req.body.userId}/${isLowRes ? 'small/' : 'full/'}${path.basename(fileObject.originalname)}`;
   fileName = encodeURI(fileName);
   let sha1 = crypto.createHash('sha1').update(source).digest('hex');
 
@@ -122,95 +122,122 @@ const getExif = async (fileObject) => {
     });
 };
 
-const addToDb = async (uploadResponse, exif, dimensions, req, lowRes) => {
+const addToDb = async (uploadResponse, exif, dimensions, req, isLowRes) => {
   let fileName = uploadResponse.data.fileName;
-  let fileId = uploadResponse.data.fileId;
-  let smallFileId = '';
-
   let uploadTime = Date.now();
-  if (lowRes) {
-    console.log('req.body: ', req.body);
-    const user = await Image.findOne({ _id: req.body.userId, 'images.fileName': fileName }, 'images.$');
-    console.log('user1: ', user);
-    user.images.$.smallFileId = uploadResponse.fileId;
-    console.log('user2: ', user);
-    return;
-  } // Don't add small versions to DB to avoid duplicates
-  const user = await User.findOne({ _id: req.body.userId });
-  if (!user.images) {
-    user.images = [];
-  }
-  console.log('user: ', user);
-  user.images.push({
-    fileId: fileId,
-    smallFileId: smallFileId,
-    fileName: fileName,
+
+  const imageInfo = {
+    userId: req.body.userId,
+    fileId: uploadResponse.data.fileId,
+    fileName: uploadResponse.data.fileName,
+    smallFileId: '',
     src: process.env.CDN_PATH + fileName,
     thumbnail: process.env.CDN_PATH + fileName.replace('/full/', '/small/'),
     w: dimensions.w,
     h: dimensions.h,
     exif: exif,
     uploadTime: uploadTime,
-  });
-  user.markModified('images');
-  await user.save(function (err, foundUser) {
-    if (err) return console.error(err);
-    console.log('Success adding image subdoc to db');
-  });
+  };
+
+  if (isLowRes) {
+    try {
+      imageInfo.smallFileId = imageInfo.fileId;
+      imageInfo.fileName = imageInfo.fileName.replace('/small/', '/full/');
+      // Find the full size uploaded image. Gets most recent upload in case multiple with same filename exist.
+      const result = await db.one(
+        'UPDATE images SET small_file_id = ${fileId} WHERE image_id = (SELECT image_id FROM images WHERE file_name = ${fileName} AND owner_id = ${userId} ORDER BY image_id DESC LIMIT 1) RETURNING *',
+        imageInfo
+      );
+    } catch (err) {
+      console.log(err);
+      return;
+    }
+  }
+
+  if (!isLowRes) {
+    try {
+      const image = await db.one(
+        'INSERT INTO images (file_id, file_name, src, thumbnail, w, h, exif, upload_time, owner_id) VALUES (${fileId}, ${fileName}, ${src}, ${thumbnail}, ${w}, ${h}, ${exif}, ${uploadTime}, ${userId}) RETURNING *',
+        imageInfo
+      );
+      if (image) console.log('Success adding image to db:', image.fileName);
+    } catch (err) {
+      console.log('Error adding image to db');
+      return console.error(err);
+    }
+  }
 
   return {
-    fileId: fileId,
-    smallFileId: smallFileId,
-    fileName: fileName,
-    exif: exif,
-    uploadTime: uploadTime,
+    fileId: imageInfo.fileId,
+    smallFileId: imageInfo.smallFileId,
+    fileName: imageInfo.fileName,
+    exif: imageInfo.exif,
+    uploadTime: imageInfo.uploadTime,
   };
 };
 
 const sendBrowserNotifications = async (res, userId) => {
-  let subscriptions = [];
-  let guestId;
-  let owner;
-
-  await User.findById(userId).then((foundUser) => {
-    subscriptions = foundUser.subscribers.browser;
-    guestId = foundUser.guestId;
-    owner = foundUser;
-  });
-
-  const payload = JSON.stringify({
-    title: `${owner.firstName} just shared ${res.locals.fileCount === 1 ? 'a' : res.locals.fileCount} new photo${
-      res.locals.fileCount > 1 ? 's' : ''
-    }!`,
-    body: `Click to see ${res.locals.fileCount === 1 ? 'it' : 'them'}!`,
-    icon: res.locals.imgPath,
-    guestId: guestId,
-  });
-
-  subscriptions.forEach((obj) => {
-    const publicVapidKey = process.env.PUBLIC_VAPID_KEY;
-    const privateVapidKey = process.env.PRIVATE_VAPID_KEY;
-
-    webPush.setVapidDetails('mailto:notification@carousel.jakepfaf.dev', publicVapidKey, privateVapidKey);
-
-    webPush.sendNotification(obj.subscription, payload).catch((error) => {
-      console.error(error);
-      // If 410 response (subscription no longer valid), remove from DB
-      if (error.statusCode == 410) {
-        console.log('Removing bad sub');
-        User.findById(userId).then(async (foundUser) => {
-          const base = foundUser.subscribers.browser;
-          base.splice(base.indexOf(obj.subscription), 1);
-          console.log('indexOf(obj.subscription): ', base.indexOf(obj.subscription));
-          foundUser.markModified('subscribers');
-          await foundUser.save(function (err, foundUser) {
-            if (err) return console.error(err);
-            console.log('Removed', obj.subscription);
-          });
-        });
-      }
+  try {
+    const result = await db.task(async (t) => {
+      const user = await db.one('SELECT first_name, guest_id FROM users WHERE user_id = $1', [userId]);
+      const subscriptions = await db.any(
+        'SELECT * FROM subscribers WHERE owner_id = ${guestId} AND browser IS NOT NULL',
+        user
+      );
+      return { user, subscriptions };
     });
-  });
+
+    if (result.subscriptions.length === 0) {
+      return console.log('No browser subscriptions found.');
+    }
+
+    const guestId = result.user.guestId;
+
+    const payload = JSON.stringify({
+      title: `${result.user.firstName} just shared ${
+        res.locals.fileCount === 1 ? 'a' : res.locals.fileCount
+      } new photo${res.locals.fileCount > 1 ? 's' : ''}!`,
+      body: `Click to see ${res.locals.fileCount === 1 ? 'it' : 'them'}!`,
+      icon: res.locals.imgPath,
+      guestId: guestId,
+    });
+
+    result.subscriptions.forEach((sub) => {
+      const publicVapidKey = process.env.PUBLIC_VAPID_KEY;
+      const privateVapidKey = process.env.PRIVATE_VAPID_KEY;
+
+      webPush.setVapidDetails('mailto:notification@carousel.jakepfaf.dev', publicVapidKey, privateVapidKey);
+
+      webPush.sendNotification(sub.browser, payload).catch(async (error) => {
+        console.error(error);
+        // If 410 response (subscription no longer valid), remove from DB
+        if (error.statusCode == 410) {
+          console.log('Removing bad sub');
+          try {
+            const result = await db.task(async (t) => {
+              const user = await db.one('SELECT username, guestId FROM users WHERE user_id = $1', [userId]);
+              const subscriptions = db.any(
+                'SELECT * FROM subscribers WHERE owner_id = ${guestId} AND browser IS NOT NULL',
+                user
+              );
+              const deletedSub = db.one(
+                "DELETE FROM subscribers WHERE browser -> 'keys'->>'auth' = ${keys.auth} RETURNING *",
+                sub
+              );
+              if (deletedSub) console.log('Removed' + deletedSub + ' from ' + user.username);
+              return { user, subscriptions, deletedSub };
+            });
+          } catch (err) {
+            console.log('Error removing bad browser subscription:', err);
+          }
+        }
+      });
+      console.log('Browser notifications sent!');
+      return res.end();
+    });
+  } catch (err) {
+    return console.log(err);
+  }
 };
 
 const sendNotifications = async (res, userId) => {
@@ -219,17 +246,18 @@ const sendNotifications = async (res, userId) => {
 
 const processImages = async (http, auth, files, sharpParams) => {
   // If longEdge is null, image is full res
-  const lowRes = sharpParams.longEdge ? true : false;
+  const isLowRes = sharpParams.longEdge ? true : false;
   await compressImages(files, sharpParams);
 
   for (const fileObject of files.files) {
-    const uploadResponse = await uploadFiles(auth, fileObject, http.req, lowRes);
+    const uploadResponse = await uploadFiles(auth, fileObject, http.req, isLowRes);
     const dimensions = await getImageDimensions(fileObject);
     const exif = await getExif(fileObject);
-    const fileInfo = await addToDb(uploadResponse, exif, dimensions, http.req, lowRes);
+    const fileInfo = await addToDb(uploadResponse, exif, dimensions, http.req, isLowRes);
 
-    if (fileInfo) {
+    if (fileInfo && isLowRes) {
       // fileInfo undefined for low res images
+      // Only send small image info (complete info) to client (via files.finished) 
       fileInfo.w = dimensions.w;
       fileInfo.h = dimensions.h;
       fileInfo.src = process.env.CDN_PATH + fileInfo.fileName;
@@ -238,7 +266,7 @@ const processImages = async (http, auth, files, sharpParams) => {
     }
   }
 
-  lowRes ? null : (http.res.locals.imgPath = files.finished[0].thumbnail); // store an example image path to use in notifications
+  isLowRes ? (http.res.locals.imgPath = files.finished[0].thumbnail) : null; // store an example image path to use in notifications
 };
 
 // ------------------------------------------
@@ -298,6 +326,7 @@ module.exports.upload = async (req, res, next) => {
     { files: files, finished: finishedFiles },
     { longEdge: null, compression: 100 }
   );
+  console.log('finishedFiles: ', finishedFiles);
   // Process small versions
   await processImages(
     { req: req, res: res },
@@ -307,7 +336,7 @@ module.exports.upload = async (req, res, next) => {
   );
 
   await sendNotifications(res, userId);
-
+console.log('finishedFiles: ', finishedFiles);
   res.status(200).json(finishedFiles);
   next();
 };
@@ -339,32 +368,63 @@ module.exports.listFiles = async (req, res) => {
 
 module.exports.deleteImage = async (req, res, next) => {
   const credentials = res.locals.credentials;
-  const fileId = req.body.fileId;
-  const fileName = req.body.fileName;
-  const userId = req.body.userId;
 
-  try {
-    // Delete image file from B2
-    await axios.post(
-      credentials.apiUrl + '/b2api/v1/b2_delete_file_version',
-      {
-        fileName: fileName,
-        fileId: fileId,
-      },
-      { headers: { Authorization: credentials.authorizationToken } }
-    );
+  const deleteImage = async (image) => {
+    console.log('image: ', image);
+    let data;
     // Remove image info from database
-    User.findOneAndUpdate({ _id: userId }, { $pull: { images: { fileId: fileId } } }, function (error, success) {
-      if (error) {
-        console.log('error: ', error);
+    try {
+      await db.task(async (t) => {
+        data = await t.one(
+          'SELECT file_id, small_file_id FROM images WHERE owner_id = ${userId} AND file_id = ${fileId}',
+          image
+        );
+        await t.none('DELETE FROM images WHERE owner_id = ${userId} AND file_id = ${fileId}', image);
+      });
+      console.log('File was successfully removed from db');
+      // res.end('File successfully deleted');
+    } catch (err) {
+      console.log('Image db deletion error');
+      res.end('An error occurred during file deletion');
+    }
+
+    try {
+      // Delete full res image file from B2
+      await axios.post(
+        credentials.apiUrl + '/b2api/v1/b2_delete_file_version',
+        {
+          fileName: image.fileName,
+          fileId: image.fileId,
+        },
+        { headers: { Authorization: credentials.authorizationToken } }
+      );
+      // Delete small image file from B2
+      await axios.post(
+        credentials.apiUrl + '/b2api/v1/b2_delete_file_version',
+        {
+          fileName: image.fileName.replace('/full/', '/small/'),
+          fileId: data.smallFileId,
+        },
+        { headers: { Authorization: credentials.authorizationToken } }
+      );
+      console.log('File was successfully deleted from B2')
+    } catch (err) {
+      console.log('Error deleting file from B2:', err.response.data.message);
+      if (err.response.data.code !== 'file_not_present') {
+        return res.json('An error occurred during file deletion');
       }
-    });
-    console.log('File was successfully deleted');
-    res.json('File successfully deleted');
-  } catch (err) {
-    console.log('Deletion error: ', err); // an error occurred
-    res.json('An error occurred during file deletion');
+    }
+  };
+
+  // Deletes single image
+  if (!req.body.images) {
+    return deleteImage(req.body);
   }
+
+  // Deletes multiple images
+  req.body.images.forEach((image) => {
+    deleteImage({ fileId: image.fileId, fileName: image.fileName, userId: req.body.userId });
+  });
 };
 
 // TODO - Downloads corrupt file - encoding problem?

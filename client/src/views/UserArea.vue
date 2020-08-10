@@ -29,7 +29,7 @@ export default {
       user: {},
       b2Credentials: {},
       filePrefix: 'test',
-      userId: this.$store.getters.user._id,
+      userId: this.$store.getters.user.userId,
       fileList: [],
       basePath: 'https://f000.backblazeb2.com/file/JFP001/',
     };

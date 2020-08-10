@@ -7,7 +7,7 @@
         <button @click="logout" class="link">Log out</button>
         <button @click="ownerShare" class="link">Share</button>
         <button @click="nuke" class="link">Nuke</button>
-        <download-zip :images="user.images" />
+        <download-zip :images="images" />
 
         <div v-if="shareUrl" class="share-modal">
           <h3>Your personal link to share:</h3>
@@ -55,7 +55,7 @@
         </div>
       </div>
 
-      <p>Image count: {{ user.images.length }}</p>
+      <p>Image count: {{ images.length }}</p>
       <div id="progress" v-if="progress !== '0%'">
         <div id="progress-bar" :style="{ width: progress }">
           <span id="progress-label">{{ progress }}</span>
@@ -75,13 +75,13 @@
       <image-sorter v-on:sort-images="sortImages" />
 
       <vue-picture-swipe
-        :items="user.images"
+        :items="images"
         :user="user"
         :userType="userType"
         v-on:delete-image="deleteImage"
       ></vue-picture-swipe>
 
-      <div v-if="user.images.length === 0 && userType === 'owner' && user._id">
+      <div v-if="images.length === 0 && userType === 'owner' && user.userId">
         <p>Upload your first images!</p>
       </div>
     </div>
@@ -163,19 +163,12 @@ export default {
   },
   methods: {
     nuke() {
-      let images = this.user.images;
-      this.user.images = [];
-      images.forEach((image) => {
-        axios.post(this.server + '/files/delete-image', {
-          fileId: image.fileId,
-          fileName: image.fileName,
-          userId: this.user._id,
-        });
-        axios.post(this.server + '/files/delete-image', {
-          fileId: image.smallFileId,
-          fileName: image.fileName.replace('/full/', '/small/'),
-          userId: this.user._id,
-        });
+      let images = this.images;
+      this.images = [];
+
+      axios.post(this.server + '/files/delete-image', {
+        images: images,
+        userId: this.user.userId,
       });
     },
 
@@ -259,7 +252,7 @@ export default {
 
     sendingEvent(file, xhr, formData) {
       if (!formData.get('userId')) {
-        formData.append('userId', this.user._id);
+        formData.append('userId', this.user.userId);
       }
       if (!formData.get('guestId')) {
         formData.append('guestId', this.user.guestId);
@@ -270,7 +263,8 @@ export default {
       console.log('response: ', response);
       for (let i = 0; i < response.length; i++) {
         response[i].thumbnail.replace(/\/full\//, '/small/');
-        this.user.images.unshift(response[i]);
+        console.log('response[i]: ', response[i]);
+        this.images.unshift(response[i]);
         response.splice(i, 1);
       }
       this.$refs.myVueDropzone.removeFile(file);
@@ -285,7 +279,7 @@ export default {
 
     sortImages(sortParameter) {
       if (sortParameter === 'reverse') {
-        this.user.images.reverse();
+        this.images.reverse();
         return;
       }
 
@@ -310,7 +304,7 @@ export default {
         return comparison;
       };
 
-      this.user.images.sort(compare);
+      this.images.sort(compare);
     },
 
     uploadError(file, message, xhr) {
@@ -322,13 +316,9 @@ export default {
     },
 
     async deleteImage(fileId, smallFileId, fileName, userId, index) {
-      this.user.images.splice(index, 1);
+      console.log(fileId, fileName)
+      this.images.splice(index, 1);
       axios.post(this.server + '/files/delete-image', { fileId: fileId, fileName: fileName, userId: userId });
-      axios.post(this.server + '/files/delete-image', {
-        fileId: smallFileId,
-        fileName: fileName.replace('/full/', '/small/'),
-        userId: userId,
-      });
     },
 
     logout() {
@@ -395,10 +385,11 @@ export default {
       if (!response.data.isLoggedIn) {
         window.location = this.server + '/login';
       }
+      console.log('response.data: ', response.data);
       this.userType = 'owner';
       this.user = response.data.user;
       this.sortImages('uploadTime');
-      // this.images = response.data.user.images.reverse();
+      this.images = response.data.images.reverse();
       this.isReadyToRender = true;
     }
 
@@ -411,7 +402,10 @@ export default {
         data: { guestId: guestId },
       });
 
-      this.user = response.data;
+      this.user = response.data.user;
+      this.images = response.data.images.reverse();
+      console.log('this.user: ', this.user);
+      console.log('this.images: ', this.images);
       this.isReadyToRender = true;
       this.sortImages('uploadTime');
     }

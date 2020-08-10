@@ -26,8 +26,8 @@
           type="button"
           class="delete-btn image-info"
           value="Delete"
-          v-if="items.length >= 0 && userType === 'owner' && user._id"
-          @click.stop="$emit('delete-image', item.fileId, item.smallFileId, item.fileName, user._id, index)"
+          v-if="items.length >= 0 && userType === 'owner' && user.userId"
+          @click.stop="$emit('delete-image', item.fileId, item.smallFileId, item.fileName, user.userId, index)"
         />
         <p class="image-timestamp image-info" v-if="item.exif && item.exif.exif.DateTimeOriginal">
           {{ item.exif.exif.DateTimeOriginal ? format(new Date(item.exif.exif.DateTimeOriginal), 'MM/dd/yyyy') : null }}
