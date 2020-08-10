@@ -1,7 +1,8 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const axios = require('axios');
-const User = require('../users/userModel');
+// const { User } = require('../users/userModel');
+const db = require('../db').pgPromise;
 
 const app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -49,28 +50,37 @@ module.exports.removeBouncedEmail = (req, res) => {
 
       if (message.notificationType !== 'Bounce' && message.bounce.bounceType !== 'Permanent') return res.end('ok');
 
-      const users = await User.find({
-        'subscribers.email.emailAddress': message.mail.destination[0],
-      });
-
-      !users.length ? console.log('Bounced email not found in DB') : null;
-
-      // Remove all bounced emails
-      for (const user of users) {
-        const base = user.subscribers.email;
-        base.splice(
-          base.indexOf({
-            emailAddress: message.mail.destination[0],
-            firstName: /.*/,
-            lastName: /.*/,
-          })
-        );
-        user.markModified('subscribers');
-        await user.save(function (err, foundUser) {
-          if (err) return console.error(err);
-          console.log('Removed', message.mail.destination[0]);
-        });
+      const deletedEmail = await db.one("DELETE FROM subscribers WHERE email ->> 'email_address' = $1 RETURNING *", [
+        message.mail.destination[0],
+      ]);
+      if (deletedEmail) {
+        console.log('Removed', message.mail.destination[0]);
       }
+      // const subscribers = await pgpQuery("SELECT FROM subscribers WHERE email ->> 'email_address' = $1", [
+      //   message.mail.destination[0],
+      // ]);
+
+      // const users = await User.find({
+      //   'subscribers.email.emailAddress': message.mail.destination[0],
+      // });
+
+      // !users.length ? console.log('Bounced email not found in DB') : null;
+
+      // // Remove all bounced emails
+      // for (const user of users) {
+      //   const base = user.subscribers.email;
+      //   base.splice(
+      //     base.indexOf({
+      //       emailAddress: message.mail.destination[0],
+      //       firstName: /.*/,
+      //       lastName: /.*/,
+      //     })
+      //   );
+      //   user.markModified('subscribers');
+      //   await user.save(function (err, foundUser) {
+      //     if (err) return console.error(err);
+      //     console.log('Removed', message.mail.destination[0]);
+      //   });
       res.end('ok');
     } catch (err) {
       console.log('Error processing bounced email:', err);

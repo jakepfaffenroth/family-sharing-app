@@ -7,29 +7,30 @@ const logger = require('morgan');
 
 const cors = require('cors');
 const axios = require('axios');
-const mongoose = require('mongoose');
 const passport = require('passport');
 const session = require('express-session');
 require('dotenv').config();
 const client = process.env.CLIENT;
-
-// const axios = require('axios');
-// const cors = require('cors');
 
 const indexRouter = require('./indexRouter');
 const userRouter = require('./users/userRouter');
 const guestRouter = require('./users/guestRouter');
 const authRouter = require('./userAuth/authRouter');
 const fileRouter = require('./fileServer/fileRouter');
-const User = require('./users/userModel');
+// const { User } = require('./users/userModel');
+
 
 const app = express();
 app.use(cors());
 
-mongoose.set('useFindAndModify', false);
-const MongoStore = require('connect-mongo')(session);
-const mongoDb = process.env.MONGO;
-const sessionStore = new MongoStore({ url: mongoDb, collection: 'sessions' });
+const db = require('./db').pgPromise;
+const pgSession = require('connect-pg-simple')(session);
+
+const sessionStore = new pgSession({
+  pgPromise: db,
+  pool: db.$pool, // Connection pool
+  tableName: 'user_sessions', // Sessions table
+});
 
 app.use(
   session({
@@ -49,10 +50,13 @@ passport.serializeUser(function (user, done) {
   done(null, user);
 });
 
-passport.deserializeUser(function (user, done) {
-  User.findById(user._id, function (err, user) {
-    done(err, user);
-  });
+passport.deserializeUser(async function (user, done) {
+  try {
+    const foundUser = await db.one('SELECT * FROM users WHERE user_id = $1', [user.userId]);
+    done(foundUser);
+  } catch (err) {
+    done(err);
+  }
 });
 
 // view engine setup
@@ -72,7 +76,7 @@ app.use('/', indexRouter);
 app.use('/user', userRouter);
 app.use('/auth', authRouter);
 app.use('/files', fileRouter);
-app.use('/guest', guestRouter)
+app.use('/guest', guestRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

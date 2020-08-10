@@ -48,7 +48,7 @@ export default {
           // Login on server successful
           console.log('Logged in');
           // console.log(response.data)
-          let userId = response.data.user._id;
+          let userId = response.data.user.userId;
           store.commit('setCredentials', response.data.credentials);
           store.commit('setUser', response.data.user);
           // document.cookie = "userId="+userId

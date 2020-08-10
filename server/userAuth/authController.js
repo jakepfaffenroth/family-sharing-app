@@ -1,33 +1,29 @@
-const mongoose = require('mongoose');
+// const mongoose = require('mongoose');
 const passport = require('passport');
 const LocalStrategy = require('passport-local');
 const bcrypt = require('bcryptjs');
-const session = require('express-session');
-const axios = require('axios');
 require('dotenv').config();
 
-const User = require('../users/userModel');
+const db = require('../db').pgPromise;
 
 // Passport config
 passport.use(
-  new LocalStrategy((username, password, done) => {
-    User.findOne({ username: username }, function (err, user) {
-      if (err) return done(err);
-      if (!user) {
-        return done(null, false, { msg: 'Incorrect username' });
+  new LocalStrategy(async (username, password, done) => {
+    const user = await db.oneOrNone('SELECT * FROM users WHERE username = $1', [username]);
+    console.log('User: ', user);
+    bcrypt.compare(password, user.password, (err, res) => {
+      if (res) {
+        // passwords match! log user in
+        console.log('password correct!');
+        console.log('res: ', user);
+        return done(null, user);
+      } else {
+        console.log('password incorrect...');
+        // passwords do not match!
+        return done(null, false, {
+          msg: 'Incorrect password',
+        });
       }
-      // Compare plain-text pw to hashed pw in db
-      bcrypt.compare(password, user.password, (err, res) => {
-        if (res) {
-          // passwords match! log user in
-          /**/ console.log('password correct!');
-          return done(null, user);
-        } else {
-          /**/ console.log('password incorrect...');
-          // passwords do not match!
-          return done(null, false, { msg: 'Incorrect password' });
-        }
-      });
     });
   })
 );
@@ -38,7 +34,7 @@ module.exports.login = (req, res, next) => {
     if (err) {
       return next(err);
     }
-    if (!user) {
+    if (user.length === 0) {
       res.locals.incorrectCred = true;
       return res.redirect('../login?q=true');
     }
@@ -52,19 +48,14 @@ module.exports.login = (req, res, next) => {
       // Send user info back to client as JSON
       // res.status(200).json(response);
       // return res.redirect(client + '/private-space');
-
-      const userId = JSON.stringify(req.session.passport.user._id).replace(/"/g, '');
+      console.log('req: ', req.session);
+      const userId = JSON.stringify(req.session.passport.user.userId).replace(/"/g, '');
       console.log('userId: ', userId);
-      // Set cookie on client with user._id
+      // Set cookie on client with user.userId
       res.cookie('ownerId', userId, { maxAge: 1000 * 60 * 60 * 24 * 7 });
       res.redirect(process.env.CLIENT + '?user=' + userId);
     });
   })(req, res, next);
-  // {
-  //   failureRedirect: client + '/login',
-  //   successRedirect: client + '/private-space',
-  // failureFlash: 'Invalid username or password.',
-  // successFlash: 'Welcome!',
 };
 
 module.exports.logout = (req, res) => {
@@ -74,29 +65,53 @@ module.exports.logout = (req, res) => {
   console.log('Logged out');
 };
 
-module.exports.checkSession = (req, res, next) => {
-  const userId = req.body.userId;
-  console.log('userId: ', userId);
-  console.log('Checking for user session');
+module.exports.checkSession = async (req, res, next) => {
+  console.log('Checking for user session -- userId:', req.body.userId);
 
-  User.findById(userId, function (err, user) {
-    if (err || !user) {
+  try {
+    let [user, images] = await db.multi(
+      'SELECT username, first_name, user_id, guest_id FROM users WHERE user_id = ${userId};SELECT * FROM images WHERE owner_id = ${userId}',
+      req.body
+    );
+
+    user = user[0] //Extract user from array; if row not found, user === undefined
+
+    if (!user) {
       console.log('Could not find user logged in');
       return res.json({ isLoggedIn: false });
     }
-    console.log('User is logged in');
+
+    console.log('User ' + user.username + ' is logged in');
+
     return res.json({
       isLoggedIn: true,
-      user: { firstName: user.firstName, _id: user._id, images: user.images, guestId: user.guestId },
+      user: user,
+      images: images,
     });
-  });
+
+    db.task(async (t) => {
+      const user = await db.oneOrNone(
+        'SELECT username, first_name, user_id, guest_id FROM users WHERE user_id = ${userId}',
+        req.body
+      );
+
+      if (!user) {
+        console.log('Could not find user logged in');
+        return res.json({ isLoggedIn: false });
+      }
+
+      const images = await db.any('SELECT * FROM images WHERE owner_id = ${userId}', req.body);
+
+      console.log('User ' + user.username + ' is logged in');
+
+      return res.json({
+        isLoggedIn: true,
+        user: user,
+        images: images,
+      });
+    });
+  } catch (err) {
+    console.error(err);
+    return res.json({ isLoggedIn: false });
+  }
 };
-
-// ----- Session logic -----
-//connect to mongoDB
-const mongoDb = process.env.MONGO;
-
-mongoose.connect(mongoDb, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});

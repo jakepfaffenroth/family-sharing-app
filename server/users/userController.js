@@ -1,10 +1,8 @@
-const express = require('express');
 const passport = require('passport');
 const bcrypt = require('bcryptjs');
 const { body, validationResult } = require('express-validator');
 const { sanitizeBody } = require('express-validator');
-// const async = require("async");
-const User = require('./userModel.js');
+const db = require('../db').pgPromise;
 const { v4: uuidv4 } = require('uuid');
 
 passport.initialize();
@@ -20,12 +18,9 @@ module.exports.create = [
 
   // Check if username already taken
   body('username')
-    .custom((value) => {
-      return User.findOne({ username: value }).then((foundUser) => {
-        if (foundUser) {
-          return Promise.reject('Username taken');
-        }
-      });
+    .custom(async (value) => {
+      const foundUser = await db.oneOrNone('SELECT * FROM users WHERE username = $1', [value]);
+      if (foundUser) return Promise.reject('Username taken');
     })
     .bail(),
 
@@ -69,33 +64,29 @@ module.exports.create = [
         firstName: firstName,
         lastName: lastName,
       });
-
-      // next();
     }
     if (errors.isEmpty()) {
       /**/ console.log('validation passed');
       // Takes req.body.password and hashes it
       // then saves hashed password to db instead of plain text password
-      bcrypt.hash(req.body.password, 10, (err, hashedPassword) => {
+      bcrypt.hash(req.body.password, 10, async (err, hashedPassword) => {
         /**/ console.log('hashing password...');
+
         if (err) return next(err);
 
-        const guestId = uuidv4();
+        const user = await db.one(
+          'INSERT INTO users (user_id, username, first_name, last_name, password, guest_id) VALUES (${id}, ${username}, ${firstName}, ${lastName}, ${password}, ${guestId}) RETURNING *',
+          {
+            id: uuidv4(),
+            username: req.body.username,
+            firstName: req.body.firstName,
+            lastName: req.body.lastName,
+            password: hashedPassword,
+            guestId: uuidv4(),
+          }
+        );
 
-        const newUser = new User({
-          username: req.body.username,
-          firstName: req.body.firstName,
-          lastName: req.body.lastName,
-          password: hashedPassword,
-          guestId: guestId,
-          images: [],
-          lastNotification: '2000-01-01T00:00:00.000+00:00',
-          subscribers: { email: [], browser: [] },
-        });
-        //   Hashing complete; save to DB
-        User.create(newUser);
-        //   Send success msg to client
-        console.log('User ' + newUser.username + ' created');
+        console.log('User ' + user.username + ' created');
         // Account created; redirect to login screen
         res.redirect('../login');
       });
@@ -103,11 +94,27 @@ module.exports.create = [
   },
 ];
 
-module.exports.getUser = (req, res) => {
-  const guestId = req.body.guestId;
-  return User.findOne({ guestId: guestId }).then((foundUser) => {
-    if (foundUser) {
-      return res.json(foundUser);
-    }
-  });
+module.exports.getUser = async (req, res) => {
+  try {
+    db.task(async (t) => {
+      const user = await db.oneOrNone(
+        'SELECT first_name, user_id, guest_id FROM users WHERE guest_id = ${guestId}',
+        req.body
+      );
+
+      if (!user) {
+        console.log('Could not find user - incorrect guestId?');
+        return res.redirect(process.env.SERVER);
+      }
+
+      const images = await db.any('SELECT * FROM images WHERE owner_id = ${userId}', user);
+      return res.json({
+        user: user,
+        images: images,
+      });
+    });
+  } catch (err) {
+    console.error(err);
+    return res.end();
+  }
 };

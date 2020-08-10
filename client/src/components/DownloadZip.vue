@@ -7,6 +7,7 @@
 import JSZip from 'jszip';
 import axios from 'axios';
 import { saveAs } from 'file-saver';
+import path from 'path'
 
 export default {
   props: { images: Array },
@@ -63,7 +64,7 @@ export default {
         // Check if zip file will exceed size limit by adding latest downloaded file
         if (zipSize + response.data.size < zipSizeLimit) {
           // Will not exceed limit; add file to zip and continue
-          imgZip.file(file.fileName.slice(file.fileName.indexOf('/')), response.data);
+          imgZip.file(path.basename(file.fileName), response.data);
           zipSize += response.data.size;
         } else {
           // Adding file exceeds limit; Write zip, create new, add file to new zip and continue

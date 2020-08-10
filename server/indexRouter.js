@@ -17,8 +17,9 @@ router.get('/signup', (req, res) => {
 });
 
 router.get('/login', (req, res) => {
-  req.query.q ? (isErrVisible = true) : (isErrVisible = false);
-  res.render('login', { loginUrl: process.env.SERVER + '/auth/login', errMsg: isErrVisible });
+  console.log('test')
+  // req.query.q ? (isErrVisible = true) : (isErrVisible = false);
+  res.render('login', { loginUrl: process.env.SERVER + '/auth/login', /*errMsg: isErrVisible*/ });
 });
 
 router.get('/:gId/guest', guestController.mark);

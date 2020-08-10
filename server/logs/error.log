@@ -1,0 +1,553 @@
+1596922171085		QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT * FROM users WHERE user_id = null"
+}
+
+1596922171497		QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT * FROM users WHERE user_id = null"
+}
+
+1596922172253		QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT * FROM users WHERE user_id = null"
+}
+
+1596922245024
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT * FROM users WHERE user_id = null"
+}
+
+1596922245413
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT * FROM users WHERE user_id = null"
+}
+
+1596922246403
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT * FROM users WHERE user_id = null"
+}
+
+2020-08-08 14:42:02
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT * FROM users WHERE user_id = null"
+}
+
+2020-08-08 14:42:04
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT * FROM users WHERE user_id = null"
+}
+
+2020-08-08 14:42:04
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT * FROM users WHERE user_id = null"
+}
+
+2020-08-08 14:42:36
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT * FROM users WHERE user_id = null"
+}
+
+2020-08-08 14:42:37
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT * FROM users WHERE user_id = null"
+}
+
+2020-08-08 14:42:37
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT * FROM users WHERE user_id = null"
+}
+
+2020-08-08 14:46:56
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT * FROM users WHERE user_id = null"
+}
+
+2020-08-08 14:46:57
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT * FROM users WHERE user_id = null"
+}
+
+2020-08-08 14:46:57
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT * FROM users WHERE user_id = null"
+}
+
+2020-08-08 20:02:02
+QueryResultError {
+    code: queryResultErrorCode.multiple
+    message: "Multiple rows were not expected."
+    received: 2
+    query: "UPDATE images SET small_file_id = '4_zc116088f5b87d73c742a0f11_f117d85bfb48966da_d20200809_m030201_c000_v0001072_t0022' WHERE file_name = '9a2b6c2c-a379-4527-89a7-d9c93e22088e/full/mortProfiles1.jpg' AND owner_id = '9a2b6c2c-a379-4527-89a7-d9c93e22088e' RETURNING *"
+}
+
+2020-08-08 21:00:30
+error: syntax error at or near "$"
+
+2020-08-08 21:33:34
+Error: Property 'guestId' doesn't exist.
+[object Object]
+
+'2020-08-08 21:47:28
+error: syntax error at end of input
+[object Object]
+
+'2020-08-08 21:49:37
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT * FROM subscribers WHERE owner_id = 'ad120b55-119f-41fc-9ef9-d3286f07a023' AND email ->> 'emailAddress' = 'pfaffej@wwu.edu'"
+}
+[object Object]
+
+'2020-08-09 16:30:45
+error: syntax error at or near "{"
+[object Object]
+
+'2020-08-09 16:30:45
+error: syntax error at or near "{"
+[object Object]
+
+'2020-08-09 16:40:08
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "DELETE FROM images WHERE owner_id = '9a2b6c2c-a379-4527-89a7-d9c93e22088e' AND file_id = '4_zc116088f5b87d73c742a0f11_f104832b99686beb9_d20200809_m210805_c000_v0001028_t0043'"
+}
+[object Object]
+
+'2020-08-09 16:40:08
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "DELETE FROM images WHERE owner_id = '9a2b6c2c-a379-4527-89a7-d9c93e22088e' AND file_id = '4_zc116088f5b87d73c742a0f11_f104832b99686bec3_d20200809_m210814_c000_v0001028_t0043'"
+}
+[object Object]
+
+'2020-08-09 16:40:57
+Error: Property 'guestId' doesn't exist.
+[object Object]
+
+'2020-08-09 16:40:57
+Error: Property 'guestId' doesn't exist.
+[object Object]
+
+'2020-08-09 16:41:30
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "DELETE FROM images WHERE owner_id = '9a2b6c2c-a379-4527-89a7-d9c93e22088e' AND file_id = '4_zc116088f5b87d73c742a0f11_f111775a859111551_d20200809_m045346_c000_v0001072_t0052'"
+}
+[object Object]
+
+'2020-08-09 16:41:30
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "DELETE FROM images WHERE owner_id = '9a2b6c2c-a379-4527-89a7-d9c93e22088e' AND file_id = '4_zc116088f5b87d73c742a0f11_f111775a85911155d_d20200809_m045347_c000_v0001072_t0052'"
+}
+[object Object]
+
+'2020-08-09 19:39:51
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "DELETE FROM images WHERE owner_id = '9a2b6c2c-a379-4527-89a7-d9c93e22088e' AND file_id = '4_zc116088f5b87d73c742a0f11_f10599f1c14f89d7d_d20200809_m045228_c000_v0001073_t0015'"
+}
+[object Object]
+
+'2020-08-09 19:39:52
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "DELETE FROM images WHERE owner_id = '9a2b6c2c-a379-4527-89a7-d9c93e22088e' AND file_id = '4_zc116088f5b87d73c742a0f11_f10599f1c14f89d56_d20200809_m045227_c000_v0001073_t0015'"
+}
+[object Object]
+
+'2020-08-09 20:17:09
+error: syntax error at or near "ORDER"
+[object Object]
+
+'2020-08-09 21:03:39
+Error: Property 'userId' doesn't exist.
+[object Object]
+
+'2020-08-09 21:03:39
+Error: Property 'userId' doesn't exist.
+[object Object]
+
+'2020-08-09 21:03:39
+Error: Property 'userId' doesn't exist.
+[object Object]
+
+'2020-08-09 21:03:39
+Error: Property 'userId' doesn't exist.
+[object Object]
+
+'2020-08-09 21:03:39
+Error: Property 'userId' doesn't exist.
+[object Object]
+
+'2020-08-09 21:03:39
+Error: Property 'userId' doesn't exist.
+[object Object]
+
+'2020-08-09 21:03:39
+Error: Property 'userId' doesn't exist.
+[object Object]
+
+'2020-08-09 21:03:39
+Error: Property 'userId' doesn't exist.
+[object Object]
+
+'2020-08-09 21:03:39
+Error: Property 'userId' doesn't exist.
+[object Object]
+
+'2020-08-09 21:03:39
+Error: Property 'userId' doesn't exist.
+[object Object]
+
+'2020-08-09 21:03:39
+Error: Property 'userId' doesn't exist.
+[object Object]
+
+'2020-08-09 21:03:39
+Error: Property 'userId' doesn't exist.
+[object Object]
+
+'2020-08-09 21:03:52
+Error: Property 'userId' doesn't exist.
+[object Object]
+
+'2020-08-09 21:03:52
+Error: Property 'userId' doesn't exist.
+[object Object]
+
+'2020-08-09 21:03:52
+Error: Property 'userId' doesn't exist.
+[object Object]
+
+'2020-08-09 21:03:52
+Error: Property 'userId' doesn't exist.
+[object Object]
+
+'2020-08-09 21:03:52
+Error: Property 'userId' doesn't exist.
+[object Object]
+
+'2020-08-09 21:03:52
+Error: Property 'userId' doesn't exist.
+[object Object]
+
+'2020-08-09 21:03:52
+Error: Property 'userId' doesn't exist.
+[object Object]
+
+'2020-08-09 21:03:52
+Error: Property 'userId' doesn't exist.
+[object Object]
+
+'2020-08-09 21:03:52
+Error: Property 'userId' doesn't exist.
+[object Object]
+
+'2020-08-09 21:03:52
+Error: Property 'userId' doesn't exist.
+[object Object]
+
+'2020-08-09 21:03:52
+Error: Property 'userId' doesn't exist.
+[object Object]
+
+'2020-08-09 21:03:52
+Error: Property 'userId' doesn't exist.
+[object Object]
+
+'2020-08-09 21:16:30
+Error: Querying against a released or lost connection.
+[object Object]
+
+'2020-08-09 21:21:32
+Error: Querying against a released or lost connection.
+[object Object]
+
+'2020-08-09 21:34:43
+Error: Property 'userId' doesn't exist.
+[object Object]
+
+'2020-08-09 21:34:43
+Error: Property 'userId' doesn't exist.
+[object Object]
+
+'2020-08-09 21:34:43
+Error: Property 'userId' doesn't exist.
+[object Object]
+
+'2020-08-09 21:34:43
+Error: Property 'userId' doesn't exist.
+[object Object]
+
+'2020-08-09 21:34:43
+Error: Property 'userId' doesn't exist.
+[object Object]
+
+'2020-08-09 21:34:43
+Error: Property 'userId' doesn't exist.
+[object Object]
+
+'2020-08-09 21:34:43
+Error: Property 'userId' doesn't exist.
+[object Object]
+
+'2020-08-09 21:34:43
+Error: Property 'userId' doesn't exist.
+[object Object]
+
+'2020-08-09 21:34:43
+Error: Property 'userId' doesn't exist.
+[object Object]
+
+'2020-08-09 21:34:44
+Error: Property 'userId' doesn't exist.
+[object Object]
+
+'2020-08-09 21:38:51
+Error: Property 'userId' doesn't exist.
+[object Object]
+
+'2020-08-09 21:38:51
+Error: Property 'userId' doesn't exist.
+[object Object]
+
+'2020-08-09 21:38:51
+Error: Property 'userId' doesn't exist.
+[object Object]
+
+'2020-08-09 21:38:51
+Error: Property 'userId' doesn't exist.
+[object Object]
+
+'2020-08-09 21:38:51
+Error: Property 'userId' doesn't exist.
+[object Object]
+
+'2020-08-09 21:38:51
+Error: Property 'userId' doesn't exist.
+[object Object]
+
+'2020-08-09 21:40:02
+Error: Property 'userId' doesn't exist.
+[object Object]
+
+'2020-08-09 21:40:02
+Error: Property 'userId' doesn't exist.
+[object Object]
+
+'2020-08-09 21:40:02
+Error: Property 'userId' doesn't exist.
+[object Object]
+
+'2020-08-09 21:40:02
+Error: Property 'userId' doesn't exist.
+[object Object]
+
+'2020-08-09 21:40:02
+Error: Property 'userId' doesn't exist.
+[object Object]
+
+'2020-08-09 21:40:02
+Error: Property 'userId' doesn't exist.
+[object Object]
+
+'2020-08-09 21:41:40
+Error: Property 'fileId' doesn't exist.
+[object Object]
+
+'2020-08-09 21:41:40
+Error: Property 'fileId' doesn't exist.
+[object Object]
+
+'2020-08-09 21:41:40
+Error: Property 'fileId' doesn't exist.
+[object Object]
+
+'2020-08-09 21:42:33
+Error: Property 'fileId' doesn't exist.
+[object Object]
+
+'2020-08-09 21:42:33
+Error: Property 'fileId' doesn't exist.
+[object Object]
+
+'2020-08-09 21:42:33
+Error: Property 'fileId' doesn't exist.
+[object Object]
+
+'2020-08-09 21:45:06
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '9a2b6c2c-a379-4527-89a7-d9c93e22088e' AND file_id = '4_zc116088f5b87d73c742a0f11_f116fdb3d4c75c501_d20200810_m044500_c000_v0001071_t0012'"
+}
+[object Object]
+
+'2020-08-09 21:46:40
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '9a2b6c2c-a379-4527-89a7-d9c93e22088e' AND file_id = '4_zc116088f5b87d73c742a0f11_f1169af0221b2a29f_d20200810_m044635_c000_v0001034_t0013'"
+}
+[object Object]
+
+'2020-08-10 06:42:52
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '9a2b6c2c-a379-4527-89a7-d9c93e22088e' AND file_id = '4_zc116088f5b87d73c742a0f11_f10444478f691f857_d20200810_m133716_c000_v0001010_t0026'"
+}
+[object Object]
+
+'2020-08-10 06:42:52
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '9a2b6c2c-a379-4527-89a7-d9c93e22088e' AND file_id = '4_zc116088f5b87d73c742a0f11_f10444478f691f859_d20200810_m133717_c000_v0001010_t0026'"
+}
+[object Object]
+
+'2020-08-10 06:43:08
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '9a2b6c2c-a379-4527-89a7-d9c93e22088e' AND file_id = '4_zc116088f5b87d73c742a0f11_f1057965653e6d94f_d20200810_m134237_c000_v0001063_t0048'"
+}
+[object Object]
+
+'2020-08-10 06:44:22
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '9a2b6c2c-a379-4527-89a7-d9c93e22088e' AND file_id = '4_zc116088f5b87d73c742a0f11_f1157f7cd773e999a_d20200810_m134151_c000_v0001073_t0002'"
+}
+[object Object]
+
+'2020-08-10 06:45:58
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '9a2b6c2c-a379-4527-89a7-d9c93e22088e' AND file_id = '4_zc116088f5b87d73c742a0f11_f114b298937d3e5a8_d20200810_m134330_c000_v0001071_t0008'"
+}
+[object Object]
+
+'2020-08-10 08:03:33
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '9a2b6c2c-a379-4527-89a7-d9c93e22088e' AND file_id = '4_zc116088f5b87d73c742a0f11_f112d1eeeb9eee158_d20200810_m150207_c000_v0001052_t0037'"
+}
+[object Object]
+
+'2020-08-10 08:03:42
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '9a2b6c2c-a379-4527-89a7-d9c93e22088e' AND file_id = '4_zc116088f5b87d73c742a0f11_f100dfbed96be153f_d20200810_m134603_c000_v0001010_t0013'"
+}
+[object Object]
+
+'2020-08-10 08:03:42
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '9a2b6c2c-a379-4527-89a7-d9c93e22088e' AND file_id = '4_zc116088f5b87d73c742a0f11_f100dfbed96be153d_d20200810_m134602_c000_v0001010_t0013'"
+}
+[object Object]
+
+'2020-08-10 08:07:48
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '9a2b6c2c-a379-4527-89a7-d9c93e22088e' AND file_id = '4_zc116088f5b87d73c742a0f11_f115cb9a9fe68975a_d20200810_m150343_c000_v0001071_t0031'"
+}
+[object Object]
+
+'2020-08-10 08:07:48
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '9a2b6c2c-a379-4527-89a7-d9c93e22088e' AND file_id = '4_zc116088f5b87d73c742a0f11_f115cb9a9fe689776_d20200810_m150344_c000_v0001071_t0031'"
+}
+[object Object]
+
+'2020-08-10 08:07:48
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '9a2b6c2c-a379-4527-89a7-d9c93e22088e' AND file_id = '4_zc116088f5b87d73c742a0f11_f115cb9a9fe68976c_d20200810_m150344_c000_v0001071_t0031'"
+}
+[object Object]
+
+'
