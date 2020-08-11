@@ -9,9 +9,9 @@ const sharp = require('sharp');
 const exif = require('exif-reader');
 const db = require('../db').pgPromise;
 
-const appKeyId = process.env.VUE_APP_APP_KEY_ID;
-const applicationKey = process.env.VUE_APP_APPLICATION_KEY;
-const bucketId = process.env.VUE_APP_BUCKET_ID;
+const appKeyId = process.env.KEY_ID;
+const applicationKey = process.env.APPLICATION_KEY;
+const bucketId = process.env.BUCKET_ID;
 
 const encodedBase64 = Buffer.from(appKeyId + ':' + applicationKey).toString('base64');
 
@@ -257,7 +257,7 @@ const processImages = async (http, auth, files, sharpParams) => {
 
     if (fileInfo && isLowRes) {
       // fileInfo undefined for low res images
-      // Only send small image info (complete info) to client (via files.finished) 
+      // Only send small image info (complete info) to client (via files.finished)
       fileInfo.w = dimensions.w;
       fileInfo.h = dimensions.h;
       fileInfo.src = process.env.CDN_PATH + fileInfo.fileName;
@@ -336,7 +336,7 @@ module.exports.upload = async (req, res, next) => {
   );
 
   await sendNotifications(res, userId);
-console.log('finishedFiles: ', finishedFiles);
+  console.log('finishedFiles: ', finishedFiles);
   res.status(200).json(finishedFiles);
   next();
 };
@@ -407,7 +407,7 @@ module.exports.deleteImage = async (req, res, next) => {
         },
         { headers: { Authorization: credentials.authorizationToken } }
       );
-      console.log('File was successfully deleted from B2')
+      console.log('File was successfully deleted from B2');
     } catch (err) {
       console.log('Error deleting file from B2:', err.response.data.message);
       if (err.response.data.code !== 'file_not_present') {
@@ -430,7 +430,7 @@ module.exports.deleteImage = async (req, res, next) => {
 // TODO - Downloads corrupt file - encoding problem?
 module.exports.download = async (req, res) => {
   const credentials = res.locals.credentials;
-  const bucketName = process.env.VUE_APP_BUCKET_NAME;
+  const bucketName = process.env.BUCKET_NAME;
   let fileName = path.basename(files);
   let saveToPath = '/Users/Jake/downloads/' + fileName;
 
