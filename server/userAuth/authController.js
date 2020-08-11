@@ -61,6 +61,7 @@ module.exports.login = (req, res, next) => {
 module.exports.logout = (req, res) => {
   req.session.destroy();
   req.logout();
+  res.clearCookie('ownerId', 'guestId', { path: '/' });
   res.redirect(process.env.SERVER);
   console.log('Logged out');
 };
@@ -74,7 +75,7 @@ module.exports.checkSession = async (req, res, next) => {
       req.body
     );
 
-    user = user[0] //Extract user from array; if row not found, user === undefined
+    user = user[0]; //Extract user from array; if row not found, user === undefined
 
     if (!user) {
       console.log('Could not find user logged in');

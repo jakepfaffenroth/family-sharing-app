@@ -317,7 +317,7 @@ export default {
       axios.get(this.server + '/logout');
       document.cookie = 'ownerId=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
       document.cookie = 'connect.sid=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
-      window.location.replace(this.server + '/login');
+      // window.location.replace(this.server + '/login');
     },
   },
 
