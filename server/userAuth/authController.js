@@ -61,8 +61,8 @@ module.exports.login = (req, res, next) => {
 module.exports.logout = (req, res) => {
   req.session.destroy();
   req.logout();
-  res.clearCookie('ownerId', 'guestId', { path: '/' });
-  res.redirect(process.env.SERVER);
+  res.cookie('ownerId', '', { expires: new Date(0) });
+  res.redirect(process.env.SERVER + 'login');
   console.log('Logged out');
 };
 
