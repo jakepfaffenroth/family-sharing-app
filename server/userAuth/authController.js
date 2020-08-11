@@ -61,7 +61,7 @@ module.exports.login = (req, res, next) => {
 module.exports.logout = (req, res) => {
   req.session.destroy();
   req.logout();
-  res.redirect(process.env.CLIENT);
+  res.redirect(process.env.SERVER);
   console.log('Logged out');
 };
 

@@ -308,16 +308,16 @@ export default {
     },
 
     async deleteImage(fileId, smallFileId, fileName, userId, index) {
-      console.log(fileId, fileName)
+      console.log(fileId, fileName);
       this.images.splice(index, 1);
       axios.post(this.server + '/files/delete-image', { fileId: fileId, fileName: fileName, userId: userId });
     },
 
     logout() {
       axios.get(this.server + '/logout');
-      document.cookie = 'ownerId=; max-age=0';
-      document.cookie = 'connect.sid=; max-age=0';
-      window.location = this.server + '/login';
+      document.cookie = 'ownerId=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+      document.cookie = 'connect.sid=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+      window.location.replace(this.server + '/login');
     },
   },
 
