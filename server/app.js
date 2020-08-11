@@ -19,7 +19,6 @@ const authRouter = require('./userAuth/authRouter');
 const fileRouter = require('./fileServer/fileRouter');
 // const { User } = require('./users/userModel');
 
-
 const app = express();
 app.use(cors());
 
@@ -39,6 +38,7 @@ app.use(
     resave: false,
     saveUninitialized: true,
     cookie: {
+      secure: true,
       maxAge: 1000 * 60 * 60 * 24 * 7,
     },
   })

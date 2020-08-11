@@ -59,11 +59,13 @@ module.exports.login = (req, res, next) => {
 };
 
 module.exports.logout = (req, res) => {
-  req.session.destroy();
   req.logout();
   res.cookie('ownerId', '', { expires: new Date(0) });
-  res.redirect(process.env.SERVER + 'login');
   console.log('Logged out');
+  req.session.destroy((err) => {
+    console.log('Session destroy error:', err);
+  });
+  return res.redirect(process.env.SERVER + 'login');
 };
 
 module.exports.checkSession = async (req, res, next) => {
