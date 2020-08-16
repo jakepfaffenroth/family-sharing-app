@@ -233,13 +233,13 @@ const sendBrowserNotifications = async (res, userId) => {
       );
       return { user, subscriptions };
     });
-
     if (result.subscriptions.length === 0) {
       return console.log('No browser subscriptions found.');
     }
-
+    
     const guestId = result.user.guestId;
-
+    
+    console.log('guestId: ', guestId);
     const payload = JSON.stringify({
       title: `${result.user.firstName} just shared ${
         res.locals.fileCount === 1 ? 'a' : res.locals.fileCount

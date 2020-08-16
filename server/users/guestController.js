@@ -68,12 +68,10 @@ module.exports.subscribeEmail = async (req, res) => {
     guest = req.body;
   }
 
-  console.log('guest: ', guest);
   const owner = await db.one('SELECT * FROM users WHERE guest_id = ${guestId}', guest);
   if (owner.length === 0) {
     return console.log('Incorrect ownerId in email subscription.');
   }
-  console.log('owner: ', owner);
 
   // First need to see if guest has already subscribed
   const email = await db.oneOrNone(
@@ -136,7 +134,6 @@ module.exports.subscribeEmail = async (req, res) => {
         console.log(err.message);
       } else {
         console.log('Email sent! Message ID: ', data.MessageId);
-        console.log('data: ', data);
       }
     });
 
@@ -187,7 +184,7 @@ module.exports.subscribeBrowser = async (req, res) => {
 
   try {
     await db.task(async (t) => {
-      const subscription = await t.one(
+      const subscription = await t.oneOrNone(
         "SELECT * FROM subscribers WHERE owner_id = $1 AND browser -> 'keys' ->> 'auth' = $2",
         [guestId, newSubscription.keys.auth]
       );

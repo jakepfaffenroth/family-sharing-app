@@ -45,12 +45,13 @@ module.exports.removeBouncedEmail = (req, res) => {
 
         if (message.notificationType !== 'Bounce' && message.bounce.bounceType !== 'Permanent') return res.end('ok');
 
-        const deletedEmail = await db.one("DELETE FROM subscribers WHERE email ->> 'email_address' = $1 RETURNING *", [
-          message.mail.destination[0],
-        ]);
-        if (deletedEmail) {
-          console.log('Removed', message.mail.destination[0]);
-        }
+        const deletedEmail = await db.oneOrNone(
+          "DELETE FROM subscribers WHERE email ->> 'email_address' = $1 RETURNING *",
+          [message.mail.destination[0]]
+        );
+        deletedEmail
+          ? console.log('Removed', message.mail.destination[0])
+          : console.log('Bounced email ' + message.mail.destination[0] + 'not found in db.');
         // const subscribers = await pgpQuery("SELECT FROM subscribers WHERE email ->> 'email_address' = $1", [
         //   message.mail.destination[0],
         // ]);

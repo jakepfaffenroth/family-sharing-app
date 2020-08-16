@@ -20,7 +20,6 @@ passport.use(
       if (res) {
         // passwords match! log user in
         console.log('password correct!');
-        console.log('res: ', user);
         return done(null, user);
       } else {
         console.log('password incorrect...');
@@ -53,9 +52,7 @@ module.exports.login = (req, res, next) => {
       // Send user info back to client as JSON
       // res.status(200).json(response);
       // return res.redirect(client + '/private-space');
-      console.log('req: ', req.session);
       const userId = JSON.stringify(req.session.passport.user.userId).replace(/"/g, '');
-      console.log('userId: ', userId);
       // Set cookie on client with user.userId
       res.cookie('ownerId', userId, { maxAge: 1000 * 60 * 60 * 24 * 7 });
       res.redirect(process.env.CLIENT + '?user=' + userId);
