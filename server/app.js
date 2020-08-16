@@ -1,6 +1,7 @@
 const createError = require('http-errors');
 const express = require('express');
 const path = require('path');
+const dotenv = require('dotenv').config({ path: path.join(__dirname, '.env') });
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const logger = require('morgan');
@@ -9,18 +10,62 @@ const cors = require('cors');
 const axios = require('axios');
 const passport = require('passport');
 const session = require('express-session');
-require('dotenv').config();
-const client = process.env.CLIENT;
 
 const indexRouter = require('./indexRouter');
 const userRouter = require('./users/userRouter');
 const guestRouter = require('./users/guestRouter');
 const authRouter = require('./userAuth/authRouter');
 const fileRouter = require('./fileServer/fileRouter');
-// const { User } = require('./users/userModel');
 
 const app = express();
 app.use(cors());
+
+const ws = require('ws');
+// Set up a headless websocket server that prints any
+// events that come in.
+const wsConfig = {
+  noServer: true,
+  // path: '/files/upload',
+  // server: app,
+};
+
+const wsServer = new ws.Server(wsConfig);
+wsServer.on('connection', (socket) => {
+  // socket.on('message', (message) => {
+  //   // console.log(`Received message => ${message.length < 100 ? message : '(long message)'}`);
+  //   if (message === 'Upload complete') socket.send(Buffer.from(JSON.stringify({ type: 'allFinished' })));
+  // });
+  socket.send('ho!');
+  app.locals.ws = socket;
+});
+
+wsServer.on('close', (code, reason) => {
+  console.log('connection closed.', code, reason);
+});
+const server = app.listen(3200);
+server.on('upgrade', (request, socket, head) => {
+  wsServer.handleUpgrade(request, socket, head, (socket) => {
+    wsServer.emit('connection', socket, request);
+  });
+});
+
+// OLD TUS STUFF
+// const tus = require('tus-node-server');
+// const server = new tus.Server();
+// const bufferStore = require('./fileServer/BufferStore.js');
+// server.datastore = new bufferStore({
+//   path: '/files',
+// });
+// server.get('/', (req, res) => {
+//   console.log(req);
+// });
+
+// const uploadApp = express();
+// uploadApp.all('*', server.handle.bind(server));
+// app.use('/uploads', uploadApp, (req, res) => {
+//   console.log('test', typeof res.locals.file);
+//   res.status(201).set('Location', null).end();
+// });
 
 const db = require('./db').pgPromise;
 const pgSession = require('connect-pg-simple')(session);

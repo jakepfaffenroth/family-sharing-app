@@ -4,10 +4,13 @@
       <!-- Owner header and navigation -->
       <div v-if="userType == 'owner'">
         <h1>Welcome Back, {{ user.firstName }}</h1>
-        <button @click="logout" class="link">Log out</button>
-        <button @click="ownerShare" class="link">Share</button>
-        <button @click="nuke" class="link">Nuke</button>
-        <download-zip :images="images" />
+        <nav id="owner-menu">
+          <button @click="logout" class="link">Log out</button>
+          <button @click="ownerShare" class="link">Share</button>
+          <button @click="nuke" class="link">Nuke</button>
+          <download-zip :images="images" />
+          <uppy :user="user"></uppy>
+        </nav>
 
         <div v-if="shareUrl" class="share-modal">
           <h3>Your personal link to share:</h3>
@@ -62,8 +65,8 @@
         </div>
       </div>
 
-      <vue-dropzone
-        v-if="userType == 'owner'"
+      <!-- <vue-dropzone
+        v-if="userType == 'ownerX'"
         ref="myVueDropzone"
         id="dropzone"
         :options="dropzoneOptions"
@@ -71,7 +74,7 @@
         @vdropzone-success="updateImages"
         @vdropzone-total-upload-progress="uploadProgress"
         @vdropzone-error="uploadError"
-      />
+      /> -->
       <image-sorter v-on:sort-images="sortImages" />
 
       <vue-picture-swipe
@@ -91,8 +94,9 @@
 
 <script scoped>
 import axios from 'axios';
-import vue2Dropzone from './components/VueDropzone';
-import 'vue2-dropzone/dist/vue2Dropzone.min.css';
+import Uppy from './components/Uppy';
+// import vue2Dropzone from './components/VueDropzone';
+// import 'vue2-dropzone/dist/vue2Dropzone.min.css';
 import VuePictureSwipe from './components/VuePictureSwipe';
 import ImageSorter from './components/ImageSorter';
 import DownloadZip from './components/DownloadZip';
@@ -100,7 +104,8 @@ import DownloadZip from './components/DownloadZip';
 export default {
   props: {},
   components: {
-    vueDropzone: vue2Dropzone,
+    Uppy,
+    // vueDropzone: vue2Dropzone,
     VuePictureSwipe,
     ImageSorter,
     DownloadZip,
@@ -130,21 +135,21 @@ export default {
         browser: null,
         email: null,
       },
-      dropzoneOptions: {
-        url: process.env.VUE_APP_SERVER + '/files/upload',
-        paramName: 'myFiles',
-        acceptedFiles: 'image/*',
-        timeout: 600000,
-        uploadMultiple: true,
-        parallelUploads: 200,
-        maxFilesize: 350,
-        thumbnailWidth: 120,
-        thumbnailHeight: 120,
-        thumbnailMethod: 'contain',
-        addRemoveLinks: true,
-      },
-      progress: '0%',
-      bytesSent: 0,
+      // dropzoneOptions: {
+      //   url: process.env.VUE_APP_SERVER + '/files/upload',
+      //   paramName: 'myFiles',
+      //   acceptedFiles: 'image/*',
+      //   timeout: 600000,
+      //   uploadMultiple: true,
+      //   parallelUploads: 200,
+      //   maxFilesize: 350,
+      //   thumbnailWidth: 120,
+      //   thumbnailHeight: 120,
+      //   thumbnailMethod: 'contain',
+      //   addRemoveLinks: true,
+      // },
+      // progress: '0%',
+      // bytesSent: 0,
       // copyLinkText: 'Copy link',
     };
   },
@@ -242,32 +247,32 @@ export default {
         .catch((error) => console.log(`Error in promises ${error}`));
     },
 
-    sendingEvent(file, xhr, formData) {
-      if (!formData.get('userId')) {
-        formData.append('userId', this.user.userId);
-      }
-      if (!formData.get('guestId')) {
-        formData.append('guestId', this.user.guestId);
-      }
-    },
+    // sendingEvent(file, xhr, formData) {
+    //   if (!formData.get('userId')) {
+    //     formData.append('userId', this.user.userId);
+    //   }
+    //   if (!formData.get('guestId')) {
+    //     formData.append('guestId', this.user.guestId);
+    //   }
+    // },
 
-    updateImages(file, response) {
-      console.log('response: ', response);
-      for (let i = 0; i < response.length; i++) {
-        response[i].thumbnail.replace(/\/full\//, '/small/');
-        console.log('response[i]: ', response[i]);
-        this.images.unshift(response[i]);
-        response.splice(i, 1);
-      }
-      this.$refs.myVueDropzone.removeFile(file);
-      this.progress = '0%';
-    },
+    // updateImages(file, response) {
+    //   console.log('response: ', response);
+    //   for (let i = 0; i < response.length; i++) {
+    //     response[i].thumbnail.replace(/\/full\//, '/small/');
+    //     console.log('response[i]: ', response[i]);
+    //     this.images.unshift(response[i]);
+    //     response.splice(i, 1);
+    //   }
+    //   this.$refs.myVueDropzone.removeFile(file);
+    //   this.progress = '0%';
+    // },
 
-    uploadProgress(progress, totalBytes, bytesSent) {
-      this.progress = `${progress.toFixed(2)}%`;
-      this.bytesSent = bytesSent;
-      this.progress >= 100 ? (this.progress = 0) : null;
-    },
+    // uploadProgress(progress, totalBytes, bytesSent) {
+    //   this.progress = `${progress.toFixed(2)}%`;
+    //   this.bytesSent = bytesSent;
+    //   this.progress >= 100 ? (this.progress = 0) : null;
+    // },
 
     sortImages(sortParameter) {
       if (sortParameter === 'reverse') {
@@ -299,9 +304,9 @@ export default {
       this.images.sort(compare);
     },
 
-    uploadError(file, message, xhr) {
-      console.log('Upload Error: ', message, xhr);
-    },
+    // uploadError(file, message, xhr) {
+    //   console.log('Upload Error: ', message, xhr);
+    // },
 
     ownerShare() {
       this.shareUrl = `${this.server}/${this.user.guestId}/guest`;
@@ -377,7 +382,6 @@ export default {
       if (!response.data.isLoggedIn) {
         window.location = this.server + '/login';
       }
-      console.log('response.data: ', response.data);
       this.userType = 'owner';
       this.user = response.data.user;
       this.sortImages('uploadTime');
@@ -411,12 +415,16 @@ export default {
 </script>
 
 <style scoped>
-#dropzone {
-  width: 60vw;
-  margin: auto;
+#owner-menu {
+  display: flex;
 }
 
-#progress {
+/* #dropzone {
+  width: 60vw;
+  margin: auto;
+} */
+
+/* #progress {
   width: 100%;
   background-color: grey;
   border: 1px solid black;
@@ -425,7 +433,7 @@ export default {
 #progress-bar {
   height: 30px;
   background-color: green;
-}
+} */
 
 .link {
   border: none;
@@ -438,12 +446,6 @@ export default {
 
 .image-grid {
   margin-top: 1rem;
-}
-
-#silentbox-gallery {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
 }
 
 .image-container {

@@ -260,7 +260,8 @@ module.exports.emailNotification = async (req, res, next) => {
   // If less than one hour has passed since last notification, do not send another email
   if (timeComparison > 0) {
     console.log('\n🕑 Email notification sent within last hour\n');
-    return res.end();
+    // return res.end();
+    return
   }
 
   if (user) {

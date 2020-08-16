@@ -67,7 +67,7 @@ function camelizeColumns(data) {
   }
 }
 
-monitor.attach(initOptions);
+// monitor.attach(initOptions);
 monitor.setTheme('dimmed');
 
 module.exports.pgPromise = pgp(cn);

@@ -14,3 +14,4 @@ yarn-error.log*
 pnpm-debug.log*
 populateGuestIds.js
 ngrok
+server/logs/error.log
