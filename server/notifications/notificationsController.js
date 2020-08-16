@@ -20,70 +20,66 @@ module.exports.removeBouncedEmail = (req, res) => {
     // console.log('payload: ', payload);
 
     // Confirm new SNS subscriptions
-    try {
-      if (payload.Type === 'SubscriptionConfirmation') {
-        const promise = new Promise((resolve, reject) => {
-          const url = payload.SubscribeURL;
-
-          axios(url, (error, response) => {
-            if (!error && response.statusCode == 200) {
-              console.log('Yess! We have accepted the confirmation from AWS');
-              return resolve();
-            } else {
-              console.log('error!');
-              return reject();
-            }
-          });
-        });
-
-        promise.then(() => {
-          res.end('ok');
-        });
+    if (payload.Type === 'SubscriptionConfirmation') {
+      try {
+        // Get the Confirm Subscription url from the AWS email
+        const url = payload.SubscribeURL;
+        // Follow the confirmation link and get the response
+        const response = await axios.get(url);
+        // Confirmation was successful
+        if (response.status == 200) {
+          console.log('Yess! We have accepted the confirmation from AWS');
+          return res.end('ok');
+        } else {
+          // Confirmation was not successful
+          return console.log('Error processing SNS confirmation email:', response.status, response.statusText);
+        }
+      } catch (err) {
+        console.log('Error processing SNS confirmation email:', err);
       }
-    } catch (err) {
-      console.log('Error processing SNS confirmation email:', err);
-    }
-    try {
-      let message = JSON.parse(payload.Message);
+    } else {
+      // Not an SNS subscription confirmation email
+      try {
+        let message = JSON.parse(payload.Message);
+        // console.log('message: ', message);
 
-      // console.log('message: ', message);
+        if (message.notificationType !== 'Bounce' && message.bounce.bounceType !== 'Permanent') return res.end('ok');
 
-      if (message.notificationType !== 'Bounce' && message.bounce.bounceType !== 'Permanent') return res.end('ok');
+        const deletedEmail = await db.one("DELETE FROM subscribers WHERE email ->> 'email_address' = $1 RETURNING *", [
+          message.mail.destination[0],
+        ]);
+        if (deletedEmail) {
+          console.log('Removed', message.mail.destination[0]);
+        }
+        // const subscribers = await pgpQuery("SELECT FROM subscribers WHERE email ->> 'email_address' = $1", [
+        //   message.mail.destination[0],
+        // ]);
 
-      const deletedEmail = await db.one("DELETE FROM subscribers WHERE email ->> 'email_address' = $1 RETURNING *", [
-        message.mail.destination[0],
-      ]);
-      if (deletedEmail) {
-        console.log('Removed', message.mail.destination[0]);
+        // const users = await User.find({
+        //   'subscribers.email.emailAddress': message.mail.destination[0],
+        // });
+
+        // !users.length ? console.log('Bounced email not found in DB') : null;
+
+        // // Remove all bounced emails
+        // for (const user of users) {
+        //   const base = user.subscribers.email;
+        //   base.splice(
+        //     base.indexOf({
+        //       emailAddress: message.mail.destination[0],
+        //       firstName: /.*/,
+        //       lastName: /.*/,
+        //     })
+        //   );
+        //   user.markModified('subscribers');
+        //   await user.save(function (err, foundUser) {
+        //     if (err) return console.error(err);
+        //     console.log('Removed', message.mail.destination[0]);
+        //   });
+        res.end('ok');
+      } catch (err) {
+        console.log('Error processing bounced email:', err);
       }
-      // const subscribers = await pgpQuery("SELECT FROM subscribers WHERE email ->> 'email_address' = $1", [
-      //   message.mail.destination[0],
-      // ]);
-
-      // const users = await User.find({
-      //   'subscribers.email.emailAddress': message.mail.destination[0],
-      // });
-
-      // !users.length ? console.log('Bounced email not found in DB') : null;
-
-      // // Remove all bounced emails
-      // for (const user of users) {
-      //   const base = user.subscribers.email;
-      //   base.splice(
-      //     base.indexOf({
-      //       emailAddress: message.mail.destination[0],
-      //       firstName: /.*/,
-      //       lastName: /.*/,
-      //     })
-      //   );
-      //   user.markModified('subscribers');
-      //   await user.save(function (err, foundUser) {
-      //     if (err) return console.error(err);
-      //     console.log('Removed', message.mail.destination[0]);
-      //   });
-      res.end('ok');
-    } catch (err) {
-      console.log('Error processing bounced email:', err);
     }
   });
 };

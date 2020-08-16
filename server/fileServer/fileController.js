@@ -46,7 +46,6 @@ const getB2Auth = async (res) => {
 };
 
 const compressImages = async (http, files, sharpParams) => {
-  console.log('test', files);
   const ws = http.req.app.locals.ws;
 
   let count = 0;
@@ -118,8 +117,14 @@ const uploadFiles = async (auth, fileObject, req, isLowRes) => {
   isLowRes
     ? null
     : ws.send(
-        Buffer.from(JSON.stringify({ type: 'statusUpdate', msg: 'Saving image...', uppyFileId: req.body.uppyFileId,
-            filename: fileObject.originalname, }))
+        Buffer.from(
+          JSON.stringify({
+            type: 'statusUpdate',
+            msg: 'Saving image...',
+            uppyFileId: req.body.uppyFileId,
+            filename: fileObject.originalname,
+          })
+        )
       );
   // Uploads images to B2 storage
   let source = fileObject.buffer;
@@ -312,7 +317,11 @@ const processImages = async (http, auth, files, sharpParams) => {
 
       ws.send(
         Buffer.from(
-          JSON.stringify({ type: 'fileFinished', uppyFileId: http.req.body.uppyFileId, filename: fileObject.originalname })
+          JSON.stringify({
+            type: 'fileFinished',
+            uppyFileId: http.req.body.uppyFileId,
+            filename: fileObject.originalname,
+          })
         )
       );
     }
@@ -370,7 +379,7 @@ module.exports.upload = async (req, res, next) => {
       )
     );
   });
-res.status(200).end()
+  res.status(200).end();
   const userId = req.body.userId;
   const files = req.files;
   const finishedFiles = [];
@@ -441,7 +450,6 @@ module.exports.deleteImage = async (req, res, next) => {
   const credentials = res.locals.credentials;
 
   const deleteImage = async (image) => {
-    console.log('image: ', image);
     let data;
     // Remove image info from database
     try {

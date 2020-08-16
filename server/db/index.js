@@ -10,6 +10,7 @@ const initOptions = {
     // console.log('Query executed:', { query: e.query, duration: result.duration + ' ms', rows: result.rowCount });
   },
   error(err, e) {
+    monitor.error(err, e);
     const log = async (err, e) => {
       try {
         const writeStream = fs.createWriteStream('./logs/error.log', { flags: 'a' });
@@ -23,13 +24,11 @@ const initOptions = {
       // this is a connection-related error
       // cn = safe connection details passed into the library:
       //      if password is present, it is masked by #
-      
       // console.log('DB connection error:', { cn: e.cn, err });
     }
 
     if (e.query) {
       // query string is available
-      
       // console.info('DB query error:', {
       //   query: e.query,
       //   msg: err.message,
@@ -40,7 +39,6 @@ const initOptions = {
 
     if (e.ctx) {
       // occurred inside a task or transaction
-      
       // console.log('DB task/tx error:', { ctx: e.ctx, err });
     }
 

@@ -10,7 +10,12 @@ const db = require('../db').pgPromise;
 passport.use(
   new LocalStrategy(async (username, password, done) => {
     const user = await db.oneOrNone('SELECT * FROM users WHERE username = $1', [username]);
-    console.log('User: ', user);
+
+    if (!user) {
+      return done(null, user, {
+        msg: 'Incorrect username',
+      });
+    }
     bcrypt.compare(password, user.password, (err, res) => {
       if (res) {
         // passwords match! log user in
@@ -34,7 +39,7 @@ module.exports.login = (req, res, next) => {
     if (err) {
       return next(err);
     }
-    if (user.length === 0) {
+    if (!user || user.length === 0) {
       res.locals.incorrectCred = true;
       return res.redirect('../login?q=true');
     }
