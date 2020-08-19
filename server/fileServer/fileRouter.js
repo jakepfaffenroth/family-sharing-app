@@ -27,9 +27,12 @@ router.post(
   // },
   fileController.b2Auth,
   multer({ storage: storage }).any(),
-  fileController.upload,
+  fileController.imgHandler,
   guestController.emailNotification
 );
+
+// const { imgCompressor, uploader } = require('../tasks');
+// router.post('/upload/test', multer({ storage: storage }).any(), imgCompressor, uploader);
 
 router.post('/delete-image', fileController.b2Auth, fileController.deleteImage);
 

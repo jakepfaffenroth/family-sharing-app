@@ -2132,4 +2132,164 @@ QueryResultError {
 }
 [object Object]
 
+'2020-08-19 08:50:58
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "UPDATE images SET small_file_id = '4_zc116088f5b87d73c742a0f11_f1042452c2d8ec4df_d20200819_m155058_c000_v0001063_t0041' WHERE image_id = (SELECT image_id FROM images WHERE file_name = '5eebb6c17f71e3812d1e91ab/thumb/009-010.jpg' AND owner_id = null ORDER BY image_id DESC LIMIT 1) RETURNING *"
+}
+[object Object]
+
+'2020-08-19 08:51:00
+error: null value in column "w" violates not-null constraint
+[object Object]
+
+'2020-08-19 08:52:15
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "UPDATE images SET small_file_id = '4_zc116088f5b87d73c742a0f11_f101a86987090b4d1_d20200819_m155215_c000_v0001071_t0043' WHERE image_id = (SELECT image_id FROM images WHERE file_name = '5eebb6c17f71e3812d1e91ab/thumb/009-010.jpg' AND owner_id = null ORDER BY image_id DESC LIMIT 1) RETURNING *"
+}
+[object Object]
+
+'2020-08-19 08:52:17
+error: null value in column "w" violates not-null constraint
+[object Object]
+
+'2020-08-19 08:54:04
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "UPDATE images SET small_file_id = '4_zc116088f5b87d73c742a0f11_f110129d027f9adb1_d20200819_m155404_c000_v0001073_t0042' WHERE image_id = (SELECT image_id FROM images WHERE file_name = '5eebb6c17f71e3812d1e91ab/thumb/009-010.jpg' AND owner_id = null ORDER BY image_id DESC LIMIT 1) RETURNING *"
+}
+[object Object]
+
+'2020-08-19 08:54:05
+error: null value in column "w" violates not-null constraint
+[object Object]
+
+'2020-08-19 09:04:40
+error: null value in column "w" violates not-null constraint
+[object Object]
+
+'2020-08-19 09:04:41
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "UPDATE images SET small_file_id = '4_zc116088f5b87d73c742a0f11_f104c614d41bdf4e4_d20200819_m160440_c000_v0001049_t0023' WHERE image_id = (SELECT image_id FROM images WHERE file_name = '5eebb6c17f71e3812d1e91ab/thumb/009-010.jpg' AND owner_id = null ORDER BY image_id DESC LIMIT 1) RETURNING *"
+}
+[object Object]
+
+'2020-08-19 09:06:57
+error: null value in column "w" violates not-null constraint
+[object Object]
+
+'2020-08-19 09:06:58
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "UPDATE images SET small_file_id = '4_zc116088f5b87d73c742a0f11_f1039dcbebb0693eb_d20200819_m160657_c000_v0001045_t0012' WHERE image_id = (SELECT image_id FROM images WHERE file_name = '5eebb6c17f71e3812d1e91ab/thumb/009-010.jpg' AND owner_id = null ORDER BY image_id DESC LIMIT 1) RETURNING *"
+}
+[object Object]
+
+'2020-08-19 09:09:51
+error: null value in column "w" violates not-null constraint
+[object Object]
+
+'2020-08-19 09:09:52
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "UPDATE images SET small_file_id = '4_zc116088f5b87d73c742a0f11_f10007076d7bac140_d20200819_m160951_c000_v0001072_t0046' WHERE image_id = (SELECT image_id FROM images WHERE file_name = '5eebb6c17f71e3812d1e91ab/thumb/009-010.jpg' AND owner_id = null ORDER BY image_id DESC LIMIT 1) RETURNING *"
+}
+[object Object]
+
+'2020-08-19 09:14:36
+error: null value in column "owner_id" violates not-null constraint
+[object Object]
+
+'2020-08-19 09:14:38
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "UPDATE images SET small_file_id = '4_zc116088f5b87d73c742a0f11_f112f83d7710780d0_d20200819_m161437_c000_v0001070_t0032' WHERE image_id = (SELECT image_id FROM images WHERE file_name = '5eebb6c17f71e3812d1e91ab/thumb/009-010.jpg' AND owner_id = null ORDER BY image_id DESC LIMIT 1) RETURNING *"
+}
+[object Object]
+
+'2020-08-19 09:16:50
+error: null value in column "owner_id" violates not-null constraint
+[object Object]
+
+'2020-08-19 09:17:56
+error: null value in column "owner_id" violates not-null constraint
+[object Object]
+
+'2020-08-19 09:26:03
+error: null value in column "owner_id" violates not-null constraint
+[object Object]
+
+'2020-08-19 09:26:03
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "UPDATE images SET small_file_id = '4_zc116088f5b87d73c742a0f11_f10156a401b86b6e2_d20200819_m162603_c000_v0001007_t0034' WHERE image_id = (SELECT image_id FROM images WHERE file_name = '5eebb6c17f71e3812d1e91ab/thumb/009-010.jpg' AND owner_id = null ORDER BY image_id DESC LIMIT 1) RETURNING *"
+}
+[object Object]
+
+'2020-08-19 09:26:28
+error: null value in column "owner_id" violates not-null constraint
+[object Object]
+
+'2020-08-19 09:26:30
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "UPDATE images SET small_file_id = '4_zc116088f5b87d73c742a0f11_f110826ae291f3986_d20200819_m162629_c000_v0001053_t0044' WHERE image_id = (SELECT image_id FROM images WHERE file_name = '5eebb6c17f71e3812d1e91ab/thumb/009-010.jpg' AND owner_id = null ORDER BY image_id DESC LIMIT 1) RETURNING *"
+}
+[object Object]
+
+'2020-08-19 09:27:27
+error: null value in column "owner_id" violates not-null constraint
+[object Object]
+
+'2020-08-19 09:27:29
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "UPDATE images SET small_file_id = '4_zc116088f5b87d73c742a0f11_f1068bae5041edb50_d20200819_m162727_c000_v0001069_t0056' WHERE image_id = (SELECT image_id FROM images WHERE file_name = '5eebb6c17f71e3812d1e91ab/thumb/009-010.jpg' AND owner_id = null ORDER BY image_id DESC LIMIT 1) RETURNING *"
+}
+[object Object]
+
+'2020-08-19 09:28:12
+Error: Property 'userId' doesn't exist.
+[object Object]
+
+'2020-08-19 09:28:16
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "UPDATE images SET small_file_id = '4_zc116088f5b87d73c742a0f11_f1027ad216cf7cd18_d20200819_m162814_c000_v0001046_t0002' WHERE image_id = (SELECT image_id FROM images WHERE file_name = '5eebb6c17f71e3812d1e91ab/thumb/009-010.jpg' AND owner_id = '5eebb6c17f71e3812d1e91ab' ORDER BY image_id DESC LIMIT 1) RETURNING *"
+}
+[object Object]
+
+'2020-08-19 09:28:43
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "UPDATE images SET small_file_id = '4_zc116088f5b87d73c742a0f11_f1170b00501ad0b6c_d20200819_m162843_c000_v0001067_t0056' WHERE image_id = (SELECT image_id FROM images WHERE file_name = '5eebb6c17f71e3812d1e91ab/thumb/009-010.jpg' AND owner_id = '5eebb6c17f71e3812d1e91ab' ORDER BY image_id DESC LIMIT 1) RETURNING *"
+}
+[object Object]
+
 '

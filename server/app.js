@@ -5,6 +5,7 @@ const dotenv = require('dotenv').config({ path: path.join(__dirname, '.env') });
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const logger = require('morgan');
+const monitoro = require('monitoro');
 
 const cors = require('cors');
 const axios = require('axios');
@@ -43,6 +44,17 @@ wsServer.on('close', (code, reason) => {
   console.log('connection closed.', code, reason);
 });
 const server = app.listen(3200);
+// const server = async () => {
+//   try {
+//     return app.listen(3200);
+//   } catch (err) {
+//     if (err.code === 'EADDRINUSE') {
+//       const kill = require('kill-port');
+//       await kill(3200, 'tcp').then(console.log).catch(console.log);
+//       return app.listen(3200);
+//     }
+//   }
+// };
 server.on('upgrade', (request, socket, head) => {
   wsServer.handleUpgrade(request, socket, head, (socket) => {
     wsServer.emit('connection', socket, request);
@@ -123,6 +135,39 @@ app.use('/auth', authRouter);
 app.use('/files', fileRouter);
 app.use('/guest', guestRouter);
 
+const multer = require('multer');
+const storage = multer.memoryStorage();
+const tasks = require('./tasks/imgCompressor');
+// app.use('/tasks', multer({ storage: storage }).any(), tasks.add);
+
+const { UI } = require('bull-board');
+app.use('/admin/bull', UI);
+// const Arena = require('bull-arena');
+// const Bull = require('bull');
+// const arena = Arena(
+//   {
+//     Bull,
+//     queues: [
+//       {
+//         name: 'imgCompressor',
+//         hostId: 'Carousel',
+//         redis: {
+//           port: 6379,
+//           host: 'localhost',
+//           password: process.env.REDIS_AUTH,
+//         },
+//       },
+//     ],
+//   },
+//   {
+//     // Make the arena dashboard become available at {my-site.com}/arena.
+//     basePath: '/arena',
+
+//     // Let express handle the listening.
+//     disableListen: true,
+//   }
+// );
+// app.use('/admin', arena);
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
   next(createError(404));
@@ -135,8 +180,7 @@ app.use(function (err, req, res, next) {
   res.locals.error = req.app.get('env') === 'development' ? err : {};
 
   // render the error page
-  res.status(err.status || 500);
-  res.render('error');
+  res.status(err.status || 500).json({ msg: err.message, status: err.status, stack: err.stack });
 });
 
 module.exports = app;

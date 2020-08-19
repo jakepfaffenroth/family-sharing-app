@@ -19,7 +19,7 @@ import '@uppy/dashboard/dist/style.css';
 
 export default {
   props: { user: Object },
-  setup(props) {
+  setup(props, context) {
     // onMounted(() => {
     const uppy = new Uppy({
       meta: {
@@ -85,8 +85,8 @@ export default {
     };
 
     const url = 'ws://localhost:3200';
-
     const socket = new WebSocket(url);
+
     uppy.on('file-added', (file) => {
       uppy.setFileMeta(file.id, { uppyFileId: file.id });
 
@@ -104,9 +104,9 @@ export default {
         // if (msg) return
         // ----------------------------------- //
         const files = uppy.getFiles().map((item) => {
-          const newArr = {};
-          newArr[item.name] = item.id;
-          return newArr;
+          const newObj = {};
+          newObj[item.name] = item.id;
+          return newObj;
         });
         console.log('new files array: ', files);
         console.log('StatusBar classes:', document.querySelector('.uppy-StatusBar').classList || null);
@@ -204,6 +204,7 @@ export default {
     // });
 
     uppy.on('complete', (result) => {
+      console.log('result: ', result);
       // console.log('uppy.getPlugin("Dashboard:StatusBar").opts: ', uppy.getPlugin('Dashboard:StatusBar').opts);
       // uppy.getPlugin('Dashboard:StatusBar').setOptions({
       //   locale: {
@@ -216,6 +217,10 @@ export default {
       console.log('failed files:', result.failed);
       // return;
       // socket.send('Upload complete');
+    });
+
+    uppy.on('upload-success', (file, response) => {
+      context.emit('update-images', response.body);
     });
 
     return {

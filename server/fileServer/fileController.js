@@ -7,6 +7,7 @@ const fs = require('fs');
 const { Readable, Writable } = require('stream');
 const sharp = require('sharp');
 const exif = require('exif-reader');
+const { dbWriter } = require('../tasks');
 const db = require('../db').pgPromise;
 
 const appKeyId = process.env.KEY_ID;
@@ -51,6 +52,7 @@ const compressImages = async (http, files, sharpParams) => {
   let count = 0;
 
   files.files.forEach(async (fileObject) => {
+    console.log('fileObject: ', fileObject);
     if (sharpParams.compression != 100) {
       ws.send(
         Buffer.from(
@@ -63,6 +65,7 @@ const compressImages = async (http, files, sharpParams) => {
         )
       );
     }
+    console.log('fileObject.buffer.length: ', fileObject.buffer.length);
     const output = sharp(fileObject.buffer);
 
     // let imageStreamFull, imageStreamSmall;
@@ -86,19 +89,20 @@ const compressImages = async (http, files, sharpParams) => {
 
     return (
       output
-        .rotate()
-        .resize({
-          width: sharpParams.longEdge,
-          height: sharpParams.longEdge,
-          fit: sharp.fit.inside,
-          withoutEnlargement: true,
-        })
-        // .sharpen()
-        .jpeg({ quality: sharpParams.compression })
+        // .rotate()
+        // .resize({
+        //   width: sharpParams.longEdge,
+        //   height: sharpParams.longEdge,
+        //   fit: sharp.fit.inside,
+        //   withoutEnlargement: true,
+        // })
+        // // .sharpen()
+        // .jpeg({ quality: sharpParams.compression })
         .withMetadata()
         .toBuffer()
 
         .then(function (data) {
+          console.log('data.length: ', data.length);
           fileObject.buffer = data;
           fileObject.size = data.length;
           count++;
@@ -236,9 +240,9 @@ const sendBrowserNotifications = async (res, userId) => {
     if (result.subscriptions.length === 0) {
       return console.log('No browser subscriptions found.');
     }
-    
+
     const guestId = result.user.guestId;
-    
+
     console.log('guestId: ', guestId);
     const payload = JSON.stringify({
       title: `${result.user.firstName} just shared ${
@@ -551,3 +555,18 @@ module.exports.getStorageSize = async (req, res) => {
 
   res.json([kilobytes + ' KB', megabytes + ' MB', gigabytes + ' GB']);
 };
+
+module.exports.imgHandler = async (req, res, next) => {
+  require('../tasks');
+
+  const imgCompressor = require('../tasks/imgCompressor');
+  const uploader = require('../tasks/uploader');
+  const dbWriter = require('../tasks/dbWriter');
+
+  await getB2Auth(res);
+  imgCompressor(req, res);
+  uploader(req, res);
+  dbWriter(req, res);
+};
+
+// module.exports.getUploadAuth = getB2Auth;

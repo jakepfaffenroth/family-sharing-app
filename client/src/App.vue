@@ -9,7 +9,7 @@
           <button @click="ownerShare" class="link">Share</button>
           <button @click="nuke" class="link">Nuke</button>
           <download-zip :images="images" />
-          <uppy :user="user"></uppy>
+          <uppy :user="user" @update-images='updateImages'></uppy>
         </nav>
 
         <div v-if="shareUrl" class="share-modal">
@@ -256,17 +256,17 @@ export default {
     //   }
     // },
 
-    // updateImages(file, response) {
-    //   console.log('response: ', response);
-    //   for (let i = 0; i < response.length; i++) {
-    //     response[i].thumbnail.replace(/\/full\//, '/small/');
-    //     console.log('response[i]: ', response[i]);
-    //     this.images.unshift(response[i]);
-    //     response.splice(i, 1);
-    //   }
-    //   this.$refs.myVueDropzone.removeFile(file);
-    //   this.progress = '0%';
-    // },
+    updateImages(filename) {
+      console.log('filename: ', filename);
+      // for (let i = 0; i < filename.length; i++) {
+      //   response[i].thumbnail.replace(/\/full\//, '/small/');
+      //   console.log('response[i]: ', response[i]);
+      //   this.images.unshift(response[i]);
+      //   response.splice(i, 1);
+      // }
+      // this.$refs.myVueDropzone.removeFile(file);
+      // this.progress = '0%';
+    },
 
     // uploadProgress(progress, totalBytes, bytesSent) {
     //   this.progress = `${progress.toFixed(2)}%`;

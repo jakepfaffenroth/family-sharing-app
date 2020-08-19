@@ -32,4 +32,5 @@ router.get('/logout', (req, res) => {
   console.log('Logged out');
 });
 
+
 module.exports = router;
