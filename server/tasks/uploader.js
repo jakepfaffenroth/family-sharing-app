@@ -57,14 +57,14 @@ const upload = async (auth, data, ws) => {
     // Uploads images to B2 storage
     let source = Buffer.from(image.buffer);
     let fileSize = image.size;
-    let fileName = `${userId}/${resolution.replace('Res', '')}/${path.basename(image.originalname)}`;
-    fileName = encodeURI(fileName);
+    let filename = `${userId}/${resolution.replace('Res', '')}/${path.basename(image.originalname)}`;
+    filename = encodeURI(filename);
     let sha1 = crypto.createHash('sha1').update(source).digest('hex');
 
     const uploadResponse = await axios.post(auth.uploadUrl, source, {
       headers: {
         Authorization: auth.uploadAuthorizationToken,
-        'X-Bz-File-Name': fileName,
+        'X-Bz-File-Name': filename,
         'Content-Type': 'b2/x-auto',
         'Content-Length': fileSize,
         'X-Bz-Content-Sha1': sha1,
@@ -77,8 +77,13 @@ const upload = async (auth, data, ws) => {
     // ws.send(uploadResponse.data.toString());
     addToDbWriterQueue(uploadResponse.data, metadata, resolution, userId);
 
-    console.log(`✅ Status: ${uploadResponse.status} - ${uploadResponse.data.fileName} uploaded`);
-    return uploadResponse.data;
+    console.log(`✅ Status: ${uploadResponse.status} - ${filename} uploaded`);
+    return {
+      filename,
+      src: process.env.CDN_PATH + filename,
+      thumbnail: process.env.CDN_PATH + filename.replace('/full/', '/thumb/'),
+      metadata,
+    };
   } catch (err) {
     console.log('err:', err);
   }
@@ -92,10 +97,38 @@ module.exports = async (req, res) => {
     return upload(auth, job.data, ws);
   });
 
-  uploader.on('completed', async (job, result) => {
-    console.log('result: ', result);
+  uploader.on('completed', async (job, fileInfo) => {
     if (job.data.resolution === 'fullRes') {
-      res.status(200).json(result.fileName).end();
+      try {
+        ws.send(
+          Buffer.from(
+            JSON.stringify({
+              ...fileInfo,
+              type: 'fileUploaded',
+              msg: 'Processing...',
+              uppyFileId: req.body.uppyFileId,
+            })
+          )
+        );
+      } catch (err) {
+        if (!ws) {
+          await res.status(200).end();
+          // console.log('req.app.listeners: ', req.app.listeners);
+          // const ws = require('ws');
+          // const wsServer = new ws.Server({ noServer: true });
+          // wsServer.emit('connection', socket, request);
+
+          // const server = req.app.locals.server;
+          // server.on('upgrade', (request, socket, head) => {
+          //   wsServer.handleUpgrade(request, socket, head, (socket) => {
+          //     wsServer.emit('connection', socket, request);
+          //   });
+          // });
+        }
+        console.log('ws error:', err);
+      }
+      // res.status(200).json(fileInfo).end();
     }
+    job.remove();
   });
 };

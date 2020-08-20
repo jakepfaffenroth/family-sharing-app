@@ -557,6 +557,12 @@ module.exports.getStorageSize = async (req, res) => {
 };
 
 module.exports.imgHandler = async (req, res, next) => {
+  console.log('\n');
+  console.log('-------------------------');
+  console.log('🔵 STARTING IMAGE UPLOAD 🔵');
+  console.log('-------------------------');
+  console.log(`Uploading ${req.files ? req.files.length : 0} ${req.files.length === 1 ? 'image' : 'images'} \n`);
+
   require('../tasks');
 
   const imgCompressor = require('../tasks/imgCompressor');

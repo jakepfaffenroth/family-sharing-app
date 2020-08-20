@@ -9,7 +9,7 @@
           <button @click="ownerShare" class="link">Share</button>
           <button @click="nuke" class="link">Nuke</button>
           <download-zip :images="images" />
-          <uppy :user="user" @update-images='updateImages'></uppy>
+          <uppy :user="user" @update-images="updateImages"></uppy>
         </nav>
 
         <div v-if="shareUrl" class="share-modal">
@@ -256,8 +256,11 @@ export default {
     //   }
     // },
 
-    updateImages(filename) {
-      console.log('filename: ', filename);
+    updateImages(fileInfo) {
+      console.log('filename: ', fileInfo.body);
+      // const info = {src: process.env.VUE_APP_CDN + filename}
+      // src, thumbnail, uploadtime, exif.exif.DateTimeOriginal
+
       // for (let i = 0; i < filename.length; i++) {
       //   response[i].thumbnail.replace(/\/full\//, '/small/');
       //   console.log('response[i]: ', response[i]);
@@ -320,8 +323,8 @@ export default {
 
     logout() {
       axios.get(this.server + '/logout');
-      document.cookie = 'ownerId=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
-      document.cookie = 'connect.sid=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+      document.cookie = 'ownerId=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;Secure';
+      document.cookie = 'connect.sid=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;Secure';
       window.location.replace(this.server + '/login');
     },
   },
@@ -400,8 +403,6 @@ export default {
 
       this.user = response.data.user;
       this.images = response.data.images.reverse();
-      console.log('this.user: ', this.user);
-      console.log('this.images: ', this.images);
       this.isReadyToRender = true;
       this.sortImages('uploadTime');
     }
