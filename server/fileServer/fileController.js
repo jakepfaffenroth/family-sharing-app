@@ -569,6 +569,7 @@ module.exports.imgHandler = async (req, res, next) => {
   const uploader = require('../tasks/uploader');
   const dbWriter = require('../tasks/dbWriter');
 
+  // Add file upload info to email notification queue
   const { guestId, userId } = req.body;
   const files = req.files;
   const imgPath = `${process.env.CDN_PATH}${userId}/thumb/${files[0].originalname}`;
@@ -578,7 +579,9 @@ module.exports.imgHandler = async (req, res, next) => {
     fileCount: files.length,
     imgPath,
   });
-  res.end();
+  // Files have reached server so send success response
+  files ? res.status(200).end() : res.status(500).end('Error uploading files')
+
   await getB2Auth(res);
   imgCompressor(req, res);
   uploader(req, res);
