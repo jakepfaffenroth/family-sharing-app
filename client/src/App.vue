@@ -193,7 +193,6 @@ export default {
       if ('serviceWorker' in navigator) {
         let register;
         // If statement to conditionally register production vs dev service workers
-        console.log('process.env.SERVER: ', process.env.VUE_APP_SERVER);
         if (process.env.VUE_APP_SERVER == 'http://localhost:3400') {
           register = await navigator.serviceWorker.register('/devSw.js', {
             scope: '/',

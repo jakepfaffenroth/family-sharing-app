@@ -1,7 +1,7 @@
 const path = require('path');
 const axios = require('axios');
 const crypto = require('crypto');
-const { uploader, dbWriter } = require('./index');
+const { uploader, dbWriter, emailSender } = require('./index');
 
 const getB2UploadAuth = async (res) => {
   const bucketId = process.env.BUCKET_ID;
@@ -45,6 +45,7 @@ const addToDbWriterQueue = (data, metadata, resolution, ownerId) => {
 
 const upload = async (auth, data, ws) => {
   const userId = data.userId;
+  const guestId = data.guestId;
   const resolution = data.resolution;
   const image = data.image;
   const metadata = {
@@ -52,6 +53,7 @@ const upload = async (auth, data, ws) => {
     h: data.image.h,
     exif: data.image.exif,
   };
+  const fileCount = data.fileCount;
 
   try {
     // Uploads images to B2 storage
@@ -74,14 +76,16 @@ const upload = async (auth, data, ws) => {
       maxBodyLength: Infinity,
     });
 
-    // ws.send(uploadResponse.data.toString());
+    const src = process.env.CDN_PATH + filename;
+    const thumbnail = process.env.CDN_PATH + filename.replace('/full/', '/thumb/');
+
     addToDbWriterQueue(uploadResponse.data, metadata, resolution, userId);
 
     console.log(`✅ Status: ${uploadResponse.status} - ${filename} uploaded`);
     return {
       filename,
-      src: process.env.CDN_PATH + filename,
-      thumbnail: process.env.CDN_PATH + filename.replace('/full/', '/thumb/'),
+      src,
+      thumbnail,
       metadata,
     };
   } catch (err) {
@@ -99,6 +103,8 @@ module.exports = async (req, res) => {
 
   uploader.on('completed', async (job, fileInfo) => {
     if (job.data.resolution === 'fullRes') {
+      const emailSender = require('../tasks/emailSender');
+      emailSender();
       try {
         ws.send(
           Buffer.from(
@@ -113,17 +119,6 @@ module.exports = async (req, res) => {
       } catch (err) {
         if (!ws) {
           await res.status(200).end();
-          // console.log('req.app.listeners: ', req.app.listeners);
-          // const ws = require('ws');
-          // const wsServer = new ws.Server({ noServer: true });
-          // wsServer.emit('connection', socket, request);
-
-          // const server = req.app.locals.server;
-          // server.on('upgrade', (request, socket, head) => {
-          //   wsServer.handleUpgrade(request, socket, head, (socket) => {
-          //     wsServer.emit('connection', socket, request);
-          //   });
-          // });
         }
         console.log('ws error:', err);
       }

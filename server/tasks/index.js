@@ -13,6 +13,7 @@ module.exports = {
   imgCompressor: new queue('imgCompressor', config),
   uploader: new queue('imgUploader', config),
   dbWriter: new queue('dbWriter', config),
+  emailSender: new queue('sendEmailNotification', config),
 };
 
-setQueues([module.exports.imgCompressor, module.exports.uploader, module.exports.dbWriter]);
+setQueues([module.exports.imgCompressor, module.exports.uploader, module.exports.dbWriter, module.exports.emailSender]);

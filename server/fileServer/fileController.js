@@ -563,12 +563,22 @@ module.exports.imgHandler = async (req, res, next) => {
   console.log('-------------------------');
   console.log(`Uploading ${req.files ? req.files.length : 0} ${req.files.length === 1 ? 'image' : 'images'} \n`);
 
-  require('../tasks');
+  const { emailSender } = require('../tasks');
 
   const imgCompressor = require('../tasks/imgCompressor');
   const uploader = require('../tasks/uploader');
   const dbWriter = require('../tasks/dbWriter');
 
+  const { guestId, userId } = req.body;
+  const files = req.files;
+  const imgPath = `${process.env.CDN_PATH}${userId}/thumb/${files[0].originalname}`;
+
+  emailSender.add('sendEmailNotification', {
+    guestId,
+    fileCount: files.length,
+    imgPath,
+  });
+  res.end();
   await getB2Auth(res);
   imgCompressor(req, res);
   uploader(req, res);

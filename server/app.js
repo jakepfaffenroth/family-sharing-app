@@ -106,7 +106,6 @@ app.use('/auth', authRouter);
 app.use('/files', fileRouter);
 app.use('/guest', guestRouter);
 
-
 const { UI } = require('bull-board');
 app.use('/admin/bull', UI);
 

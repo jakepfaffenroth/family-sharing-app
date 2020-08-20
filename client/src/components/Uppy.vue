@@ -25,7 +25,7 @@ export default {
         guestId: props.user.guestId,
       },
       // logger: Uppy.debugLogger,
-      autoProceed: false,
+      autoProceed: true,
       onBeforeUpload: () => {
         uppy.getPlugin('Dashboard:StatusBar').setOptions({
           hideAfterFinish: false,
@@ -43,7 +43,7 @@ export default {
         trigger: '#uppy-select-files',
         closeModalOnClickOutside: true,
         theme: 'auto',
-        inline: false,
+        inline: true,
         showProgressDetails: true,
         // hideProgressAfterFinish: false,
         locale: {
@@ -160,7 +160,7 @@ export default {
             return rws.send('Complete Confirmed');
           },
           default: () => {
-            return console.log('Message received:', data);
+            return console.log('Message received =>', data);
           },
         };
         return (msgTypes[type] || msgTypes['default'])();

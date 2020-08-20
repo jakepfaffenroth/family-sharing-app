@@ -3,7 +3,7 @@ const exif = require('exif-reader');
 
 const premiumUser = false;
 
-const { imgCompressor, processedImgsQueue, uploader } = require('./index');
+const { imgCompressor, uploader } = require('./index');
 
 const compressImg = async (res, data) => {
   // const processedImgs = [];
@@ -63,6 +63,8 @@ const compressImg = async (res, data) => {
           resolution: resolution,
           guestId: data.guestId,
           userId: data.userId,
+          fileCount: data.images.length,
+          shareUrl: data.shareUrl,
         });
       };
 
@@ -96,7 +98,12 @@ const compressImg = async (res, data) => {
 };
 
 module.exports = async (req, res) => {
-  await imgCompressor.add('imgCompressor', { images: req.files, guestId: req.body.guestId, userId: req.body.userId });
+  await imgCompressor.add('imgCompressor', {
+    images: req.files,
+    guestId: req.body.guestId,
+    userId: req.body.userId,
+    shareUrl: req.body.shareUrl,
+  });
 
   imgCompressor.process('imgCompressor', async (job) => {
     return compressImg(res, job.data);
