@@ -211,7 +211,7 @@ export default {
         // console.log({message: JSON.stringify(subscription)});
 
         await axios({
-          url: this.server + '/guest/subscribe-browser',
+          url: this.server + '/notifications/subscribe-browser',
           method: 'POST',
           data: { subscription: JSON.stringify(subscription), guestId: this.user.guestId },
           headers: {
@@ -224,7 +224,7 @@ export default {
     },
 
     subscribeEmail() {
-      axios.post(this.server + '/guest/subscribe-email', this.guest);
+      axios.post(this.server + '/notifications/subscribe-email', this.guest);
     },
 
     async subscribe() {
@@ -315,7 +315,6 @@ export default {
     },
 
     async deleteImage(fileId, smallFileId, fileName, userId, index) {
-      console.log(fileId, fileName);
       this.images.splice(index, 1);
       axios.post(this.server + '/files/delete-image', { fileId: fileId, fileName: fileName, userId: userId });
     },

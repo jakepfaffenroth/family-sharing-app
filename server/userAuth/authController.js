@@ -71,7 +71,7 @@ module.exports.logout = (req, res) => {
 };
 
 module.exports.checkSession = async (req, res, next) => {
-  console.log('Checking for user session -- userId:', req.body.userId);
+  // console.log('Checking for user session -- userId:', req.body.userId);
 
   try {
     let [user, images] = await db.multi(
@@ -86,7 +86,7 @@ module.exports.checkSession = async (req, res, next) => {
       return res.json({ isLoggedIn: false });
     }
 
-    console.log('User ' + user.username + ' is logged in');
+    // console.log('User ' + user.username + ' is logged in');
 
     return res.json({
       isLoggedIn: true,

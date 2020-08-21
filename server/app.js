@@ -13,6 +13,7 @@ const userRouter = require('./users/userRouter');
 const guestRouter = require('./users/guestRouter');
 const authRouter = require('./userAuth/authRouter');
 const fileRouter = require('./fileServer/fileRouter');
+const notificationsRouter = require('./notifications/notificationsRouter');
 
 const app = express();
 app.use(cors());
@@ -28,12 +29,13 @@ const wsConfig = {
 const server = app.listen(3200);
 const wsServer = new ws.Server(wsConfig);
 wsServer.on('connection', (socket) => {
-  console.log('WS connection opened');
+  // console.log('WS connection opened');
   socket.on('message', (message) => {
-    console.log(`Received message => ${message.length < 100 ? message : '(long message)'}`);
+    console.log(message);
+    // console.log(`Received message => ${message.length < 100 ? message : '(long message)'}`);
     // if (message === 'Upload complete') socket.send(Buffer.from(JSON.stringify({ type: 'allFinished' })));
   });
-  socket.send('Connected!');
+  socket.send('PONG');
   app.locals.ws = socket;
 });
 
@@ -104,6 +106,7 @@ app.use('/', indexRouter);
 app.use('/user', userRouter);
 app.use('/auth', authRouter);
 app.use('/files', fileRouter);
+app.use('/notifications', notificationsRouter);
 app.use('/guest', guestRouter);
 
 const { UI } = require('bull-board');

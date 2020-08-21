@@ -485,7 +485,7 @@ module.exports.deleteImage = async (req, res, next) => {
       await axios.post(
         credentials.apiUrl + '/b2api/v1/b2_delete_file_version',
         {
-          fileName: image.fileName.replace('/full/', '/small/'),
+          fileName: image.fileName.replace('/full/', '/thumb/'),
           fileId: data.smallFileId,
         },
         { headers: { Authorization: credentials.authorizationToken } }
@@ -494,7 +494,8 @@ module.exports.deleteImage = async (req, res, next) => {
     } catch (err) {
       console.log('Error deleting file from B2:', err.response.data.message);
       if (err.response.data.code !== 'file_not_present') {
-        return res.json('An error occurred during file deletion');
+        // return res.json('An error occurred during file deletion');
+        return;
       }
     }
   };
@@ -563,29 +564,58 @@ module.exports.imgHandler = async (req, res, next) => {
   console.log('-------------------------');
   console.log(`Uploading ${req.files ? req.files.length : 0} ${req.files.length === 1 ? 'image' : 'images'} \n`);
 
-  const { emailSender } = require('../tasks');
+  const queues = require('../tasks');
 
   const imgCompressor = require('../tasks/imgCompressor');
   const uploader = require('../tasks/uploader');
   const dbWriter = require('../tasks/dbWriter');
+  const sendNotifications = require('../notifications');
 
   // Add file upload info to email notification queue
   const { guestId, userId } = req.body;
   const files = req.files;
   const imgPath = `${process.env.CDN_PATH}${userId}/thumb/${files[0].originalname}`;
 
-  emailSender.add('sendEmailNotification', {
+  queues.emailSender.add('sendEmailNotification', {
+    guestId,
+    fileCount: files.length,
+    imgPath,
+  });
+  queues.browserSender.add('sendBrowserNotification', {
+    userId,
     guestId,
     fileCount: files.length,
     imgPath,
   });
   // Files have reached server so send success response
-  files ? res.status(200).end() : res.status(500).end('Error uploading files')
+  files ? res.status(200).end() : res.status(500).end('Error uploading files');
 
   await getB2Auth(res);
+
   imgCompressor(req, res);
-  uploader(req, res);
+  uploader(req, res).then(sendNotifications());
   dbWriter(req, res);
+
+  // const jobsFinished = await Promise.all([
+  //   queues.imgCompressor.whenCurrentJobsFinished().then(() => {
+  //     return true;
+  //   }),
+  //   queues.uploader.whenCurrentJobsFinished().then(() => {
+  //     return true;
+  //   }),
+  //   queues.dbWriter.whenCurrentJobsFinished().then(() => {
+  //     return true;
+  //   }),
+  //   queues.emailSender.whenCurrentJobsFinished().then(() => {
+  //     return true;
+  //   }),
+  // ]);
+
+  // if (jobsFinished.every(() => true)) {
+  //   console.log('jobsFinished');
+  // }
+
+  // TODO - Detect when all tasks are done and console log a notice
 };
 
 // module.exports.getUploadAuth = getB2Auth;

@@ -57,7 +57,9 @@ module.exports.subscribeBrowser = async (req, res) => {
   // }
 };
 
-module.exports.sendBrowserNotifications = async (req, res, userId) => {
+module.exports.sendBrowserNotifications = async (data) => {
+  const { userId, guestId, imgPath, fileCount } = data;
+
   try {
     const result = await db.task(async (t) => {
       const user = await db.one('SELECT first_name, guest_id FROM users WHERE user_id = $1', [userId]);
@@ -71,16 +73,13 @@ module.exports.sendBrowserNotifications = async (req, res, userId) => {
       return console.log('No browser subscriptions found.');
     }
 
-    const guestId = result.user.guestId;
-
-    console.log('guestId: ', guestId);
     const payload = JSON.stringify({
-      title: `${result.user.firstName} just shared ${
-        res.locals.fileCount === 1 ? 'a' : res.locals.fileCount
-      } new photo${res.locals.fileCount > 1 ? 's' : ''}!`,
-      body: `Click to see ${res.locals.fileCount === 1 ? 'it' : 'them'}!`,
-      icon: res.locals.imgPath,
-      guestId: guestId,
+      title: `${result.user.firstName} just shared ${fileCount === 1 ? 'a' : fileCount} new photo${
+        fileCount > 1 ? 's' : ''
+      }!`,
+      body: `Click to see ${fileCount === 1 ? 'it' : 'them'}!`,
+      icon: imgPath,
+      guestId,
     });
 
     result.subscriptions.forEach((sub) => {
@@ -113,9 +112,10 @@ module.exports.sendBrowserNotifications = async (req, res, userId) => {
           }
         }
       });
-      console.log('Browser notifications sent!');
-      return res.end();
+      
+      return;
     });
+    console.log('Browser notifications sent!');
   } catch (err) {
     return console.log(err);
   }

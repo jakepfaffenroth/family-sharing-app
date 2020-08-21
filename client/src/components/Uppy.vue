@@ -92,7 +92,7 @@ export default {
     };
 
     rws.onopen = () => {
-      rws.send('hey');
+      rws.send('ping');
     };
 
     rws.onmessage = async (msg) => {
@@ -160,7 +160,7 @@ export default {
             return rws.send('Complete Confirmed');
           },
           default: () => {
-            return console.log('Message received =>', data);
+            return console.log(data);
           },
         };
         return (msgTypes[type] || msgTypes['default'])();

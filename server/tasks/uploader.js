@@ -1,7 +1,7 @@
 const path = require('path');
 const axios = require('axios');
 const crypto = require('crypto');
-const { uploader, dbWriter, emailSender } = require('./index');
+const { uploader, dbWriter, emailSender, cleanCompleted } = require('./index');
 
 const getB2UploadAuth = async (res) => {
   const bucketId = process.env.BUCKET_ID;
@@ -75,18 +75,42 @@ const upload = async (auth, data, ws) => {
       maxContentLength: Infinity,
       maxBodyLength: Infinity,
     });
+    if (uploadResponse.data.status === 503) {
+      uploader.pause();
+      await getB2UploadAuth(data.res);
+      uploader.resume();
+    }
 
     const src = process.env.CDN_PATH + filename;
     const thumbnail = process.env.CDN_PATH + filename.replace('/full/', '/thumb/');
 
     addToDbWriterQueue(uploadResponse.data, metadata, resolution, userId);
 
-    console.log(`✅ Status: ${uploadResponse.status} - ${filename} uploaded`);
+    const truncate = (str, truncLen, separator) => {
+      if (str.length <= truncLen) return str;
+
+      separator = separator || '...';
+
+      const sepLen = separator.length,
+        charsToShow = truncLen - sepLen,
+        frontChars = Math.ceil(charsToShow / 2),
+        backChars = Math.floor(charsToShow / 2);
+
+      return str.substr(0, frontChars) + separator + str.substr(str.length - backChars);
+    };
+
+    const loggingFileName = (str, truncLen) => {
+      const filenameArr = str.split('/').slice(1);
+      filenameArr[1] = truncate(filenameArr[1], truncLen);
+      return filenameArr.reverse().join(' -- ');
+    };
+    console.log(`✅ ${loggingFileName(filename, 30)} uploaded`);
     return {
       filename,
       src,
       thumbnail,
       metadata,
+      status: uploadResponse.status,
     };
   } catch (err) {
     console.log('err:', err);
@@ -98,13 +122,17 @@ module.exports = async (req, res) => {
   uploader.process('imgUploader', async (job) => {
     // Get upload auth token
     const auth = await getB2UploadAuth(res);
+    job.data.res = res;
     return upload(auth, job.data, ws);
   });
 
   uploader.on('completed', async (job, fileInfo) => {
     if (job.data.resolution === 'fullRes') {
-      const emailSender = require('../tasks/emailSender');
-      emailSender();
+      // Full version uploaded; send notifications
+      // const emailSender = require('../tasks/emailSender');
+      // emailSender();
+
+      // Send success response to client
       try {
         ws.send(
           Buffer.from(
@@ -124,6 +152,5 @@ module.exports = async (req, res) => {
       }
       // res.status(200).json(fileInfo).end();
     }
-    job.remove();
   });
 };

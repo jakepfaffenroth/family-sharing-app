@@ -48,7 +48,7 @@ const updateTimestamp = async (guestId, timeStamp) => {
 };
 
 // Sends guests subscription verification emails
-module.exports.subscribeEmail = async (req, res) => {
+module.exports.sendSubscribeEmail = async (req, res) => {
   let guest = req.body.guest;
 
   // Handle form data if coming from invalid link re-subscribe page
@@ -162,9 +162,8 @@ module.exports.verifyEmail = async (req, res, next) => {
 };
 
 // Send email notification
-module.exports.sendEmailNotification = async (data) => {
+module.exports.sendEmailNotifications = async (data) => {
   const { guestId, fileCount, imgPath } = data;
-  console.log('imgPath: ', imgPath);
   // Get guestId out of url path
   // const guestId = data.guestId;
   // const fileCount = data.fileCount;
@@ -231,18 +230,24 @@ module.exports.sendEmailNotification = async (data) => {
     };
 
     // Get email subscribers and send email to each
-    await db.each('SELECT email FROM subscribers WHERE owner_id = ${guestId} AND email IS NOT NULL', data, (row) => {
-      params.Destination.ToAddresses[0] = row.email.emailAddress;
+    const emailResult = await db.each(
+      'SELECT email FROM subscribers WHERE owner_id = ${guestId} AND email IS NOT NULL',
+      data,
+      (row) => {
+        params.Destination.ToAddresses[0] = row.email.emailAddress;
 
-      //Try to send the email.
-      ses.sendEmail(params, function (err, data) {
-        // If something goes wrong, print an error message.
-        if (err) {
-          console.log('err: ', err.message);
-        } else {
-          console.log('Email sent! Message ID: ', data.MessageId);
-        }
-      });
-    });
+        //Try to send the email.
+        ses.sendEmail(params, function (err, data) {
+          // If something goes wrong, print an error message.
+          if (err) {
+            console.log('err: ', err.message);
+          } else {
+            // console.log('Email sent! Message ID: ', data.MessageId);
+            return data.MessageId;
+          }
+        });
+      }
+    );
+    return emailResult;
   }
 };

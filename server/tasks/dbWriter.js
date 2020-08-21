@@ -66,6 +66,25 @@ module.exports = async (req, res) => {
   });
 
   dbWriter.on('completed', async (job, result) => {
-    console.log(`${job.data.fileName.split('/').slice(1).join('/')} written to the DB`);
+    const truncate = (str, truncLen, separator) => {
+      if (str.length <= truncLen) return str;
+
+      separator = separator || '...';
+
+      const sepLen = separator.length,
+        charsToShow = truncLen - sepLen,
+        frontChars = Math.ceil(charsToShow / 2),
+        backChars = Math.floor(charsToShow / 2);
+
+      return str.substr(0, frontChars) + separator + str.substr(str.length - backChars);
+    };
+
+    const loggingFileName = (str, truncLen) => {
+      const filenameArr = str.split('/').slice(1);
+      filenameArr[1] = truncate(filenameArr[1], truncLen);
+      return filenameArr.reverse().join(' -- ');
+    };
+
+    console.log(`🗄  ${loggingFileName(job.data.fileName, 30)} written to DB`);
   });
 };
