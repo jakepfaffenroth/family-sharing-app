@@ -43,7 +43,7 @@ export default {
         trigger: '#uppy-select-files',
         closeModalOnClickOutside: true,
         theme: 'auto',
-        inline: true,
+        inline: false,
         showProgressDetails: true,
         // hideProgressAfterFinish: false,
         locale: {
