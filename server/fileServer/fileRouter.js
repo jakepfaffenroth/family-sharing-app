@@ -28,7 +28,7 @@ router.post(
   fileController.b2Auth,
   multer({ storage: storage }).any(),
   fileController.imgHandler,
-  guestController.emailNotification
+  // guestController.emailNotification
 );
 
 // const { imgCompressor, uploader } = require('../tasks');

@@ -1,7 +1,8 @@
 const path = require('path');
 const axios = require('axios');
 const crypto = require('crypto');
-const { uploader, dbWriter, emailSender, cleanCompleted } = require('./index');
+const { uploader, dbWriter } = require('./index');
+const sendNotifications = require('../notifications');
 
 const getB2UploadAuth = async (res) => {
   const bucketId = process.env.BUCKET_ID;
@@ -151,6 +152,9 @@ module.exports = async (req, res) => {
         console.log('ws error:', err);
       }
       // res.status(200).json(fileInfo).end();
+    } else {
+      // Thumbnail is finished uploading - send notifications
+      sendNotifications();
     }
   });
 };

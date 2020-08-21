@@ -230,24 +230,19 @@ module.exports.sendEmailNotifications = async (data) => {
     };
 
     // Get email subscribers and send email to each
-    const emailResult = await db.each(
-      'SELECT email FROM subscribers WHERE owner_id = ${guestId} AND email IS NOT NULL',
-      data,
-      (row) => {
-        params.Destination.ToAddresses[0] = row.email.emailAddress;
+    await db.each('SELECT email FROM subscribers WHERE owner_id = ${guestId} AND email IS NOT NULL', data, (row) => {
+      params.Destination.ToAddresses[0] = row.email.emailAddress;
 
-        //Try to send the email.
-        ses.sendEmail(params, function (err, data) {
-          // If something goes wrong, print an error message.
-          if (err) {
-            console.log('err: ', err.message);
-          } else {
-            // console.log('Email sent! Message ID: ', data.MessageId);
-            return data.MessageId;
-          }
-        });
-      }
-    );
-    return emailResult;
+      //Try to send the email.
+      ses.sendEmail(params, function (err, data) {
+        // If something goes wrong, print an error message.
+        if (err) {
+          console.log('err: ', err.message);
+        } else {
+          console.log('Email sent! Message ID: ', data.MessageId);
+          // return data.MessageId;
+        }
+      });
+    });
   }
 };

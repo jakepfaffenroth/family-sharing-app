@@ -106,7 +106,7 @@ app.use('/', indexRouter);
 app.use('/user', userRouter);
 app.use('/auth', authRouter);
 app.use('/files', fileRouter);
-app.use('/notifications', notificationsRouter);
+// app.use('/notifications', notificationsRouter);
 app.use('/guest', guestRouter);
 
 const { UI } = require('bull-board');

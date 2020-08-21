@@ -16,6 +16,7 @@ module.exports.subscribeBrowser = async (req, res) => {
         "SELECT * FROM subscribers WHERE owner_id = $1 AND browser -> 'keys' ->> 'auth' = $2",
         [guestId, newSubscription.keys.auth]
       );
+      
       if (subscription) return res.status(200).send('Already subscribed to browser notifications');
       else {
         (async function () {

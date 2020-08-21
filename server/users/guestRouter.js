@@ -1,9 +1,11 @@
 const express = require('express');
 const router = express.Router();
 
-const notificationsController = require('./guestController');
+const guestController = require('./guestController');
 
-router.get('/verify-email', notificationsController.verifyEmail);
+router.post('/subscribe-email', guestController.subscribeEmail);
+router.post('/subscribe-browser', guestController.subscribeBrowser);
+router.get('/verify-email', guestController.verifyEmail);
 
 
 module.exports = router;

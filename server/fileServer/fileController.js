@@ -569,7 +569,7 @@ module.exports.imgHandler = async (req, res, next) => {
   const imgCompressor = require('../tasks/imgCompressor');
   const uploader = require('../tasks/uploader');
   const dbWriter = require('../tasks/dbWriter');
-  const sendNotifications = require('../notifications');
+  
 
   // Add file upload info to email notification queue
   const { guestId, userId } = req.body;
@@ -591,31 +591,10 @@ module.exports.imgHandler = async (req, res, next) => {
   files ? res.status(200).end() : res.status(500).end('Error uploading files');
 
   await getB2Auth(res);
-
   imgCompressor(req, res);
-  uploader(req, res).then(sendNotifications());
+  uploader(req, res)
   dbWriter(req, res);
 
-  // const jobsFinished = await Promise.all([
-  //   queues.imgCompressor.whenCurrentJobsFinished().then(() => {
-  //     return true;
-  //   }),
-  //   queues.uploader.whenCurrentJobsFinished().then(() => {
-  //     return true;
-  //   }),
-  //   queues.dbWriter.whenCurrentJobsFinished().then(() => {
-  //     return true;
-  //   }),
-  //   queues.emailSender.whenCurrentJobsFinished().then(() => {
-  //     return true;
-  //   }),
-  // ]);
-
-  // if (jobsFinished.every(() => true)) {
-  //   console.log('jobsFinished');
-  // }
 
   // TODO - Detect when all tasks are done and console log a notice
 };
-
-// module.exports.getUploadAuth = getB2Auth;

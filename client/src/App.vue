@@ -65,16 +65,6 @@
         </div>
       </div>
 
-      <!-- <vue-dropzone
-        v-if="userType == 'ownerX'"
-        ref="myVueDropzone"
-        id="dropzone"
-        :options="dropzoneOptions"
-        @vdropzone-sending="sendingEvent"
-        @vdropzone-success="updateImages"
-        @vdropzone-total-upload-progress="uploadProgress"
-        @vdropzone-error="uploadError"
-      /> -->
       <image-sorter v-on:sort-images="sortImages" />
 
       <vue-picture-swipe
@@ -95,8 +85,6 @@
 <script scoped>
 import axios from 'axios';
 import Uppy from './components/Uppy';
-// import vue2Dropzone from './components/VueDropzone';
-// import 'vue2-dropzone/dist/vue2Dropzone.min.css';
 import VuePictureSwipe from './components/VuePictureSwipe';
 import ImageSorter from './components/ImageSorter';
 import DownloadZip from './components/DownloadZip';
@@ -105,7 +93,6 @@ export default {
   props: {},
   components: {
     Uppy,
-    // vueDropzone: vue2Dropzone,
     VuePictureSwipe,
     ImageSorter,
     DownloadZip,
@@ -135,22 +122,6 @@ export default {
         browser: null,
         email: null,
       },
-      // dropzoneOptions: {
-      //   url: process.env.VUE_APP_SERVER + '/files/upload',
-      //   paramName: 'myFiles',
-      //   acceptedFiles: 'image/*',
-      //   timeout: 600000,
-      //   uploadMultiple: true,
-      //   parallelUploads: 200,
-      //   maxFilesize: 350,
-      //   thumbnailWidth: 120,
-      //   thumbnailHeight: 120,
-      //   thumbnailMethod: 'contain',
-      //   addRemoveLinks: true,
-      // },
-      // progress: '0%',
-      // bytesSent: 0,
-      // copyLinkText: 'Copy link',
     };
   },
   computed: {
@@ -211,7 +182,7 @@ export default {
         // console.log({message: JSON.stringify(subscription)});
 
         await axios({
-          url: this.server + '/notifications/subscribe-browser',
+          url: this.server + '/guest/subscribe-browser',
           method: 'POST',
           data: { subscription: JSON.stringify(subscription), guestId: this.user.guestId },
           headers: {
@@ -224,7 +195,7 @@ export default {
     },
 
     subscribeEmail() {
-      axios.post(this.server + '/notifications/subscribe-email', this.guest);
+      axios.post(this.server + '/guest/subscribe-email', this.guest);
     },
 
     async subscribe() {
@@ -302,8 +273,11 @@ export default {
         }
         return comparison;
       };
-
-      this.images.sort(compare);
+      try {
+        this.images.sort(compare);
+      } catch (err) {
+        console.log('err: ', err);
+      }
     },
 
     // uploadError(file, message, xhr) {
@@ -396,7 +370,7 @@ export default {
       const response = await axios({
         url: this.server + '/user/get-user',
         method: 'post',
-        data: { guestId: guestId },
+        data: { guestId },
       });
 
       this.user = response.data.user;
