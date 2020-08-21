@@ -1,63 +1,6 @@
 const webPush = require('web-push');
 const db = require('../db').pgPromise;
 
-module.exports.subscribeBrowser = async (req, res) => {
-  const publicVapidKey = process.env.PUBLIC_VAPID_KEY;
-  const privateVapidKey = process.env.PRIVATE_VAPID_KEY;
-
-  webPush.setVapidDetails('mailto:hello@jakepfaf.dev', publicVapidKey, privateVapidKey);
-
-  const newSubscription = JSON.parse(req.body.subscription);
-  const guestId = req.body.guestId;
-
-  try {
-    await db.task(async (t) => {
-      const subscription = await t.oneOrNone(
-        "SELECT * FROM subscribers WHERE owner_id = $1 AND browser -> 'keys' ->> 'auth' = $2",
-        [guestId, newSubscription.keys.auth]
-      );
-      
-      if (subscription) return res.status(200).send('Already subscribed to browser notifications');
-      else {
-        (async function () {
-          const newSub = await t.one('INSERT INTO subscribers (owner_id, browser) VALUES ($1, $2) RETURNING browser', [
-            guestId,
-            newSubscription,
-          ]);
-          console.log(newSub + ' saved.');
-          return res.status(200).send(newSub);
-        })();
-      }
-    });
-
-    // // Save subscriptions info to owner doc in DB
-    // // First need to see if guest has already subscribed
-    // const subscription = await db.one(
-    //   "SELECT * FROM subscribers WHERE owner_id = $1 AND browser -> 'keys' ->> 'auth' = $2",
-    //   [guestId, newSubscription.keys.auth]
-    // );
-    // if (foundSub) {
-    //   return res.status(200).send('Already subscribed to browser notifications');
-    // }
-  } catch (err) {
-    return console.log(err);
-  }
-  // try {
-  //   const subscription = await db.one('INSERT INTO subscribers (owner_id, browser) VALUES ($1, $2) RETURNING browser', [
-  //     guestId,
-  //     newSubscription,
-  //   ]);
-
-  //   if (subscription) {
-  //     console.log(subscription + ' saved.');
-  //   }
-
-  //   res.status(200).send(subscription);
-  // } catch (err) {
-  //   console.log(err);
-  // }
-};
-
 module.exports.sendBrowserNotifications = async (data) => {
   const { userId, guestId, imgPath, fileCount } = data;
 

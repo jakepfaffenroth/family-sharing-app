@@ -1,17 +1,11 @@
 const crypto = require('crypto');
-const algorithm = 'aes-256-cbc';
 const key = crypto.randomBytes(32);
 const iv = crypto.randomBytes(16);
 const webPush = require('web-push');
-const add = require('date-fns/add');
-const toDate = require('date-fns/toDate');
-const compareAsc = require('date-fns/compareAsc');
 require('dotenv').config();
 const db = require('../db').pgPromise;
 
 const AWS = require('aws-sdk');
-const { ForecastQueryService } = require('aws-sdk');
-const { sendSubscribeEmail } = require('../notifications/emailController');
 const credentials = {
   accessKeyId: process.env.AWS_ACCESS_KEY_ID,
   secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
@@ -143,7 +137,7 @@ module.exports.subscribeEmail = async (req, res) => {
         if (err) {
           console.log(err.message);
         } else {
-          console.log('Email sent! Message ID: ', data.MessageId);
+          console.log('Verification email sent! Message ID: ', data.MessageId);
         }
       });
 
@@ -177,7 +171,7 @@ module.exports.verifyEmail = async (req, res, next) => {
     { firstName: guest.firstName, lastName: guest.lastName, emailAddress: guest.email },
   ]);
 
-  console.log(newEmailSubscriber + ' saved.');
+  console.log(newEmailSubscriber.email.emailAddress + ' saved.');
 
   const guestLink = `${process.env.SERVER}/${guest.guestId}/guest`;
 
@@ -205,155 +199,11 @@ module.exports.subscribeBrowser = async (req, res) => {
           guestId,
           newSubscription,
         ]);
-        console.log(newSub + ' saved.');
+        console.log('New browser sub saved.');
         return res.status(200).send(newSub);
       })();
     }
-    // await db.task(async (t) => {
-    //   // TODO - INSERT should only run if subscription not found
-    //   const newSub = await t.one('INSERT INTO subscribers (owner_id, browser) VALUES ($1, $2) RETURNING browser', [
-    //     guestId,
-    //     newSubscription,
-    //   ]);
-    // });
-
-    // // Save subscriptions info to owner doc in DB
-    // // First need to see if guest has already subscribed
-    // const subscription = await db.one(
-    //   "SELECT * FROM subscribers WHERE owner_id = $1 AND browser -> 'keys' ->> 'auth' = $2",
-    //   [guestId, newSubscription.keys.auth]
-    // );
-    // if (foundSub) {
-    //   return res.status(200).send('Already subscribed to browser notifications');
-    // }
   } catch (err) {
     return console.log(err);
   }
-  // try {
-  //   const subscription = await db.one('INSERT INTO subscribers (owner_id, browser) VALUES ($1, $2) RETURNING browser', [
-  //     guestId,
-  //     newSubscription,
-  //   ]);
-
-  //   if (subscription) {
-  //     console.log(subscription + ' saved.');
-  //   }
-
-  //   res.status(200).send(subscription);
-  // } catch (err) {
-  //   console.log(err);
-  // }
 };
-
-// const updateTimestamp = async (guestId, timeStamp) => {
-//   try {
-//     const user = await db.one(
-//       'UPDATE users SET last_notification = $1 WHERE guest_id = $2 RETURNING last_notification',
-//       [timeStamp, guestId]
-//     );
-//   } catch (err) {
-//     console.log('Error:', err);
-//     return;
-//   }
-// };
-
-// // Send email notification
-// module.exports.emailNotification = async (req, res, next) => {
-//   // Get guestId out of url path
-//   const guestId = req.body.guestId;
-//   const timeStamp = toDate(Date.now()); // Convert numerical date to human-readable
-
-//   const user = await db.one('SELECT * FROM users WHERE guest_id = $1', [guestId]);
-
-//   // If last notification+1hr is later than the current timestamp,
-//   // timeComparison will equal 1 (else -1 or 0)
-//   const lastNotification = add(user.lastNotification, { hours: 1 });
-//   const timeComparison = compareAsc(lastNotification, timeStamp);
-
-//   // If less than one hour has passed since last notification, do not send another email
-//   if (timeComparison > 0) {
-//     console.log('\n🕑 Email notification sent within last hour\n');
-//     // return res.end();
-//     return
-//   }
-
-//   if (user) {
-//     await updateTimestamp(guestId, timeStamp);
-
-//     //  ---- CODE BELOW SENDS EMAILS
-//     const sender = `${user.firstName} ${user.lastName} (via Carousel) <notification@carousel.jakepfaf.dev>`;
-//     const subject = `New photo${res.locals.fileCount > 1 ? 's' : ''} shared!`;
-//     const body_text = `Go see ${res.locals.fileCount === 1 ? 'it' : 'them'}!` + req.body.shareUrl;
-//     const charset = 'UTF-8'; // The character encoding for the email.
-//     // The HTML body of the email.
-//     const body_html = `<html>
-//     <head></head>
-//     <body>
-//       <h1>${user.firstName} ${user.lastName} just shared ${
-//       res.locals.fileCount === 1 ? 'a' : res.locals.fileCount
-//     } new photo${res.locals.fileCount > 1 ? 's' : ''}!</h1>
-//       <p>Go see ${res.locals.fileCount === 1 ? 'it' : 'them'} here:</p>
-//         <a href='${process.env.SERVER}/${user.guest_id}/guest'>View Photo${res.locals.fileCount === 1 ? '' : 's'}</a>
-//         <img src=${res.locals.imgPath} />
-//     </body>
-//     </html>`;
-
-//     // Specify the parameters to pass to the API.
-//     let params = {
-//       Source: sender,
-//       Destination: {
-//         ToAddresses: [],
-//       },
-//       Message: {
-//         Subject: {
-//           Data: subject,
-//           Charset: charset,
-//         },
-//         Body: {
-//           Text: {
-//             Data: body_text,
-//             Charset: charset,
-//           },
-//           Html: {
-//             Data: body_html,
-//             Charset: charset,
-//           },
-//         },
-//       },
-//     };
-
-//     // Get email subscribers and send email to each
-//     await db.each(
-//       'SELECT email FROM subscribers WHERE owner_id = ${guestId} AND email IS NOT NULL',
-//       req.body,
-//       (row) => {
-//         params.Destination.ToAddresses[0] = row.email.emailAddress;
-
-//         //Try to send the email.
-//         ses.sendEmail(params, function (err, data) {
-//           // If something goes wrong, print an error message.
-//           if (err) {
-//             console.log('err: ', err.message);
-//           } else {
-//             console.log('Email sent! Message ID: ', data.MessageId);
-//           }
-//         });
-//       }
-//     );
-//     // emailSubscribers.forEach((email) => {
-//     //   console.log(email);
-//     //   params.Destination.ToAddresses[0] = email.email.emailAddress;
-
-//     //   //Try to send the email.
-//     //   ses.sendEmail(params, function (err, data) {
-//     //     // If something goes wrong, print an error message.
-//     //     if (err) {
-//     //       console.log('err: ', err.message);
-//     //     } else {
-//     //       console.log('Email sent! Message ID: ', data.MessageId);
-//     //     }
-//     //   });
-//     // });
-//   }
-//   res.end();
-// };

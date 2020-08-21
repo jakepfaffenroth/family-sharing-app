@@ -13,7 +13,6 @@ const userRouter = require('./users/userRouter');
 const guestRouter = require('./users/guestRouter');
 const authRouter = require('./userAuth/authRouter');
 const fileRouter = require('./fileServer/fileRouter');
-const notificationsRouter = require('./notifications/notificationsRouter');
 
 const app = express();
 app.use(cors());
@@ -106,7 +105,6 @@ app.use('/', indexRouter);
 app.use('/user', userRouter);
 app.use('/auth', authRouter);
 app.use('/files', fileRouter);
-// app.use('/notifications', notificationsRouter);
 app.use('/guest', guestRouter);
 
 const { UI } = require('bull-board');
