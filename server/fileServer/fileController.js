@@ -7,6 +7,7 @@ const fs = require('fs');
 const { Readable, Writable } = require('stream');
 const sharp = require('sharp');
 const exif = require('exif-reader');
+const { dbWriter } = require('../tasks');
 const db = require('../db').pgPromise;
 
 const appKeyId = process.env.KEY_ID;
@@ -45,26 +46,63 @@ const getB2Auth = async (res) => {
   return auth;
 };
 
-const compressImages = async (files, sharpParams) => {
+const compressImages = async (http, files, sharpParams) => {
+  const ws = http.req.app.locals.ws;
+
   let count = 0;
-  files.files.forEach((fileObject) => {
+
+  files.files.forEach(async (fileObject) => {
+    console.log('fileObject: ', fileObject);
+    if (sharpParams.compression != 100) {
+      ws.send(
+        Buffer.from(
+          JSON.stringify({
+            type: 'statusUpdate',
+            msg: 'Generating thumbnail...',
+            uppyFileId: http.req.body.uppyFileId,
+            filename: fileObject.originalname,
+          })
+        )
+      );
+    }
+    console.log('fileObject.buffer.length: ', fileObject.buffer.length);
     const output = sharp(fileObject.buffer);
+
+    // let imageStreamFull, imageStreamSmall;
+    // const pipeline = sharp().rotate().withMetadata();
+    // pipeline.clone().jpeg().pipe(imageStreamFull);
+    // pipeline
+    //   .clone()
+    //   .resize({
+    //     width: 800,
+    //     height: 800,
+    //     fit: sharp.fit.inside,
+    //     withoutEnlargement: true
+    //   })
+    //   .jpeg({ quality: 80 })
+    //   .pipe(imageStreamSmall);
+    // fileObject.buffer.pipe(pipeline);
+
+    // console.log('imageStreamFull: ', imageStreamFull);
+    // console.log('imageStreamSmall: ', imageStreamSmall);
+    // return
 
     return (
       output
-        .rotate()
-        .resize({
-          width: sharpParams.longEdge,
-          height: sharpParams.longEdge,
-          fit: sharp.fit.inside,
-          withoutEnlargement: true,
-        })
-        // .sharpen()
-        .jpeg({ quality: sharpParams.compression })
+        // .rotate()
+        // .resize({
+        //   width: sharpParams.longEdge,
+        //   height: sharpParams.longEdge,
+        //   fit: sharp.fit.inside,
+        //   withoutEnlargement: true,
+        // })
+        // // .sharpen()
+        // .jpeg({ quality: sharpParams.compression })
         .withMetadata()
         .toBuffer()
 
         .then(function (data) {
+          console.log('data.length: ', data.length);
           fileObject.buffer = data;
           fileObject.size = data.length;
           count++;
@@ -79,6 +117,19 @@ const compressImages = async (files, sharpParams) => {
 };
 
 const uploadFiles = async (auth, fileObject, req, isLowRes) => {
+  const ws = req.app.locals.ws;
+  isLowRes
+    ? null
+    : ws.send(
+        Buffer.from(
+          JSON.stringify({
+            type: 'statusUpdate',
+            msg: 'Saving image...',
+            uppyFileId: req.body.uppyFileId,
+            filename: fileObject.originalname,
+          })
+        )
+      );
   // Uploads images to B2 storage
   let source = fileObject.buffer;
   let fileSize = fileObject.size;
@@ -186,13 +237,13 @@ const sendBrowserNotifications = async (res, userId) => {
       );
       return { user, subscriptions };
     });
-
     if (result.subscriptions.length === 0) {
       return console.log('No browser subscriptions found.');
     }
 
     const guestId = result.user.guestId;
 
+    console.log('guestId: ', guestId);
     const payload = JSON.stringify({
       title: `${result.user.firstName} just shared ${
         res.locals.fileCount === 1 ? 'a' : res.locals.fileCount
@@ -245,11 +296,15 @@ const sendNotifications = async (res, userId) => {
 };
 
 const processImages = async (http, auth, files, sharpParams) => {
+  const ws = http.req.app.locals.ws;
   // If longEdge is null, image is full res
   const isLowRes = sharpParams.longEdge ? true : false;
-  await compressImages(files, sharpParams);
+  // isLowRes ? ws.send(Buffer.from(JSON.stringify({ type: 'statusUpdate', msg: 'Generating thumbnail...', uppyFileId: http.req.body.uppyFileId }))); : null;
+  await compressImages(http, files, sharpParams);
 
   for (const fileObject of files.files) {
+    // console.log('http.req.body: ', http.req.body);
+    // console.log('fileObject: ', typeof fileObject, fileObject);
     const uploadResponse = await uploadFiles(auth, fileObject, http.req, isLowRes);
     const dimensions = await getImageDimensions(fileObject);
     const exif = await getExif(fileObject);
@@ -263,10 +318,23 @@ const processImages = async (http, auth, files, sharpParams) => {
       fileInfo.src = process.env.CDN_PATH + fileInfo.fileName;
       fileInfo.thumbnail = process.env.CDN_PATH + fileInfo.fileName.replace('/full/', '/small/');
       files.finished.push(fileInfo);
+
+      ws.send(
+        Buffer.from(
+          JSON.stringify({
+            type: 'fileFinished',
+            uppyFileId: http.req.body.uppyFileId,
+            filename: fileObject.originalname,
+          })
+        )
+      );
     }
+    // if (fileInfo && !isLowRes) {
+    //   ws.send(`File ${files.files.indexOf(fileObject)+1} of ${files.files.length} complete`);
+    // }
   }
 
-  isLowRes ? (http.res.locals.imgPath = files.finished[0].thumbnail) : null; // store an example image path to use in notifications
+  isLowRes ? (http.res.locals.imgPath = files.finished[0].thumbnail) : null; // Store an example image path to use in notifications;
 };
 
 // ------------------------------------------
@@ -302,6 +370,20 @@ module.exports.b2Auth = (req, res, next) => {
 };
 
 module.exports.upload = async (req, res, next) => {
+  const ws = req.app.locals.ws;
+  req.files.forEach((file) => {
+    ws.send(
+      Buffer.from(
+        JSON.stringify({
+          type: 'fileUploaded',
+          msg: 'Processing...',
+          uppyFileId: req.body.uppyFileId,
+          filename: file.originalname,
+        })
+      )
+    );
+  });
+  res.status(200).end();
   const userId = req.body.userId;
   const files = req.files;
   const finishedFiles = [];
@@ -326,7 +408,7 @@ module.exports.upload = async (req, res, next) => {
     { files: files, finished: finishedFiles },
     { longEdge: null, compression: 100 }
   );
-  console.log('finishedFiles: ', finishedFiles);
+
   // Process small versions
   await processImages(
     { req: req, res: res },
@@ -335,9 +417,11 @@ module.exports.upload = async (req, res, next) => {
     { longEdge: 800, compression: 80 }
   );
 
-  await sendNotifications(res, userId);
-  console.log('finishedFiles: ', finishedFiles);
-  res.status(200).json(finishedFiles);
+  sendNotifications(res, userId);
+  await ws.on('message', (message) => {
+    console.log(`Received message => ${message.length < 100 ? message : '(long message)'}`);
+  });
+  // res.status(200).json(finishedFiles);
   next();
 };
 
@@ -370,7 +454,6 @@ module.exports.deleteImage = async (req, res, next) => {
   const credentials = res.locals.credentials;
 
   const deleteImage = async (image) => {
-    console.log('image: ', image);
     let data;
     // Remove image info from database
     try {
@@ -402,7 +485,7 @@ module.exports.deleteImage = async (req, res, next) => {
       await axios.post(
         credentials.apiUrl + '/b2api/v1/b2_delete_file_version',
         {
-          fileName: image.fileName.replace('/full/', '/small/'),
+          fileName: image.fileName.replace('/full/', '/thumb/'),
           fileId: data.smallFileId,
         },
         { headers: { Authorization: credentials.authorizationToken } }
@@ -411,7 +494,8 @@ module.exports.deleteImage = async (req, res, next) => {
     } catch (err) {
       console.log('Error deleting file from B2:', err.response.data.message);
       if (err.response.data.code !== 'file_not_present') {
-        return res.json('An error occurred during file deletion');
+        // return res.json('An error occurred during file deletion');
+        return;
       }
     }
   };
@@ -471,4 +555,46 @@ module.exports.getStorageSize = async (req, res) => {
   let gigabytes = (megabytes / 1024).toFixed(2);
 
   res.json([kilobytes + ' KB', megabytes + ' MB', gigabytes + ' GB']);
+};
+
+module.exports.imgHandler = async (req, res, next) => {
+  console.log('\n');
+  console.log('-------------------------');
+  console.log('🔵 STARTING IMAGE UPLOAD 🔵');
+  console.log('-------------------------');
+  console.log(`Uploading ${req.files ? req.files.length : 0} ${req.files.length === 1 ? 'image' : 'images'} \n`);
+
+  const queues = require('../tasks');
+
+  const imgCompressor = require('../tasks/imgCompressor');
+  const uploader = require('../tasks/uploader');
+  const dbWriter = require('../tasks/dbWriter');
+  
+
+  // Add file upload info to email notification queue
+  const { guestId, userId } = req.body;
+  const files = req.files;
+  const imgPath = `${process.env.CDN_PATH}${userId}/thumb/${files[0].originalname}`;
+
+  queues.emailSender.add('sendEmailNotification', {
+    guestId,
+    fileCount: files.length,
+    imgPath,
+  });
+  queues.browserSender.add('sendBrowserNotification', {
+    userId,
+    guestId,
+    fileCount: files.length,
+    imgPath,
+  });
+  // Files have reached server so send success response
+  files ? res.status(200).end() : res.status(500).end('Error uploading files');
+
+  await getB2Auth(res);
+  imgCompressor(req, res);
+  uploader(req, res)
+  dbWriter(req, res);
+
+
+  // TODO - Detect when all tasks are done and console log a notice
 };

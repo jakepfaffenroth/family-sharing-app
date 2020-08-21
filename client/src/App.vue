@@ -4,10 +4,13 @@
       <!-- Owner header and navigation -->
       <div v-if="userType == 'owner'">
         <h1>Welcome Back, {{ user.firstName }}</h1>
-        <button @click="logout" class="link">Log out</button>
-        <button @click="ownerShare" class="link">Share</button>
-        <button @click="nuke" class="link">Nuke</button>
-        <download-zip :images="images" />
+        <nav id="owner-menu">
+          <button @click="logout" class="link">Log out</button>
+          <button @click="ownerShare" class="link">Share</button>
+          <button @click="nuke" class="link">Nuke</button>
+          <download-zip :images="images" />
+          <uppy :user="user" @update-images="updateImages"></uppy>
+        </nav>
 
         <div v-if="shareUrl" class="share-modal">
           <h3>Your personal link to share:</h3>
@@ -62,16 +65,6 @@
         </div>
       </div>
 
-      <vue-dropzone
-        v-if="userType == 'owner'"
-        ref="myVueDropzone"
-        id="dropzone"
-        :options="dropzoneOptions"
-        @vdropzone-sending="sendingEvent"
-        @vdropzone-success="updateImages"
-        @vdropzone-total-upload-progress="uploadProgress"
-        @vdropzone-error="uploadError"
-      />
       <image-sorter v-on:sort-images="sortImages" />
 
       <vue-picture-swipe
@@ -91,8 +84,7 @@
 
 <script scoped>
 import axios from 'axios';
-import vue2Dropzone from './components/VueDropzone';
-import 'vue2-dropzone/dist/vue2Dropzone.min.css';
+import Uppy from './components/Uppy';
 import VuePictureSwipe from './components/VuePictureSwipe';
 import ImageSorter from './components/ImageSorter';
 import DownloadZip from './components/DownloadZip';
@@ -100,7 +92,7 @@ import DownloadZip from './components/DownloadZip';
 export default {
   props: {},
   components: {
-    vueDropzone: vue2Dropzone,
+    Uppy,
     VuePictureSwipe,
     ImageSorter,
     DownloadZip,
@@ -130,22 +122,6 @@ export default {
         browser: null,
         email: null,
       },
-      dropzoneOptions: {
-        url: process.env.VUE_APP_SERVER + '/files/upload',
-        paramName: 'myFiles',
-        acceptedFiles: 'image/*',
-        timeout: 600000,
-        uploadMultiple: true,
-        parallelUploads: 200,
-        maxFilesize: 350,
-        thumbnailWidth: 120,
-        thumbnailHeight: 120,
-        thumbnailMethod: 'contain',
-        addRemoveLinks: true,
-      },
-      progress: '0%',
-      bytesSent: 0,
-      // copyLinkText: 'Copy link',
     };
   },
   computed: {
@@ -188,7 +164,6 @@ export default {
       if ('serviceWorker' in navigator) {
         let register;
         // If statement to conditionally register production vs dev service workers
-        console.log('process.env.SERVER: ', process.env.VUE_APP_SERVER);
         if (process.env.VUE_APP_SERVER == 'http://localhost:3400') {
           register = await navigator.serviceWorker.register('/devSw.js', {
             scope: '/',
@@ -242,32 +217,35 @@ export default {
         .catch((error) => console.log(`Error in promises ${error}`));
     },
 
-    sendingEvent(file, xhr, formData) {
-      if (!formData.get('userId')) {
-        formData.append('userId', this.user.userId);
-      }
-      if (!formData.get('guestId')) {
-        formData.append('guestId', this.user.guestId);
-      }
+    // sendingEvent(file, xhr, formData) {
+    //   if (!formData.get('userId')) {
+    //     formData.append('userId', this.user.userId);
+    //   }
+    //   if (!formData.get('guestId')) {
+    //     formData.append('guestId', this.user.guestId);
+    //   }
+    // },
+
+    updateImages(fileInfo) {
+      console.log('filename: ', fileInfo.body);
+      // const info = {src: process.env.VUE_APP_CDN + filename}
+      // src, thumbnail, uploadtime, exif.exif.DateTimeOriginal
+
+      // for (let i = 0; i < filename.length; i++) {
+      //   response[i].thumbnail.replace(/\/full\//, '/small/');
+      //   console.log('response[i]: ', response[i]);
+      //   this.images.unshift(response[i]);
+      //   response.splice(i, 1);
+      // }
+      // this.$refs.myVueDropzone.removeFile(file);
+      // this.progress = '0%';
     },
 
-    updateImages(file, response) {
-      console.log('response: ', response);
-      for (let i = 0; i < response.length; i++) {
-        response[i].thumbnail.replace(/\/full\//, '/small/');
-        console.log('response[i]: ', response[i]);
-        this.images.unshift(response[i]);
-        response.splice(i, 1);
-      }
-      this.$refs.myVueDropzone.removeFile(file);
-      this.progress = '0%';
-    },
-
-    uploadProgress(progress, totalBytes, bytesSent) {
-      this.progress = `${progress.toFixed(2)}%`;
-      this.bytesSent = bytesSent;
-      this.progress >= 100 ? (this.progress = 0) : null;
-    },
+    // uploadProgress(progress, totalBytes, bytesSent) {
+    //   this.progress = `${progress.toFixed(2)}%`;
+    //   this.bytesSent = bytesSent;
+    //   this.progress >= 100 ? (this.progress = 0) : null;
+    // },
 
     sortImages(sortParameter) {
       if (sortParameter === 'reverse') {
@@ -295,28 +273,30 @@ export default {
         }
         return comparison;
       };
-
-      this.images.sort(compare);
+      try {
+        this.images.sort(compare);
+      } catch (err) {
+        console.log('err: ', err);
+      }
     },
 
-    uploadError(file, message, xhr) {
-      console.log('Upload Error: ', message, xhr);
-    },
+    // uploadError(file, message, xhr) {
+    //   console.log('Upload Error: ', message, xhr);
+    // },
 
     ownerShare() {
       this.shareUrl = `${this.server}/${this.user.guestId}/guest`;
     },
 
     async deleteImage(fileId, smallFileId, fileName, userId, index) {
-      console.log(fileId, fileName);
       this.images.splice(index, 1);
       axios.post(this.server + '/files/delete-image', { fileId: fileId, fileName: fileName, userId: userId });
     },
 
     logout() {
       axios.get(this.server + '/logout');
-      document.cookie = 'ownerId=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
-      document.cookie = 'connect.sid=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+      document.cookie = 'ownerId=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;Secure';
+      document.cookie = 'connect.sid=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;Secure';
       window.location.replace(this.server + '/login');
     },
   },
@@ -377,7 +357,6 @@ export default {
       if (!response.data.isLoggedIn) {
         window.location = this.server + '/login';
       }
-      console.log('response.data: ', response.data);
       this.userType = 'owner';
       this.user = response.data.user;
       this.sortImages('uploadTime');
@@ -391,13 +370,11 @@ export default {
       const response = await axios({
         url: this.server + '/user/get-user',
         method: 'post',
-        data: { guestId: guestId },
+        data: { guestId },
       });
 
       this.user = response.data.user;
       this.images = response.data.images.reverse();
-      console.log('this.user: ', this.user);
-      console.log('this.images: ', this.images);
       this.isReadyToRender = true;
       this.sortImages('uploadTime');
     }
@@ -411,12 +388,16 @@ export default {
 </script>
 
 <style scoped>
-#dropzone {
-  width: 60vw;
-  margin: auto;
+#owner-menu {
+  display: flex;
 }
 
-#progress {
+/* #dropzone {
+  width: 60vw;
+  margin: auto;
+} */
+
+/* #progress {
   width: 100%;
   background-color: grey;
   border: 1px solid black;
@@ -425,7 +406,7 @@ export default {
 #progress-bar {
   height: 30px;
   background-color: green;
-}
+} */
 
 .link {
   border: none;
@@ -438,12 +419,6 @@ export default {
 
 .image-grid {
   margin-top: 1rem;
-}
-
-#silentbox-gallery {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
 }
 
 .image-container {

@@ -10,12 +10,16 @@ const db = require('../db').pgPromise;
 passport.use(
   new LocalStrategy(async (username, password, done) => {
     const user = await db.oneOrNone('SELECT * FROM users WHERE username = $1', [username]);
-    console.log('User: ', user);
+
+    if (!user) {
+      return done(null, user, {
+        msg: 'Incorrect username',
+      });
+    }
     bcrypt.compare(password, user.password, (err, res) => {
       if (res) {
         // passwords match! log user in
         console.log('password correct!');
-        console.log('res: ', user);
         return done(null, user);
       } else {
         console.log('password incorrect...');
@@ -34,7 +38,7 @@ module.exports.login = (req, res, next) => {
     if (err) {
       return next(err);
     }
-    if (user.length === 0) {
+    if (!user || user.length === 0) {
       res.locals.incorrectCred = true;
       return res.redirect('../login?q=true');
     }
@@ -48,9 +52,7 @@ module.exports.login = (req, res, next) => {
       // Send user info back to client as JSON
       // res.status(200).json(response);
       // return res.redirect(client + '/private-space');
-      console.log('req: ', req.session);
       const userId = JSON.stringify(req.session.passport.user.userId).replace(/"/g, '');
-      console.log('userId: ', userId);
       // Set cookie on client with user.userId
       res.cookie('ownerId', userId, { maxAge: 1000 * 60 * 60 * 24 * 7 });
       res.redirect(process.env.CLIENT + '?user=' + userId);
@@ -69,7 +71,7 @@ module.exports.logout = (req, res) => {
 };
 
 module.exports.checkSession = async (req, res, next) => {
-  console.log('Checking for user session -- userId:', req.body.userId);
+  // console.log('Checking for user session -- userId:', req.body.userId);
 
   try {
     let [user, images] = await db.multi(
@@ -84,7 +86,7 @@ module.exports.checkSession = async (req, res, next) => {
       return res.json({ isLoggedIn: false });
     }
 
-    console.log('User ' + user.username + ' is logged in');
+    // console.log('User ' + user.username + ' is logged in');
 
     return res.json({
       isLoggedIn: true,

@@ -2,25 +2,54 @@ const createError = require('http-errors');
 const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
-const bodyParser = require('body-parser');
 const logger = require('morgan');
 
 const cors = require('cors');
-const axios = require('axios');
 const passport = require('passport');
 const session = require('express-session');
-require('dotenv').config();
-const client = process.env.CLIENT;
 
 const indexRouter = require('./indexRouter');
 const userRouter = require('./users/userRouter');
 const guestRouter = require('./users/guestRouter');
 const authRouter = require('./userAuth/authRouter');
 const fileRouter = require('./fileServer/fileRouter');
-// const { User } = require('./users/userModel');
 
 const app = express();
 app.use(cors());
+
+const ws = require('ws');
+// Set up a headless websocket server that prints any
+// events that come in.
+const wsConfig = {
+  noServer: true,
+  // path: '/files/upload',
+  // server: app,
+};
+const server = app.listen(3200);
+const wsServer = new ws.Server(wsConfig);
+wsServer.on('connection', (socket) => {
+  // console.log('WS connection opened');
+  socket.on('message', (message) => {
+    console.log(message);
+    // console.log(`Received message => ${message.length < 100 ? message : '(long message)'}`);
+    // if (message === 'Upload complete') socket.send(Buffer.from(JSON.stringify({ type: 'allFinished' })));
+  });
+  socket.send('PONG');
+  app.locals.ws = socket;
+});
+
+wsServer.on('close', (code, reason) => {
+  console.log('connection closed.', code, reason);
+});
+wsServer.on('error', (err) => {
+  console.log('websocket error: ', err);
+});
+
+server.on('upgrade', (request, socket, head) => {
+  wsServer.handleUpgrade(request, socket, head, (socket) => {
+    wsServer.emit('connection', socket, request);
+  });
+});
 
 const db = require('./db').pgPromise;
 const pgSession = require('connect-pg-simple')(session);
@@ -78,6 +107,9 @@ app.use('/auth', authRouter);
 app.use('/files', fileRouter);
 app.use('/guest', guestRouter);
 
+const { UI } = require('bull-board');
+app.use('/admin/bull', UI);
+
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
   next(createError(404));
@@ -90,8 +122,7 @@ app.use(function (err, req, res, next) {
   res.locals.error = req.app.get('env') === 'development' ? err : {};
 
   // render the error page
-  res.status(err.status || 500);
-  res.render('error');
+  res.status(err.status || 500).json({ msg: err.message, status: err.status, stack: err.stack });
 });
 
 module.exports = app;

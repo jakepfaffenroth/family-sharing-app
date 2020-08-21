@@ -17,9 +17,8 @@ router.get('/signup', (req, res) => {
 });
 
 router.get('/login', (req, res) => {
-  console.log('test')
-  // req.query.q ? (isErrVisible = true) : (isErrVisible = false);
-  res.render('login', { loginUrl: process.env.SERVER + '/auth/login', /*errMsg: isErrVisible*/ });
+  req.query.q ? (isErrVisible = true) : (isErrVisible = false);
+  res.render('login', { loginUrl: process.env.SERVER + '/auth/login', errMsg: isErrVisible });
 });
 
 router.get('/:gId/guest', guestController.mark);
@@ -32,5 +31,6 @@ router.get('/logout', (req, res) => {
   res.redirect('/login');
   console.log('Logged out');
 });
+
 
 module.exports = router;
