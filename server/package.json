@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node -r /node_modules/dotenv/config ./bin/www dotenv_config_path=/bin/.env.production",
+    "start": "node -r ./bin/config ./bin/www",
     "debug": "DEBUG=server:* npm run dev",
     "dev": "nodemon --config ./bin/nodemon.json -r ./bin/config ./bin/www"
   },
