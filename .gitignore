@@ -12,6 +12,6 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
-populateGuestIds.js
+populateGuestIds*
 ngrok
 server/logs/error.log

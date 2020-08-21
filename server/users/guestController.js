@@ -2,7 +2,7 @@ const crypto = require('crypto');
 const key = crypto.randomBytes(32);
 const iv = crypto.randomBytes(16);
 const webPush = require('web-push');
-require('dotenv').config();
+// require('dotenv').config({ path: './bin/.env' });
 const db = require('../db').pgPromise;
 
 const AWS = require('aws-sdk');

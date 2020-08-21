@@ -2,7 +2,7 @@
 const passport = require('passport');
 const LocalStrategy = require('passport-local');
 const bcrypt = require('bcryptjs');
-require('dotenv').config();
+// require('dotenv').config({ path: './bin/.env' });
 
 const db = require('../db').pgPromise;
 

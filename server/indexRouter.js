@@ -5,7 +5,7 @@ const router = express.Router();
 const userController = require('./users/userController');
 const guestController = require('./users/guestController');
 const notificationsController = require('./notifications/notificationsController');
-require('dotenv').config();
+// require('dotenv').config({ path: './bin/.env' });
 
 /* GET home page. */
 router.get('/', (req, res, next) => {
@@ -31,6 +31,5 @@ router.get('/logout', (req, res) => {
   res.redirect('/login');
   console.log('Logged out');
 });
-
 
 module.exports = router;

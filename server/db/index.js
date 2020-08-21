@@ -1,4 +1,4 @@
-require('dotenv').config();
+// require('dotenv').config({ path: './bin/.env'});
 const fs = require('fs');
 const format = require('date-fns/format');
 

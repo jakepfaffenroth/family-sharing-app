@@ -1,0 +1,4 @@
+{
+  "ext": "js,json,hbs,development",
+  "watch": ["./bin/.env.development", "."]
+}

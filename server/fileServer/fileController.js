@@ -1,4 +1,4 @@
-require('dotenv').config();
+// require('dotenv').config({ path: './bin/.env' });
 const axios = require('axios');
 const crypto = require('crypto');
 const webPush = require('web-push');
@@ -569,7 +569,6 @@ module.exports.imgHandler = async (req, res, next) => {
   const imgCompressor = require('../tasks/imgCompressor');
   const uploader = require('../tasks/uploader');
   const dbWriter = require('../tasks/dbWriter');
-  
 
   // Add file upload info to email notification queue
   const { guestId, userId } = req.body;
@@ -592,9 +591,8 @@ module.exports.imgHandler = async (req, res, next) => {
 
   await getB2Auth(res);
   imgCompressor(req, res);
-  uploader(req, res)
+  uploader(req, res);
   dbWriter(req, res);
-
 
   // TODO - Detect when all tasks are done and console log a notice
 };
