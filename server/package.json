@@ -3,9 +3,9 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node -r ./bin/config ./bin/www",
+    "start": "nodemon -r ./bin/config.production ./bin/www",
     "debug": "DEBUG=server:* npm run dev",
-    "dev": "nodemon --config ./bin/nodemon.json -r ./bin/config ./bin/www"
+    "dev": "nodemon --config ./bin/nodemon.json -r ./bin/config.development ./bin/www"
   },
   "dependencies": {
     "aws-sdk": "^2.718.0",
