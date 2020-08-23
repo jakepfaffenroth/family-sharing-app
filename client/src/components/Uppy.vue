@@ -77,7 +77,7 @@ export default {
       uppy.getPlugin('Dashboard').openModal();
     };
 
-    const rws = new ReconnectingWebSocket(process.env.VUE_APP_SERVER.replace('https', 'wss'));
+    const rws = new ReconnectingWebSocket(process.env.VUE_APP_WSS);
 
     rws.onclose = () => {
       console.log('WebSocket is closed.');
