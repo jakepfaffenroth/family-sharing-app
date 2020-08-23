@@ -27,17 +27,17 @@ const wsConfig = {
   // path: '/files/upload',
   // server: app,
 };
-const server = app.listen(3200);
 const wsServer = new ws.Server(wsConfig);
 wsServer.on('connection', (socket) => {
+  app.locals.ws = socket;
+  console.log('app.locals: ', app.locals);
   // console.log('WS connection opened');
   socket.on('message', (message) => {
     msg(message);
     // console.log(`Received message => ${message.length < 100 ? message : '(long message)'}`);
     // if (message === 'Upload complete') socket.send(Buffer.from(JSON.stringify({ type: 'allFinished' })));
+    socket.send('pong');
   });
-  socket.send('pong');
-  app.locals.ws = socket;
 });
 
 wsServer.on('close', (code, reason) => {
@@ -47,6 +47,7 @@ wsServer.on('error', (err) => {
   error('websocket error: ', err);
 });
 
+const server = app.listen(3200);
 server.on('upgrade', (request, socket, head) => {
   wsServer.handleUpgrade(request, socket, head, (socket) => {
     wsServer.emit('connection', socket, request);

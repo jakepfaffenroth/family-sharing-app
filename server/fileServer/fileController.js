@@ -508,7 +508,7 @@ module.exports.deleteImage = async (req, res, next) => {
   req.body.images.forEach((image) => {
     deleteImage({ fileId: image.fileId, fileName: image.fileName, userId: req.body.userId });
   });
-  res.status(200).end('ok');
+  res.status(200).json('Deleted');
 };
 
 // TODO - Downloads corrupt file - encoding problem?
@@ -557,6 +557,7 @@ module.exports.getStorageSize = async (req, res) => {
 };
 
 module.exports.imgHandler = async (req, res, next) => {
+  console.log('req.app.locals: ', req.app.locals);
   // info('\n');
   info('-------------------------');
   info('🔵 STARTING IMAGE UPLOAD 🔵');
@@ -585,13 +586,13 @@ module.exports.imgHandler = async (req, res, next) => {
     fileCount: files.length,
     imgPath,
   });
-  // Files have reached server so send success response
-  files ? res.status(200).json('ok') : res.status(500).end('Error uploading files');
 
   await getB2Auth(res);
   imgCompressor(req, res);
   uploader(req, res);
   dbWriter(req, res);
+  // Files have reached server so send success response
+  files ? res.status(200).json('ok') : res.status(500).end('Error uploading files');
 
   // TODO - Detect when all tasks are done and console log a notice
 };

@@ -138,6 +138,7 @@ module.exports = async (req, res) => {
 
       // Send success response to client
       try {
+        // console.log('req.app.locals: ', req.app.locals);
         ws.send(
           Buffer.from(
             JSON.stringify({
