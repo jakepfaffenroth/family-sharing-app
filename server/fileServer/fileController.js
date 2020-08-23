@@ -557,7 +557,6 @@ module.exports.getStorageSize = async (req, res) => {
 };
 
 module.exports.imgHandler = async (req, res, next) => {
-  console.log('req.app.locals: ', req.app.locals);
   // info('\n');
   info('-------------------------');
   info('🔵 STARTING IMAGE UPLOAD 🔵');
