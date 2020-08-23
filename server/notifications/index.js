@@ -1,7 +1,7 @@
-const sendEmails = require('../tasks/emailSender');
+const sendEmailNotifications = require('../tasks/emailSender');
 const sendBrowser = require('../tasks/browserSender');
 
 module.exports = async (req, res) => {
-  sendEmails(req, res);
+  sendEmailNotifications();
   sendBrowser(req, res);
 };

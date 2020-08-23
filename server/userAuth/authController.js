@@ -63,9 +63,9 @@ module.exports.login = (req, res, next) => {
 module.exports.logout = (req, res) => {
   req.logout();
   res.cookie('ownerId', '', { expires: new Date(0) });
-  console.log('Logged out');
+  info('Logged out');
   req.session.destroy((err) => {
-    console.log('Session destroy error:', err);
+    error('Session destroy error:', err);
   });
   return res.redirect(process.env.SERVER + 'login');
 };
@@ -82,7 +82,7 @@ module.exports.checkSession = async (req, res, next) => {
     user = user[0]; //Extract user from array; if row not found, user === undefined
 
     if (!user) {
-      console.log('Could not find user logged in');
+      info('Could not find user logged in');
       return res.json({ isLoggedIn: false });
     }
 
@@ -116,7 +116,7 @@ module.exports.checkSession = async (req, res, next) => {
       });
     });
   } catch (err) {
-    console.error(err);
+    error(err);
     return res.json({ isLoggedIn: false });
   }
 };

@@ -29,7 +29,7 @@ const addToDb = async (data) => {
       );
       return foundRecord;
     } catch (err) {
-      console.log('Err updating image record with thumb info:', err);
+      error('Err updating image record with thumb info:', err);
       return;
     }
   };
@@ -41,7 +41,7 @@ const addToDb = async (data) => {
         imageInfo
       );
     } catch (err) {
-      console.log('Error adding image to db');
+      error('Error adding image to db');
       return console.error(err);
     }
   } else if (data.resolution === 'thumbRes') {
@@ -61,10 +61,13 @@ const addToDb = async (data) => {
 };
 
 module.exports = async (req, res) => {
-  dbWriter.process('dbWriter', async (job) => {
-    return addToDb(job.data);
-  });
-
+  try {
+    dbWriter.process('*', async (job) => {
+      return addToDb(job.data);
+    });
+  } catch (err) {
+    error(err);
+  }
   dbWriter.on('completed', async (job, result) => {
     const truncate = (str, truncLen, separator) => {
       if (str.length <= truncLen) return str;
@@ -82,9 +85,9 @@ module.exports = async (req, res) => {
     const loggingFileName = (str, truncLen) => {
       const filenameArr = str.split('/').slice(1);
       filenameArr[1] = truncate(filenameArr[1], truncLen);
-      return filenameArr.reverse().join(' -- ');
+      return filenameArr.reverse().join(' - ');
     };
 
-    console.log(`🗄  ${loggingFileName(job.data.fileName, 30)} written to DB`);
+    success(`Wrote -- ${loggingFileName(job.data.fileName, 30)}`);
   });
 };

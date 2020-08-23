@@ -103,9 +103,9 @@ const upload = async (auth, data, ws) => {
     const loggingFileName = (str, truncLen) => {
       const filenameArr = str.split('/').slice(1);
       filenameArr[1] = truncate(filenameArr[1], truncLen);
-      return filenameArr.reverse().join(' -- ');
+      return filenameArr.reverse().join(' - ');
     };
-    console.log(`✅ ${loggingFileName(filename, 30)} uploaded`);
+    success(`Uploaded -- ${loggingFileName(filename, 30)}`);
     return {
       filename,
       src,
@@ -114,19 +114,22 @@ const upload = async (auth, data, ws) => {
       status: uploadResponse.status,
     };
   } catch (err) {
-    console.log('err:', err);
+    error('err:', err);
   }
 };
 
 module.exports = async (req, res) => {
   const ws = req.app.locals.ws;
-  uploader.process('imgUploader', async (job) => {
-    // Get upload auth token
-    const auth = await getB2UploadAuth(res);
-    job.data.res = res;
-    return upload(auth, job.data, ws);
-  });
-
+  try {
+    uploader.process('*', async (job) => {
+      // Get upload auth token
+      const auth = await getB2UploadAuth(res);
+      job.data.res = res;
+      return upload(auth, job.data, ws);
+    });
+  } catch (err) {
+    error('%O', { err });
+  }
   uploader.on('completed', async (job, fileInfo) => {
     if (job.data.resolution === 'fullRes') {
       // Full version uploaded; send notifications
@@ -149,7 +152,7 @@ module.exports = async (req, res) => {
         if (!ws) {
           await res.status(200).end();
         }
-        console.log('ws error:', err);
+        error('ws error:', err);
       }
       // res.status(200).json(fileInfo).end();
     } else {

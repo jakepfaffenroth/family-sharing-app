@@ -14,7 +14,7 @@ module.exports.sendBrowserNotifications = async (data) => {
       return { user, subscriptions };
     });
     if (result.subscriptions.length === 0) {
-      return console.log('No browser subscriptions found.');
+      return info('No browser subscriptions found.');
     }
 
     const payload = JSON.stringify({
@@ -48,19 +48,19 @@ module.exports.sendBrowserNotifications = async (data) => {
                 "DELETE FROM subscribers WHERE browser -> 'keys'->>'auth' = ${keys.auth} RETURNING *",
                 sub
               );
-              if (deletedSub) console.log('Removed' + deletedSub + ' from ' + user.username);
+              if (deletedSub) info('Removed' + deletedSub + ' from ' + user.username);
               return { user, subscriptions, deletedSub };
             });
           } catch (err) {
-            console.log('Error removing bad browser subscription:', err);
+            error('Error removing bad browser subscription:', err);
           }
         }
       });
       
       return;
     });
-    console.log('Browser notifications sent!');
+    success('Browser notifications sent!');
   } catch (err) {
-    return console.log(err);
+    return error(err);
   }
 };

@@ -3,9 +3,9 @@
 /**
  * Module dependencies.
  */
-
+const path = require('path');
+require(path.join(__dirname, './config'));
 const app = require('../app');
-const debug = require('debug')('server:server');
 const http = require('http');
 
 /**
@@ -63,11 +63,11 @@ function onError(error) {
   // handle specific listen errors with friendly messages
   switch (error.code) {
     case 'EACCES':
-      console.error(bind + ' requires elevated privileges');
+      error(bind + ' requires elevated privileges');
       process.exit(1);
       break;
     case 'EADDRINUSE':
-      console.error(bind + ' is already in use');
+      error(bind + ' is already in use');
       process.exit(1);
       break;
     default:
@@ -80,9 +80,8 @@ function onError(error) {
  */
 
 function onListening() {
-  console.log(`\n❇️  ${process.env.ENV} Server listening on PORT ${port}! ❇️\n`);
-
   const addr = server.address();
-  const bind = typeof addr === 'string' ? 'pipe ' + addr : 'port ' + addr.port;
-  debug('Listening on ' + bind);
+  const bind = typeof addr === 'string' ? 'PIPE ' + addr : 'PORT ' + addr.port;
+
+  success(`${process.env.ENV} Server listening on ${bind}`);
 }

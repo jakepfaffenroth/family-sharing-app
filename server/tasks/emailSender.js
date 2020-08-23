@@ -1,16 +1,11 @@
 const { emailSender } = require('./index');
-const { sendSubscribeEmail, sendEmailNotifications } = require('../notifications/emailController');
+const { sendEmailNotifications } = require('../notifications/emailController');
 
-module.exports = (req, res) => {
-  emailSender.process('subscribeEmail', async (job) => {
-    return sendSubscribeEmail(req, res);
-  });
-
-  emailSender.process('sendEmailNotification', async (job) => {
-    return sendEmailNotifications(job.data);
-  });
-
-  // emailSender.on('completed', async (job, result) => {
-  //   console.log('emailSender Completed result: ', result);
-  // });
+module.exports = async () => {
+  // Only try to process queue if a job still exists (if notifs haven't already been sent)
+  if (await emailSender.count()) {
+    emailSender.process('*', async (job) => {
+      return sendEmailNotifications(job.data);
+    });
+  }
 };

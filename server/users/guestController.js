@@ -135,9 +135,9 @@ module.exports.subscribeEmail = async (req, res) => {
       ses.sendEmail(params, function (err, data) {
         // If something goes wrong, print an error message.
         if (err) {
-          console.log(err.message);
+          error(err.message);
         } else {
-          console.log('Verification email sent! Message ID: ', data.MessageId);
+          success('Verification email sent! Message ID: ', data.MessageId);
         }
       });
 
@@ -171,7 +171,7 @@ module.exports.verifyEmail = async (req, res, next) => {
     { firstName: guest.firstName, lastName: guest.lastName, emailAddress: guest.email },
   ]);
 
-  console.log(newEmailSubscriber.email.emailAddress + ' saved.');
+  success(newEmailSubscriber.email.emailAddress + ' saved.');
 
   const guestLink = `${process.env.SERVER}/${guest.guestId}/guest`;
 
@@ -199,11 +199,11 @@ module.exports.subscribeBrowser = async (req, res) => {
           guestId,
           newSubscription,
         ]);
-        console.log('New browser sub saved.');
+        success('New browser sub saved.');
         return res.status(200).send(newSub);
       })();
     }
   } catch (err) {
-    return console.log(err);
+    return error(err);
   }
 };

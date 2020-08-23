@@ -108,7 +108,7 @@ const compressImg = async (res, data) => {
         return str.substr(0, frontChars) + separator + str.substr(str.length - backChars);
       };
 
-      console.log(`⚙️  ${truncate(image.originalname, 30)} compressed
+      success(`Compressed -- ${truncate(image.originalname, 30)}
       from ${getFileSize(image.buffer)} (orig)
         to ${getFileSize(compFullBuffer)} (full) ${premiumUser ? '(premium)' : ''}
         and ${getFileSize(compThumbBuffer)} (thumb)`);
@@ -127,12 +127,14 @@ module.exports = async (req, res) => {
     userId: req.body.userId,
     shareUrl: req.body.shareUrl,
   });
-
-  imgCompressor.process('imgCompressor', async (job) => {
-    return compressImg(res, job.data);
-  });
-
-  // imgCompressor.whenCurrentJobsFinished().then(() => {
+  try {
+    imgCompressor.process('*', async (job) => {
+      return compressImg(res, job.data);
+    });
+  } catch (err) {
+    error(err);
+  }
+  // imgCompressor.whenCurrentJobsFinished().then(() => }
   //   return 'imgCompressor done'
   // //   console.log('~~~~ ALL DONE :) ~~~')
   // // });

@@ -46,8 +46,8 @@ for (const key in queues) {
   setQueues(queue);
 
   queue.on('stalled', function (job) {
-    console.log('stalled:', job);
-    job.moveToFailed();
+    error('stalled:', { job: job.name, file: job.data.image.originalname, userId: job.data.userId });
+    // job.moveToFailed();
   });
 
   // queue.whenCurrentJobsFinished().then(() => {

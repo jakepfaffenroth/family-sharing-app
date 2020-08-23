@@ -46,7 +46,6 @@ export default {
             this.downloadProgress = `Creating Zip file: ${metadata.percent.toFixed()}%`;
           })
           .then((data) => {
-            console.log('data: ', data);
             saveAs(data, `images${count === 1 ? '' : ' part' + count}.zip`);
             this.downloadProgress = null;
           });

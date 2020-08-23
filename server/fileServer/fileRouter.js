@@ -13,18 +13,6 @@ const storage = multer.memoryStorage();
 
 router.post(
   '/upload',
-  // (req, res, next) => {
-  //   const ws = req.app.locals.ws;
-  //   // console.log('ws: ', ws);
-
-  //   ws.on('message', function incoming(message) {
-  //     console.log('received: %s', message);
-  //   });
-
-  //   ws.send(JSON.stringify('it works! Yeeee! :))'));
-
-  //   next();
-  // },
   fileController.b2Auth,
   multer({ storage: storage }).any(),
   fileController.imgHandler,

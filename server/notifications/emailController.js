@@ -27,7 +27,7 @@ module.exports.sendEmailNotifications = async (data) => {
   const timeComparison = compareAsc(lastNotification, timeStamp);
   // If less than one hour has passed since last notification, do not send another email
   if (timeComparison > 0) {
-    console.log('\n🕑 Email notification sent within last hour\n');
+    info('\n🕑 Email notification sent within last hour\n');
     return;
   }
 
@@ -49,7 +49,7 @@ module.exports.sendEmailNotifications = async (data) => {
       fileCount > 1 ? 's' : ''
     }!</h1>
       <p>Go see ${fileCount === 1 ? 'it' : 'them'} here:</p>
-        <a href='${process.env.SERVER}/${user.guest_id}/guest'>View Photo${fileCount === 1 ? '' : 's'}</a>
+        <a href='${process.env.SERVER}/${guestId}/guest'>View Photo${fileCount === 1 ? '' : 's'}</a>
         <img src=${imgPath} />
     </body>
     </html>`;
@@ -86,9 +86,9 @@ module.exports.sendEmailNotifications = async (data) => {
       ses.sendEmail(params, function (err, data) {
         // If something goes wrong, print an error message.
         if (err) {
-          console.log('err: ', err.message);
+          error('err: ', err.message);
         } else {
-          console.log('Email sent! Message ID: ', data.MessageId);
+          success('Email sent! Message ID: ', data.MessageId);
         }
       });
     });

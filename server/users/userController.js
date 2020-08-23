@@ -46,10 +46,10 @@ module.exports.create = [
     const errors = validationResult(req);
     // Print error messages to console
     if (!errors.isEmpty()) {
-      /**/ console.log('Validation failed:');
+      /**/ error('Validation failed:');
       for (let i = 0; i < errors.array().length; i++) {
         if (errors.array()[i].msg) {
-          console.log('::' + errors.array()[i].param + ': ' + errors.array()[i].msg);
+          error('::' + errors.array()[i].param + ': ' + errors.array()[i].msg);
         }
       }
       const username = req.body.username;
@@ -86,7 +86,7 @@ module.exports.create = [
           }
         );
 
-        console.log('User ' + user.username + ' created');
+        success('User ' + user.username + ' created');
         // Account created; redirect to login screen
         res.redirect('../login');
       });
@@ -114,7 +114,7 @@ module.exports.getUser = async (req, res) => {
       });
     });
   } catch (err) {
-    console.error(err);
+    error(err);
     return res.end();
   }
 };

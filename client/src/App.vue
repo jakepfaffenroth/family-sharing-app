@@ -135,7 +135,10 @@ export default {
       this.images = [];
 
       axios.post(this.server + '/files/delete-image', {
-        images: images,
+        images: images.map((x) => {
+          const { fileId, fileName } = x;
+          return { fileId, fileName };
+        }),
         userId: this.user.userId,
       });
     },
@@ -227,7 +230,7 @@ export default {
     // },
 
     updateImages(fileInfo) {
-      console.log('filename: ', fileInfo.body);
+      console.log('filename in updateImages: ', fileInfo.body);
       // const info = {src: process.env.VUE_APP_CDN + filename}
       // src, thumbnail, uploadtime, exif.exif.DateTimeOriginal
 

@@ -112,7 +112,7 @@ export default {
       let data = await msgParser(msg);
 
       const getUppyFileId = (data, files) => {
-        const filename = data.filename.split('/').pop();
+        const filename = decodeURI(data.filename.split('/').pop());
         return files.filter((item) => {
           if (item[filename]) return true;
         })[0][filename];
@@ -125,7 +125,6 @@ export default {
           fileUploaded: async () => {
             console.log('File uploaded');
             data.uppyFileId = getUppyFileId(data, files);
-            console.log('data.uppyFileId: ', data.uppyFileId);
             const progress = uppy.getState().files[data.uppyFileId].progress;
             return await uppy.setFileState(data.uppyFileId, {
               meta: { name: data.msg },
@@ -160,7 +159,7 @@ export default {
             return rws.send('Complete Confirmed');
           },
           default: () => {
-            return console.log(data);
+            return console.log('%c' + data, 'color: #E46AFF');
           },
         };
         return (msgTypes[type] || msgTypes['default'])();

@@ -1,4 +1,5 @@
 const createError = require('http-errors');
+const compression = require('compression');
 const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
@@ -15,6 +16,7 @@ const authRouter = require('./userAuth/authRouter');
 const fileRouter = require('./fileServer/fileRouter');
 
 const app = express();
+app.use(compression());
 app.use(cors());
 
 const ws = require('ws');
@@ -30,19 +32,19 @@ const wsServer = new ws.Server(wsConfig);
 wsServer.on('connection', (socket) => {
   // console.log('WS connection opened');
   socket.on('message', (message) => {
-    console.log(message);
+    msg(message);
     // console.log(`Received message => ${message.length < 100 ? message : '(long message)'}`);
     // if (message === 'Upload complete') socket.send(Buffer.from(JSON.stringify({ type: 'allFinished' })));
   });
-  socket.send('PONG');
+  socket.send('pong');
   app.locals.ws = socket;
 });
 
 wsServer.on('close', (code, reason) => {
-  console.log('connection closed.', code, reason);
+  info('connection closed.', code, reason);
 });
 wsServer.on('error', (err) => {
-  console.log('websocket error: ', err);
+  error('websocket error: ', err);
 });
 
 server.on('upgrade', (request, socket, head) => {
