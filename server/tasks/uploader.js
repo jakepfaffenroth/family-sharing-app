@@ -128,7 +128,7 @@ module.exports = async (req, res) => {
       return upload(auth, job.data, ws);
     });
   } catch (err) {
-    error('%O', { err });
+    error(err);
   }
   uploader.on('completed', async (job, fileInfo) => {
     if (job.data.resolution === 'fullRes') {
@@ -158,7 +158,12 @@ module.exports = async (req, res) => {
       // res.status(200).json(fileInfo).end();
     } else {
       // Thumbnail is finished uploading - send notifications
-      sendNotifications();
+      // info('count A', await uploader.count(), req.files.length - 1);
+      if ((await uploader.count()) === req.files.length - 1) {
+        // info('count B', await uploader.count(), req.files.length - 1);
+        sendNotifications();
+      }
+      // uploader.whenCurrentJobsFinished();
     }
   });
 };

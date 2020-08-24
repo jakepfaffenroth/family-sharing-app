@@ -29,6 +29,7 @@ const wsConfig = {
 };
 const wsServer = new ws.Server(wsConfig);
 wsServer.on('connection', (socket) => {
+  app.locals.ws = socket;
   // console.log('WS connection opened');
   socket.on('message', (message) => {
     msg(message);
@@ -45,7 +46,7 @@ wsServer.on('error', (err) => {
   error('websocket error: ', err);
 });
 app.use('/ws', (req, res) => {
-  res.redirect('ws://localhost:3200');
+  res.redirect('wss://localhost:3200');
 });
 const server = app.listen(3200);
 server.on('upgrade', (request, socket, head) => {

@@ -6,7 +6,6 @@ if (process.env.NODE_ENV === 'production') {
   process.env.DEBUG = `${process.env.DEBUG},✘`;
   // global.success = null;
   // global.error = null;
-  console.log(process.env.DEBUG);
   // global.info = null;
 } else {
   path = './bin/.env.development';
