@@ -1,11 +1,13 @@
 const { emailSender } = require('./index');
 const { sendEmailNotifications } = require('../notifications/emailController');
 
-module.exports = async () => {
+module.exports = async (job) => {
   // Only try to process queue if a job still exists (if notifs haven't already been sent)
-  if (await emailSender.count()) {
-    emailSender.process('*', async (job) => {
-      return sendEmailNotifications(job.data);
-    });
+  try {
+    // emailSender.process('*', async (job) => {
+    return await sendEmailNotifications(job.data);
+    // });
+  } catch (err) {
+    error('Email notifications error:', err);
   }
 };

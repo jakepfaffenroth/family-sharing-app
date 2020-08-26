@@ -9,7 +9,7 @@ if (process.env.NODE_ENV === 'production') {
   // global.info = null;
 } else {
   path = './bin/.env.development';
-  process.env.DEBUG = '.';
+  process.env.DEBUG = `${process.env.DEBUG},.`;
 }
 
 require('dotenv').config({ path });

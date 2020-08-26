@@ -1,7 +1,7 @@
 const db = require('../db').pgPromise;
 const { dbWriter } = require('./index');
 
-const addToDb = async (data) => {
+const writeToDb = async (data) => {
   let fileName = data.fileName;
   let uploadTime = Date.now();
 
@@ -41,8 +41,8 @@ const addToDb = async (data) => {
         imageInfo
       );
     } catch (err) {
-      error('Error adding image to db');
-      return console.error(err);
+      error('Error adding image to db', err);
+      return;
     }
   } else if (data.resolution === 'thumbRes') {
     let foundRecord = null;
@@ -60,34 +60,10 @@ const addToDb = async (data) => {
   };
 };
 
-module.exports = async (req, res) => {
+module.exports = async (job) => {
   try {
-    dbWriter.process('*', async (job) => {
-      return addToDb(job.data);
-    });
+      return await writeToDb(job.data);
   } catch (err) {
     error(err);
   }
-  dbWriter.on('completed', async (job, result) => {
-    const truncate = (str, truncLen, separator) => {
-      if (str.length <= truncLen) return str;
-
-      separator = separator || '...';
-
-      const sepLen = separator.length,
-        charsToShow = truncLen - sepLen,
-        frontChars = Math.ceil(charsToShow / 2),
-        backChars = Math.floor(charsToShow / 2);
-
-      return str.substr(0, frontChars) + separator + str.substr(str.length - backChars);
-    };
-
-    const loggingFileName = (str, truncLen) => {
-      const filenameArr = str.split('/').slice(1);
-      filenameArr[1] = truncate(filenameArr[1], truncLen);
-      return filenameArr.reverse().join(' - ');
-    };
-
-    success(`Wrote -- ${loggingFileName(job.data.fileName, 30)}`);
-  });
 };

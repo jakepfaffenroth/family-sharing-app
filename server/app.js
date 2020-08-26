@@ -19,6 +19,9 @@ const app = express();
 app.use(compression());
 app.use(cors());
 
+// const maxListenersExceededWarning = require('max-listeners-exceeded-warning');
+// maxListenersExceededWarning();
+
 const ws = require('ws');
 // Set up a headless websocket server that prints any
 // events that come in.
@@ -30,11 +33,8 @@ const wsConfig = {
 const wsServer = new ws.Server(wsConfig);
 wsServer.on('connection', (socket) => {
   app.locals.ws = socket;
-  // console.log('WS connection opened');
-  socket.on('message', (message) => {
+  socket.on('message', async (message) => {
     msg(message);
-    // console.log(`Received message => ${message.length < 100 ? message : '(long message)'}`);
-    // if (message === 'Upload complete') socket.send(Buffer.from(JSON.stringify({ type: 'allFinished' })));
     socket.send('pong');
   });
 });
@@ -112,6 +112,7 @@ app.use('/files', fileRouter);
 app.use('/guest', guestRouter);
 
 const { UI } = require('bull-board');
+const { info } = require('console');
 app.use('/admin/bull', UI);
 
 // catch 404 and forward to error handler

@@ -1,11 +1,10 @@
 const sharp = require('sharp');
 const exif = require('exif-reader');
+const queues = require('./index');
 
 const premiumUser = false;
 
-const { imgCompressor, uploader } = require('./index');
-
-const compressImg = async (res, data) => {
+const compressImg = async (data) => {
   // const processedImgs = [];
   for (const image of data.images) {
     try {
@@ -53,28 +52,37 @@ const compressImg = async (res, data) => {
         });
       };
 
-      const addToUploadQueue = (resolution, processedImg) => {
-        uploader.add('imgUploader', {
+      const addToUploadQueue = (resolutionStr, processedImg, data) => {
+        const { guestId, userId, shareUrl, credentials, uppyFileId, fileCount } = data;
+        queues.uploader.add({
           image: processedImg,
-          resolution: resolution,
-          guestId: data.guestId,
-          userId: data.userId,
-          fileCount: data.images.length,
-          shareUrl: data.shareUrl,
+          resolution: resolutionStr,
+          guestId,
+          userId,
+          fileCount,
+          shareUrl,
+          credentials,
+          uppyFileId,
         });
       };
 
-      const compressGetMetaUpload = async (compress, resolution, image) => {
+      const compressGetMetaUpload = async (compress, resolutionStr, image) => {
         const imageBuffer = compress;
         const metadata = await getMetadata(imageBuffer);
-        addToUploadQueue(resolution, {
-          ...image,
-          size: imageBuffer.length,
-          buffer: imageBuffer,
-          w: metadata.w,
-          h: metadata.h,
-          exif: metadata.exif,
-        });
+
+        // Compressed version is finished; Add to upload queue.
+        addToUploadQueue(
+          resolutionStr,
+          {
+            ...image,
+            size: imageBuffer.length,
+            buffer: imageBuffer,
+            w: metadata.w,
+            h: metadata.h,
+            exif: metadata.exif,
+          },
+          data
+        );
         return imageBuffer;
       };
 
@@ -107,41 +115,23 @@ const compressImg = async (res, data) => {
 
         return str.substr(0, frontChars) + separator + str.substr(str.length - backChars);
       };
-
+      
       success(`Compressed -- ${truncate(image.originalname, 30)}
       from ${getFileSize(image.buffer)} (orig)
         to ${getFileSize(compFullBuffer)} (full) ${premiumUser ? '(premium)' : ''}
         and ${getFileSize(compThumbBuffer)} (thumb)`);
       //
     } catch (err) {
-      console.log('err:', err);
+      error('err:', err);
     }
   }
-  return data.images;
+  return;
 };
 
-module.exports = async (req, res) => {
-  await imgCompressor.add('imgCompressor', {
-    images: req.files,
-    guestId: req.body.guestId,
-    userId: req.body.userId,
-    shareUrl: req.body.shareUrl,
-  });
+module.exports = async (job) => {
   try {
-    imgCompressor.process('*', async (job) => {
-      return compressImg(res, job.data);
-    });
+    return await compressImg(job.data);;
   } catch (err) {
     error(err);
   }
-  // imgCompressor.whenCurrentJobsFinished().then(() => }
-  //   return 'imgCompressor done'
-  // //   console.log('~~~~ ALL DONE :) ~~~')
-  // // });
-  // // imgCompressor.on('completed', async (job, processedImgs) => {
-  // //   // processedImgs.forEach((imageObj) => {
-  // //   //   console.log('image from compressor result: ', imageObj);
-  // //   // });
-  // //   console.log('imgCompressor finished');
-  // });
 };

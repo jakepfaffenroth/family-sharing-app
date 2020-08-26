@@ -220,35 +220,20 @@ export default {
         .catch((error) => console.log(`Error in promises ${error}`));
     },
 
-    // sendingEvent(file, xhr, formData) {
-    //   if (!formData.get('userId')) {
-    //     formData.append('userId', this.user.userId);
-    //   }
-    //   if (!formData.get('guestId')) {
-    //     formData.append('guestId', this.user.guestId);
-    //   }
-    // },
-
     updateImages(fileInfo) {
-      console.log('filename in updateImages: ', fileInfo.body);
-      // const info = {src: process.env.VUE_APP_CDN + filename}
-      // src, thumbnail, uploadtime, exif.exif.DateTimeOriginal
-
-      // for (let i = 0; i < filename.length; i++) {
-      //   response[i].thumbnail.replace(/\/full\//, '/small/');
-      //   console.log('response[i]: ', response[i]);
-      //   this.images.unshift(response[i]);
-      //   response.splice(i, 1);
-      // }
-      // this.$refs.myVueDropzone.removeFile(file);
-      // this.progress = '0%';
+      const { fileId, filename, src, thumbnail, uploadTime } = fileInfo;
+      const newImg = {
+        fileId,
+        fileName: filename,
+        src,
+        thumbnail,
+        uploadTime,
+        w: fileInfo.metadata.w,
+        h: fileInfo.metadata.h,
+        ownerId: this.user.userId,
+      };
+      this.images.unshift(newImg);
     },
-
-    // uploadProgress(progress, totalBytes, bytesSent) {
-    //   this.progress = `${progress.toFixed(2)}%`;
-    //   this.bytesSent = bytesSent;
-    //   this.progress >= 100 ? (this.progress = 0) : null;
-    // },
 
     sortImages(sortParameter) {
       if (sortParameter === 'reverse') {

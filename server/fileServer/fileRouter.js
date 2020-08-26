@@ -3,9 +3,9 @@ const router = express.Router();
 const multer = require('multer');
 
 const fileController = require('./fileController');
-const guestController = require('../users/guestController');
+const notificationsController = require('../notifications/notificationsController');
+const getB2Auth = require('../tasks/getB2Auth');
 
-// File auth and CRUD
 router.get('/b2-auth', fileController.b2Auth);
 
 // Define multer storage
@@ -13,14 +13,14 @@ const storage = multer.memoryStorage();
 
 router.post(
   '/upload',
-  fileController.b2Auth,
+  notificationsController.addToNotifsQueue,
+  async (req, res, next) => {
+    res.locals.credentials = await getB2Auth();
+    next();
+  },
   multer({ storage: storage }).any(),
-  fileController.imgHandler,
-  // guestController.emailNotification
+  fileController.imgHandler
 );
-
-// const { imgCompressor, uploader } = require('../tasks');
-// router.post('/upload/test', multer({ storage: storage }).any(), imgCompressor, uploader);
 
 router.post('/delete-image', fileController.b2Auth, fileController.deleteImage);
 

@@ -2,20 +2,12 @@ const path = require('path');
 const axios = require('axios');
 const crypto = require('crypto');
 const { uploader, dbWriter } = require('./index');
-const sendNotifications = require('../notifications');
 
-const getB2UploadAuth = async (res) => {
-  const bucketId = process.env.BUCKET_ID;
-  const credentials = res.locals.credentials;
+const bucketId = process.env.BUCKET_ID;
 
-  let authToken;
-  let auth = {
-    uploadAuthorizationToken: '',
-    uploadUrl: '',
-  };
+const getB2UploadAuth = async (credentials) => {
   try {
-    // Gets B2 auth token
-    authToken = await axios.post(
+    return await axios.post(
       credentials.apiUrl + '/b2api/v2/b2_get_upload_url',
       {
         bucketId: bucketId,
@@ -26,16 +18,13 @@ const getB2UploadAuth = async (res) => {
         },
       }
     );
-    auth.uploadUrl = authToken.data.uploadUrl;
-    auth.uploadAuthorizationToken = authToken.data.authorizationToken;
   } catch (err) {
     console.log('Error getting B2 upload token');
   }
-  return auth;
 };
 
 const addToDbWriterQueue = (data, metadata, resolution, ownerId) => {
-  dbWriter.add('dbWriter', {
+  dbWriter.add({
     fileId: data.fileId,
     fileName: data.fileName,
     metadata,
@@ -44,17 +33,13 @@ const addToDbWriterQueue = (data, metadata, resolution, ownerId) => {
   });
 };
 
-const upload = async (auth, data, ws) => {
-  const userId = data.userId;
-  const guestId = data.guestId;
-  const resolution = data.resolution;
-  const image = data.image;
+const upload = async (auth, data) => {
+  const { userId, image, resolution } = data;
   const metadata = {
-    w: data.image.w,
-    h: data.image.h,
-    exif: data.image.exif,
+    w: image.w,
+    h: image.h,
+    exif: image.exif,
   };
-  const fileCount = data.fileCount;
 
   try {
     // Uploads images to B2 storage
@@ -78,13 +63,14 @@ const upload = async (auth, data, ws) => {
     });
     if (uploadResponse.data.status === 503) {
       uploader.pause();
-      await getB2UploadAuth(data.res);
+      await getB2UploadAuth(data.credentials);
       uploader.resume();
     }
 
     const src = process.env.CDN_PATH + filename;
     const thumbnail = process.env.CDN_PATH + filename.replace('/full/', '/thumb/');
 
+    // File upload to B2 complete; Send to dbWriter queue.
     addToDbWriterQueue(uploadResponse.data, metadata, resolution, userId);
 
     const truncate = (str, truncLen, separator) => {
@@ -111,6 +97,8 @@ const upload = async (auth, data, ws) => {
       src,
       thumbnail,
       metadata,
+      fileId: uploadResponse.data.fileId,
+      uploadTime: uploadResponse.data.uploadTimestamp,
       status: uploadResponse.status,
     };
   } catch (err) {
@@ -118,52 +106,22 @@ const upload = async (auth, data, ws) => {
   }
 };
 
-module.exports = async (req, res) => {
-  const ws = req.app.locals.ws;
+module.exports = async (job) => {
   try {
-    uploader.process('*', async (job) => {
-      // Get upload auth token
-      const auth = await getB2UploadAuth(res);
-      job.data.res = res;
-      return upload(auth, job.data, ws);
-    });
+    let uploadUrl = await getB2UploadAuth(job.data.credentials);
+    if (!uploadUrl || uploadUrl.status === '401') {
+      const getNew = true;
+      const newCreds = await require('../tasks/getB2Auth')(getNew);
+      uploadUrl = await getB2UploadAuth(newCreds);
+    }
+
+    const uploadAuth = {
+      uploadAuthorizationToken: uploadUrl.data.authorizationToken,
+      uploadUrl: uploadUrl.data.uploadUrl,
+    };
+
+    return await upload(uploadAuth, job.data);
   } catch (err) {
     error(err);
   }
-  uploader.on('completed', async (job, fileInfo) => {
-    if (job.data.resolution === 'fullRes') {
-      // Full version uploaded; send notifications
-      // const emailSender = require('../tasks/emailSender');
-      // emailSender();
-
-      // Send success response to client
-      try {
-        // console.log('req.app.locals: ', req.app.locals);
-        ws.send(
-          Buffer.from(
-            JSON.stringify({
-              ...fileInfo,
-              type: 'fileUploaded',
-              msg: 'Processing...',
-              uppyFileId: req.body.uppyFileId,
-            })
-          )
-        );
-      } catch (err) {
-        if (!ws) {
-          await res.status(200).end();
-        }
-        error('ws error:', err);
-      }
-      // res.status(200).json(fileInfo).end();
-    } else {
-      // Thumbnail is finished uploading - send notifications
-      // info('count A', await uploader.count(), req.files.length - 1);
-      if ((await uploader.count()) === req.files.length - 1) {
-        // info('count B', await uploader.count(), req.files.length - 1);
-        sendNotifications();
-      }
-      // uploader.whenCurrentJobsFinished();
-    }
-  });
 };

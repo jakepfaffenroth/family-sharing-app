@@ -12,11 +12,11 @@ const ses = new AWS.SES({ credentials: credentials, region: 'us-west-2' });
 
 // Send email notification
 module.exports.sendEmailNotifications = async (data) => {
-  const { guestId, fileCount, imgPath } = data;
+  const { guestId, fileCount, thumbPath } = data;
   // Get guestId out of url path
   // const guestId = data.guestId;
   // const fileCount = data.fileCount;
-  // const imgPath = data.imgPath;
+  // const thumbPath = data.thumbPath;
   const timeStamp = toDate(Date.now()); // Convert numerical date to human-readable
 
   const user = await db.one('SELECT * FROM users WHERE guest_id = $1', [guestId]);
@@ -50,7 +50,7 @@ module.exports.sendEmailNotifications = async (data) => {
     }!</h1>
       <p>Go see ${fileCount === 1 ? 'it' : 'them'} here:</p>
         <a href='${process.env.SERVER}/${guestId}/guest'>View Photo${fileCount === 1 ? '' : 's'}</a>
-        <img src=${imgPath} />
+        <img src=${thumbPath} />
     </body>
     </html>`;
 

@@ -12,6 +12,7 @@ import Dashboard from '@uppy/dashboard';
 import ImageEditor from '@uppy/image-editor';
 import xhr from '@uppy/xhr-upload';
 import ReconnectingWebSocket from 'reconnecting-websocket';
+import axios from 'axios';
 
 import '@uppy/core/dist/style.css';
 import '@uppy/dashboard/dist/style.css';
@@ -25,10 +26,10 @@ export default {
         guestId: props.user.guestId,
       },
       // logger: Uppy.debugLogger,
-      autoProceed: true,
+      autoProceed: false,
       onBeforeUpload: () => {
         uppy.getPlugin('Dashboard:StatusBar').setOptions({
-          hideAfterFinish: false,
+          hideAfterFinish: true,
           locale: {
             strings: {
               complete: 'Upload complete (You can leave this page)',
@@ -69,7 +70,7 @@ export default {
       endpoint: process.env.VUE_APP_SERVER + '/files/upload',
       method: 'post',
       responseType: document,
-      bundle: true,
+      bundle: false,
       timeout: 0,
     });
 
@@ -83,8 +84,19 @@ export default {
       console.log('WebSocket is closed.');
     };
 
-    uppy.on('file-added', (file) => {
+    uppy.on('file-added', async (file) => {
       uppy.setFileMeta(file.id, { uppyFileId: file.id });
+    });
+
+    uppy.on('upload', async () => {
+      const files = await uppy.getFiles();
+      axios.post(process.env.VUE_APP_SERVER + '/files/upload', {
+        initializeUpload: true,
+        userId: props.user.userId,
+        guestId: props.user.guestId,
+        fileCount: files.length,
+        sampleImg: files[0].data.name,
+      });
     });
 
     rws.onerror = (error) => {
@@ -123,7 +135,8 @@ export default {
       function getMsg(type, data) {
         const msgTypes = {
           fileUploaded: async () => {
-            console.log('File uploaded');
+            context.emit('update-images', data.fileInfo);
+
             data.uppyFileId = getUppyFileId(data, files);
             const progress = uppy.getState().files[data.uppyFileId].progress;
             return await uppy.setFileState(data.uppyFileId, {
@@ -169,13 +182,10 @@ export default {
     };
 
     uppy.on('complete', (result) => {
-      console.log('sucessful files:', result.successful);
-      console.log('failed files:', result.failed);
+      console.log('upload result:', { sucessful: result.successful, failed: result.failed });
     });
 
-    uppy.on('upload-success', (file, response) => {
-      context.emit('update-images', response);
-    });
+    // uppy.on('upload-success', (file, response) => {});
 
     return {
       openUppyModal,

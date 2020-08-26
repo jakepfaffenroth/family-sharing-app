@@ -2,7 +2,7 @@ const webPush = require('web-push');
 const db = require('../db').pgPromise;
 
 module.exports.sendBrowserNotifications = async (data) => {
-  const { userId, guestId, imgPath, fileCount } = data;
+  const { userId, guestId, thumbPath, fileCount } = data;
 
   try {
     const result = await db.task(async (t) => {
@@ -22,7 +22,7 @@ module.exports.sendBrowserNotifications = async (data) => {
         fileCount > 1 ? 's' : ''
       }!`,
       body: `Click to see ${fileCount === 1 ? 'it' : 'them'}!`,
-      icon: imgPath,
+      icon: thumbPath,
       guestId,
     });
 
@@ -56,7 +56,7 @@ module.exports.sendBrowserNotifications = async (data) => {
           }
         }
       });
-      
+
       return;
     });
     success('Browser notifications sent!');
