@@ -48,12 +48,12 @@ getB2Auth.pause();
 emailSender.pause();
 browserSender.pause();
 
-getB2Auth.process(require('./getB2Auth.js'));
-imgCompressor.process(require('./imgCompressor.js'));
-uploader.process(require('./uploader.js'));
-dbWriter.process(require('./dbWriter.js'));
-emailSender.process(require('./emailSender'));
-browserSender.process(require('./browserSender'));
+getB2Auth.process(50, require('./getB2Auth.js'));
+imgCompressor.process(50, require('./imgCompressor.js'));
+uploader.process(50, require('./uploader.js'));
+dbWriter.process(50, require('./dbWriter.js'));
+emailSender.process(50, require('./emailSender'));
+browserSender.process(50, require('./browserSender'));
 
 uploader.on('completed', async (job, fileInfo) => {
   const { resolution, uppyFileId, fileCount } = job.data;
@@ -71,7 +71,6 @@ uploader.on('completed', async (job, fileInfo) => {
           })
         )
       );
-
     } catch (err) {
       if (!ws) {
         // await res.status(200).end();
