@@ -10,6 +10,18 @@ const credentials = {
 };
 const ses = new AWS.SES({ credentials: credentials, region: 'us-west-2' });
 
+const updateTimestamp = async (guestId, timeStamp) => {
+  try {
+    const user = await db.one(
+      'UPDATE users SET last_notification = $1 WHERE guest_id = $2 RETURNING last_notification',
+      [timeStamp, guestId]
+    );
+  } catch (err) {
+    console.log('Error:', err);
+    return;
+  }
+};
+
 // Send email notification
 module.exports.sendEmailNotifications = async (data) => {
   const { guestId, fileCount, thumbPath } = data;
@@ -33,7 +45,7 @@ module.exports.sendEmailNotifications = async (data) => {
 
   if (user) {
     // ------------ TURN OFF FOR DEV ------------
-    // await updateTimestamp(guestId, timeStamp);
+    await updateTimestamp(guestId, timeStamp);
     // ------------------------------------------
 
     // ---- CODE BELOW SENDS EMAILS  ----
