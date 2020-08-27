@@ -177,11 +177,12 @@ module.exports.imgHandler = async (req, res, next) => {
   const images = req.files;
   const thumbPath = `${process.env.CDN_PATH}${userId}/thumb/${images[0].originalname}`;
   const fileCount = images.length;
-  const {getB2Auth, imgCompressor} = require('../tasks');
+  const { getB2Auth, imgCompressor } = require('../tasks');
 
   // Files have reached server so send success response
+  info('Received ' + images[0].originalname);
   if (images) {
-    res.status(200).json('ok');
+    res.status(200).json({ msg: 'File arrived. Processing...', file: images[0].originalname });
   } else {
     error('No files reached server');
     res.status(500).json('Error uploading files');
@@ -196,4 +197,4 @@ module.exports.imgHandler = async (req, res, next) => {
     credentials,
     uppyFileId,
   });
-}
+};

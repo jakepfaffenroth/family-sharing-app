@@ -66,13 +66,14 @@ export default {
         },
       });
     });
+
     uppy.use(xhr, {
       endpoint: process.env.VUE_APP_SERVER + '/files/upload',
       method: 'post',
       responseType: document,
       bundle: false,
       timeout: 0,
-      limit: 5,
+      limit: 2,
     });
 
     const openUppyModal = () => {

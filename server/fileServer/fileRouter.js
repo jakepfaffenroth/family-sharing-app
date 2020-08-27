@@ -9,7 +9,13 @@ const getB2Auth = require('../tasks/getB2Auth');
 router.get('/b2-auth', fileController.b2Auth);
 
 // Define multer storage
-const storage = multer.memoryStorage();
+const memStorage = multer.memoryStorage();
+const diskStorage = multer.diskStorage({
+  destination: '/tmp/uploads',
+  filename: (req, file, cb) => {
+    cb(null, file.originalname);
+  },
+});
 
 router.post(
   '/upload',
@@ -18,7 +24,7 @@ router.post(
     res.locals.credentials = await getB2Auth();
     next();
   },
-  multer({ storage: storage }).any(),
+  multer({ storage: diskStorage }).any(),
   fileController.imgHandler
 );
 

@@ -1,3 +1,4 @@
+const fs = require('fs');
 const sharp = require('sharp');
 const exif = require('exif-reader');
 const queues = require('./index');
@@ -8,11 +9,12 @@ const compressImg = async (data) => {
   // const processedImgs = [];
   for (const image of data.images) {
     try {
-      if (!(image.buffer instanceof Buffer)) {
-        image.buffer = Buffer.from(image.buffer);
-      }
+      // if (!(image.buffer instanceof Buffer)) {
+      //   image.buffer = Buffer.from(image.buffer);
+      // }
+      const tempImg = fs.readFileSync(image.path);
 
-      const imgFlow = sharp(image.buffer).rotate().withMetadata();
+      const imgFlow = sharp(tempImg).rotate().withMetadata();
 
       const compressFullImg = async () => {
         return await Promise.resolve(
@@ -89,7 +91,7 @@ const compressImg = async (data) => {
       // If premium user, send untouched image to upload queue. Otherwise, compress and resize the full image and then add to upload queue.
       let compFullBuffer;
       if (premiumUser) {
-        compFullBuffer = await compressGetMetaUpload(image.buffer, 'fullRes', image);
+        compFullBuffer = await compressGetMetaUpload(tempImg, 'fullRes', image);
       } else {
         compFullBuffer = await compressGetMetaUpload(await compressFullImg(), 'fullRes', image);
       }
@@ -115,9 +117,9 @@ const compressImg = async (data) => {
 
         return str.substr(0, frontChars) + separator + str.substr(str.length - backChars);
       };
-      
+
       success(`Compressed -- ${truncate(image.originalname, 30)}
-      from ${getFileSize(image.buffer)} (orig)
+      from ${getFileSize(tempImg)} (orig)
         to ${getFileSize(compFullBuffer)} (full) ${premiumUser ? '(premium)' : ''}
         and ${getFileSize(compThumbBuffer)} (thumb)`);
       //
@@ -128,9 +130,20 @@ const compressImg = async (data) => {
   return;
 };
 
+const deleteTempImg = (image) => {
+  fs.unlink(image.path, (err) => {
+    if (err) {
+      throw err;
+    }
+    success('Deleted ' + image.path);
+  });
+};
+
 module.exports = async (job) => {
   try {
-    return await compressImg(job.data);;
+    await compressImg(job.data);
+    deleteTempImg(job.data.images[0]);
+    return;
   } catch (err) {
     error(err);
   }
