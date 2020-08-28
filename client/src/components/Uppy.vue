@@ -71,7 +71,7 @@ export default {
       endpoint: process.env.VUE_APP_SERVER + '/files/upload',
       method: 'post',
       // withCredentials: true,
-      responseType: document,
+      // responseType: document,
       bundle: false,
       timeout: 0,
       limit: 2,
