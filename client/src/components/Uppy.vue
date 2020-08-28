@@ -70,11 +70,13 @@ export default {
     uppy.use(xhr, {
       endpoint: process.env.VUE_APP_SERVER + '/files/upload',
       method: 'post',
+      // withCredentials: true,
       responseType: document,
       bundle: false,
       timeout: 0,
       limit: 6,
     });
+    // test
 
     const openUppyModal = () => {
       uppy.getPlugin('Dashboard').openModal();
