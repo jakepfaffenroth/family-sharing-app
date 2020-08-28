@@ -194,10 +194,11 @@ export default {
     uppy.on('upload-error', (file, error, response) => {
       console.log('error with file:', file.id);
       console.log('error message:', error);
+      console.log('error response:', response);
       if (error.isNetworkError) {
         // Let your users know that file upload could have failed
         // due to firewall or ISP issues
-        alertUserAboutPossibleFirewallOrISPIssues(error);
+        console.error(error);
       }
       uppy.retryUpload(file.fileId);
     });
