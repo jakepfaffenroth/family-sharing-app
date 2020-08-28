@@ -18,7 +18,7 @@ const fileRouter = require('./fileServer/fileRouter');
 const app = express();
 app.use(compression());
 app.use(cors());
-app.options('*', cors());
+// app.options('*', cors());
 // const maxListenersExceededWarning = require('max-listeners-exceeded-warning');
 // maxListenersExceededWarning();
 
