@@ -56,44 +56,44 @@ emailSender.process(50, require('./emailSender'));
 browserSender.process(50, require('./browserSender'));
 
 uploader.on('completed', async (job, fileInfo) => {
-  const { resolution, uppyFileId, fileCount } = job.data;
-  // Send success response to client
-  if (resolution === 'fullResX') {
-    try {
-      await ws.send(
-        Buffer.from(
-          JSON.stringify({
-            // ...fileInfo,
-            type: 'fileUploaded',
-            msg: 'Processing...',
-            uppyFileId,
-            // fileInfo: fileInfo,
-          })
-        )
-      );
-    } catch (err) {
-      if (!ws) {
-        // await res.status(200).end();
-      }
-      error('ws error:', err);
-    }
-    // res.status(200).json(fileInfo).end();
-  } else if (resolution === 'thumbRes') {
-    // Thumbnail is finished uploading - resume processing notifications
-    // notifications(thumbnail is in notifications so must be uploaded first)
-    ws.send(
-      Buffer.from(
-        JSON.stringify({
-          type: 'fileUploaded',
-          msg: 'Processing...',
-          uppyFileId,
-          fileInfo: fileInfo,
-        })
-      )
-    );
-    emailSender.resume();
-    browserSender.resume();
-  }
+  // const { resolution, uppyFileId, fileCount } = job.data;
+  // // Send success response to client
+  // if (resolution === 'fullResX') {
+  //   try {
+  //     await ws.send(
+  //       Buffer.from(
+  //         JSON.stringify({
+  //           // ...fileInfo,
+  //           type: 'fileUploaded',
+  //           msg: 'Processing...',
+  //           uppyFileId,
+  //           // fileInfo: fileInfo,
+  //         })
+  //       )
+  //     );
+  //   } catch (err) {
+  //     if (!ws) {
+  //       // await res.status(200).end();
+  //     }
+  //     error('ws error:', err);
+  //   }
+  //   // res.status(200).json(fileInfo).end();
+  // } else if (resolution === 'thumbRes') {
+  //   // Thumbnail is finished uploading - resume processing notifications
+  //   // notifications(thumbnail is in notifications so must be uploaded first)
+  //   ws.send(
+  //     Buffer.from(
+  //       JSON.stringify({
+  //         type: 'fileUploaded',
+  //         msg: 'Processing...',
+  //         uppyFileId,
+  //         fileInfo: fileInfo,
+  //       })
+  //     )
+  //   );
+  emailSender.resume();
+  browserSender.resume();
+  // }
 });
 
 dbWriter.on('completed', async (job, result) => {

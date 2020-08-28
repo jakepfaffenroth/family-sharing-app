@@ -21,7 +21,6 @@
             itemprop="thumbnail"
             class="image"
             :style="{ height: imageSize }"
-            :data-url="item.thumbnail"
           />
         </a>
         <input

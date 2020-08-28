@@ -54,9 +54,9 @@ const compressImg = async (data, jobId) => {
         });
       };
 
-      const addToUploadQueue = (resolutionStr, processedImg, data) => {
+      const addToUploadQueue = async (resolutionStr, processedImg, data) => {
         const { guestId, userId, shareUrl, credentials, uppyFileId, fileCount } = data;
-        queues.uploader.add(
+        await queues.uploader.add(
           {
             image: processedImg,
             resolution: resolutionStr,
@@ -67,7 +67,7 @@ const compressImg = async (data, jobId) => {
             credentials,
             uppyFileId,
           },
-          { jobId: jobId }
+          resolutionStr === 'thumbRes' ? { jobId: jobId } : { jobId: jobId + '_full' }
         );
       };
 
@@ -76,7 +76,7 @@ const compressImg = async (data, jobId) => {
         const metadata = await getMetadata(imageBuffer);
 
         // Compressed version is finished; Add to upload queue.
-        addToUploadQueue(
+        await addToUploadQueue(
           resolutionStr,
           {
             ...image,

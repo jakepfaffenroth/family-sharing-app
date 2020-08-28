@@ -97,6 +97,7 @@ const upload = async (auth, data) => {
       src,
       thumbnail,
       metadata,
+      resolution,
       fileId: uploadResponse.data.fileId,
       uploadTime: uploadResponse.data.uploadTimestamp,
       status: uploadResponse.status,
@@ -119,7 +120,6 @@ module.exports = async (job) => {
       uploadAuthorizationToken: uploadUrl.data.authorizationToken,
       uploadUrl: uploadUrl.data.uploadUrl,
     };
-
     return await upload(uploadAuth, job.data);
   } catch (err) {
     error(err);

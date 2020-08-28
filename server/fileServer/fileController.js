@@ -205,12 +205,12 @@ module.exports.imgHandler = async (req, res, next) => {
   // TODO - job returned by uploader completion is a different job from newJob created above
   // TODO - Need to pass original newJob job id to uploader
   uploader.on('completed', (job, result) => {
-    // if (job.data.resolution === 'thumbRes') {
-    if (jobs[job.id]) {
-      const res = jobs[job.id].res;
-      res.status(200).json(result);
-      // delete jobs[j];
+    if (job.data.resolution === 'thumbRes') {
+      if (jobs[job.id]) {
+        const res = jobs[job.id].res;
+        res.status(200).json(result);
+        // delete jobs[j];
+      }
     }
-    // }
   });
 };
