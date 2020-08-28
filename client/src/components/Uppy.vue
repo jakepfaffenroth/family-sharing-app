@@ -74,7 +74,7 @@ export default {
       responseType: document,
       bundle: false,
       timeout: 0,
-      limit: 6,
+      limit: 2,
     });
     // test
 
