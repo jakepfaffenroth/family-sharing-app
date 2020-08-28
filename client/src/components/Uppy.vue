@@ -187,7 +187,9 @@ export default {
       console.log('upload result:', { sucessful: result.successful, failed: result.failed });
     });
 
-    // uppy.on('upload-success', (file, response) => {});
+    uppy.on('upload-success', (file, response) => {
+      context.emit('update-images', response.body);
+    });
 
     return {
       openUppyModal,

@@ -24,7 +24,7 @@ module.exports.addToNotifsQueue = async (req, res, next) => {
       fileCount,
       thumbPath,
     });
-    res.status(200).json('ok');
+    // res.status(200).json('ok');
   } else {
     next();
   }
@@ -82,7 +82,7 @@ module.exports.removeBouncedEmail = (req, res) => {
         //   'subscribers.email.emailAddress': message.mail.destination[0],
         // });
 
-        // !users.length ? console.log('Bounced email not found in DB') : null;
+        //- !users.length ? console.log('Bounced email not found in DB') : null;
 
         // // Remove all bounced emails
         // for (const user of users) {

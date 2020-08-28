@@ -177,24 +177,40 @@ module.exports.imgHandler = async (req, res, next) => {
   const images = req.files;
   const thumbPath = `${process.env.CDN_PATH}${userId}/thumb/${images[0].originalname}`;
   const fileCount = images.length;
-  const { getB2Auth, imgCompressor } = require('../tasks');
+  const { getB2Auth, imgCompressor, uploader } = require('../tasks');
 
   // Files have reached server so send success response
-  info('Received ' + images[0].originalname);
-  if (images) {
-    res.status(200).json({ msg: 'File arrived. Processing...', file: images[0].originalname });
-  } else {
-    error('No files reached server');
-    res.status(500).json('Error uploading files');
-  }
+  // info('Received ' + images[0].originalname);
+  // if (images) {
+  //   res.status(200).json({ msg: 'File arrived. Processing...', file: images[0].originalname });
+  // } else {
+  //   error('No files reached server');
+  //   res.status(500).json('Error uploading files');
+  // }
+
+  const jobs = {};
 
   // Add the images to the processing flow
-  await imgCompressor.add({
+  const newJob = await imgCompressor.add({
     images,
     guestId,
     userId,
     shareUrl,
     credentials,
     uppyFileId,
+  });
+
+  jobs[newJob.id] = { req, res };
+
+  // TODO - job returned by uploader completion is a different job from newJob created above
+  // TODO - Need to pass original newJob job id to uploader
+  uploader.on('completed', (job, result) => {
+    // if (job.data.resolution === 'thumbRes') {
+    if (jobs[job.id]) {
+      const res = jobs[job.id].res;
+      res.status(200).json(result);
+      // delete jobs[j];
+    }
+    // }
   });
 };

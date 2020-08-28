@@ -14,12 +14,14 @@
         :style="{ height: imageSize }"
       >
         <a :href="item.src" itemprop="contentUrl" :data-size="'' + item.w + 'x' + item.h" :title="item.title">
+          <!-- image thumbnails -->
           <img
             :src="item.thumbnail"
             :alt="item.alt"
             itemprop="thumbnail"
             class="image"
             :style="{ height: imageSize }"
+            :data-url="item.thumbnail"
           />
         </a>
         <input

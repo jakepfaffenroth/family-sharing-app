@@ -5,7 +5,7 @@ const queues = require('./index');
 
 const premiumUser = false;
 
-const compressImg = async (data) => {
+const compressImg = async (data, jobId) => {
   // const processedImgs = [];
   for (const image of data.images) {
     try {
@@ -56,16 +56,19 @@ const compressImg = async (data) => {
 
       const addToUploadQueue = (resolutionStr, processedImg, data) => {
         const { guestId, userId, shareUrl, credentials, uppyFileId, fileCount } = data;
-        queues.uploader.add({
-          image: processedImg,
-          resolution: resolutionStr,
-          guestId,
-          userId,
-          fileCount,
-          shareUrl,
-          credentials,
-          uppyFileId,
-        });
+        queues.uploader.add(
+          {
+            image: processedImg,
+            resolution: resolutionStr,
+            guestId,
+            userId,
+            fileCount,
+            shareUrl,
+            credentials,
+            uppyFileId,
+          },
+          { jobId: jobId }
+        );
       };
 
       const compressGetMetaUpload = async (compress, resolutionStr, image) => {
@@ -141,7 +144,7 @@ const deleteTempImg = (image) => {
 
 module.exports = async (job) => {
   try {
-    await compressImg(job.data);
+    await compressImg(job.data, job.id);
     deleteTempImg(job.data.images[0]);
     return;
   } catch (err) {
