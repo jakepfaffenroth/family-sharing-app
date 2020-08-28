@@ -202,6 +202,10 @@ export default {
       uppy.retryUpload(file.fileId);
     });
 
+    uppy.on('error', (error) => {
+      console.error(error.stack);
+    });
+
     return {
       openUppyModal,
       uppy,
