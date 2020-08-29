@@ -187,7 +187,25 @@ export default {
       console.log('upload result:', { sucessful: result.successful, failed: result.failed });
     });
 
-    // uppy.on('upload-success', (file, response) => {});
+    uppy.on('upload-success', (file, response) => {
+      context.emit('update-images', response.body);
+    });
+
+    uppy.on('upload-error', (file, error, response) => {
+      console.log('error with file:', file.id);
+      console.log('error message:', error);
+      console.log('error response:', response);
+      if (error.isNetworkError) {
+        // Let your users know that file upload could have failed
+        // due to firewall or ISP issues
+        console.error('network errorX:', error);
+      }
+      uppy.retryUpload(file.fileId);
+    });
+
+    uppy.on('error', (error) => {
+      console.error(error.stack);
+    });
 
     return {
       openUppyModal,
