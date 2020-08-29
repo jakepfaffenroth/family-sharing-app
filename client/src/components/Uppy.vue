@@ -87,6 +87,7 @@ export default {
 
     uppy.on('file-added', async (file) => {
       uppy.setFileMeta(file.id, { uppyFileId: file.id });
+      console.log('Master')
     });
 
     uppy.on('upload', async () => {
