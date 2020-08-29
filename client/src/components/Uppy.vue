@@ -72,7 +72,7 @@ export default {
       responseType: document,
       bundle: false,
       timeout: 0,
-      limit: 4,
+      limit: 3,
     });
 
     const openUppyModal = () => {
