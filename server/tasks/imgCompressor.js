@@ -1,18 +1,20 @@
+const fs = require('fs');
 const sharp = require('sharp');
 const exif = require('exif-reader');
 const queues = require('./index');
 
 const premiumUser = false;
 
-const compressImg = async (data) => {
+const compressImg = async (data, jobId) => {
   // const processedImgs = [];
   for (const image of data.images) {
     try {
-      if (!(image.buffer instanceof Buffer)) {
-        image.buffer = Buffer.from(image.buffer);
-      }
+      // if (!(image.buffer instanceof Buffer)) {
+      //   image.buffer = Buffer.from(image.buffer);
+      // }
+      const tempImg = fs.readFileSync(image.path);
 
-      const imgFlow = sharp(image.buffer).rotate().withMetadata();
+      const imgFlow = sharp(tempImg).rotate().withMetadata();
 
       const compressFullImg = async () => {
         return await Promise.resolve(
@@ -52,18 +54,21 @@ const compressImg = async (data) => {
         });
       };
 
-      const addToUploadQueue = (resolutionStr, processedImg, data) => {
+      const addToUploadQueue = async (resolutionStr, processedImg, data) => {
         const { guestId, userId, shareUrl, credentials, uppyFileId, fileCount } = data;
-        queues.uploader.add({
-          image: processedImg,
-          resolution: resolutionStr,
-          guestId,
-          userId,
-          fileCount,
-          shareUrl,
-          credentials,
-          uppyFileId,
-        });
+        await queues.uploader.add(
+          {
+            image: processedImg,
+            resolution: resolutionStr,
+            guestId,
+            userId,
+            fileCount,
+            shareUrl,
+            credentials,
+            uppyFileId,
+          },
+          resolutionStr === 'thumbRes' ? { jobId: jobId } : { jobId: jobId + '_full' }
+        );
       };
 
       const compressGetMetaUpload = async (compress, resolutionStr, image) => {
@@ -71,7 +76,7 @@ const compressImg = async (data) => {
         const metadata = await getMetadata(imageBuffer);
 
         // Compressed version is finished; Add to upload queue.
-        addToUploadQueue(
+        await addToUploadQueue(
           resolutionStr,
           {
             ...image,
@@ -89,7 +94,7 @@ const compressImg = async (data) => {
       // If premium user, send untouched image to upload queue. Otherwise, compress and resize the full image and then add to upload queue.
       let compFullBuffer;
       if (premiumUser) {
-        compFullBuffer = await compressGetMetaUpload(image.buffer, 'fullRes', image);
+        compFullBuffer = await compressGetMetaUpload(tempImg, 'fullRes', image);
       } else {
         compFullBuffer = await compressGetMetaUpload(await compressFullImg(), 'fullRes', image);
       }
@@ -115,9 +120,9 @@ const compressImg = async (data) => {
 
         return str.substr(0, frontChars) + separator + str.substr(str.length - backChars);
       };
-      
+
       success(`Compressed -- ${truncate(image.originalname, 30)}
-      from ${getFileSize(image.buffer)} (orig)
+      from ${getFileSize(tempImg)} (orig)
         to ${getFileSize(compFullBuffer)} (full) ${premiumUser ? '(premium)' : ''}
         and ${getFileSize(compThumbBuffer)} (thumb)`);
       //
@@ -128,9 +133,20 @@ const compressImg = async (data) => {
   return;
 };
 
+const deleteTempImg = (image) => {
+  fs.unlink(image.path, (err) => {
+    if (err) {
+      throw err;
+    }
+    success('Deleted ' + image.path);
+  });
+};
+
 module.exports = async (job) => {
   try {
-    return await compressImg(job.data);;
+    await compressImg(job.data, job.id);
+    deleteTempImg(job.data.images[0]);
+    return;
   } catch (err) {
     error(err);
   }

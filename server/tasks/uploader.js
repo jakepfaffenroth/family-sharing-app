@@ -45,7 +45,7 @@ const upload = async (auth, data) => {
     // Uploads images to B2 storage
     let source = Buffer.from(image.buffer);
     let fileSize = image.size;
-    let filename = `${userId}/${resolution.replace('Res', '')}/${path.basename(image.originalname)}`;
+    let filename = `${userId}/${resolution.replace('Res', '')}/${path.basename(image.name)}`;
     filename = encodeURI(filename);
     let sha1 = crypto.createHash('sha1').update(source).digest('hex');
 
@@ -91,12 +91,14 @@ const upload = async (auth, data) => {
       filenameArr[1] = truncate(filenameArr[1], truncLen);
       return filenameArr.reverse().join(' - ');
     };
+
     success(`Uploaded -- ${loggingFileName(filename, 30)}`);
     return {
       filename,
       src,
       thumbnail,
       metadata,
+      resolution,
       fileId: uploadResponse.data.fileId,
       uploadTime: uploadResponse.data.uploadTimestamp,
       status: uploadResponse.status,
@@ -119,8 +121,19 @@ module.exports = async (job) => {
       uploadAuthorizationToken: uploadUrl.data.authorizationToken,
       uploadUrl: uploadUrl.data.uploadUrl,
     };
-
-    return await upload(uploadAuth, job.data);
+    const result = await upload(uploadAuth, job.data);
+    const ws = require('../app').locals.ws;
+    if (result.resolution === 'thumbRes') {
+      ws.send(
+        Buffer.from(
+          JSON.stringify({
+            type: 'fileUploaded',
+            fileInfo: { ...result, src: result.src.replace('/thumb/', '/full/') },
+          })
+        )
+      );
+    }
+    return result;
   } catch (err) {
     error(err);
   }
