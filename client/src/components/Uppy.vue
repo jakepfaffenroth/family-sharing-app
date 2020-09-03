@@ -88,6 +88,7 @@ export default {
 
     uppy.on('file-added', async (file) => {
       uppy.setFileMeta(file.id, { uppyFileId: file.id });
+      console.log('Master')
     });
 
     uppy.on('upload', async () => {
@@ -186,6 +187,7 @@ export default {
     uppy.on('complete', (result) => {
       console.log('upload result:', { sucessful: result.successful, failed: result.failed });
     });
+
 
     uppy.on('upload-error', (file, error, response) => {
       console.log('error with file:', file);
