@@ -28,7 +28,23 @@ const server = http.createServer(app);
 server.listen(port);
 server.on('error', onError);
 server.on('listening', onListening);
-
+server.on('connection', (socket) => {
+  socket.setTimeout(60000 * 2); // 60000 = 1 minute
+  socket.on('end', function () {
+    console.log('fin');
+  });
+  socket.on('drain', function () {
+    error('socket drained');
+  });
+  socket.on('error', function (err) {
+    error('socket error:\n', err);
+  });
+  socket.on('close', function (hadError) {
+    if (hadError) {
+      error('closed (error)');
+    }
+  });
+});
 /**
  * Normalize a port into a number, string, or false.
  */

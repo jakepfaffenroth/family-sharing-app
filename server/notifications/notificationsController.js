@@ -24,7 +24,7 @@ module.exports.addToNotifsQueue = async (req, res, next) => {
       fileCount,
       thumbPath,
     });
-    res.status(200).json('ok');
+    res.json('ok');
   } else {
     next();
   }
