@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const multer = require('multer');
-const formidable = require('formidable');
 
 const fileController = require('./fileController');
 const notificationsController = require('../notifications/notificationsController');
