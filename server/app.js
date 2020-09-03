@@ -16,6 +16,7 @@ const authRouter = require('./userAuth/authRouter');
 const fileRouter = require('./fileHandler/fileRouter');
 
 const app = express();
+app.use(require('express-status-monitor')());
 app.use(compression());
 app.use(cors());
 
