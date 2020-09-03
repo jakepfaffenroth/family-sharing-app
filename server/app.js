@@ -13,22 +13,15 @@ const indexRouter = require('./indexRouter');
 const userRouter = require('./users/userRouter');
 const guestRouter = require('./users/guestRouter');
 const authRouter = require('./userAuth/authRouter');
-const fileRouter = require('./fileServer/fileRouter');
+const fileRouter = require('./fileHandler/fileRouter');
 
 const app = express();
 app.use(compression());
 app.use(cors());
-// app.options('*', cors());
-// const maxListenersExceededWarning = require('max-listeners-exceeded-warning');
-// maxListenersExceededWarning();
 
 const ws = require('ws');
-// Set up a headless websocket server that prints any
-// events that come in.
 const wsConfig = {
   noServer: true,
-  // path: '/files/upload',
-  // server: app,
 };
 const wsServer = new ws.Server(wsConfig);
 wsServer.on('connection', (socket) => {

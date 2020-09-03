@@ -70,13 +70,11 @@ export default {
     uppy.use(xhr, {
       endpoint: process.env.VUE_APP_SERVER + '/files/upload',
       method: 'post',
-      // withCredentials: true,
-      // responseType: document,
+      fieldName: 'file',
       bundle: false,
       timeout: 0,
-      limit: 2,
+      limit: 6,
     });
-    // test
 
     const openUppyModal = () => {
       uppy.getPlugin('Dashboard').openModal();
@@ -95,7 +93,7 @@ export default {
 
     uppy.on('upload', async () => {
       const files = await uppy.getFiles();
-      axios.post(process.env.VUE_APP_SERVER + '/files/upload', {
+      axios.post(process.env.VUE_APP_SERVER + '/files/initialize-upload', {
         initializeUpload: true,
         userId: props.user.userId,
         guestId: props.user.guestId,
@@ -190,30 +188,19 @@ export default {
       console.log('upload result:', { sucessful: result.successful, failed: result.failed });
     });
 
-    uppy.on('upload-success', (file, response) => {
-      context.emit('update-images', response.body);
-    });
-
     uppy.on('upload-error', (file, error, response) => {
-      console.log('error with file:', file.id);
+      console.log('error with file:', file);
       console.log('error message:', error);
       console.log('error response:', response);
-      if (error.isNetworkError) {
-        // Let your users know that file upload could have failed
-        // due to firewall or ISP issues
-        console.error('network errorX:', error);
-      }
-      uppy.retryUpload(file.fileId);
     });
 
-    uppy.on('error', (error) => {
-      console.error(error.stack);
+    uppy.on('upload-retry', (fileID) => {
+      console.log('upload retried:', fileID);
     });
 
     return {
       openUppyModal,
       uppy,
-      rws,
     };
   },
 };

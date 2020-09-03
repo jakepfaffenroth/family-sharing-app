@@ -1,7 +1,7 @@
 const Redis = require('ioredis');
 const queue = require('bull');
 const { setQueues } = require('bull-board');
-const ws = require('../app').locals.ws;
+// const ws = require('../app').locals.ws;
 
 const redisConfig = {
   port: 6379,
@@ -31,7 +31,6 @@ const bullConfig = {
   prefix: 'worker',
 };
 const queues = {
-  // queue: new queue('queue', bullConfig),
   getB2Auth: new queue('getB2Auth', bullConfig),
   imgCompressor: new queue('imgCompressor', bullConfig),
   uploader: new queue('imgUploader', bullConfig),
@@ -126,7 +125,7 @@ for (const key in queues) {
   setQueues(queue);
 
   queue.on('stalled', function (job) {
-    error('stalled:', { job: job.name, file: job.data.image.originalname, userId: job.data.userId });
+    error('stalled:', { job: job.name, file: job.data.image, userId: job.data.userId });
     // job.moveToFailed();
   });
 

@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const multer = require('multer');
+const formidable = require('formidable');
 
 const fileController = require('./fileController');
 const notificationsController = require('../notifications/notificationsController');
@@ -9,23 +10,21 @@ const getB2Auth = require('../tasks/getB2Auth');
 router.get('/b2-auth', fileController.b2Auth);
 
 // Define multer storage
-const memStorage = multer.memoryStorage();
-const diskStorage = multer.diskStorage({
-  destination: '/tmp/uploads',
-  filename: (req, file, cb) => {
-    cb(null, file.originalname);
-  },
-});
-
+// const memStorage = multer.memoryStorage();
+// const diskStorage = multer.diskStorage({
+//   destination: '/tmp/uploads',
+//   filename: (req, file, cb) => {
+//     cb(null, file.originalname);
+//   },
+// });
+router.post('/initialize-upload', notificationsController.addToNotifsQueue);
 router.post(
   '/upload',
-  notificationsController.addToNotifsQueue,
   async (req, res, next) => {
-    res.locals.credentials = await getB2Auth();
+    res.locals.credentials = await getB2Auth(false);
     next();
   },
-  multer({ storage: diskStorage }).any(),
-  fileController.imgHandler
+  fileController.imgCompressor
 );
 
 router.post('/delete-image', fileController.b2Auth, fileController.deleteImage);

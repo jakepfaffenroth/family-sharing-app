@@ -1,7 +1,8 @@
 const axios = require('axios');
 const path = require('path');
 const fs = require('fs');
-const { Readable } = require('stream');
+const { Readable, pipeline } = require('stream');
+const { filter } = require('compression');
 const db = require('../db').pgPromise;
 
 const appKeyId = process.env.KEY_ID;
@@ -171,8 +172,10 @@ module.exports.getStorageSize = async (req, res) => {
   res.json([kilobytes + ' KB', megabytes + ' MB', gigabytes + ' GB']);
 };
 
+// imgHandler is LEGACY from imgCompressor queue
 module.exports.imgHandler = async (req, res, next) => {
   const { guestId, userId, shareUrl, uppyFileId } = req.body;
+  info('req.body:', req.body);
   const credentials = res.locals.credentials;
   const images = req.files;
   const thumbPath = `${process.env.CDN_PATH}${userId}/thumb/${images[0].originalname}`;
@@ -202,8 +205,6 @@ module.exports.imgHandler = async (req, res, next) => {
 
   jobs[newJob.id] = { req, res };
 
-  // TODO - job returned by uploader completion is a different job from newJob created above
-  // TODO - Need to pass original newJob job id to uploader
   uploader.on('completed', (job, result) => {
     if (job.data.resolution === 'thumbRes') {
       if (jobs[job.id]) {
@@ -213,4 +214,171 @@ module.exports.imgHandler = async (req, res, next) => {
       }
     }
   });
+};
+
+//NEW logic for handling incoming file and compressing
+module.exports.imgCompressor = async (req, res, next) => {
+  const premiumUser = true;
+
+  const credentials = res.locals.credentials;
+  const { uploader } = require('../tasks');
+
+  const sharp = require('sharp');
+  const exif = require('exif-reader');
+  const Busboy = require('busboy');
+  const busboy = new Busboy({ headers: req.headers });
+
+  const fields = {};
+  const compResults = { orig: 0 };
+
+  const imgFlow = sharp({ sequentialRead: true }).withMetadata();
+
+  // if premium user, do not resize or compress. Otherwise, resize to 1200px long edge and quality:80
+  if (premiumUser) {
+    imgFlow.clone().toBuffer(async (err, image, info) => {
+      if (err) {
+        error(err);
+      }
+      info.exif = await getMetadata(image);
+      receiveCompImgs(image, 'fullRes', info);
+    });
+  } else {
+    imgFlow
+      .clone()
+      .resize({
+        width: 1200,
+        height: 1200,
+        fit: sharp.fit.inside,
+        withoutEnlargement: true,
+      })
+      .jpeg({ quality: 80 })
+      .toBuffer(async (err, image, info) => {
+        if (err) {
+          error(err);
+        }
+        info.exif = await getMetadata(image);
+        receiveCompImgs(image, 'fullRes', info);
+      });
+  }
+
+  imgFlow
+    .clone()
+    .resize({
+      width: 600,
+      height: 600,
+      fit: sharp.fit.inside,
+      withoutEnlargement: true,
+    })
+    .jpeg({ quality: 80 })
+    .toBuffer(async (err, image, info) => {
+      if (err) {
+        error(err);
+      }
+      receiveCompImgs(image, 'thumbRes', info);
+    });
+
+  imgFlow.on('error', (err) => {
+    error('imgFlow error:\n', err);
+  });
+
+  busboy.on('field', (fieldname, val, fieldnameTruncated, valTruncated, encoding, mimetype) => {
+    fields[fieldname] = val;
+  });
+
+  busboy.on('file', async (fieldname, file, filename, encoding, mimetype) => {
+    info('File [' + filename + '] Started');
+    fields.filename = filename;
+
+    pipeline(file, imgFlow, (err) => {
+      if (err) {
+        error(err);
+      }
+    });
+
+    file.on('data', (data) => {
+      compResults.orig += data.length;
+    });
+    file.on('end', async () => {
+      info('File [' + filename + '] Finished');
+      res.json('test');
+    });
+  });
+
+  busboy.on('finish', () => {
+    console.log('busboy finished');
+  });
+
+  busboy.on('error', (err) => {
+    error('busboy error:\n', err);
+  });
+
+  const getMetadata = async (image) => {
+    const metadata = await sharp(image).metadata();
+    return metadata.exif ? exif(metadata.exif) : null;
+  };
+
+  const addToUploadQueue = async (resolutionStr, processedImg, data) => {
+    const { guestId, userId, shareUrl, credentials, uppyFileId, fileCount } = data;
+    await uploader.add({
+      image: processedImg,
+      resolution: resolutionStr,
+      guestId,
+      userId,
+      fileCount,
+      shareUrl,
+      credentials,
+      uppyFileId,
+    });
+  };
+
+  const markCompDone = () => {
+    const getFileSize = (input) => {
+      return input / 1024 > 1024 ? (input / 1024 / 1024).toFixed(2) + ' mb' : (input / 1024).toFixed(2) + ' kb';
+    };
+
+    const truncate = (filename, truncLen, separator) => {
+      if (filename.length <= truncLen) return filename;
+
+      separator = separator || '...';
+
+      const sepLen = separator.length,
+        charsToShow = truncLen - sepLen,
+        frontChars = Math.ceil(charsToShow / 2),
+        backChars = Math.floor(charsToShow / 2);
+
+      return filename.substr(0, frontChars) + separator + filename.substr(filename.length - backChars);
+    };
+
+    success(`Compressed -- ${truncate(fields.filename, 30)}
+      from ${getFileSize(compResults.orig)} (orig)
+        to ${getFileSize(compResults.fullRes)} (full) ${premiumUser ? '(premium)' : ''}
+        and ${getFileSize(compResults.thumbRes)} (thumb)`);
+  };
+
+  const receiveCompImgs = async (image, resolutionStr, info) => {
+    compResults[resolutionStr] = info.size;
+    const data = {
+      ...fields,
+      credentials,
+    };
+    if (compResults.fullRes && compResults.thumbRes) {
+      markCompDone();
+    }
+    const metadata = await getMetadata(image);
+    // Compressed version is finished; Add to upload queue.
+    await addToUploadQueue(
+      resolutionStr,
+      {
+        name: data.name,
+        size: info.size,
+        buffer: image,
+        w: info.width,
+        h: info.height,
+        exif: info.exif,
+      },
+      data // guestId, userId, shareUrl, credentials, uppyFileId, fileCount
+    );
+  };
+
+  req.pipe(busboy);
 };
