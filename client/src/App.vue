@@ -3,14 +3,15 @@
     <div v-if="isReadyToRender">
       <!-- Owner header and navigation -->
       <div v-if="userType == 'owner'">
-        <h1>Welcome Back, {{ user.firstName }}</h1>
+        <owner-menu />
+        <!-- <h1>Welcome Back, {{ owner.firstName }}</h1>
         <nav id="owner-menu">
           <button @click="logout" class="link">Log out</button>
           <button @click="ownerShare" class="link">Share</button>
           <button @click="nuke" class="link">Nuke</button>
           <download-zip :images="images" />
-          <uppy :user="user" @update-images="updateImages"></uppy>
-        </nav>
+          <uppy :owner="owner" @update-images="updateImages"></uppy>
+        </nav> -->
 
         <div v-if="shareUrl" class="share-modal">
           <h3>Your personal link to share:</h3>
@@ -24,7 +25,7 @@
 
       <!-- Guest header and navigation -->
       <div v-if="userType == 'guest'">
-        <h1>You are a guest of {{ user.firstName }} {{ user.lastName }}</h1>
+        <h1>You are a guest of {{ owner.firstName }} {{ owner.lastName }}</h1>
 
         <button @click="openSubscribeForm" class="link">Subscribe</button>
 
@@ -69,12 +70,12 @@
 
       <vue-picture-swipe
         :items="images"
-        :user="user"
+        :owner="owner"
         :userType="userType"
         v-on:delete-image="deleteImage"
       ></vue-picture-swipe>
 
-      <div v-if="images.length === 0 && userType === 'owner' && user.userId">
+      <div v-if="images.length === 0 && userType === 'owner' && owner.ownerId">
         <p>Upload your first images!</p>
       </div>
     </div>
@@ -84,23 +85,26 @@
 
 <script scoped>
 import axios from 'axios';
-import Uppy from './components/Uppy';
+
+import OwnerMenu from './components/OwnerMenu';
+// import Uppy from './components/Uppy';
 import VuePictureSwipe from './components/VuePictureSwipe';
 import ImageSorter from './components/ImageSorter';
-import DownloadZip from './components/DownloadZip';
+// import DownloadZip from './components/DownloadZip';
 
 export default {
   props: {},
   components: {
-    Uppy,
+    OwnerMenu,
+    // Uppy,
     VuePictureSwipe,
     ImageSorter,
-    DownloadZip,
+    // DownloadZip,
   },
   provide() {
     return {
       userType: 'guest',
-      user: {},
+      owner: {},
       images: this.images,
     };
   },
@@ -109,7 +113,7 @@ export default {
       server: process.env.VUE_APP_SERVER,
       isReadyToRender: false,
       userType: 'guest',
-      user: {},
+      owner: {},
       images: [],
       shareUrl: '',
       guest: {
@@ -139,12 +143,12 @@ export default {
           const { fileId, fileName } = x;
           return { fileId, fileName };
         }),
-        userId: this.user.userId,
+        ownerId: this.owner.ownerId,
       });
     },
 
     openSubscribeForm() {
-      this.guest.guestId = this.user.guestId;
+      this.guest.guestId = this.owner.guestId;
     },
 
     urlBase64ToUint8Array(base64String) {
@@ -185,9 +189,9 @@ export default {
         // console.log({message: JSON.stringify(subscription)});
 
         await axios({
-          url: this.server + '/guest/subscribe-browser',
+          url: this.server + '/user/subscribe-browser',
           method: 'POST',
-          data: { subscription: JSON.stringify(subscription), guestId: this.user.guestId },
+          data: { subscription: JSON.stringify(subscription), guestId: this.owner.guestId },
           headers: {
             'Content-Type': 'application/json',
           },
@@ -198,7 +202,7 @@ export default {
     },
 
     subscribeEmail() {
-      axios.post(this.server + '/guest/subscribe-email', this.guest);
+      axios.post(this.server + '/user/subscribe-email', this.guest);
     },
 
     async subscribe() {
@@ -230,7 +234,7 @@ export default {
         uploadTime,
         w: fileInfo.metadata.w,
         h: fileInfo.metadata.h,
-        ownerId: this.user.userId,
+        ownerId: this.owner.ownerId,
       };
       this.images.unshift(newImg);
     },
@@ -273,12 +277,12 @@ export default {
     // },
 
     ownerShare() {
-      this.shareUrl = `${this.server}/${this.user.guestId}/guest`;
+      this.shareUrl = `${this.server}/${this.owner.guestId}/guest`;
     },
 
-    async deleteImage(fileId, smallFileId, fileName, userId, index) {
+    async deleteImage(fileId, smallFileId, fileName, ownerId, index) {
       this.images.splice(index, 1);
-      axios.post(this.server + '/files/delete-image', { fileId: fileId, fileName: fileName, userId: userId });
+      axios.post(this.server + '/files/delete-image', { fileId: fileId, fileName: fileName, ownerId: ownerId });
     },
 
     logout() {
@@ -290,12 +294,12 @@ export default {
   },
 
   beforeCreate() {
-    // user id is passed as query param from server after login
+    // owner id is passed as query param from server after login
     // set cookie with id and clear query from url & history
     // if there's no query param (user went to site directly) then
     // don't change the cookie
     const params = new URLSearchParams(window.location.search);
-    const uId = params.get('user');
+    const uId = params.get('owner');
     const gId = params.get('guest');
     if (uId) {
       document.cookie = 'ownerId=' + uId;
@@ -340,13 +344,13 @@ export default {
       const response = await axios({
         url: this.server + '/auth/check-session',
         method: 'post',
-        data: { userId: ownerId },
+        data: { ownerId: ownerId },
       });
       if (!response.data.isLoggedIn) {
         window.location = this.server + '/login';
       }
       this.userType = 'owner';
-      this.user = response.data.user;
+      this.owner = response.data.owner;
       this.sortImages('uploadTime');
       this.images = response.data.images.reverse();
       this.isReadyToRender = true;
@@ -356,12 +360,12 @@ export default {
     // then direct to owner's guest page
     if (guestId && !ownerId) {
       const response = await axios({
-        url: this.server + '/user/get-user',
+        url: this.server + '/user/get-owner',
         method: 'post',
         data: { guestId },
       });
 
-      this.user = response.data.user;
+      this.owner = response.data.owner;
       this.images = response.data.images.reverse();
       this.isReadyToRender = true;
       this.sortImages('uploadTime');

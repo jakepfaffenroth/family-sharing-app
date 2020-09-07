@@ -55,13 +55,13 @@ const compressImg = async (data, jobId) => {
       };
 
       const addToUploadQueue = async (resolutionStr, processedImg, data) => {
-        const { guestId, userId, shareUrl, credentials, uppyFileId, fileCount } = data;
+        const { guestId, ownerId, shareUrl, credentials, uppyFileId, fileCount } = data;
         await queues.uploader.add(
           {
             image: processedImg,
             resolution: resolutionStr,
             guestId,
-            userId,
+            ownerId,
             fileCount,
             shareUrl,
             credentials,

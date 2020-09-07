@@ -9,8 +9,8 @@ app.use(bodyParser.json());
 
 module.exports.addToNotifsQueue = async (req, res, next) => {
   if (req.body.initializeUpload) {
-    const { guestId, userId, fileCount, sampleImg } = req.body;
-    const thumbPath = `${process.env.CDN_PATH}${userId}/thumb/${sampleImg}`;
+    const { guestId, ownerId, fileCount, sampleImg } = req.body;
+    const thumbPath = `${process.env.CDN_PATH}${ownerId}/thumb/${sampleImg}`;
     const queues = require('../tasks');
     // Add file upload info to email notification queue
     await queues.emailSender.add({
@@ -19,7 +19,7 @@ module.exports.addToNotifsQueue = async (req, res, next) => {
       thumbPath,
     });
     await queues.browserSender.add({
-      userId,
+      ownerId,
       guestId,
       fileCount,
       thumbPath,
@@ -74,31 +74,6 @@ module.exports.removeBouncedEmail = (req, res) => {
         deletedEmail
           ? console.log('Removed', message.mail.destination[0])
           : console.log('Bounced email ' + message.mail.destination[0] + 'not found in db.');
-        // const subscribers = await pgpQuery("SELECT FROM subscribers WHERE email ->> 'email_address' = $1", [
-        //   message.mail.destination[0],
-        // ]);
-
-        // const users = await User.find({
-        //   'subscribers.email.emailAddress': message.mail.destination[0],
-        // });
-
-        //- !users.length ? console.log('Bounced email not found in DB') : null;
-
-        // // Remove all bounced emails
-        // for (const user of users) {
-        //   const base = user.subscribers.email;
-        //   base.splice(
-        //     base.indexOf({
-        //       emailAddress: message.mail.destination[0],
-        //       firstName: /.*/,
-        //       lastName: /.*/,
-        //     })
-        //   );
-        //   user.markModified('subscribers');
-        //   await user.save(function (err, foundUser) {
-        //     if (err) return console.error(err);
-        //     console.log('Removed', message.mail.destination[0]);
-        //   });
         res.end('ok');
       } catch (err) {
         console.log('Error processing bounced email:', err);

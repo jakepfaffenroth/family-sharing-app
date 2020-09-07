@@ -48,12 +48,12 @@ export default {
           // Login on server successful
           console.log('Logged in');
           // console.log(response.data)
-          let userId = response.data.user.userId;
+          let ownerId = response.data.owner.ownerId;
           store.commit('setCredentials', response.data.credentials);
-          store.commit('setUser', response.data.user);
-          // document.cookie = "userId="+userId
+          store.commit('setOwner', response.data.owner);
+          // document.cookie = "ownerId="+ownerId
           // open PrivateSpace page
-          this.$router.push({ name: 'UserArea', params: { userId } });
+          this.$router.push({ name: 'OwnerArea', params: { ownerId } });
         } catch (error) {
           console.log('error: ', error);
           console.log('Cannot log in');
@@ -66,13 +66,13 @@ export default {
   },
   async created() {
     try {
-      const response = await axios.get(this.server + '/user-auth', { withCredentials: true });
-      if (!response.data.user) {
+      const response = await axios.get(this.server + '/owner-auth', { withCredentials: true });
+      if (!response.data.owner) {
         console.log('Not logged in yet')
         // this.$router.push({ name: 'Login' });
       }
       console.log('response: ', response);
-      // this.$router.push({ name: 'UserArea' });
+      // this.$router.push({ name: 'OwnerArea' });
     } catch (err) {
       console.log(err);
     }

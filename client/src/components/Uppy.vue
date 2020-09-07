@@ -18,12 +18,12 @@ import '@uppy/core/dist/style.css';
 import '@uppy/dashboard/dist/style.css';
 
 export default {
-  props: { user: Object },
+  props: { owner: Object },
   setup(props, context) {
     const uppy = new Uppy({
       meta: {
-        userId: props.user.userId,
-        guestId: props.user.guestId,
+        ownerId: props.owner.ownerId,
+        guestId: props.owner.guestId,
       },
       // logger: Uppy.debugLogger,
       autoProceed: false,
@@ -88,15 +88,15 @@ export default {
 
     uppy.on('file-added', async (file) => {
       uppy.setFileMeta(file.id, { uppyFileId: file.id });
-      console.log('Development')
+      console.log('Development');
     });
 
     uppy.on('upload', async () => {
       const files = await uppy.getFiles();
       axios.post(process.env.VUE_APP_SERVER + '/files/initialize-upload', {
         initializeUpload: true,
-        userId: props.user.userId,
-        guestId: props.user.guestId,
+        ownerId: props.owner.ownerId,
+        guestId: props.owner.guestId,
         fileCount: files.length,
         sampleImg: files[0].data.name,
       });
@@ -192,6 +192,9 @@ export default {
       console.log('error with file:', file);
       console.log('error message:', error);
       console.log('error response:', response);
+      if (error.isNetworkError) {
+        uppy.retryUpload(file.id);
+      }
     });
 
     uppy.on('upload-retry', (fileID) => {

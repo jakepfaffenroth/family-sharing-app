@@ -125,7 +125,7 @@ for (const key in queues) {
   setQueues(queue);
 
   queue.on('stalled', function (job) {
-    error('stalled:', { job: job.name, file: job.data.image, userId: job.data.userId });
+    error('stalled:', { job: job.name, file: job.data.image, ownerId: job.data.ownerId });
     // job.moveToFailed();
   });
 

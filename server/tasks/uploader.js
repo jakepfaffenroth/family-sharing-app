@@ -34,7 +34,7 @@ const addToDbWriterQueue = (data, metadata, resolution, ownerId) => {
 };
 
 const upload = async (auth, data) => {
-  const { userId, image, resolution } = data;
+  const { ownerId, image, resolution } = data;
   const metadata = {
     w: image.w,
     h: image.h,
@@ -45,7 +45,7 @@ const upload = async (auth, data) => {
     // Uploads images to B2 storage
     let source = Buffer.from(image.buffer);
     let fileSize = image.size;
-    let filename = `${userId}/${resolution.replace('Res', '')}/${path.basename(image.name)}`;
+    let filename = `${ownerId}/${resolution.replace('Res', '')}/${path.basename(image.name)}`;
     filename = encodeURI(filename);
     let sha1 = crypto.createHash('sha1').update(source).digest('hex');
 
@@ -71,7 +71,7 @@ const upload = async (auth, data) => {
     const thumbnail = process.env.CDN_PATH + filename.replace('/full/', '/thumb/');
 
     // File upload to B2 complete; Send to dbWriter queue.
-    addToDbWriterQueue(uploadResponse.data, metadata, resolution, userId);
+    addToDbWriterQueue(uploadResponse.data, metadata, resolution, ownerId);
 
     const truncate = (str, truncLen, separator) => {
       if (str.length <= truncLen) return str;

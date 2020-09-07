@@ -41,11 +41,11 @@ module.exports.mark = async (req, res) => {
   // extracts guestId from path
   const guestId = req.path.split('/')[1];
 
-  const user = await db.oneOrNone('SELECT guest_id FROM users WHERE guest_id = $1', [guestId]);
+  const owner = await db.oneOrNone('SELECT guest_id FROM owners WHERE guest_id = $1', [guestId]);
   // Set guestId cookie on client
-  if (user) {
-    res.cookie('guestId', user.guestId, { maxAge: 1000 * 60 * 60 * 24 * 7 });
-    res.redirect(process.env.CLIENT + '?guest=' + user.guestId);
+  if (owner) {
+    res.cookie('guestId', owner.guestId, { maxAge: 1000 * 60 * 60 * 24 * 7 });
+    res.redirect(process.env.CLIENT + '?guest=' + owner.guestId);
   } else {
     res.status(404).end('<div style="text-align: center;"><h1>404 - Not Found</h1> \n <h2>Invalid link</h2></div>');
   }
@@ -72,7 +72,7 @@ module.exports.subscribeEmail = async (req, res) => {
       guest = req.body;
     }
 
-    const owner = await db.one('SELECT * FROM users WHERE guest_id = ${guestId}', guest);
+    const owner = await db.one('SELECT * FROM owners WHERE guest_id = ${guestId}', guest);
     if (owner.length === 0) {
       return console.log('Incorrect ownerId in email subscription.');
     }
@@ -155,7 +155,7 @@ module.exports.verifyEmail = async (req, res, next) => {
   // If decrypt fails (node probably restarted) try subscribing again.
   if (!guest) {
     const gId = req.query.id;
-    const subscribeLink = `${process.env.SERVER}/guest/subscribe-email`;
+    const subscribeLink = `${process.env.SERVER}/user/subscribe-email`;
     return res.status(418).render('verificationError', { guestId: gId, subscribeLink: subscribeLink });
   }
 

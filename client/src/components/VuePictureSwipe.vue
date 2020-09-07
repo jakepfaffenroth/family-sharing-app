@@ -27,8 +27,8 @@
           type="button"
           class="delete-btn image-info"
           value="Delete"
-          v-if="items.length >= 0 && userType === 'owner' && user.userId"
-          @click.stop="$emit('delete-image', item.fileId, item.smallFileId, item.fileName, user.userId, index)"
+          v-if="items.length >= 0 && userType === 'owner' && owner.ownerId"
+          @click.stop="$emit('delete-image', item.fileId, item.smallFileId, item.fileName, owner.ownerId, index)"
         />
         <p class="image-timestamp image-info" v-if="item.exif && item.exif.exif && item.exif.exif.DateTimeOriginal">
           {{ item.exif.exif.DateTimeOriginal ? format(new Date(item.exif.exif.DateTimeOriginal), 'MM/dd/yyyy') : null }}
@@ -100,7 +100,7 @@ export default {
     // ImageGridControls,
   },
   props: {
-    user: Object,
+    owner: Object,
     userType: String,
     items: {
       default: function() {

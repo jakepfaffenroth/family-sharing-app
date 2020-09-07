@@ -74,10 +74,10 @@ module.exports.deleteImage = async (req, res, next) => {
     try {
       await db.task(async (t) => {
         data = await t.one(
-          'SELECT file_id, small_file_id FROM images WHERE owner_id = ${userId} AND file_id = ${fileId}',
+          'SELECT file_id, small_file_id FROM images WHERE owner_id = ${ownerId} AND file_id = ${fileId}',
           image
         );
-        await t.none('DELETE FROM images WHERE owner_id = ${userId} AND file_id = ${fileId}', image);
+        await t.none('DELETE FROM images WHERE owner_id = ${ownerId} AND file_id = ${fileId}', image);
       });
       success('File was successfully removed from db');
       // res.end('File successfully deleted');
@@ -122,7 +122,7 @@ module.exports.deleteImage = async (req, res, next) => {
 
   // Deletes multiple images
   req.body.images.forEach((image) => {
-    deleteImage({ fileId: image.fileId, fileName: image.fileName, userId: req.body.userId });
+    deleteImage({ fileId: image.fileId, fileName: image.fileName, ownerId: req.body.ownerId });
   });
   res.status(200).json('Deleted');
 };
@@ -174,11 +174,11 @@ module.exports.getStorageSize = async (req, res) => {
 
 // imgHandler is LEGACY from imgCompressor queue
 module.exports.imgHandler = async (req, res, next) => {
-  const { guestId, userId, shareUrl, uppyFileId } = req.body;
+  const { guestId, ownerId, shareUrl, uppyFileId } = req.body;
   info('req.body:', req.body);
   const credentials = res.locals.credentials;
   const images = req.files;
-  const thumbPath = `${process.env.CDN_PATH}${userId}/thumb/${images[0].originalname}`;
+  const thumbPath = `${process.env.CDN_PATH}${ownerId}/thumb/${images[0].originalname}`;
   const fileCount = images.length;
   const { getB2Auth, imgCompressor, uploader } = require('../tasks');
 
@@ -197,7 +197,7 @@ module.exports.imgHandler = async (req, res, next) => {
   const newJob = await imgCompressor.add({
     images,
     guestId,
-    userId,
+    ownerId,
     shareUrl,
     credentials,
     uppyFileId,
@@ -318,12 +318,12 @@ module.exports.imgCompressor = async (req, res, next) => {
   };
 
   const addToUploadQueue = async (resolutionStr, processedImg, data) => {
-    const { guestId, userId, shareUrl, credentials, uppyFileId, fileCount } = data;
+    const { guestId, ownerId, shareUrl, credentials, uppyFileId, fileCount } = data;
     await uploader.add({
       image: processedImg,
       resolution: resolutionStr,
       guestId,
-      userId,
+      ownerId,
       fileCount,
       shareUrl,
       credentials,
@@ -376,7 +376,7 @@ module.exports.imgCompressor = async (req, res, next) => {
         h: info.height,
         exif: info.exif,
       },
-      data // guestId, userId, shareUrl, credentials, uppyFileId, fileCount
+      data // guestId, ownerId, shareUrl, credentials, uppyFileId, fileCount
     );
   };
 

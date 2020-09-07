@@ -12,8 +12,8 @@ const ses = new AWS.SES({ credentials: credentials, region: 'us-west-2' });
 
 const updateTimestamp = async (guestId, timeStamp) => {
   try {
-    const user = await db.one(
-      'UPDATE users SET last_notification = $1 WHERE guest_id = $2 RETURNING last_notification',
+    const owner = await db.one(
+      'UPDATE owners SET last_notification = $1 WHERE guest_id = $2 RETURNING last_notification',
       [timeStamp, guestId]
     );
   } catch (err) {
@@ -31,11 +31,11 @@ module.exports.sendEmailNotifications = async (data) => {
   // const thumbPath = data.thumbPath;
   const timeStamp = toDate(Date.now()); // Convert numerical date to human-readable
 
-  const user = await db.one('SELECT * FROM users WHERE guest_id = $1', [guestId]);
+  const owner = await db.one('SELECT * FROM owners WHERE guest_id = $1', [guestId]);
 
   // If last notification+1hr is later than the current timestamp,
   // timeComparison will equal 1 (else -1 or 0)
-  const lastNotification = add(user.lastNotification, { hours: 1 });
+  const lastNotification = add(owner.lastNotification, { hours: 1 });
   const timeComparison = compareAsc(lastNotification, timeStamp);
   // If less than one hour has passed since last notification, do not send another email
   if (timeComparison > 0) {
@@ -43,13 +43,13 @@ module.exports.sendEmailNotifications = async (data) => {
     return;
   }
 
-  if (user) {
+  if (owner) {
     // ------------ TURN OFF FOR DEV ------------
     await updateTimestamp(guestId, timeStamp);
     // ------------------------------------------
 
     // ---- CODE BELOW SENDS EMAILS  ----
-    const sender = `${user.firstName} ${user.lastName} (via Carousel) <notification@carousel.jakepfaf.dev>`;
+    const sender = `${owner.firstName} ${owner.lastName} (via Carousel) <notification@carousel.jakepfaf.dev>`;
     const subject = `New photo${fileCount > 1 ? 's' : ''} shared!`;
     const body_text = `Go see ${fileCount === 1 ? 'it' : 'them'}!` + data.shareUrl;
     const charset = 'UTF-8'; // The character encoding for the email.
@@ -57,7 +57,7 @@ module.exports.sendEmailNotifications = async (data) => {
     const body_html = `<html>
     <head></head>
     <body>
-      <h1>${user.firstName} ${user.lastName} just shared ${fileCount === 1 ? 'a' : fileCount} new photo${
+      <h1>${owner.firstName} ${owner.lastName} just shared ${fileCount === 1 ? 'a' : fileCount} new photo${
       fileCount > 1 ? 's' : ''
     }!</h1>
       <p>Go see ${fileCount === 1 ? 'it' : 'them'} here:</p>

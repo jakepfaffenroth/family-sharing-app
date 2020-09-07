@@ -8,7 +8,7 @@ import axios from 'axios';
 export default {
   async created() {
     try {
-      const response = await axios.get(process.env.VUE_APP_SERVER + '/user-auth');
+      const response = await axios.get(process.env.VUE_APP_SERVER + '/owner-auth');
       console.log('response: ',response);
       response.data.authorized ? console.log('authorized!') : console.log('Not authorized!');
     } catch (err) {

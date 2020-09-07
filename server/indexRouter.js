@@ -2,7 +2,7 @@ const express = require('express');
 // const session = require('express-session');
 // const passport = require('passport');
 const router = express.Router();
-const userController = require('./users/userController');
+const ownerController = require('./users/ownerController');
 const guestController = require('./users/guestController');
 const notificationsController = require('./notifications/notificationsController');
 // require('dotenv').config({ path: './bin/.env' });
@@ -23,7 +23,7 @@ router.get('/login', (req, res) => {
 
 router.get('/:gId/guest', guestController.mark);
 router.post('/notifications/bounce', notificationsController.removeBouncedEmail);
-router.get('/user/get-user', userController.getUser);
+router.get('/user/get-owner', ownerController.getOwner);
 
 router.get('/logout', (req, res) => {
   // req.session.destroy();
