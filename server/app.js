@@ -1,6 +1,6 @@
+const express = require('express');
 const createError = require('http-errors');
 const compression = require('compression');
-const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
@@ -11,12 +11,10 @@ const session = require('express-session');
 
 const indexRouter = require('./indexRouter');
 const userRouter = require('./users/userRouter');
-const guestRouter = require('./users/guestRouter');
 const authRouter = require('./userAuth/authRouter');
 const fileRouter = require('./fileHandler/fileRouter');
 
 const app = express();
-app.use(require('express-status-monitor')());
 app.use(compression());
 app.use(cors());
 
@@ -73,14 +71,17 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
-passport.serializeUser(function (user, done) {
-  done(null, user);
+passport.serializeUser(function (owner, done) {
+  done(null, owner);
 });
 
-passport.deserializeUser(async function (user, done) {
+passport.deserializeUser(async function (owner, done) {
   try {
-    const foundUser = await db.one('SELECT * FROM users WHERE user_id = $1', [user.userId]);
-    done(foundUser);
+    const foundOwner = await db.one(
+      'SELECT * FROM owners WHERE owner_id = $1',
+      [owner.ownerId]
+    );
+    done(foundOwner);
   } catch (err) {
     done(err);
   }
@@ -96,14 +97,15 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json({ limit: '50mb' }));
-app.use(express.urlencoded({ limit: '50mb', extended: true, parameterLimit: 50000 }));
+app.use(
+  express.urlencoded({ limit: '50mb', extended: true, parameterLimit: 50000 })
+);
 
 //add routes
 app.use('/', indexRouter);
 app.use('/user', userRouter);
 app.use('/auth', authRouter);
 app.use('/files', fileRouter);
-app.use('/guest', guestRouter);
 
 const { UI } = require('bull-board');
 const { info } = require('console');
@@ -114,14 +116,15 @@ app.use(function (req, res, next) {
   next(createError(404));
 });
 
-// error handler
 app.use(function (err, req, res, next) {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
 
   // render the error page
-  res.status(err.status || 500).json({ msg: err.message, status: err.status, stack: err.stack });
+  res
+    .status(err.status || 500)
+    .json({ msg: err.message, status: err.status, stack: err.stack });
 });
 
 module.exports = app;

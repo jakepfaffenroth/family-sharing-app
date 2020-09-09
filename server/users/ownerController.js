@@ -12,14 +12,23 @@ module.exports.create = [
   // username and password must not be empty
   // TODO - add stronger password requirements
   body('username', 'Username must not be empty.').trim().isLength({ min: 1 }),
-  body('password', 'Password must not be empty.').trim().isLength({ min: 1, max: 64 }),
-  body('firstName', 'First Name must not be empty.').trim().isLength({ min: 1, max: 64 }),
-  body('lastName', 'Last Name must not be empty.').trim().isLength({ min: 1, max: 64 }),
+  body('password', 'Password must not be empty.')
+    .trim()
+    .isLength({ min: 1, max: 64 }),
+  body('firstName', 'First Name must not be empty.')
+    .trim()
+    .isLength({ min: 1, max: 64 }),
+  body('lastName', 'Last Name must not be empty.')
+    .trim()
+    .isLength({ min: 1, max: 64 }),
 
   // Check if username already taken
   body('username')
     .custom(async (value) => {
-      const foundUser = await db.oneOrNone('SELECT * FROM users WHERE username = $1', [value]);
+      const foundUser = await db.oneOrNone(
+        'SELECT * FROM owners WHERE username = $1',
+        [value]
+      );
       if (foundUser) return Promise.reject('Username taken');
     })
     .bail(),
@@ -74,8 +83,8 @@ module.exports.create = [
 
         if (err) return next(err);
 
-        const user = await db.one(
-          'INSERT INTO users (user_id, username, first_name, last_name, password, guest_id) VALUES (${id}, ${username}, ${firstName}, ${lastName}, ${password}, ${guestId}) RETURNING *',
+        const owner = await db.one(
+          'INSERT INTO owners (owner_id, username, first_name, last_name, password, guest_id) VALUES (${id}, ${username}, ${firstName}, ${lastName}, ${password}, ${guestId}) RETURNING *',
           {
             id: uuidv4(),
             username: req.body.username,
@@ -86,7 +95,7 @@ module.exports.create = [
           }
         );
 
-        success('User ' + user.username + ' created');
+        success('User ' + owner.username + ' created');
         // Account created; redirect to login screen
         res.redirect('../login');
       });
@@ -94,22 +103,25 @@ module.exports.create = [
   },
 ];
 
-module.exports.getUser = async (req, res) => {
+module.exports.getOwner = async (req, res) => {
   try {
     db.task(async (t) => {
-      const user = await db.oneOrNone(
-        'SELECT first_name, user_id, guest_id FROM users WHERE guest_id = ${guestId}',
+      const owner = await db.oneOrNone(
+        'SELECT first_name, owner_id, guest_id FROM owners WHERE guest_id = ${guestId}',
         req.body
       );
 
-      if (!user) {
+      if (!owner) {
         console.log('Could not find user - incorrect guestId?');
         return res.redirect(process.env.SERVER);
       }
 
-      const images = await db.any('SELECT * FROM images WHERE owner_id = ${userId}', user);
+      const images = await db.any(
+        'SELECT * FROM images WHERE owner_id = ${ownerId}',
+        owner
+      );
       return res.json({
-        user: user,
+        owner: owner,
         images: images,
       });
     });

@@ -3,20 +3,20 @@ import Vuex from 'vuex';
 export default Vuex.createStore({
   state: {
     b2Credentials: {},
-    user: {},
+    owner: {},
   },
   mutations: {
     setCredentials(state, cred) {
       state.b2Credentials = cred;
     },
-    setUser(state, user) {
-      state.user = user;
+    setOwner(state, owner) {
+      state.owner = owner;
     },
   },
   actions: {},
   getters: {
     b2Credentials: (state) => state.b2Credentials,
-    user: (state) => state.user,
+    owner: (state) => state.owner,
   },
   modules: {},
 });

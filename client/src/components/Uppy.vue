@@ -1,8 +1,8 @@
 <template>
-  <div>
-    <button id="uppy-select-files" @click="openUppyModal">Upload Files (Uppy)</button>
-    <div id="drop-area"></div>
-  </div>
+  <button id="uppy-select-files" @click="openUppyModal">
+    Upload Files (Uppy)
+  </button>
+  <div id="drop-area" />
 </template>
 
 <script>
@@ -18,12 +18,18 @@ import '@uppy/core/dist/style.css';
 import '@uppy/dashboard/dist/style.css';
 
 export default {
-  props: { user: Object },
+  props: {
+    owner: {
+      type: Object,
+      default: null,
+    },
+  },
+  emits: ['update-images'],
   setup(props, context) {
     const uppy = new Uppy({
       meta: {
-        userId: props.user.userId,
-        guestId: props.user.guestId,
+        ownerId: props.owner.ownerId,
+        guestId: props.owner.guestId,
       },
       // logger: Uppy.debugLogger,
       autoProceed: false,
@@ -46,7 +52,6 @@ export default {
         theme: 'auto',
         inline: false,
         showProgressDetails: true,
-        // hideProgressAfterFinish: false,
         locale: {
           strings: {
             complete: 'Upload complete (You can leave this page)',
@@ -68,7 +73,7 @@ export default {
     });
 
     uppy.use(xhr, {
-      endpoint: process.env.VUE_APP_SERVER + '/files/upload',
+      endpoint: `${process.env.VUE_APP_SERVER}/files/upload`,
       method: 'post',
       fieldName: 'file',
       bundle: false,
@@ -88,22 +93,21 @@ export default {
 
     uppy.on('file-added', async (file) => {
       uppy.setFileMeta(file.id, { uppyFileId: file.id });
-      console.log('Development')
     });
 
     uppy.on('upload', async () => {
       const files = await uppy.getFiles();
-      axios.post(process.env.VUE_APP_SERVER + '/files/initialize-upload', {
+      axios.post(`${process.env.VUE_APP_SERVER}/files/initialize-upload`, {
         initializeUpload: true,
-        userId: props.user.userId,
-        guestId: props.user.guestId,
+        ownerId: props.owner.ownerId,
+        guestId: props.owner.guestId,
         fileCount: files.length,
         sampleImg: files[0].data.name,
       });
     });
 
     rws.onerror = (error) => {
-      console.log(`WebSocket error:`, error);
+      console.log('WebSocket error:', error);
     };
 
     rws.onopen = () => {
@@ -120,14 +124,16 @@ export default {
         return newObj;
       });
 
-      const msgParser = async (msg) => {
-        return msg.data instanceof Blob ? JSON.parse(await msg.data.text()) : msg.data;
-      };
+      const msgParser = async (msg) =>
+        msg.data instanceof Blob ? JSON.parse(await msg.data.text()) : msg.data;
 
-      let data = await msgParser(msg);
+      const data = await msgParser(msg);
 
       const getUppyFileId = (data, files) => {
-        const filename = decodeURI(data.filename.split('/').pop());
+        console.log('data:', data);
+        console.log('files:', files);
+        const filename = decodeURI(data.fileInfo.filename.split('/').pop());
+        console.log('filename:', filename);
         return files.filter((item) => {
           if (item[filename]) return true;
         })[0][filename];
@@ -139,26 +145,20 @@ export default {
         const msgTypes = {
           fileUploaded: async () => {
             context.emit('update-images', data.fileInfo);
-
-            data.uppyFileId = getUppyFileId(data, files);
-            const progress = uppy.getState().files[data.uppyFileId].progress;
-            return await uppy.setFileState(data.uppyFileId, {
-              meta: { name: data.msg },
-              progress: {
-                ...progress,
-                uploadComplete: true,
-                percentage: 100,
-              },
-            });
           },
 
           statusUpdate: async () => {
             data.uppyFileId = getUppyFileId(data, files);
-            return await uppy.setFileState(data.uppyFileId, { meta: { name: data.msg } });
+            return await uppy.setFileState(data.uppyFileId, {
+              meta: { name: data.msg },
+            });
           },
           fileFinished: async () => {
             data.uppyFileId = getUppyFileId(data, files);
-            await uppy.setFileState(data.uppyFileId, { meta: { name: 'Complete' }, complete: true });
+            await uppy.setFileState(data.uppyFileId, {
+              meta: { name: 'Complete' },
+              complete: true,
+            });
 
             const state = await uppy.getState();
 
@@ -174,24 +174,28 @@ export default {
             }
             return rws.send('Complete Confirmed');
           },
-          default: () => {
-            return console.log('%c' + data, 'color: #E46AFF');
-          },
+          default: () => console.log(`%c${data}`, 'color: #E46AFF'),
         };
-        return (msgTypes[type] || msgTypes['default'])();
+        return (msgTypes[type] || msgTypes.default)();
       }
 
       getMsg(data.type, data);
     };
 
     uppy.on('complete', (result) => {
-      console.log('upload result:', { sucessful: result.successful, failed: result.failed });
+      console.log('upload result:', {
+        sucessful: result.successful,
+        failed: result.failed,
+      });
     });
 
     uppy.on('upload-error', (file, error, response) => {
       console.log('error with file:', file);
       console.log('error message:', error);
       console.log('error response:', response);
+      if (error.isNetworkError) {
+        uppy.retryUpload(file.id);
+      }
     });
 
     uppy.on('upload-retry', (fileID) => {
@@ -216,8 +220,5 @@ export default {
 }
 #uppy-select-files:hover {
   cursor: pointer;
-}
-
-.is-waiting {
 }
 </style>

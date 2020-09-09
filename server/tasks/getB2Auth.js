@@ -3,14 +3,17 @@ const db = require('../db').pgPromise;
 
 const appKeyId = process.env.KEY_ID;
 const applicationKey = process.env.APPLICATION_KEY;
-const encodedBase64 = Buffer.from(appKeyId + ':' + applicationKey).toString('base64');
+const encodedBase64 = Buffer.from(appKeyId + ':' + applicationKey).toString(
+  'base64'
+);
 
 const getAuthFromDB = async () => {
   try {
     const b2Auth = await db.oneOrNone('SELECT * FROM b2_auth');
     const oneDay = 1000 * 60 * 60 * 24;
 
-    const credsExpired = parseInt(b2Auth.timestamp) + oneDay < Date.now() ? true : false;
+    const credsExpired =
+      parseInt(b2Auth.timestamp) + oneDay < Date.now() ? true : false;
 
     if (!b2Auth || credsExpired) {
       credsExpired ? info('Expired credentials') : null;

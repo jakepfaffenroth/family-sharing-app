@@ -1,4 +1,3 @@
-// require('dotenv').config({ path: './bin/.env'});
 const fs = require('fs');
 const format = require('date-fns/format');
 
@@ -13,8 +12,12 @@ const initOptions = {
     monitor.error(err, e);
     const log = async (err, e) => {
       try {
-        const writeStream = fs.createWriteStream('./logs/error.log', { flags: 'a' });
-        writeStream.write(`${format(new Date(), 'yyyy-MM-dd HH:mm:ss')}\n${err}\n${e}\n\n'`); // Write logs to file
+        const writeStream = fs.createWriteStream('./logs/error.log', {
+          flags: 'a',
+        });
+        writeStream.write(
+          `${format(new Date(), 'yyyy-MM-dd HH:mm:ss')}\n${err}\n${e}\n\n'`
+        ); // Write logs to file
       } catch (logErr) {
         console.log('Logging error:', logErr);
       }

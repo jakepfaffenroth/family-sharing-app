@@ -1,4 +1,3 @@
-const { emailSender } = require('./index');
 const { sendEmailNotifications } = require('../notifications/emailController');
 
 module.exports = async (job) => {
