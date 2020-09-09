@@ -30,9 +30,7 @@ server.on('error', onError);
 server.on('listening', onListening);
 server.on('connection', (socket) => {
   socket.setTimeout(60000 * 2); // 60000 = 1 minute
-  socket.on('end', function () {
-    console.log('fin');
-  });
+  socket.on('end', function () {});
   socket.on('drain', function () {
     error('socket drained');
   });

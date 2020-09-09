@@ -55,7 +55,14 @@ const compressImg = async (data, jobId) => {
       };
 
       const addToUploadQueue = async (resolutionStr, processedImg, data) => {
-        const { guestId, ownerId, shareUrl, credentials, uppyFileId, fileCount } = data;
+        const {
+          guestId,
+          ownerId,
+          shareUrl,
+          credentials,
+          uppyFileId,
+          fileCount,
+        } = data;
         await queues.uploader.add(
           {
             image: processedImg,
@@ -67,7 +74,9 @@ const compressImg = async (data, jobId) => {
             credentials,
             uppyFileId,
           },
-          resolutionStr === 'thumbRes' ? { jobId: jobId } : { jobId: jobId + '_full' }
+          resolutionStr === 'thumbRes'
+            ? { jobId: jobId }
+            : { jobId: jobId + '_full' }
         );
       };
 
@@ -96,11 +105,19 @@ const compressImg = async (data, jobId) => {
       if (premiumUser) {
         compFullBuffer = await compressGetMetaUpload(tempImg, 'fullRes', image);
       } else {
-        compFullBuffer = await compressGetMetaUpload(await compressFullImg(), 'fullRes', image);
+        compFullBuffer = await compressGetMetaUpload(
+          await compressFullImg(),
+          'fullRes',
+          image
+        );
       }
 
       // Make thumbnail, get metadata, and send to upload queue
-      const compThumbBuffer = await compressGetMetaUpload(await makeThumbnail(), 'thumbRes', image);
+      const compThumbBuffer = await compressGetMetaUpload(
+        await makeThumbnail(),
+        'thumbRes',
+        image
+      );
 
       const getFileSize = (buffer) => {
         return buffer.length / 1024 > 1024
@@ -118,12 +135,18 @@ const compressImg = async (data, jobId) => {
           frontChars = Math.ceil(charsToShow / 2),
           backChars = Math.floor(charsToShow / 2);
 
-        return str.substr(0, frontChars) + separator + str.substr(str.length - backChars);
+        return (
+          str.substr(0, frontChars) +
+          separator +
+          str.substr(str.length - backChars)
+        );
       };
 
       success(`Compressed -- ${truncate(image.originalname, 30)}
       from ${getFileSize(tempImg)} (orig)
-        to ${getFileSize(compFullBuffer)} (full) ${premiumUser ? '(premium)' : ''}
+        to ${getFileSize(compFullBuffer)} (full) ${
+        premiumUser ? '(premium)' : ''
+      }
         and ${getFileSize(compThumbBuffer)} (thumb)`);
       //
     } catch (err) {

@@ -35,12 +35,21 @@ const queues = {
   imgCompressor: new queue('imgCompressor', bullConfig),
   uploader: new queue('imgUploader', bullConfig),
   dbWriter: new queue('dbWriter', bullConfig),
+  verifyEmailSender: new queue('verifyEmailSender', bullConfig),
   emailSender: new queue('emailSender', bullConfig),
   browserSender: new queue('browserSender', bullConfig),
 };
 module.exports = queues;
 
-const { getB2Auth, imgCompressor, uploader, dbWriter, emailSender, browserSender } = queues;
+const {
+  getB2Auth,
+  imgCompressor,
+  uploader,
+  dbWriter,
+  verifyEmailSender,
+  emailSender,
+  browserSender,
+} = queues;
 
 getB2Auth.pause();
 // Pause notification processing until after thumbnail first thumbnail uploaded
@@ -52,47 +61,12 @@ imgCompressor.process(50, require('./imgCompressor.js'));
 uploader.process(50, require('./uploader.js'));
 dbWriter.process(50, require('./dbWriter.js'));
 emailSender.process(50, require('./emailSender'));
+verifyEmailSender.process(50, require('./verifyEmailSender'));
 browserSender.process(50, require('./browserSender'));
 
 uploader.on('completed', async (job, fileInfo) => {
-  // const { resolution, uppyFileId, fileCount } = job.data;
-  // // Send success response to client
-  // if (resolution === 'fullResX') {
-  //   try {
-  //     await ws.send(
-  //       Buffer.from(
-  //         JSON.stringify({
-  //           // ...fileInfo,
-  //           type: 'fileUploaded',
-  //           msg: 'Processing...',
-  //           uppyFileId,
-  //           // fileInfo: fileInfo,
-  //         })
-  //       )
-  //     );
-  //   } catch (err) {
-  //     if (!ws) {
-  //       // await res.status(200).end();
-  //     }
-  //     error('ws error:', err);
-  //   }
-  //   // res.status(200).json(fileInfo).end();
-  // } else if (resolution === 'thumbRes') {
-  //   // Thumbnail is finished uploading - resume processing notifications
-  //   // notifications(thumbnail is in notifications so must be uploaded first)
-  //   ws.send(
-  //     Buffer.from(
-  //       JSON.stringify({
-  //         type: 'fileUploaded',
-  //         msg: 'Processing...',
-  //         uppyFileId,
-  //         fileInfo: fileInfo,
-  //       })
-  //     )
-  //   );
   emailSender.resume();
   browserSender.resume();
-  // }
 });
 
 dbWriter.on('completed', async (job, result) => {
@@ -106,7 +80,9 @@ dbWriter.on('completed', async (job, result) => {
       frontChars = Math.ceil(charsToShow / 2),
       backChars = Math.floor(charsToShow / 2);
 
-    return str.substr(0, frontChars) + separator + str.substr(str.length - backChars);
+    return (
+      str.substr(0, frontChars) + separator + str.substr(str.length - backChars)
+    );
   };
 
   const loggingFileName = (str, truncLen) => {
@@ -125,7 +101,11 @@ for (const key in queues) {
   setQueues(queue);
 
   queue.on('stalled', function (job) {
-    error('stalled:', { job: job.name, file: job.data.image, ownerId: job.data.ownerId });
+    error('stalled:', {
+      job: job.name,
+      file: job.data.image,
+      ownerId: job.data.ownerId,
+    });
     // job.moveToFailed();
   });
 

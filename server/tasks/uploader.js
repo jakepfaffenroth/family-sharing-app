@@ -45,7 +45,9 @@ const upload = async (auth, data) => {
     // Uploads images to B2 storage
     let source = Buffer.from(image.buffer);
     let fileSize = image.size;
-    let filename = `${ownerId}/${resolution.replace('Res', '')}/${path.basename(image.name)}`;
+    let filename = `${ownerId}/${resolution.replace('Res', '')}/${path.basename(
+      image.name
+    )}`;
     filename = encodeURI(filename);
     let sha1 = crypto.createHash('sha1').update(source).digest('hex');
 
@@ -68,7 +70,8 @@ const upload = async (auth, data) => {
     }
 
     const src = process.env.CDN_PATH + filename;
-    const thumbnail = process.env.CDN_PATH + filename.replace('/full/', '/thumb/');
+    const thumbnail =
+      process.env.CDN_PATH + filename.replace('/full/', '/thumb/');
 
     // File upload to B2 complete; Send to dbWriter queue.
     addToDbWriterQueue(uploadResponse.data, metadata, resolution, ownerId);
@@ -83,7 +86,11 @@ const upload = async (auth, data) => {
         frontChars = Math.ceil(charsToShow / 2),
         backChars = Math.floor(charsToShow / 2);
 
-      return str.substr(0, frontChars) + separator + str.substr(str.length - backChars);
+      return (
+        str.substr(0, frontChars) +
+        separator +
+        str.substr(str.length - backChars)
+      );
     };
 
     const loggingFileName = (str, truncLen) => {
@@ -123,12 +130,15 @@ module.exports = async (job) => {
     };
     const result = await upload(uploadAuth, job.data);
     const ws = require('../app').locals.ws;
-    if (result.resolution === 'thumbRes') {
+    if (result.resolution === 'fullRes') {
       ws.send(
         Buffer.from(
           JSON.stringify({
             type: 'fileUploaded',
-            fileInfo: { ...result, src: result.src.replace('/thumb/', '/full/') },
+            fileInfo: {
+              ...result,
+              src: result.src.replace('/thumb/', '/full/'),
+            },
           })
         )
       );

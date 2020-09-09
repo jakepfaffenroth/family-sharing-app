@@ -77,7 +77,10 @@ passport.serializeUser(function (owner, done) {
 
 passport.deserializeUser(async function (owner, done) {
   try {
-    const foundOwner = await db.one('SELECT * FROM owners WHERE owner_id = $1', [owner.ownerId]);
+    const foundOwner = await db.one(
+      'SELECT * FROM owners WHERE owner_id = $1',
+      [owner.ownerId]
+    );
     done(foundOwner);
   } catch (err) {
     done(err);
@@ -94,7 +97,9 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json({ limit: '50mb' }));
-app.use(express.urlencoded({ limit: '50mb', extended: true, parameterLimit: 50000 }));
+app.use(
+  express.urlencoded({ limit: '50mb', extended: true, parameterLimit: 50000 })
+);
 
 //add routes
 app.use('/', indexRouter);
@@ -117,7 +122,9 @@ app.use(function (err, req, res, next) {
   res.locals.error = req.app.get('env') === 'development' ? err : {};
 
   // render the error page
-  res.status(err.status || 500).json({ msg: err.message, status: err.status, stack: err.stack });
+  res
+    .status(err.status || 500)
+    .json({ msg: err.message, status: err.status, stack: err.stack });
 });
 
 module.exports = app;

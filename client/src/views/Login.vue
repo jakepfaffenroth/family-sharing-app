@@ -1,26 +1,26 @@
 <template>
   <div>
     <h1>Log in to your account</h1>
-    <!-- TODO - the action needs to POST to the servet URL, not the client URL... -->
     <form @submit.prevent="login">
       <div>
         <label>Username:</label>
-        <input type="text" name="username" v-model="username" />
+        <input v-model="username" type="text" name="username" />
       </div>
       <div>
         <label>Password:</label>
-        <input type="password" name="password" v-model="password" />
+        <input v-model="password" type="password" name="password" />
       </div>
       <div>
         <input type="submit" value="Log In" />
       </div>
     </form>
-    <p v-if="incorrectCred">Incorrect username or password</p>
+    <p v-if="incorrectCred">
+      Incorrect username or password
+    </p>
   </div>
 </template>
 
 <script>
-// import router from '../router/index';
 import axios from 'axios';
 import store from '../store/index';
 
@@ -34,24 +34,35 @@ export default {
       incorrectCred: false,
     };
   },
+  async created() {
+    try {
+      const response = await axios.get(`${this.server}/owner-auth`, {
+        withCredentials: true,
+      });
+      if (!response.data.owner) {
+        console.log('Not logged in yet');
+      }
+      console.log('response: ', response);
+    } catch (err) {
+      console.log(err);
+    }
+  },
   methods: {
     login() {
-      // e.preventDefault();
       console.log('attempting login...');
-      let login = async () => {
-        let body = {
+      const login = async () => {
+        const body = {
           username: this.username,
           password: this.password,
         };
         try {
-          let response = await axios.post(this.server + '/api/login', body);
+          const response = await axios.post(`${this.server}/api/login`, body);
           // Login on server successful
           console.log('Logged in');
           // console.log(response.data)
-          let ownerId = response.data.owner.ownerId;
+          const { ownerId } = response.data.owner;
           store.commit('setCredentials', response.data.credentials);
           store.commit('setOwner', response.data.owner);
-          // document.cookie = "ownerId="+ownerId
           // open PrivateSpace page
           this.$router.push({ name: 'OwnerArea', params: { ownerId } });
         } catch (error) {
@@ -63,19 +74,6 @@ export default {
 
       login();
     },
-  },
-  async created() {
-    try {
-      const response = await axios.get(this.server + '/owner-auth', { withCredentials: true });
-      if (!response.data.owner) {
-        console.log('Not logged in yet')
-        // this.$router.push({ name: 'Login' });
-      }
-      console.log('response: ', response);
-      // this.$router.push({ name: 'OwnerArea' });
-    } catch (err) {
-      console.log(err);
-    }
   },
 };
 </script>

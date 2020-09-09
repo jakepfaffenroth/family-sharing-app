@@ -62,7 +62,7 @@ const writeToDb = async (data) => {
 
 module.exports = async (job) => {
   try {
-      return await writeToDb(job.data);
+    return await writeToDb(job.data);
   } catch (err) {
     error(err);
   }

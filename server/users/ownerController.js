@@ -12,14 +12,23 @@ module.exports.create = [
   // username and password must not be empty
   // TODO - add stronger password requirements
   body('username', 'Username must not be empty.').trim().isLength({ min: 1 }),
-  body('password', 'Password must not be empty.').trim().isLength({ min: 1, max: 64 }),
-  body('firstName', 'First Name must not be empty.').trim().isLength({ min: 1, max: 64 }),
-  body('lastName', 'Last Name must not be empty.').trim().isLength({ min: 1, max: 64 }),
+  body('password', 'Password must not be empty.')
+    .trim()
+    .isLength({ min: 1, max: 64 }),
+  body('firstName', 'First Name must not be empty.')
+    .trim()
+    .isLength({ min: 1, max: 64 }),
+  body('lastName', 'Last Name must not be empty.')
+    .trim()
+    .isLength({ min: 1, max: 64 }),
 
   // Check if username already taken
   body('username')
     .custom(async (value) => {
-      const foundUser = await db.oneOrNone('SELECT * FROM owners WHERE username = $1', [value]);
+      const foundUser = await db.oneOrNone(
+        'SELECT * FROM owners WHERE username = $1',
+        [value]
+      );
       if (foundUser) return Promise.reject('Username taken');
     })
     .bail(),
@@ -107,7 +116,10 @@ module.exports.getOwner = async (req, res) => {
         return res.redirect(process.env.SERVER);
       }
 
-      const images = await db.any('SELECT * FROM images WHERE owner_id = ${ownerId}', owner);
+      const images = await db.any(
+        'SELECT * FROM images WHERE owner_id = ${ownerId}',
+        owner
+      );
       return res.json({
         owner: owner,
         images: images,

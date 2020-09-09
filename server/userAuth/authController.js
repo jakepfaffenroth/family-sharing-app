@@ -9,7 +9,10 @@ const db = require('../db').pgPromise;
 // Passport config
 passport.use(
   new LocalStrategy(async (username, password, done) => {
-    const owner = await db.oneOrNone('SELECT * FROM owners WHERE username = $1', [username]);
+    const owner = await db.oneOrNone(
+      'SELECT * FROM owners WHERE username = $1',
+      [username]
+    );
 
     if (!owner) {
       return done(null, owner, {
@@ -52,7 +55,10 @@ module.exports.login = (req, res, next) => {
       // Send owner info back to client as JSON
       // res.status(200).json(response);
       // return res.redirect(client + '/private-space');
-      const ownerId = JSON.stringify(req.session.passport.user.ownerId).replace(/"/g, '');
+      const ownerId = JSON.stringify(req.session.passport.user.ownerId).replace(
+        /"/g,
+        ''
+      );
       // Set cookie on client with owner.ownerId
       res.cookie('ownerId', ownerId, { maxAge: 1000 * 60 * 60 * 24 * 7 });
       res.redirect(process.env.CLIENT + '?owner=' + ownerId);
@@ -105,7 +111,10 @@ module.exports.checkSession = async (req, res, next) => {
         return res.json({ isLoggedIn: false });
       }
 
-      const images = await db.any('SELECT * FROM images WHERE owner_id = ${ownerId}', req.body);
+      const images = await db.any(
+        'SELECT * FROM images WHERE owner_id = ${ownerId}',
+        req.body
+      );
 
       console.log('Owner ' + owner.username + ' is logged in');
 

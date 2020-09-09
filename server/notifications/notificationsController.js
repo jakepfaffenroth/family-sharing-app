@@ -54,7 +54,11 @@ module.exports.removeBouncedEmail = (req, res) => {
           return res.end('ok');
         } else {
           // Confirmation was not successful
-          return console.log('Error processing SNS confirmation email:', response.status, response.statusText);
+          return console.log(
+            'Error processing SNS confirmation email:',
+            response.status,
+            response.statusText
+          );
         }
       } catch (err) {
         console.log('Error processing SNS confirmation email:', err);
@@ -65,7 +69,11 @@ module.exports.removeBouncedEmail = (req, res) => {
         let message = JSON.parse(payload.Message);
         // console.log('message: ', message);
 
-        if (message.notificationType !== 'Bounce' && message.bounce.bounceType !== 'Permanent') return res.end('ok');
+        if (
+          message.notificationType !== 'Bounce' &&
+          message.bounce.bounceType !== 'Permanent'
+        )
+          return res.end('ok');
 
         const deletedEmail = await db.oneOrNone(
           "DELETE FROM subscribers WHERE email ->> 'email_address' = $1 RETURNING *",
@@ -73,7 +81,11 @@ module.exports.removeBouncedEmail = (req, res) => {
         );
         deletedEmail
           ? console.log('Removed', message.mail.destination[0])
-          : console.log('Bounced email ' + message.mail.destination[0] + 'not found in db.');
+          : console.log(
+              'Bounced email ' +
+                message.mail.destination[0] +
+                'not found in db.'
+            );
         res.end('ok');
       } catch (err) {
         console.log('Error processing bounced email:', err);

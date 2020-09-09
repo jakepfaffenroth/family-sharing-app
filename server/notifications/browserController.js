@@ -6,7 +6,10 @@ module.exports.sendBrowserNotifications = async (data) => {
 
   try {
     const result = await db.task(async (t) => {
-      const owner = await db.one('SELECT first_name, guest_id FROM owners WHERE owner_id = $1', [ownerId]);
+      const owner = await db.one(
+        'SELECT first_name, guest_id FROM owners WHERE owner_id = $1',
+        [ownerId]
+      );
       const subscriptions = await db.any(
         'SELECT * FROM subscribers WHERE owner_id = ${guestId} AND browser IS NOT NULL',
         owner
@@ -18,9 +21,9 @@ module.exports.sendBrowserNotifications = async (data) => {
     }
 
     const payload = JSON.stringify({
-      title: `${result.owner.firstName} just shared ${fileCount === 1 ? 'a' : fileCount} new photo${
-        fileCount > 1 ? 's' : ''
-      }!`,
+      title: `${result.owner.firstName} just shared ${
+        fileCount === 1 ? 'a' : fileCount
+      } new photo${fileCount > 1 ? 's' : ''}!`,
       body: `Click to see ${fileCount === 1 ? 'it' : 'them'}!`,
       icon: thumbPath,
       guestId,
@@ -30,7 +33,11 @@ module.exports.sendBrowserNotifications = async (data) => {
       const publicVapidKey = process.env.PUBLIC_VAPID_KEY;
       const privateVapidKey = process.env.PRIVATE_VAPID_KEY;
 
-      webPush.setVapidDetails('mailto:notification@carousel.jakepfaf.dev', publicVapidKey, privateVapidKey);
+      webPush.setVapidDetails(
+        'mailto:notification@carousel.jakepfaf.dev',
+        publicVapidKey,
+        privateVapidKey
+      );
 
       webPush.sendNotification(sub.browser, payload).catch(async (error) => {
         console.error(error);
@@ -39,7 +46,10 @@ module.exports.sendBrowserNotifications = async (data) => {
           console.log('Removing bad sub');
           try {
             const result = await db.task(async (t) => {
-              const owner = await db.one('SELECT username, guestId FROM owners WHERE owner_id = $1', [ownerId]);
+              const owner = await db.one(
+                'SELECT username, guestId FROM owners WHERE owner_id = $1',
+                [ownerId]
+              );
               const subscriptions = db.any(
                 'SELECT * FROM subscribers WHERE owner_id = ${guestId} AND browser IS NOT NULL',
                 owner
@@ -48,7 +58,8 @@ module.exports.sendBrowserNotifications = async (data) => {
                 "DELETE FROM subscribers WHERE browser -> 'keys'->>'auth' = ${keys.auth} RETURNING *",
                 sub
               );
-              if (deletedSub) info('Removed' + deletedSub + ' from ' + owner.username);
+              if (deletedSub)
+                info('Removed' + deletedSub + ' from ' + owner.username);
               return { owner, subscriptions, deletedSub };
             });
           } catch (err) {

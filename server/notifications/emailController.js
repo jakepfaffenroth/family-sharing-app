@@ -31,7 +31,9 @@ module.exports.sendEmailNotifications = async (data) => {
   // const thumbPath = data.thumbPath;
   const timeStamp = toDate(Date.now()); // Convert numerical date to human-readable
 
-  const owner = await db.one('SELECT * FROM owners WHERE guest_id = $1', [guestId]);
+  const owner = await db.one('SELECT * FROM owners WHERE guest_id = $1', [
+    guestId,
+  ]);
 
   // If last notification+1hr is later than the current timestamp,
   // timeComparison will equal 1 (else -1 or 0)
@@ -51,17 +53,20 @@ module.exports.sendEmailNotifications = async (data) => {
     // ---- CODE BELOW SENDS EMAILS  ----
     const sender = `${owner.firstName} ${owner.lastName} (via Carousel) <notification@carousel.jakepfaf.dev>`;
     const subject = `New photo${fileCount > 1 ? 's' : ''} shared!`;
-    const body_text = `Go see ${fileCount === 1 ? 'it' : 'them'}!` + data.shareUrl;
+    const body_text =
+      `Go see ${fileCount === 1 ? 'it' : 'them'}!` + data.shareUrl;
     const charset = 'UTF-8'; // The character encoding for the email.
     // The HTML body of the email.
     const body_html = `<html>
     <head></head>
     <body>
-      <h1>${owner.firstName} ${owner.lastName} just shared ${fileCount === 1 ? 'a' : fileCount} new photo${
-      fileCount > 1 ? 's' : ''
-    }!</h1>
+      <h1>${owner.firstName} ${owner.lastName} just shared ${
+      fileCount === 1 ? 'a' : fileCount
+    } new photo${fileCount > 1 ? 's' : ''}!</h1>
       <p>Go see ${fileCount === 1 ? 'it' : 'them'} here:</p>
-        <a href='${process.env.SERVER}/${guestId}/guest'>View Photo${fileCount === 1 ? '' : 's'}</a>
+        <a href='${process.env.SERVER}/${guestId}/guest'>View Photo${
+      fileCount === 1 ? '' : 's'
+    }</a>
         <img src=${thumbPath} />
     </body>
     </html>`;
@@ -91,18 +96,22 @@ module.exports.sendEmailNotifications = async (data) => {
     };
 
     // Get email subscribers and send email to each
-    await db.each('SELECT email FROM subscribers WHERE owner_id = ${guestId} AND email IS NOT NULL', data, (row) => {
-      params.Destination.ToAddresses[0] = row.email.emailAddress;
+    await db.each(
+      'SELECT email FROM subscribers WHERE owner_id = ${guestId} AND email IS NOT NULL',
+      data,
+      (row) => {
+        params.Destination.ToAddresses[0] = row.email.emailAddress;
 
-      //Try to send the email.
-      ses.sendEmail(params, function (err, data) {
-        // If something goes wrong, print an error message.
-        if (err) {
-          error('err: ', err.message);
-        } else {
-          success('Email sent! Message ID: ', data.MessageId);
-        }
-      });
-    });
+        //Try to send the email.
+        ses.sendEmail(params, function (err, data) {
+          // If something goes wrong, print an error message.
+          if (err) {
+            error('err: ', err.message);
+          } else {
+            success('Email sent! Message ID: ', data.MessageId);
+          }
+        });
+      }
+    );
   }
 };

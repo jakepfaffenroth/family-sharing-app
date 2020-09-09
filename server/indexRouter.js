@@ -18,11 +18,17 @@ router.get('/signup', (req, res) => {
 
 router.get('/login', (req, res) => {
   req.query.q ? (isErrVisible = true) : (isErrVisible = false);
-  res.render('login', { loginUrl: process.env.SERVER + '/auth/login', errMsg: isErrVisible });
+  res.render('login', {
+    loginUrl: process.env.SERVER + '/auth/login',
+    errMsg: isErrVisible,
+  });
 });
 
 router.get('/:gId/guest', guestController.mark);
-router.post('/notifications/bounce', notificationsController.removeBouncedEmail);
+router.post(
+  '/notifications/bounce',
+  notificationsController.removeBouncedEmail
+);
 router.get('/user/get-owner', ownerController.getOwner);
 
 router.get('/logout', (req, res) => {

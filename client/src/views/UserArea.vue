@@ -2,14 +2,23 @@
   <div>
     <h1>Welcome Back, {{ owner.firstName }}</h1>
     <a :href="server + '/logout'">Log out</a>
-    <form :action="'http://localhost:3050/api/b2/upload'" enctype="multipart/form-data" method="POST">
+    <form
+      :action="'http://localhost:3050/api/b2/upload'"
+      enctype="multipart/form-data"
+      method="POST"
+    >
       <input type="file" name="myFiles" multiple />
       <!-- <input type="hidden" name="ownerId" :value="owner._id" /> -->
       <input type="submit" value="Upload" />
     </form>
     <div v-if="fileList.length > 0" class="image-grid">
       <!-- <p>Showing images from folder {{}}</p> -->
-      <img v-for="(image, index) in fileList" :key="index.fileId" :src="basePath + image.fileName" class="image" />
+      <img
+        v-for="(image, index) in fileList"
+        :key="index.fileId"
+        :src="basePath + image.fileName"
+        class="image"
+      />
     </div>
   </div>
 </template>
@@ -19,10 +28,6 @@ import axios from 'axios';
 
 export default {
   name: 'PrivateSpace',
-  props: {
-    // owner: { type: Object, required: true },
-    // credentials: { type: Object, required: true },
-  },
   data() {
     return {
       server: process.env.VUE_APP_SERVER,
@@ -34,30 +39,12 @@ export default {
       basePath: 'https://f000.backblazeb2.com/file/JFP001/',
     };
   },
-  methods: {
-    // async uploadFiles() {
-    //   await axios.post(this.server + '/api/b2/upload', {
-    //     data: this.fileSelection,
-    //   });
-    // },
-  },
   async created() {
-    // try {
-    //   const response = await axios.get(this.server + '/owner-auth', {withCredentials: true});
-    //   if (!response.data.owner) {
-    //     this.$router.push({ name: 'Login' });
-    //     console.log('round trip from login to owner-area back to login')
-    //   }
-    //   console.log('response: ', response);
-    // } catch (err) {
-    //   console.log(err);
-    // }
-
     this.b2Credentials = this.$store.getters.b2Credentials;
     this.owner = this.$store.getters.owner;
     try {
       const response = await axios({
-        url: this.server + '/api/b2/list-files',
+        url: `${this.server}/api/b2/list-files`,
         method: 'POST',
         data: { filePrefix: this.filePrefix },
       });

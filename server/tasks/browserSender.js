@@ -1,5 +1,7 @@
 const { browserSender } = require('./index');
-const { sendBrowserNotifications } = require('../notifications/browserController');
+const {
+  sendBrowserNotifications,
+} = require('../notifications/browserController');
 
 module.exports = async (job) => {
   try {
