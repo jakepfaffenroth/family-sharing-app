@@ -37,16 +37,19 @@ module.exports.create = [
   body('*').escape().trim().bail(),
 
   // TODO - Make sure password confirmation matches
-  //   body('confirmPassword', 'Confirm your password.').trim().isLength({ min: 1 }).bail(),
-  //   body('confirmPassword')
-  //     .custom((value, { req }) => {
-  //       /**/ console.log('checking passwords...');
-  //       if (value !== req.body.password) {
-  //         return false;
-  //       }
-  //       return true;
-  //     })
-  //     .bail(),
+  body('confirmPassword', 'Confirm your password.')
+    .trim()
+    .isLength({ min: 1 })
+    .bail(),
+  body('confirmPassword')
+    .custom((value, { req }) => {
+      /**/ console.log('checking passwords...');
+      if (value !== req.body.password) {
+        return false;
+      }
+      return true;
+    })
+    .bail(),
   //
 
   // Process request after validation and sanitization
@@ -65,13 +68,17 @@ module.exports.create = [
       const password = req.body.password;
       const firstName = req.body.firstName;
       const lastName = req.body.lastName;
+      const email = req.body.email;
 
       res.render('signup', {
+        title: 'Carousel',
+        loginUrl: process.env.SERVER + '/auth/login',
         errMsg: errors.array()[0].msg,
         username: username,
         password: password,
         firstName: firstName,
         lastName: lastName,
+        email: email,
       });
     }
     if (errors.isEmpty()) {
@@ -97,7 +104,7 @@ module.exports.create = [
 
         success('User ' + owner.username + ' created');
         // Account created; redirect to login screen
-        res.redirect('../login');
+        res.redirect('/login');
       });
     }
   },
@@ -107,7 +114,7 @@ module.exports.getOwner = async (req, res) => {
   try {
     db.task(async (t) => {
       const owner = await db.oneOrNone(
-        'SELECT first_name, owner_id, guest_id FROM owners WHERE guest_id = ${guestId}',
+        'SELECT first_name, last_name, owner_id, guest_id, premium_user FROM owners WHERE guest_id = ${guestId}',
         req.body
       );
 

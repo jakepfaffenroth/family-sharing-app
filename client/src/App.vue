@@ -1,64 +1,113 @@
 <template>
   <div>
-    <div v-if="isReadyToRender">
-      <component
-        :is="user.typeMenu"
-        :owner="owner"
-        :guest="guest"
-        :sub-options="subOptions"
-      />
-      <div v-if="user.type === 'owner'">
-        <uppy :owner="owner" @update-images="updateImages" />
+    <div
+      v-show="isReadyToRender"
+      class="flex flex-col min-h-screen w-full px-2 py-2 sm:px-6 sm:py-4
+        xl:px-12 xl:py-6"
+    >
+      <!-- Header and Menu -->
+      <div class="flex flex-col sm:flex-row sm:justify-between">
+        <component
+          :is="user.typeMenu"
+          :owner="owner"
+          :guest="guest"
+          :sub-options="subOptions"
+          @sort-images="sortImages"
+        ></component>
       </div>
 
-      <p>Image count: {{ images.length }}</p>
-
-      <image-sorter @sort-images="sortImages" />
-      <vue-picture-swipe
+      <!-- Image gallery -->
+      <gallery
         :items="images"
         :owner="owner"
         :user-type="user.type"
-        @delete-image="deleteImage"
-      />
+        @delete-image="showDeleteModal"
+      ></gallery>
 
-      <div v-if="images.length === 0 && user.type === 'owner' && owner.ownerId">
-        <p>Upload some images!</p>
+      <!-- Empty gallery  -->
+      <div
+      id="empty-gallery"
+        class="uppy-select-files flex flex-grow justify-center rounded border-4 border-dashed border-gray-400 text-gray-500 hover:bg-gray-200 hover:text-gray-600 cursor-pointer transition-all duration-200 ease-in-out"
+        v-if="images.length === 0 && user.type === 'owner' && owner.ownerId"
+      >
+        <p class="flex-grow self-center text-center text-2xl">
+          Upload some images!
+        </p>
       </div>
     </div>
-    <div />
+
+    <!-- Uppy file uploader -->
+    <uppy
+      v-if="user.type === 'owner'"
+      :key="forceReloadKey"
+      :owner="owner"
+      @update-images="updateImages"
+    ></uppy>
+
+    <delete-modal
+      v-show="isDeleteModalVisible"
+      :img-delete-info="imgDeleteInfo"
+      @toggle-form="isDeleteModalVisible = !isDeleteModalVisible"
+      @delete-image="deleteImage"
+    ></delete-modal>
   </div>
 </template>
 
 <script scoped>
-import axios from 'axios';
+import { provide, ref, reactive, defineAsyncComponent } from 'vue';
 
-import { provide, ref, reactive } from 'vue';
+import axios from 'axios';
+import { Notyf } from 'notyf';
+import 'notyf/notyf.min.css';
+import Toastify from 'toastify-js';
+
+import ColorfulLogo from './components/ColorfulLogo';
 import OwnerMenu from './components/OwnerMenu';
 import GuestMenu from './components/GuestMenu';
 import Uppy from './components/Uppy';
-import VuePictureSwipe from './components/VuePictureSwipe';
-import ImageSorter from './components/ImageSorter';
+// import VuePictureSwipe from './components/VuePictureSwipe';
+import DeleteModal from './components/DeleteModal';
+
+// const Gallery = defineAsyncComponent(() =>
+//   import('./components/VuePictureSwipe.vue')
+// );
 
 export default {
   components: {
+    ColorfulLogo,
     OwnerMenu,
     GuestMenu,
     Uppy,
-    VuePictureSwipe,
-    ImageSorter,
+    Gallery: defineAsyncComponent(() =>
+      import('./components/VuePictureSwipe.vue')
+    ),
+    DeleteModal
   },
+
   setup() {
     const server = process.env.VUE_APP_SERVER;
-    const isReadyToRender = ref(false);
+    let isReadyToRender = ref(false);
+    let isDeleteModalVisible = ref(false);
+    let forceReloadKey = ref(0);
 
     const user = reactive({ type: null, typeMenu: null });
     const owner = reactive({});
     const images = ref([]);
 
+    const toast = new Notyf({
+      position: { x: 'right', y: 'top' },
+      duration: 2000,
+      types: [
+        {
+          type: 'info'
+        }
+      ]
+    });
+
     provide('images', images);
     provide('userType', user.type);
     provide('owner', owner);
-
+    provide('toast', toast);
     // -------------------------------------
     // ------ INITIAL CONFIGURATION --------
     // ------------ & COOKIES --------------
@@ -72,7 +121,7 @@ export default {
     }
 
     // Prevent right clicking images
-    document.addEventListener('contextmenu', (event) => {
+    document.addEventListener('contextmenu', event => {
       if (event.target.nodeName === 'IMG') {
         event.preventDefault();
       }
@@ -127,7 +176,7 @@ export default {
         response = await axios({
           url: `${server}/auth/check-session`,
           method: 'post',
-          data: { ownerId },
+          data: { ownerId }
         });
         if (!response.data.isLoggedIn) {
           window.location = `${server}/login`;
@@ -136,11 +185,11 @@ export default {
         response = await axios({
           url: `${server}/user/get-owner`,
           method: 'post',
-          data: { guestId },
+          data: { guestId }
         });
       }
-
       const ownerArr = Object.keys(response.data.owner);
+
       for (const key of ownerArr) {
         owner[key] = response.data.owner[key];
       }
@@ -149,7 +198,7 @@ export default {
       user.typeMenu = userType === 'owner' ? OwnerMenu : GuestMenu;
       images.value = response.data.images.reverse();
       isReadyToRender.value = true;
-      sortImages('uploadTime');
+      sortImages('captureTime');
     }
 
     // ------ IMAGE HANDLING --------
@@ -157,17 +206,19 @@ export default {
       const imagesArr = images.value;
       images.value = [];
 
+      forceReloadKey.value++; //force Uppy to reload
+
       axios.post(`${server}/files/delete-image`, {
-        images: imagesArr.map((x) => {
+        images: imagesArr.map(x => {
           const { fileId, fileName } = x;
           return { fileId, fileName };
         }),
-        ownerId: owner.ownerId,
+        ownerId: owner.ownerId
       });
     };
     provide('nuke', nuke);
 
-    const updateImages = (fileInfo) => {
+    const updateImages = fileInfo => {
       const { fileId, filename, src, thumbnail, uploadTime } = fileInfo;
       const newImg = {
         fileId,
@@ -178,13 +229,13 @@ export default {
         w: fileInfo.metadata.w,
         h: fileInfo.metadata.h,
         ownerId: owner.ownerId,
-        exif: fileInfo.metadata.exif,
+        exif: fileInfo.metadata.exif
       };
       images.value.unshift(newImg);
     };
     provide('updateImages', updateImages);
 
-    const sortImages = (sortParameter) => {
+    const sortImages = sortParameter => {
       if (sortParameter === 'reverse') {
         images.value.reverse();
         return;
@@ -217,15 +268,29 @@ export default {
         console.log('err: ', err);
       }
     };
+    provide('sortImages', sortImages);
 
-    const deleteImage = async (
-      fileId,
-      smallFileId,
-      fileName,
-      ownerId,
-      index
-    ) => {
-      images.value.splice(index, 1);
+    let imgDeleteInfo = ref(null);
+
+    const showDeleteModal = imgInfo => {
+      imgDeleteInfo.value = { ...imgInfo };
+      isDeleteModalVisible.value = true;
+    };
+
+    const deleteImage = async imgInfo => {
+      isDeleteModalVisible = false;
+      const { date, fileId, smallFileId, fileName, ownerId, index } = imgInfo;
+
+      images.value.splice(
+        images.value.indexOf(images.value.find(x => x.fileId === fileId)),
+        1
+      );
+
+      // force Uppy to reload if there are zero images
+      if (images.value.length === 0) {
+        forceReloadKey.value++;
+      }
+      console.log('forceReloadKey:', forceReloadKey.value);
       axios.post(`${server}/files/delete-image`, { fileId, fileName, ownerId });
     };
 
@@ -234,75 +299,96 @@ export default {
       owner,
       images,
       isReadyToRender,
+      isDeleteModalVisible,
+      forceReloadKey,
       server,
       nuke,
       updateImages,
       sortImages,
-      deleteImage,
+      showDeleteModal,
+      imgDeleteInfo,
+      deleteImage
     };
   },
+  computed: {
+    imgGroups() {
+      let group = this.items.reduce((r, a) => {
+        const captureDate = a.exif.exif.DateTimeOriginal
+          ? format(
+              new Date(a.exif.exif.DateTimeOriginal.split('T').shift()),
+              'E, LLL dd'
+            )
+          : null;
+
+        const uploadDate = format(
+          new Date(parseInt(a.uploadTime)),
+          'E, LLL dd'
+        );
+
+        r[captureDate || uploadDate] = [
+          ...(r[captureDate || uploadDate] || []),
+          a
+        ];
+        return r;
+      }, {});
+
+      return group;
+    }
+  }
 };
 </script>
 
-<style scoped>
-.link {
-  border: none;
-  background: none;
-  cursor: pointer;
+<style>
+.notyf__toast {
+  @apply flex justify-between content-center w-56 h-auto p-0 text-sm font-light bg-gradient-to-r from-teal-400 to-purple-500 rounded-md;
 }
-.link:hover {
-  color: blue;
+
+.notyf__wrapper {
+  @apply m-3 p-0 w-full;
+}
+
+.notyf__message {
+  @apply w-full;
+}
+
+.notyf__dismiss-btn {
+  @apply absolute -top-6 right-0 bg-transparent hover:bg-transparent;
+}
+
+.link {
+  @apply px-3  cursor-pointer;
 }
 
 .image-grid {
-  margin-top: 1rem;
-}
-
-.image-container {
-  position: relative;
-  margin: 0.25rem;
-  overflow: hidden;
-  height: 250px;
+  @apply mt-4;
 }
 
 .image {
-  flex: auto;
+  @apply flex h-10 object-contain transition duration-200 ease-in-out;
+  /* flex: auto;
   height: 250px;
   min-width: 100px;
   object-fit: contain;
-  transition: 0.2s ease-in-out;
+  transition: 0.2s ease-in-out; */
 }
 
 .image-overlay {
-  position: absolute;
+  @apply absolute top-0 left-0 w-full h-full opacity-0;
+  /* position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  opacity: 0;
-}
-
-.image-container:hover .image {
-  scale: 1.1;
-  object-fit: cover;
-}
-
-.image-container:hover .image-overlay {
-  opacity: 1;
-  transition: all 0.2s ease-in-out;
+  opacity: 0; */
 }
 .delete-btn {
-  position: absolute;
+  @apply absolute top-2 right-2 px-2 py-1 text-xs;
+  /* position: absolute;
   top: 10px;
-  right: 10px;
+  right: 10px; */
 }
 
-.share-modal {
-  position: absolute;
-  z-index: 1000;
-  padding: 200px;
-  margin: auto;
-  background-color: white;
-  border: 1px solid black;
+.text-input {
+  @apply appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:border-blue-300  sm:text-sm sm:leading-5;
 }
 </style>

@@ -1,61 +1,113 @@
 /* eslint-disable */
 
 <template>
-  <div class="my-gallery" itemscope itemtype="http://schema.org/ImageGallery">
-    <figure
-      v-for="(item, index) in items"
-      :key="index"
-      itemprop="associatedMedia"
-      itemscope
-      itemtype="http://schema.org/ImageObject"
-      :src="item.src"
-      class="image-container"
-      :style="{ height: imageSize }"
-    >
-      <a
-        :href="item.src"
-        itemprop="contentUrl"
-        :data-size="'' + item.w + 'x' + item.h"
-        :title="item.title"
-      >
-        <!-- image thumbnails -->
-        <img
-          :src="item.thumbnail"
-          :alt="item.alt"
-          itemprop="thumbnail"
-          class="image"
-          :style="{ height: imageSize }"
-        />
-      </a>
-      <input
-        v-if="items.length >= 0 && userType === 'owner' && owner.ownerId"
-        type="button"
-        class="delete-btn image-info"
-        value="Delete"
-        @click.stop="
-          $emit(
-            'delete-image',
-            item.fileId,
-            item.smallFileId,
-            item.fileName,
-            owner.ownerId,
-            index
-          )
-        "
-      />
-      <p
-        v-if="item.exif && item.exif.exif && item.exif.exif.DateTimeOriginal"
-        class="image-timestamp image-info"
-      >
-        {{
-          item.exif.exif.DateTimeOriginal
-            ? format(new Date(item.exif.exif.DateTimeOriginal), 'MM/dd/yyyy')
-            : null
-        }}
-      </p>
-    </figure>
+  <div
+    id="my-gallery"
+    class="my-gallery flex flex-wrap justify-start py-2 sm:py-4"
+    itemscope
+    itemtype="http://schema.org/ImageGallery"
+  >
+    <div v-for="(group, date) in imgGroups" :key="date" class="group-container">
+      <div class="flex justify-between">
+        <p class="mb-1 text-sm sm:text-base">{{ date }}</p>
+      </div>
+      <div class="group-wrapper flex flex-wrap">
+        <figure
+          v-for="(item, index) in group"
+          :key="index"
+          itemprop="associatedMedia"
+          itemscope
+          itemtype="http://schema.org/ImageObject"
+          :src="item.src"
+          @mouseenter="item.isMenuVisible = true"
+          @mouseleave="item.isMenuVisible = false"
+          class="image-container h-24 xs:h-28 sm:h-36 md:h-64"
+          :id="'image-' + index"
+        >
+          <div class="absolute top-1 right-4 z-30">
+            <transition name="fade">
+              <div
+                :id="'menu-' + index"
+                v-show="item.isMenuVisible"
+                v-if="userType === 'owner'"
+                @click.stop
+              >
+                <drop-menu menu-type="imgMenu">
+                  <template #btnLabel>
+                    <svg
+                      class="w-8 h-8 p-1 bg-gradient-to-r from-teal-400 to-purple-500 border border-white rounded-full shadow text-white"
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path
+                        d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM16 12a2 2 0 100-4 2 2 0 000 4z"
+                      />
+                    </svg>
+                  </template>
+                  <template #listItems>
+                    <!-- <a
+                      v-if="
+                        items.length >= 0 &&
+                          userType === 'owner' &&
+                          owner.ownerId
+                      "
+                      class="img-menu-link"
+                      @click.stop="shareImage(item)"
+                    >
+                      Share
+                    </a> -->
+                    <a
+                      v-if="
+                        items.length >= 0 &&
+                          userType === 'owner' &&
+                          owner.ownerId
+                      "
+                      class="img-menu-link"
+                      @click.stop="
+                        $emit('delete-image', {
+                          date,
+                          fileId: item.fileId,
+                          smallFileId: item.smallFileId,
+                          fileName: item.fileName,
+                          ownerId: owner.ownerId,
+                          index
+                        })
+                      "
+                    >
+                      Delete
+                    </a>
+                  </template>
+                </drop-menu>
+              </div>
+            </transition>
+          </div>
+          <a
+            v-lazyload
+            :href="item.src"
+            itemprop="contentUrl"
+            :data-size="'' + item.w + 'x' + item.h"
+            :title="item.title"
+          >
+            <!-- image thumbnails -->
+            <img
+              :data-url="item.thumbnail"
+              :alt="item.alt"
+              itemprop="thumbnail"
+              class="image h-24 xs:h-28 sm:h-36 md:h-64"
+            />
+          </a>
+        </figure>
+      </div>
+    </div>
   </div>
 
+  <!-- <modal
+    v-if="showSingleShareModal"
+    :shareUrl="'example.com/&gid=1&pid=' + 'Picture Index (from pswp)'"
+  /> -->
+
+  <!-- Image lightbox -->
   <div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="pswp__bg" />
     <div class="pswp__scroll-wrap">
@@ -132,26 +184,36 @@ import PhotoSwipeUI_Default from 'photoswipe/dist/photoswipe-ui-default';
 import 'photoswipe/dist/photoswipe.css';
 import 'photoswipe/dist/default-skin/default-skin.css';
 import format from 'date-fns/format';
+import DropMenu from './DropMenu';
+// import Modal from './Modal';
+import LazyLoadDirective from '../directives/LazyLoadDirective';
 
 export default {
+  directives: {
+    lazyload: LazyLoadDirective
+  },
+  components: {
+    DropMenu
+    // Modal
+  },
   props: {
     owner: {
       type: Object,
       default() {
         return {};
-      },
+      }
     },
     userType: { type: String, default: '' },
     items: {
       default() {
         return [];
       },
-      type: Array,
+      type: Array
     },
     options: {
       default: () => ({}),
-      type: Object,
-    },
+      type: Object
+    }
   },
   emits: ['delete-image'],
   data() {
@@ -160,6 +222,8 @@ export default {
       angle: 0,
       format,
       imageSize: '250px',
+      showSingleShareModal: false,
+      itemToShare: {}
     };
   },
   mounted() {
@@ -167,25 +231,31 @@ export default {
     const initPhotoSwipeFromDOM = function(gallerySelector) {
       // parse slide data (url, title, size ...) from DOM elements
       // (children of gallerySelector)
+      const thumbElements = [];
       const parseThumbnailElements = function(el) {
-        const thumbElements = el.childNodes;
+        for (let i = 0; i < el.children.length; i++) {
+          Array.from(el.children)[i].children.forEach(child => {
+            if (child.matches('.group-wrapper')) {
+              Array.from(child.children).forEach(img => {
+                thumbElements.push(img);
+              });
+            }
+          });
+        }
+
         const numNodes = thumbElements.length;
         const items = [];
         let figureEl;
         let linkEl;
         let size;
         let item;
-
         for (let i = 0; i < numNodes; i++) {
           figureEl = thumbElements[i]; // <figure> element
-
           // include only element nodes
           if (figureEl.nodeType !== 1) {
             continue;
           }
-
-          linkEl = figureEl.children[0]; // <a> element
-
+          linkEl = figureEl.children[1]; // <a> element
           size = linkEl.getAttribute('data-size').split('x');
 
           // create slide object
@@ -193,12 +263,11 @@ export default {
             src: linkEl.getAttribute('href'),
             w: parseInt(size[0], 10),
             h: parseInt(size[1], 10),
-            title: linkEl.getAttribute('title'),
+            title: linkEl.getAttribute('title')
           };
-
-          if (figureEl.children.length > 1) {
+          if (figureEl.children.length > 2) {
             // <figcaption> content
-            item.title = figureEl.children[1].innerHTML;
+            item.title = figureEl.children[2].innerHTML;
           }
 
           if (linkEl.children.length > 0) {
@@ -224,36 +293,35 @@ export default {
         e.preventDefault ? e.preventDefault() : (e.returnValue = false);
 
         const eTarget = e.target || e.srcElement;
-
         // find root element of slide
         const clickedListItem = closest(
           eTarget,
-          (el) => el.tagName && el.tagName.toUpperCase() === 'FIGURE'
+          el => el.tagName && el.tagName.toUpperCase() === 'FIGURE'
         );
-
         if (!clickedListItem) {
           return;
         }
-
         // find index of clicked item by looping through all child nodes
         // alternatively, you may define index via data- attribute
-        const clickedGallery = clickedListItem.parentNode;
+        const clickedGallery = document.querySelector('#my-gallery');
         const { childNodes } = clickedListItem.parentNode;
         const numChildNodes = childNodes.length;
         let nodeIndex = 0;
         let index;
 
-        for (let i = 0; i < numChildNodes; i++) {
-          if (childNodes[i].nodeType !== 1) {
-            continue;
-          }
+        parseThumbnailElements(clickedGallery);
 
-          if (childNodes[i] === clickedListItem) {
-            index = nodeIndex;
-            break;
-          }
-          nodeIndex++;
-        }
+        // for (let i = 0; i < numChildNodes; i++) {
+        //   if (childNodes[i].nodeType !== 1) {
+        //     continue;
+        //   }
+        //   if (childNodes[i] === clickedListItem) {
+        //     index = nodeIndex;
+        //     break;
+        //   }
+        //   nodeIndex++;
+        // }
+        index = thumbElements.indexOf(clickedListItem);
 
         if (index >= 0) {
           // open PhotoSwipe if valid index found
@@ -296,7 +364,9 @@ export default {
         disableAnimation,
         fromURL
       ) {
-        const pswpElement = galleryElement.parentElement.querySelector('.pswp');
+        const pswpElement =
+          galleryElement.parentElement.querySelector('.pswp') ||
+          document.querySelector('.pswp');
         let gallery;
         let options;
         let items;
@@ -316,7 +386,7 @@ export default {
             const rect = thumbnail.getBoundingClientRect();
 
             return { x: rect.left, y: rect.top + pageYScroll, w: rect.width };
-          },
+          }
         };
 
         // PhotoSwipe opened from URL
@@ -346,7 +416,6 @@ export default {
         if (disableAnimation) {
           options.showAnimationDuration = 0;
         }
-
         // Pass data to PhotoSwipe and initialize it
         gallery = new PhotoSwipe(
           pswpElement,
@@ -368,6 +437,7 @@ export default {
             img.src = item.src; // let's download image
           }
         });
+
         gallery.init();
         that.pswp = gallery;
       };
@@ -382,6 +452,7 @@ export default {
 
       // Parse URL and open gallery if it contains #&pid=3&gid=1
       const hashData = photoswipeParseHash();
+
       if (hashData.pid && hashData.gid) {
         openPhotoSwipe(
           hashData.pid,
@@ -395,27 +466,82 @@ export default {
     initPhotoSwipeFromDOM('.my-gallery');
   },
   methods: {
+    shareImage(item) {
+      this.showSingleShareModal = true;
+      this.itemToShare = item;
+    },
     resizeImages(sliderValue) {
-      console.log('sliderValue: ', sliderValue);
       this.imageSize = sliderValue;
     },
     rotate(newAngle) {
       this.angle += newAngle;
-      this.$el
+      document
         .querySelectorAll('.pswp__img')
-        .forEach((i) => (i.style.transform = `rotate(${this.angle}deg)`));
+        .forEach(i => (i.style.transform = `rotate(${this.angle}deg)`));
     },
     resetAngle() {
       this.angle = 0;
-      this.$el
+      document
         .querySelectorAll('.pswp__img')
-        .forEach((i) => (i.style.transform = `rotate(${this.angle}deg)`));
+        .forEach(i => (i.style.transform = `rotate(${this.angle}deg)`));
     },
+    getImgSize() {
+      const innerWidth = window.innerWidth;
+      console.log('innerWidth:', innerWidth);
+      const rowCount = (innerWidth / 250 > 6 ? 6 : innerWidth / 250).toFixed();
+      console.log('rowCount:', rowCount);
+      const imgWidth = (innerWidth / 4 < 200 ? 200 : innerWidth / 4).toFixed();
+      console.log('imgWidth:', imgWidth + 'px');
+      return imgWidth + 'px';
+    }
   },
+  computed: {
+    imgGroups() {
+      const currentYear = new Date().getFullYear().toString();
+
+      let group = this.items.reduce((r, a) => {
+        let captureDate =
+          a.exif && a.exif.exif && a.exif.exif.DateTimeOriginal
+            ? format(
+                new Date(a.exif.exif.DateTimeOriginal.split('T').shift()),
+                'E, LLL dd yyyy'
+              )
+            : null;
+
+        let uploadDate = format(
+          new Date(parseInt(a.uploadTime)),
+          'E, LLL dd yyyy'
+        );
+
+        if (captureDate && captureDate.substr(-4, 4) === currentYear) {
+          captureDate = captureDate.slice(0, -5);
+        }
+        if (uploadDate && uploadDate.substr(-4, 4) === currentYear) {
+          uploadDate = uploadDate.slice(0, -5);
+        }
+        r[captureDate || uploadDate] = [
+          ...(r[captureDate || uploadDate] || []),
+          a
+        ];
+        return r;
+      }, {});
+
+      return group;
+    }
+  }
 };
 </script>
 <style scoped>
 @import 'https://fonts.googleapis.com/icon?family=Material+Icons';
+
+/* .menu-link-scoped {
+  @apply hover:bg-teal-500 hover:text-white !important;
+} */
+
+.img-menu-btn:hover .img-menu-list {
+  @apply visible opacity-100;
+}
+
 .pswp__top-bar {
   text-align: right;
 }
@@ -429,20 +555,18 @@ export default {
 }
 
 figure {
-  display: inline;
-  margin: 5px;
+  @apply inline;
 }
 
-.my-gallery {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-}
+/* .my-gallery {
+  @apply flex flex-wrap justify-center p-6;
+} */
 
+.group-container {
+  @apply relative mr-2 mb-6 overflow-hidden;
+}
 .image-container {
-  position: relative;
-  margin: 0.25rem;
-  overflow: hidden;
+  @apply relative mr-1 mb-1 overflow-hidden;
 }
 
 .image {
@@ -462,35 +586,28 @@ figure {
 }
 
 .image-container:hover .image {
-  scale: 1.05;
+  scale: 1;
   object-fit: cover;
+}
+
+.image-container:hover .img-menu-btn {
+  color: black;
 }
 
 .image-container:hover .image-info {
   opacity: 1;
 }
 
-.image-info {
-  position: absolute;
-  opacity: 0;
-  z-index: 1000;
-  transition: opacity 0.1s ease-in-out;
+.fade-enter-active {
+  @apply transition-all duration-150 ease-out;
 }
 
-.delete-btn {
-  top: 10px;
-  right: 10px;
-}
-.delete-btn:hover {
-  background-color: aquamarine;
-  border-radius: 3px;
-  cursor: pointer;
-  transition: background-color 0.2s ease-in-out;
+.fade-leave-active {
+  @apply transition-all duration-100 ease-in;
 }
 
-.image-timestamp {
-  bottom: 0;
-  margin: 0 auto;
-  color: white;
+.fade-enter-from,
+.fade-leave-to {
+  @apply transform invisible opacity-0;
 }
 </style>

@@ -186,53 +186,14 @@ module.exports.getStorageSize = async (req, res) => {
   res.json([kilobytes + ' KB', megabytes + ' MB', gigabytes + ' GB']);
 };
 
-// imgHandler is LEGACY from imgCompressor queue
-// module.exports.imgHandler = async (req, res, next) => {
-//   const { guestId, ownerId, shareUrl, uppyFileId } = req.body;
-//   info('req.body:', req.body);
-//   const credentials = res.locals.credentials;
-//   const images = req.files;
-//   const thumbPath = `${process.env.CDN_PATH}${ownerId}/thumb/${images[0].originalname}`;
-//   const fileCount = images.length;
-//   const { getB2Auth, imgCompressor, uploader } = require('../tasks');
-
-//   // Files have reached server so send success response
-//   // info('Received ' + images[0].originalname);
-//   // if (images) {
-//   //   res.status(200).json({ msg: 'File arrived. Processing...', file: images[0].originalname });
-//   // } else {
-//   //   error('No files reached server');
-//   //   res.status(500).json('Error uploading files');
-//   // }
-
-//   const jobs = {};
-
-//   // Add the images to the processing flow
-//   const newJob = await imgCompressor.add({
-//     images,
-//     guestId,
-//     ownerId,
-//     shareUrl,
-//     credentials,
-//     uppyFileId,
-//   });
-
-//   jobs[newJob.id] = { req, res };
-
-//   uploader.on('completed', (job, result) => {
-//     if (job.data.resolution === 'thumbRes') {
-//       if (jobs[job.id]) {
-//         const res = jobs[job.id].res;
-//         res.status(200).json(result);
-//         // delete jobs[j];
-//       }
-//     }
-//   });
-// };
-
-//NEW logic for handling incoming file and compressing
+// Logic for handling incoming file and compressing
 module.exports.imgCompressor = async (req, res, next) => {
-  const premiumUser = true;
+  const { premiumUser } = await db.one(
+    'SELECT premium_user FROM owners WHERE owner_id = ${id}',
+    req.headers
+  );
+
+  premiumUser === null ? console.log('no owner found...') : null;
 
   const credentials = res.locals.credentials;
   const { uploader } = require('../tasks');
@@ -247,16 +208,62 @@ module.exports.imgCompressor = async (req, res, next) => {
 
   const imgFlow = sharp({ sequentialRead: true }).withMetadata();
 
-  // if premium user, do not resize or compress. Otherwise, resize to 1200px long edge and quality:80
-  if (premiumUser) {
-    imgFlow.clone().toBuffer(async (err, image, info) => {
+  req.pipe(busboy);
+
+  busboy.on(
+    'field',
+    (fieldname, val, fieldnameTruncated, valTruncated, encoding, mimetype) => {
+      fields[fieldname] = val;
+    }
+  );
+
+  busboy.on('file', async (fieldname, file, filename, encoding, mimetype) => {
+    info('File [' + filename + '] Started');
+
+    fields.filename = filename;
+    const chunks = [];
+
+    // If premium user, fullRes image chunks are streamed straight into an array
+    if (premiumUser) {
+      file.on('data', (data) => {
+        chunks.push(data);
+      });
+    }
+    pipeline(file, imgFlow, (err) => {
       if (err) {
         error(err);
       }
-      info.exif = await getMetadata(image);
-      receiveCompImgs(image, 'fullRes', info);
     });
-  } else {
+
+    file.on('data', (data) => {
+      compResults.orig += data.length;
+    });
+    file.on('end', async () => {
+      // If premium user, create buffer from the array of chunks
+      // get the metadata like normal, and pass it on to next step
+      if (premiumUser) {
+        const fullResBuffer = Buffer.concat(chunks);
+        const { format, size, width, height, exif } = await getMetadata(
+          fullResBuffer
+        );
+        const info = { format, size, width, height, exif };
+        receiveCompImgs(fullResBuffer, 'fullRes', info);
+      }
+      info('File [' + filename + '] Finished');
+      res.json('test');
+    });
+  });
+
+  // busboy.on('finish', () => {
+  //   console.log('busboy finished');
+  // });
+
+  busboy.on('error', (err) => {
+    error('busboy error:\n', err);
+  });
+
+  // if not a premium user, resize to 1200px long edge and quality:80
+  if (!premiumUser) {
     imgFlow
       .clone()
       .resize({
@@ -266,12 +273,16 @@ module.exports.imgCompressor = async (req, res, next) => {
         withoutEnlargement: true,
       })
       .jpeg({ quality: 80 })
-      .toBuffer(async (err, image, info) => {
+      .toBuffer(async (err, compFullResBuffer) => {
         if (err) {
           error(err);
         }
-        info.exif = await getMetadata(image);
-        receiveCompImgs(image, 'fullRes', info);
+
+        const { format, size, width, height, exif } = await getMetadata(
+          compFullResBuffer
+        );
+        const info = { format, size, width, height, exif };
+        receiveCompImgs(compFullResBuffer, 'fullRes', info);
       });
   }
 
@@ -284,57 +295,30 @@ module.exports.imgCompressor = async (req, res, next) => {
       withoutEnlargement: true,
     })
     .jpeg({ quality: 80 })
-    .toBuffer(async (err, image, info) => {
+    .toBuffer(async (err, thumbResBuffer, { format, size, width, height }) => {
       if (err) {
         error(err);
       }
-      receiveCompImgs(image, 'thumbRes', info);
+      receiveCompImgs(thumbResBuffer, 'thumbRes', {
+        format,
+        size,
+        width,
+        height,
+      });
     });
 
   imgFlow.on('error', (err) => {
     error('imgFlow error:\n', err);
   });
 
-  busboy.on(
-    'field',
-    (fieldname, val, fieldnameTruncated, valTruncated, encoding, mimetype) => {
-      fields[fieldname] = val;
-    }
-  );
-
-  busboy.on('file', async (fieldname, file, filename, encoding, mimetype) => {
-    info('File [' + filename + '] Started');
-    fields.filename = filename;
-
-    pipeline(file, imgFlow, (err) => {
-      if (err) {
-        error(err);
-      }
-    });
-
-    file.on('data', (data) => {
-      compResults.orig += data.length;
-    });
-    file.on('end', async () => {
-      info('File [' + filename + '] Finished');
-      res.json('test');
-    });
-  });
-
-  busboy.on('finish', () => {
-    console.log('busboy finished');
-  });
-
-  busboy.on('error', (err) => {
-    error('busboy error:\n', err);
-  });
-
-  const getMetadata = async (image) => {
+  async function getMetadata(image) {
     const metadata = await sharp(image).metadata();
-    return metadata.exif ? exif(metadata.exif) : null;
-  };
+    return metadata.exif
+      ? { ...metadata, exif: exif(metadata.exif) }
+      : metadata;
+  }
 
-  const addToUploadQueue = async (resolutionStr, processedImg, data) => {
+  async function addToUploadQueue(resolutionStr, processedImg, data) {
     const {
       guestId,
       ownerId,
@@ -353,9 +337,9 @@ module.exports.imgCompressor = async (req, res, next) => {
       credentials,
       uppyFileId,
     });
-  };
+  }
 
-  const markCompDone = () => {
+  async function markCompDone() {
     const getFileSize = (input) => {
       return input / 1024 > 1024
         ? (input / 1024 / 1024).toFixed(2) + ' mb'
@@ -385,9 +369,9 @@ module.exports.imgCompressor = async (req, res, next) => {
       premiumUser ? '(premium)' : ''
     }
         and ${getFileSize(compResults.thumbRes)} (thumb)`);
-  };
+  }
 
-  const receiveCompImgs = async (image, resolutionStr, info) => {
+  async function receiveCompImgs(image, resolutionStr, info) {
     compResults[resolutionStr] = info.size;
     const data = {
       ...fields,
@@ -396,7 +380,7 @@ module.exports.imgCompressor = async (req, res, next) => {
     if (compResults.fullRes && compResults.thumbRes) {
       markCompDone();
     }
-    const metadata = await getMetadata(image);
+
     // Compressed version is finished; Add to upload queue.
     await addToUploadQueue(
       resolutionStr,
@@ -410,7 +394,5 @@ module.exports.imgCompressor = async (req, res, next) => {
       },
       data // guestId, ownerId, shareUrl, credentials, uppyFileId, fileCount
     );
-  };
-
-  req.pipe(busboy);
+  }
 };

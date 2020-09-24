@@ -32,7 +32,7 @@ server.on('connection', (socket) => {
   socket.setTimeout(60000 * 2); // 60000 = 1 minute
   socket.on('end', function () {});
   socket.on('drain', function () {
-    error('socket drained');
+    // error('socket drained');
   });
   socket.on('error', function (err) {
     error('socket error:\n', err);

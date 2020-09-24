@@ -41,9 +41,19 @@ module.exports.login = (req, res, next) => {
     if (err) {
       return next(err);
     }
+    const username = req.body.username;
+    const password = req.body.password;
+    console.log('username:', username);
+
     if (!owner || owner.length === 0) {
       res.locals.incorrectCred = true;
-      return res.redirect('../login?q=true');
+      return res.render('login', {
+        title: 'Carousel',
+        loginUrl: process.env.SERVER + '/auth/login',
+        loginErrMsg: 'Incorrect username or password.',
+        username: username,
+        password: password,
+      });
     }
     // Success; log in
     req.logIn(owner, function (err) {
@@ -73,7 +83,7 @@ module.exports.logout = (req, res) => {
   req.session.destroy((err) => {
     error('Session destroy error:', err);
   });
-  return res.redirect(process.env.SERVER + 'login');
+  return res.redirect(process.env.SERVER);
 };
 
 module.exports.checkSession = async (req, res, next) => {
@@ -81,7 +91,7 @@ module.exports.checkSession = async (req, res, next) => {
 
   try {
     let [owner, images] = await db.multi(
-      'SELECT username, first_name, owner_id, guest_id FROM owners WHERE owner_id = ${ownerId};SELECT * FROM images WHERE owner_id = ${ownerId}',
+      'SELECT username, first_name, owner_id, guest_id, premium_user FROM owners WHERE owner_id = ${ownerId};SELECT * FROM images WHERE owner_id = ${ownerId}',
       req.body
     );
 
@@ -98,31 +108,6 @@ module.exports.checkSession = async (req, res, next) => {
       isLoggedIn: true,
       owner: owner,
       images: images,
-    });
-
-    db.task(async (t) => {
-      const owner = await db.oneOrNone(
-        'SELECT username, first_name, owner_id, guest_id FROM owners WHERE owner_id = ${ownerId}',
-        req.body
-      );
-
-      if (!owner) {
-        console.log('Could not find user logged in');
-        return res.json({ isLoggedIn: false });
-      }
-
-      const images = await db.any(
-        'SELECT * FROM images WHERE owner_id = ${ownerId}',
-        req.body
-      );
-
-      console.log('Owner ' + owner.username + ' is logged in');
-
-      return res.json({
-        isLoggedIn: true,
-        owner: owner,
-        images: images,
-      });
     });
   } catch (err) {
     error(err);

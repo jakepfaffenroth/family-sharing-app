@@ -1,10 +1,8 @@
 const db = require('../db').pgPromise;
-const { dbWriter } = require('./index');
 
 const writeToDb = async (data) => {
   let fileName = data.fileName;
   let uploadTime = Date.now();
-
   const imageInfo = {
     ownerId: data.ownerId,
     fileId: data.fileId,
@@ -18,22 +16,6 @@ const writeToDb = async (data) => {
     uploadTime: uploadTime,
   };
 
-  const updateRecordWithThumb = async () => {
-    try {
-      imageInfo.smallFileId = imageInfo.fileId;
-      imageInfo.fileName = imageInfo.fileName.replace('/thumb/', '/full/');
-      // Find the full size uploaded image. Gets most recent upload in case multiple with same filename exist.
-      const foundRecord = await db.oneOrNone(
-        'UPDATE images SET small_file_id = ${fileId} WHERE image_id = (SELECT image_id FROM images WHERE file_name = ${fileName} AND owner_id = ${ownerId} ORDER BY image_id DESC LIMIT 1) RETURNING *',
-        imageInfo
-      );
-      return foundRecord;
-    } catch (err) {
-      error('Err updating image record with thumb info:', err);
-      return;
-    }
-  };
-
   if (data.resolution === 'fullRes') {
     try {
       const image = await db.one(
@@ -45,9 +27,11 @@ const writeToDb = async (data) => {
       return;
     }
   } else if (data.resolution === 'thumbRes') {
-    let foundRecord = null;
-    while (!foundRecord) {
-      foundRecord = await updateRecordWithThumb();
+    // When a thumb res fileId is ready to added to the db, loop through until the full res record has been added; then update it with the thumbnail id.
+    let fullResRecordExists = false;
+    while (!fullResRecordExists) {
+      fullResRecordExists = await updateRecordWithThumb();
+      // If fullResRecordExists, break the loop
     }
   }
 
@@ -58,6 +42,24 @@ const writeToDb = async (data) => {
     exif: imageInfo.exif,
     uploadTime: imageInfo.uploadTime,
   };
+
+  async function updateRecordWithThumb() {
+    try {
+      imageInfo.smallFileId = imageInfo.fileId;
+      imageInfo.fileName = imageInfo.fileName.replace('/thumb/', '/full/');
+      // Find the full size uploaded image. Gets most recent upload in case multiple with same filename exist.
+      const fullResRecord = await db.oneOrNone(
+        'UPDATE images SET small_file_id = ${fileId} WHERE image_id = (SELECT image_id FROM images WHERE file_name = ${fileName} AND owner_id = ${ownerId} ORDER BY image_id DESC LIMIT 1) RETURNING *',
+        imageInfo
+      );
+      if (fullResRecord) {
+      }
+      return fullResRecord ? true : false;
+    } catch (err) {
+      error('Err updating image record with thumb info:', err);
+      return;
+    }
+  }
 };
 
 module.exports = async (job) => {

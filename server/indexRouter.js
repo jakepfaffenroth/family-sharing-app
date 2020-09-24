@@ -9,16 +9,28 @@ const notificationsController = require('./notifications/notificationsController
 
 /* GET home page. */
 router.get('/', (req, res, next) => {
-  res.render('index', { title: 'Family Sharing App' });
+  res.render('index', {
+    title: 'Carousel',
+    loginUrl: process.env.SERVER + '/auth/login',
+  });
 });
 
 router.get('/signup', (req, res) => {
   res.render('signup');
 });
 
+router.get('/features', (req, res) => {
+  res.render('features');
+});
+
+router.get('/pricing', (req, res) => {
+  res.render('pricing');
+});
+
 router.get('/login', (req, res) => {
   req.query.q ? (isErrVisible = true) : (isErrVisible = false);
   res.render('login', {
+    // layout: 'login',
     loginUrl: process.env.SERVER + '/auth/login',
     errMsg: isErrVisible,
   });

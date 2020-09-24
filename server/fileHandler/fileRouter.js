@@ -8,6 +8,7 @@ const getB2Auth = require('../tasks/getB2Auth');
 router.get('/b2-auth', fileController.b2Auth);
 
 router.post('/initialize-upload', notificationsController.addToNotifsQueue);
+
 router.post(
   '/upload',
   async (req, res, next) => {

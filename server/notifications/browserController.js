@@ -47,7 +47,7 @@ module.exports.sendBrowserNotifications = async (data) => {
           try {
             const result = await db.task(async (t) => {
               const owner = await db.one(
-                'SELECT username, guestId FROM owners WHERE owner_id = $1',
+                'SELECT username, guest_id FROM owners WHERE owner_id = $1',
                 [ownerId]
               );
               const subscriptions = db.any(
@@ -55,11 +55,11 @@ module.exports.sendBrowserNotifications = async (data) => {
                 owner
               );
               const deletedSub = db.one(
-                "DELETE FROM subscribers WHERE browser -> 'keys'->>'auth' = ${keys.auth} RETURNING *",
+                "DELETE FROM subscribers WHERE browser -> 'keys'->>'auth' = ${browser.keys.auth} RETURNING *",
                 sub
               );
               if (deletedSub)
-                info('Removed' + deletedSub + ' from ' + owner.username);
+                info('Removed bad browser sub from ' + owner.username);
               return { owner, subscriptions, deletedSub };
             });
           } catch (err) {

@@ -1,14 +1,12 @@
 <template>
-  <button id="uppy-select-files" @click="openUppyModal">
-    Upload Files (Uppy)
-  </button>
   <div id="drop-area" />
 </template>
 
 <script>
-import { onMounted } from 'vue';
+import { inject, onMounted } from 'vue';
 import Uppy from '@uppy/core';
 import Dashboard from '@uppy/dashboard';
+import EmptyDashboard from '@uppy/dashboard';
 import ImageEditor from '@uppy/image-editor';
 import xhr from '@uppy/xhr-upload';
 import ReconnectingWebSocket from 'reconnecting-websocket';
@@ -21,43 +19,69 @@ export default {
   props: {
     owner: {
       type: Object,
-      default: null,
-    },
+      default: null
+    }
   },
   emits: ['update-images'],
   setup(props, context) {
     const uppy = new Uppy({
       meta: {
         ownerId: props.owner.ownerId,
-        guestId: props.owner.guestId,
+        guestId: props.owner.guestId
       },
       // logger: Uppy.debugLogger,
       autoProceed: false,
+      restrictions: {
+        allowedFileTypes: ['image/*'],
+        // file size limit is 100mb for premium users, 10mb for basic users
+        maxFileSize: props.owner.premiumUser ? 1048576 * 100 : 1048576 * 10
+      },
       onBeforeUpload: () => {
         uppy.getPlugin('Dashboard:StatusBar').setOptions({
           hideAfterFinish: true,
           locale: {
             strings: {
-              complete: 'Upload complete (You can leave this page)',
-            },
-          },
+              complete: 'Upload complete (You can leave this page)'
+            }
+          }
         });
-      },
+      }
     });
     onMounted(() => {
+      const basicRestrictions = 'Images only, up to 10 MB each';
+      const premiumRestrictions = 'Images only, up to 100 MB each';
+
       uppy.use(Dashboard, {
         target: '#drop-area',
-        trigger: '#uppy-select-files',
+        trigger: '.uppy-select-files', // Defined in App.vue
         closeModalOnClickOutside: true,
         theme: 'auto',
         inline: false,
         showProgressDetails: true,
+        note: props.owner.premiumUser ? premiumRestrictions : basicRestrictions,
+        proudlyDisplayPoweredByUppy: false,
         locale: {
           strings: {
-            complete: 'Upload complete (You can leave this page)',
-          },
-        },
+            complete: 'Upload complete (You can leave this page)'
+          }
+        }
       });
+
+      //  TODO - Replace empty gallery with this uppy uploader
+      // uppy.use(EmptyDashboard, {
+      //   id: EmptyDashboard,
+      //   target: '#empty-gallery',
+      //   trigger: '.uppy-select-files', // Defined in App.vue
+      //   closeModalOnClickOutside: true,
+      //   theme: 'auto',
+      //   inline: true,
+      //   showProgressDetails: true,
+      //   locale: {
+      //     strings: {
+      //       complete: 'Upload complete (You can leave this page)'
+      //     }
+      //   }
+      // });
 
       uppy.use(ImageEditor, {
         id: 'ImageEditor',
@@ -67,8 +91,8 @@ export default {
           viewMode: 1,
           background: false,
           autoCropArea: 1,
-          responsive: true,
-        },
+          responsive: true
+        }
       });
     });
 
@@ -76,14 +100,13 @@ export default {
       endpoint: `${process.env.VUE_APP_SERVER}/files/upload`,
       method: 'post',
       fieldName: 'file',
+      headers: {
+        id: props.owner.ownerId
+      },
       bundle: false,
       timeout: 0,
-      limit: 6,
+      limit: 6
     });
-
-    const openUppyModal = () => {
-      uppy.getPlugin('Dashboard').openModal();
-    };
 
     const rws = new ReconnectingWebSocket(process.env.VUE_APP_WSS);
 
@@ -91,7 +114,7 @@ export default {
       console.log('WebSocket is closed.');
     };
 
-    uppy.on('file-added', async (file) => {
+    uppy.on('file-added', async file => {
       uppy.setFileMeta(file.id, { uppyFileId: file.id });
     });
 
@@ -102,11 +125,11 @@ export default {
         ownerId: props.owner.ownerId,
         guestId: props.owner.guestId,
         fileCount: files.length,
-        sampleImg: files[0].data.name,
+        sampleImg: files[0].data.name
       });
     });
 
-    rws.onerror = (error) => {
+    rws.onerror = error => {
       console.log('WebSocket error:', error);
     };
 
@@ -114,17 +137,17 @@ export default {
       rws.send('ping');
     };
 
-    rws.onmessage = async (msg) => {
+    rws.onmessage = async msg => {
       // ----- TURN OFF STATUS UPDATES ----- //
       // return
       // ----------------------------------- //
-      const files = uppy.getFiles().map((item) => {
+      const files = uppy.getFiles().map(item => {
         const newObj = {};
         newObj[item.name] = item.id;
         return newObj;
       });
 
-      const msgParser = async (msg) =>
+      const msgParser = async msg =>
         msg.data instanceof Blob ? JSON.parse(await msg.data.text()) : msg.data;
 
       const data = await msgParser(msg);
@@ -134,7 +157,7 @@ export default {
         console.log('files:', files);
         const filename = decodeURI(data.fileInfo.filename.split('/').pop());
         console.log('filename:', filename);
-        return files.filter((item) => {
+        return files.filter(item => {
           if (item[filename]) return true;
         })[0][filename];
       };
@@ -150,31 +173,31 @@ export default {
           statusUpdate: async () => {
             data.uppyFileId = getUppyFileId(data, files);
             return await uppy.setFileState(data.uppyFileId, {
-              meta: { name: data.msg },
+              meta: { name: data.msg }
             });
           },
           fileFinished: async () => {
             data.uppyFileId = getUppyFileId(data, files);
             await uppy.setFileState(data.uppyFileId, {
               meta: { name: 'Complete' },
-              complete: true,
+              complete: true
             });
 
             const state = await uppy.getState();
 
-            if (Object.values(state.files).every((item) => item.complete)) {
+            if (Object.values(state.files).every(item => item.complete)) {
               console.log('file state: ', await uppy.getFile(data.uppyFileId));
               await uppy.getPlugin('Dashboard:StatusBar').setOptions({
                 locale: {
                   strings: {
-                    complete: 'Complete',
-                  },
-                },
+                    complete: 'Complete'
+                  }
+                }
               });
             }
             return rws.send('Complete Confirmed');
           },
-          default: () => console.log(`%c${data}`, 'color: #E46AFF'),
+          default: () => console.log(`%c${data}`, 'color: #E46AFF')
         };
         return (msgTypes[type] || msgTypes.default)();
       }
@@ -182,10 +205,10 @@ export default {
       getMsg(data.type, data);
     };
 
-    uppy.on('complete', (result) => {
+    uppy.on('complete', result => {
       console.log('upload result:', {
         sucessful: result.successful,
-        failed: result.failed,
+        failed: result.failed
       });
     });
 
@@ -198,15 +221,14 @@ export default {
       }
     });
 
-    uppy.on('upload-retry', (fileID) => {
+    uppy.on('upload-retry', fileID => {
       console.log('upload retried:', fileID);
     });
 
     return {
-      openUppyModal,
-      uppy,
+      uppy
     };
-  },
+  }
 };
 </script>
 

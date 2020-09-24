@@ -8,6 +8,7 @@ const logger = require('morgan');
 const cors = require('cors');
 const passport = require('passport');
 const session = require('express-session');
+const flash = require('connect-flash');
 
 const indexRouter = require('./indexRouter');
 const userRouter = require('./users/userRouter');
@@ -70,6 +71,7 @@ app.use(
 );
 app.use(passport.initialize());
 app.use(passport.session());
+app.use(flash());
 
 passport.serializeUser(function (owner, done) {
   done(null, owner);
@@ -89,7 +91,10 @@ passport.deserializeUser(async function (owner, done) {
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'hbs');
+app.set('view engine', 'html');
+app.engine('html', require('hbs').__express);
+const hbs = require('hbs');
+hbs.registerPartials(__dirname + '/views/partials', function (err) {});
 
 app.use(logger('dev'));
 app.use(express.json());

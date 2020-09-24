@@ -5,15 +5,18 @@
   "scripts": {
     "start": "NODE_ENV=production node -r ./bin/config.js ./bin/www",
     "debug": "DEBUG='.' npm run dev",
+    "tailwind": "postcss ./**/*/index.css -o ./public/stylesheets/style.css -w",
     "dev": "NODE_ENV=development nodemon --config ./bin/nodemon.json -r ./bin/config.js ./bin/www"
   },
   "dependencies": {
+    "autoprefixer": "^9.8.6",
     "aws-sdk": "^2.738.0",
     "axios": "^0.19.2",
     "bcryptjs": "^2.4.3",
     "bull": "^3.18.0",
     "bull-board": "^0.9.0",
     "compression": "^1.7.4",
+    "connect-flash": "^0.1.1",
     "connect-pg-simple": "^6.2.1",
     "cookie-parser": "~1.4.4",
     "cors": "^2.8.5",
@@ -42,13 +45,19 @@
     "pg": "^8.3.2",
     "pg-monitor": "^1.4.1",
     "pg-promise": "^10.6.0",
+    "postcss-cli": "^7.1.2",
+    "reconnecting-websocket": "^4.4.0",
     "sharp": "^0.25.4",
     "supports-color": "^7.1.0",
+    "tailwindcss": "^1.8.6",
     "tus-node-server": "^0.3.2",
     "uppy": "^1.20.2",
     "uuid": "^8.3.0",
     "web-push": "^3.4.4",
     "winston": "^3.3.3",
     "ws": "^7.3.1"
+  },
+  "devDependencies": {
+    "@tailwindcss/custom-forms": "^0.2.1"
   }
 }

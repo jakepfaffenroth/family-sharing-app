@@ -24,13 +24,21 @@ const getB2UploadAuth = async (credentials) => {
 };
 
 const addToDbWriterQueue = (data, metadata, resolution, ownerId) => {
-  dbWriter.add({
-    fileId: data.fileId,
-    fileName: data.fileName,
-    metadata,
-    resolution: resolution,
-    ownerId: ownerId,
-  });
+  dbWriter.add(
+    {
+      fileId: data.fileId,
+      fileName: data.fileName,
+      metadata,
+      resolution: resolution,
+      ownerId: ownerId,
+    },
+    {
+      delay: resolution === 'thumbRes' ? 5000 : null,
+      priority: resolution === 'fullRes' ? 1 : null,
+      attempts: 10,
+      timeout: 10000,
+    }
+  );
 };
 
 const upload = async (auth, data) => {

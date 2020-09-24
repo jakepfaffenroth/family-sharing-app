@@ -1,7 +1,6 @@
 const Redis = require('ioredis');
 const queue = require('bull');
 const { setQueues } = require('bull-board');
-// const ws = require('../app').locals.ws;
 
 const redisConfig = {
   port: 6379,
@@ -32,7 +31,6 @@ const bullConfig = {
 };
 const queues = {
   getB2Auth: new queue('getB2Auth', bullConfig),
-  imgCompressor: new queue('imgCompressor', bullConfig),
   uploader: new queue('imgUploader', bullConfig),
   dbWriter: new queue('dbWriter', bullConfig),
   verifyEmailSender: new queue('verifyEmailSender', bullConfig),
@@ -43,7 +41,6 @@ module.exports = queues;
 
 const {
   getB2Auth,
-  imgCompressor,
   uploader,
   dbWriter,
   verifyEmailSender,
@@ -56,17 +53,20 @@ getB2Auth.pause();
 emailSender.pause();
 browserSender.pause();
 
-getB2Auth.process(50, require('./getB2Auth.js'));
-imgCompressor.process(50, require('./imgCompressor.js'));
-uploader.process(50, require('./uploader.js'));
-dbWriter.process(50, require('./dbWriter.js'));
-emailSender.process(50, require('./emailSender'));
-verifyEmailSender.process(50, require('./verifyEmailSender'));
-browserSender.process(50, require('./browserSender'));
+getB2Auth.process(require('./getB2Auth.js'));
+dbWriter.process(require('./dbWriter.js'));
+uploader.process(require('./uploader.js'));
+emailSender.process(require('./emailSender'));
+verifyEmailSender.process(require('./verifyEmailSender'));
+browserSender.process(require('./browserSender'));
 
 uploader.on('completed', async (job, fileInfo) => {
   emailSender.resume();
   browserSender.resume();
+});
+
+dbWriter.on('failed', function (job, err) {
+  error(job.data.fileName + '\n' + err);
 });
 
 dbWriter.on('completed', async (job, result) => {
