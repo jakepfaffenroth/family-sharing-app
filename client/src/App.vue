@@ -26,7 +26,7 @@
 
       <!-- Empty gallery  -->
       <div
-      id="empty-gallery"
+        id="empty-gallery"
         class="uppy-select-files flex flex-grow justify-center rounded border-4 border-dashed border-gray-400 text-gray-500 hover:bg-gray-200 hover:text-gray-600 cursor-pointer transition-all duration-200 ease-in-out"
         v-if="images.length === 0 && user.type === 'owner' && owner.ownerId"
       >
@@ -117,7 +117,7 @@ export default {
 
     // Prevent users from viewing app without login or guestId
     if (!guestId && !ownerId) {
-      window.location = this.server;
+      window.location = server;
     }
 
     // Prevent right clicking images
