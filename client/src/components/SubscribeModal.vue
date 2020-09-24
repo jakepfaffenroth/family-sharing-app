@@ -122,7 +122,7 @@ export default {
         'BIXOvprQOJRgsH4EHujdKRaOmrxCLTP5uKlrB_W-1pXEmCU9twuOgxIaFniDmLE8r4SAVmaTZOxOLsXdgAoWwpw';
 
       if ('serviceWorker' in navigator) {
-        console.log(process.env.VUE_APP_DEV_SW);
+        // console.log(process.env.VUE_APP_DEV_SW);
         const register = await navigator.serviceWorker.register(
           process.env.VUE_APP_DEV_SW || '/sw.js',
           {
