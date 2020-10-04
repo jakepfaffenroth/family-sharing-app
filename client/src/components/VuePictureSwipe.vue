@@ -9,27 +9,29 @@
   >
     <div v-for="(group, date) in imgGroups" :key="date" class="group-container">
       <div class="flex justify-between">
-        <p class="mb-1 text-sm sm:text-base">{{ date }}</p>
+        <p class="mb-1 text-sm sm:text-base">
+          {{ date }}
+        </p>
       </div>
       <div class="group-wrapper flex flex-wrap">
         <figure
           v-for="(item, index) in group"
+          :id="'image-' + index"
           :key="index"
           itemprop="associatedMedia"
           itemscope
           itemtype="http://schema.org/ImageObject"
           :src="item.src"
+          class="image-container h-24 xs:h-28 sm:h-36 md:h-64"
           @mouseenter="item.isMenuVisible = true"
           @mouseleave="item.isMenuVisible = false"
-          class="image-container h-24 xs:h-28 sm:h-36 md:h-64"
-          :id="'image-' + index"
         >
           <div class="absolute top-1 right-4 z-30">
             <transition name="fade">
               <div
-                :id="'menu-' + index"
-                v-show="item.isMenuVisible"
                 v-if="userType === 'owner'"
+                v-show="item.isMenuVisible"
+                :id="'menu-' + index"
                 @click.stop
               >
                 <drop-menu menu-type="imgMenu">
@@ -225,6 +227,40 @@ export default {
       showSingleShareModal: false,
       itemToShare: {}
     };
+  },
+  computed: {
+    imgGroups() {
+      const currentYear = new Date().getFullYear().toString();
+
+      let group = this.items.reduce((r, a) => {
+        let captureDate =
+          a.exif && a.exif.exif && a.exif.exif.DateTimeOriginal
+            ? format(
+                new Date(a.exif.exif.DateTimeOriginal.split('T').shift()),
+                'E, LLL dd yyyy'
+              )
+            : null;
+
+        let uploadDate = format(
+          new Date(parseInt(a.uploadTime)),
+          'E, LLL dd yyyy'
+        );
+
+        if (captureDate && captureDate.substr(-4, 4) === currentYear) {
+          captureDate = captureDate.slice(0, -5);
+        }
+        if (uploadDate && uploadDate.substr(-4, 4) === currentYear) {
+          uploadDate = uploadDate.slice(0, -5);
+        }
+        r[captureDate || uploadDate] = [
+          ...(r[captureDate || uploadDate] || []),
+          a
+        ];
+        return r;
+      }, {});
+
+      return group;
+    }
   },
   mounted() {
     const that = this;
@@ -493,40 +529,6 @@ export default {
       const imgWidth = (innerWidth / 4 < 200 ? 200 : innerWidth / 4).toFixed();
       console.log('imgWidth:', imgWidth + 'px');
       return imgWidth + 'px';
-    }
-  },
-  computed: {
-    imgGroups() {
-      const currentYear = new Date().getFullYear().toString();
-
-      let group = this.items.reduce((r, a) => {
-        let captureDate =
-          a.exif && a.exif.exif && a.exif.exif.DateTimeOriginal
-            ? format(
-                new Date(a.exif.exif.DateTimeOriginal.split('T').shift()),
-                'E, LLL dd yyyy'
-              )
-            : null;
-
-        let uploadDate = format(
-          new Date(parseInt(a.uploadTime)),
-          'E, LLL dd yyyy'
-        );
-
-        if (captureDate && captureDate.substr(-4, 4) === currentYear) {
-          captureDate = captureDate.slice(0, -5);
-        }
-        if (uploadDate && uploadDate.substr(-4, 4) === currentYear) {
-          uploadDate = uploadDate.slice(0, -5);
-        }
-        r[captureDate || uploadDate] = [
-          ...(r[captureDate || uploadDate] || []),
-          a
-        ];
-        return r;
-      }, {});
-
-      return group;
     }
   }
 };

@@ -2,7 +2,9 @@
   <transition name="slide-fade">
     <modal @close-modal="$emit('toggle-form')">
       <div class="text-white">
-        <h3 class="text-xl">Subscription methods</h3>
+        <h3 class="text-xl">
+          Subscription methods
+        </h3>
         <div class="font-light mt-2">
           <p>
             Choose at least one:
@@ -11,18 +13,18 @@
             <div class="my-2 space-x-2">
               <label class="inline-flex items-center">
                 <input
+                  v-model="subOptions.browser"
                   type="checkbox"
                   class="form-checkbox h-4 w-4 text-teal-400"
-                  v-model="subOptions.browser"
                   name="browserSubscribe"
                 />
                 <span class="ml-2">Browser notifications</span>
               </label>
               <label class="inline-flex items-center">
                 <input
+                  v-model="subOptions.email"
                   type="checkbox"
                   class="form-checkbox h-4 w-4 text-teal-400"
-                  v-model="subOptions.email"
                   name="emailSubscribe"
                 />
                 <span class="ml-2">Email notifications</span>
@@ -31,16 +33,16 @@
             <div class="">
               <div class="flex justify-between mb-2">
                 <input
-                  class="text-input rounded-l-md"
                   v-model="guest.firstName"
+                  class="text-input rounded-l-md"
                   type="text"
                   name="firstName"
                   required
                   placeholder="First name"
                 />
                 <input
-                  class="text-input rounded-r-md"
                   v-model="guest.lastName"
+                  class="text-input rounded-r-md"
                   type="text"
                   name="lastName"
                   required
@@ -48,8 +50,8 @@
                 />
               </div>
               <input
-                class="text-input rounded-md"
                 v-model="guest.email"
+                class="text-input rounded-md"
                 type="email"
                 name="email"
                 required
@@ -90,6 +92,7 @@ export default {
     Modal
   },
   props: { owner: { type: Object, default: null } },
+  emits: ['toggle-form'],
   setup(props, { emit }) {
     const server = process.env.VUE_APP_SERVER;
     const subOptions = reactive({ browser: null, email: null });

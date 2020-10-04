@@ -3,7 +3,9 @@
     class="flex justify-end content-center divide-x divide-gray-600 text-gray-700"
   >
     <drop-menu menu-type="sortMenu">
-      <template #btnLabel>Sort</template>
+      <template #btnLabel>
+        Sort
+      </template>
       <template #listItems>
         <a
           class="img-menu-link"
@@ -50,21 +52,21 @@ import DropMenu from './DropMenu';
 
 export default {
   components: {
-    DropMenu,
+    DropMenu
   },
   // emits: ['sort-images'],
   inject: ['sortImages'],
   data() {
     return {
       isMenuVisible: false,
-      sortAsc: true,
+      sortAsc: true
     };
   },
   methods: {
     closeMenu() {
       this.isMenuVisible = false;
-    },
-  },
+    }
+  }
 };
 </script>
 

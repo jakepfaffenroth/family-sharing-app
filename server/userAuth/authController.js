@@ -91,7 +91,7 @@ module.exports.checkSession = async (req, res, next) => {
 
   try {
     let [owner, images] = await db.multi(
-      'SELECT username, first_name, owner_id, guest_id, premium_user FROM owners WHERE owner_id = ${ownerId};SELECT * FROM images WHERE owner_id = ${ownerId}',
+      'SELECT username, first_name, owner_id, guest_id, plan, quota FROM owners WHERE owner_id = ${ownerId};SELECT * FROM images WHERE owner_id = ${ownerId}',
       req.body
     );
 

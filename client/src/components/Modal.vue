@@ -63,7 +63,6 @@
           <textarea
             :id="shareUrl || singleImgUrl"
             class="w-full text-sm text-gray-700 dark:text-gray-300 bg-transparent outline-none resize-none"
-            type="text"
             readonly="readonly"
             :value="shareUrl || singleImgUrl"
           ></textarea>

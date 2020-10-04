@@ -11,6 +11,7 @@
           :is="user.typeMenu"
           :owner="owner"
           :guest="guest"
+          :usage="usage"
           :sub-options="subOptions"
           @sort-images="sortImages"
         ></component>
@@ -26,9 +27,9 @@
 
       <!-- Empty gallery  -->
       <div
+        v-if="images.length === 0 && user.type === 'owner' && owner.ownerId"
         id="empty-gallery"
         class="uppy-select-files flex flex-grow justify-center rounded border-4 border-dashed border-gray-400 text-gray-500 hover:bg-gray-200 hover:text-gray-600 cursor-pointer transition-all duration-200 ease-in-out"
-        v-if="images.length === 0 && user.type === 'owner' && owner.ownerId"
       >
         <p class="flex-grow self-center text-center text-2xl">
           Upload some images!
@@ -170,9 +171,26 @@ export default {
       renderUserType('guest');
     }
 
+    let usage = ref('');
+
     async function renderUserType(userType) {
       let response;
+      console.log('userType:', userType);
       if (userType === 'owner') {
+        const usageData = await axios({
+          url: `${server}/files/get-usage`,
+          method: 'post',
+          data: { ownerId }
+        });
+        usage.value = usageData.data;
+        console.log('usage:', usage);
+        // const storageInfo = usageData.data;
+        // if (storageInfo.gb >= 1)
+        //   usage.value = { value: storageInfo.gb.toFixed(2), unit: 'GB' };
+        // else if (storageInfo.mb >= 1)
+        //   usage.value = { value: storageInfo.mb.toFixed(2), unit: 'MB' };
+        // else usage.value = { value: storageInfo.kb.toFixed(2), unit: 'KB' };
+
         response = await axios({
           url: `${server}/auth/check-session`,
           method: 'post',
@@ -307,7 +325,8 @@ export default {
       sortImages,
       showDeleteModal,
       imgDeleteInfo,
-      deleteImage
+      deleteImage,
+      usage
     };
   },
   computed: {

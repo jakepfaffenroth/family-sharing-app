@@ -44,7 +44,7 @@ module.exports.b2Auth = async (req, res, next) => {
 module.exports.listFiles = async (req, res) => {
   const apiUrl = res.locals.credentials.apiUrl;
   const authToken = res.locals.credentials.authorizationToken;
-  const filePrefix = req.body.filePrefix;
+  const filePrefix = req.body.ownerId;
   try {
     const response = await axios({
       method: 'POST',
@@ -95,7 +95,7 @@ module.exports.deleteImage = async (req, res, next) => {
       await axios.post(
         credentials.apiUrl + '/b2api/v1/b2_delete_file_version',
         {
-          fileName: decodeURI(image.fileName),
+          fileName: unescape(image.fileName),
           fileId: image.fileId,
         },
         { headers: { Authorization: credentials.authorizationToken } }
@@ -104,7 +104,7 @@ module.exports.deleteImage = async (req, res, next) => {
       await axios.post(
         credentials.apiUrl + '/b2api/v1/b2_delete_file_version',
         {
-          fileName: decodeURI(image.fileName).replace('/full/', '/thumb/'),
+          fileName: unescape(image.fileName).replace('/full/', '/thumb/'),
           fileId: data.smallFileId,
         },
         { headers: { Authorization: credentials.authorizationToken } }
@@ -171,7 +171,7 @@ module.exports.download = async (req, res) => {
   }
 };
 
-module.exports.getStorageSize = async (req, res) => {
+module.exports.getUsage = async (req, res) => {
   const files = await this.listFiles(req, res);
 
   let totalStorageUsed = files.reduce(
@@ -179,21 +179,25 @@ module.exports.getStorageSize = async (req, res) => {
     0
   );
 
-  let kilobytes = (totalStorageUsed / 1024).toFixed(2);
-  let megabytes = (kilobytes / 1024).toFixed(2);
-  let gigabytes = (megabytes / 1024).toFixed(2);
+  let kilobytes = parseFloat((totalStorageUsed / 1024).toFixed(2));
+  let megabytes = parseFloat((kilobytes / 1024).toFixed(2));
+  let gigabytes = parseFloat((megabytes / 1024).toFixed(2));
 
-  res.json([kilobytes + ' KB', megabytes + ' MB', gigabytes + ' GB']);
+  res.json({
+    kb: kilobytes,
+    mb: megabytes,
+    gb: gigabytes,
+  });
 };
 
 // Logic for handling incoming file and compressing
 module.exports.imgCompressor = async (req, res, next) => {
-  const { premiumUser } = await db.one(
-    'SELECT premium_user FROM owners WHERE owner_id = ${id}',
+  const { plan } = await db.one(
+    'SELECT plan FROM owners WHERE owner_id = ${id}',
     req.headers
   );
 
-  premiumUser === null ? console.log('no owner found...') : null;
+  plan === null ? console.log('no owner found...') : null;
 
   const credentials = res.locals.credentials;
   const { uploader } = require('../tasks');
@@ -224,7 +228,7 @@ module.exports.imgCompressor = async (req, res, next) => {
     const chunks = [];
 
     // If premium user, fullRes image chunks are streamed straight into an array
-    if (premiumUser) {
+    if (plan === /premium/) {
       file.on('data', (data) => {
         chunks.push(data);
       });
@@ -241,7 +245,7 @@ module.exports.imgCompressor = async (req, res, next) => {
     file.on('end', async () => {
       // If premium user, create buffer from the array of chunks
       // get the metadata like normal, and pass it on to next step
-      if (premiumUser) {
+      if (plan === /premium/) {
         const fullResBuffer = Buffer.concat(chunks);
         const { format, size, width, height, exif } = await getMetadata(
           fullResBuffer
@@ -263,7 +267,7 @@ module.exports.imgCompressor = async (req, res, next) => {
   });
 
   // if not a premium user, resize to 1200px long edge and quality:80
-  if (!premiumUser) {
+  if (plan === 'basic') {
     imgFlow
       .clone()
       .resize({
@@ -366,7 +370,7 @@ module.exports.imgCompressor = async (req, res, next) => {
     success(`Compressed -- ${truncate(fields.filename, 30)}
       from ${getFileSize(compResults.orig)} (orig)
         to ${getFileSize(compResults.fullRes)} (full) ${
-      premiumUser ? '(premium)' : ''
+      plan === /premium/ ? '(premium)' : ''
     }
         and ${getFileSize(compResults.thumbRes)} (thumb)`);
   }

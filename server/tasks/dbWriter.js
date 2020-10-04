@@ -8,8 +8,9 @@ const writeToDb = async (data) => {
     fileId: data.fileId,
     fileName: data.fileName,
     smallFileId: '',
-    src: process.env.CDN_PATH + fileName,
-    thumbnail: process.env.CDN_PATH + fileName.replace('/full/', '/thumb/'),
+    src: process.env.CDN_PATH + escape(fileName),
+    thumbnail:
+      process.env.CDN_PATH + escape(fileName.replace('/full/', '/thumb/')),
     w: data.metadata.w,
     h: data.metadata.h,
     exif: data.metadata.exif,

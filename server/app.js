@@ -90,11 +90,15 @@ passport.deserializeUser(async function (owner, done) {
 });
 
 // view engine setup
+const exphbs = require('express-handlebars');
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'html');
-app.engine('html', require('hbs').__express);
-const hbs = require('hbs');
-hbs.registerPartials(__dirname + '/views/partials', function (err) {});
+app.engine(
+  'html',
+  exphbs({
+    extname: '.html',
+  })
+);
 
 app.use(logger('dev'));
 app.use(express.json());

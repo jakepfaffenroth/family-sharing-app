@@ -19,6 +19,10 @@ router.get('/signup', (req, res) => {
   res.render('signup');
 });
 
+router.get('/complete-signup', (req, res) => {
+  res.render('accountCompletion');
+});
+
 router.get('/features', (req, res) => {
   res.render('features');
 });

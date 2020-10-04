@@ -33,7 +33,7 @@ export default {
         duration: 0,
         // dismissible: true,
         message:
-          '<div id="toast-message"><p id="msg-text"></p><div class="flex justify-end mt-2"><button id="zip-cancel-btn">Cancel</button></div></div>',
+          '<div id="toast-message"><p id="msg-text"></p><div class="flex justify-end mt-2"><button id="zip-cancel-btn">Cancel</button></div></div>'
       });
 
       try {
@@ -68,7 +68,7 @@ export default {
               `https://cdn.jakepfaf.dev/file/JFP001/${file.fileName}`,
               {
                 responseType: 'blob',
-                encoding: null,
+                encoding: null
               }
             );
             // Check if zip file will exceed size limit by adding latest downloaded file
@@ -107,16 +107,16 @@ export default {
               streamFiles: true,
               compression: 'DEFLATE',
               compressionOptions: {
-                level: 6,
-              },
+                level: 6
+              }
             })
-            .accumulate((metadata) => {
+            .accumulate(metadata => {
               if (keepZipping === false) {
                 return;
               }
               zipMsg.innerText = `Preparing download: ${metadata.percent.toFixed()}%`;
             })
-            .then((data) => {
+            .then(data => {
               if (keepZipping === false) {
                 return;
               }
@@ -150,9 +150,9 @@ export default {
     return {
       // images,
       downloadProgress,
-      downloadZip,
+      downloadZip
     };
-  },
+  }
 };
 </script>
 

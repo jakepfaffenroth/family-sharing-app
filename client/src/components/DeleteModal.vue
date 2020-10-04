@@ -2,7 +2,9 @@
   <transition name="slide-fade">
     <modal @close-modal="$emit('toggle-form')">
       <div class="text-white">
-        <h3 class="text-xl">Are you sure you want to delete this image?</h3>
+        <h3 class="text-xl">
+          Are you sure you want to delete this image?
+        </h3>
         <div class="font-light mt-2">
           <p>It cannot be undone.</p>
           <button
@@ -27,15 +29,16 @@
 import Modal from './Modal';
 
 export default {
+  components: {
+    Modal
+  },
   props: {
     imgDeleteInfo: {
       type: Object,
       default: null
     }
   },
-  components: {
-    Modal
-  },
+  emits: ['toggle-form', 'delete-image'],
   methods: {
     deleteAndCloseModal() {
       this.$emit('delete-image', this.imgDeleteInfo);

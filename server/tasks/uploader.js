@@ -56,7 +56,7 @@ const upload = async (auth, data) => {
     let filename = `${ownerId}/${resolution.replace('Res', '')}/${path.basename(
       image.name
     )}`;
-    filename = encodeURI(filename);
+    filename = escape(filename);
     let sha1 = crypto.createHash('sha1').update(source).digest('hex');
 
     const uploadResponse = await axios.post(auth.uploadUrl, source, {

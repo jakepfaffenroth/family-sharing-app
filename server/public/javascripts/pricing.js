@@ -1,6 +1,9 @@
 const priceToggle = () => {
-  // Don't run the pricing page logic if not on the priicng page
-  if (window.location.pathname != '/pricing') {
+  // Don't run the pricing page logic if not on the pricing page
+  if (
+    window.location.pathname != '/pricing' &&
+    window.location.pathname != '/complete-signup'
+  ) {
     return;
   }
 

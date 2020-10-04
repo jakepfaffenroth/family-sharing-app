@@ -23,9 +23,9 @@
     <!-- Menu list -->
     <transition name="slide-fade">
       <div
+        v-show="isMenuVisible"
         class="absolute right-0 overflow-hidden shadow-xl z-40"
         :class="menuStyle"
-        v-show="isMenuVisible"
       >
         <div
           class="grid mt-2 p-1 bg-white rounded border border-teal-300 transition-all duration-150 ease-in-out"
@@ -41,14 +41,14 @@
 <script>
 export default {
   props: {
-    menuType: { type: String, default: 'mainMenu' },
+    menuType: { type: String, default: 'mainMenu' }
   },
   data() {
     return {
       btnStyle: 'main-menu-btn',
       menuStyle: 'main-menu-list',
       linkStyle: 'main-menu-link',
-      isMenuVisible: false,
+      isMenuVisible: false
     };
   },
   beforeMount() {
@@ -73,8 +73,8 @@ export default {
       event.type === 'click' && event.target.tagName != 'A'
         ? null // don't close menu
         : (this.isMenuVisible = false); // close menu
-    },
-  },
+    }
+  }
 };
 </script>
 

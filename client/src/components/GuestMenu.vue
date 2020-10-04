@@ -1,6 +1,8 @@
 <template>
   <div>
-    <colorful-logo class="self-center sm:self-start" :content="'carousel'" />
+    <a :href="server">
+      <colorful-logo class="self-center sm:self-start" :content="'carousel'" />
+    </a>
     <h1
       class="text-lg tracking-tight leading-10 font-semibold text-gray-900 sm:text-lg sm:leading-none md:text-xl"
     >
@@ -15,7 +17,7 @@
   </div>
   <div class="flex flex-col items-center sm:items-end ml-auto py-4 mt-3">
     <button
-      class="combo-btn self-end w-48 px-2  leading-5 text-white bg-purple-500  rounded-lg active:bg-purple-600 hover:bg-purple-600 focus:shadow-outline-purple"
+      class="combo-btn self-end w-48 px-2 leading-5 text-white bg-purple-500  rounded-lg active:bg-purple-600 hover:bg-purple-600 focus:shadow-outline-purple"
       @click="openSubscribeForm"
     >
       Subscribe to updates
@@ -26,8 +28,8 @@
 
   <subscribe-modal
     v-show="isFormVisible"
-    @toggle-form="isFormVisible = !isFormVisible"
     :owner="owner"
+    @toggle-form="isFormVisible = !isFormVisible"
   ></subscribe-modal>
 </template>
 

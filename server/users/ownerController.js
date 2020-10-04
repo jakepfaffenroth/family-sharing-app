@@ -10,11 +10,11 @@ passport.initialize();
 module.exports.create = [
   // VALIDATE FIELDS
   // username and password must not be empty
-  // TODO - add stronger password requirements
   body('username', 'Username must not be empty.').trim().isLength({ min: 1 }),
-  body('password', 'Password must not be empty.')
-    .trim()
-    .isLength({ min: 1, max: 64 }),
+  body('password', 'Password must not be empty.').trim(),
+  body('password', 'Password must be at least 6 characters.').isLength({
+    min: 6,
+  }),
   body('firstName', 'First Name must not be empty.')
     .trim()
     .isLength({ min: 1, max: 64 }),
@@ -36,14 +36,12 @@ module.exports.create = [
   // Remove whitespace (sanitization)
   body('*').escape().trim().bail(),
 
-  // TODO - Make sure password confirmation matches
-  body('confirmPassword', 'Confirm your password.')
+  body('confirmPassword', 'Enter a password.')
     .trim()
     .isLength({ min: 1 })
     .bail(),
-  body('confirmPassword')
+  body('confirmPassword', 'Confirm your password.')
     .custom((value, { req }) => {
-      /**/ console.log('checking passwords...');
       if (value !== req.body.password) {
         return false;
       }
@@ -69,7 +67,7 @@ module.exports.create = [
       const firstName = req.body.firstName;
       const lastName = req.body.lastName;
       const email = req.body.email;
-
+      console.log('errors.array():', errors.array());
       res.render('signup', {
         title: 'Carousel',
         loginUrl: process.env.SERVER + '/auth/login',
@@ -103,12 +101,41 @@ module.exports.create = [
         );
 
         success('User ' + owner.username + ' created');
+
+        //Account created; redirect to account completion screen (choose plan)
+        res.redirect('/complete-signup' + '?owner=' + owner.ownerId);
+
         // Account created; redirect to login screen
-        res.redirect('/login');
+        // res.redirect('/login');
       });
     }
   },
 ];
+
+module.exports.choosePlan = async (req, res) => {
+  const quota = setQuota(req.body.plan);
+  function setQuota(plan) {
+    switch (plan) {
+      case 'basic':
+        return 2000;
+      case 'premium':
+        return 10000;
+      case 'premium plus':
+        return 200000;
+    }
+  }
+
+  try {
+    const owner = await db.oneOrNone(
+      'UPDATE owners SET plan = $plan, quota = $quota WHERE owner_id = $ownerId RETURNING *',
+      { ...req.body, quota }
+    );
+    console.log('owner.plan:', owner.plan);
+    console.log('owner.quota:', owner.quota);
+  } catch (err) {
+    error('err:', err);
+  }
+};
 
 module.exports.getOwner = async (req, res) => {
   try {

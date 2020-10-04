@@ -155,7 +155,7 @@ export default {
       const getUppyFileId = (data, files) => {
         console.log('data:', data);
         console.log('files:', files);
-        const filename = decodeURI(data.fileInfo.filename.split('/').pop());
+        const filename = unescape(data.fileInfo.filename.split('/').pop());
         console.log('filename:', filename);
         return files.filter(item => {
           if (item[filename]) return true;
