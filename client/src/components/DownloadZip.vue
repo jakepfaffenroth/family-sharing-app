@@ -51,48 +51,52 @@ export default {
 
         // ------------------ //
         async function zipImages() {
-          let count = 1;
-          let folder = createFolder();
+          try {
+            let count = 1;
+            let folder = createFolder(count);
 
-          for (const file of images) {
-            if (keepZipping === false) {
-              return (count = 0);
-            }
-            zipMsg.innerText = `Preparing file ${images.indexOf(file)} of ${
-              images.length
-            }`;
-            // downloadProgress.value = `Downloading file ${images.indexOf(
-            //   file
-            // )} of ${images.length}`;
-            const response = await axios.get(
-              `https://cdn.jakepfaf.dev/file/JFP001/${file.fileName}`,
-              {
-                responseType: 'blob',
-                encoding: null
+            for (const file of images) {
+              if (keepZipping === false) {
+                return (count = 0);
               }
-            );
-            // Check if zip file will exceed size limit by adding latest downloaded file
-            if (zipSize + response.data.size < zipSizeLimit) {
-              // Will not exceed limit; add file to zip and continue
-              folder.file(path.basename(file.fileName), response.data);
-              zipSize += response.data.size;
-            } else {
-              // Adding file exceeds limit; Write zip, create new, add file to new zip and continue
-              zipSize = 0;
-              finishZip(count);
-              count++;
-              zip = startZip();
-              folder = createFolder();
-              folder.file(
-                file.fileName.slice(file.fileName.indexOf('/')),
-                response.data
+              zipMsg.innerText = `Preparing file ${images.indexOf(file)} of ${
+                images.length
+              }`;
+              // downloadProgress.value = `Downloading file ${images.indexOf(
+              //   file
+              // )} of ${images.length}`;
+              const response = await axios.get(
+                `https://cdn.jakepfaf.dev/file/JFP001/${escape(file.fileName)}`,
+                {
+                  responseType: 'blob',
+                  encoding: null
+                }
               );
+              // Check if zip file will exceed size limit by adding latest downloaded file
+              if (zipSize + response.data.size < zipSizeLimit) {
+                // Will not exceed limit; add file to zip and continue
+                folder.file(path.basename(file.fileName), response.data);
+                zipSize += response.data.size;
+              } else {
+                // Adding file exceeds limit; Write zip, create new, add file to new zip and continue
+                zipSize = 0;
+                finishZip(count);
+                count++;
+                zip = startZip();
+                folder = createFolder(count);
+                folder.file(
+                  file.fileName.slice(file.fileName.indexOf('/')),
+                  response.data
+                );
+              }
             }
+            return count;
+          } catch (err) {
+            console.log(err);
           }
-          return count;
         }
 
-        function createFolder() {
+        function createFolder(count) {
           // Folder name includes 'part N'
           return zip.folder(`images${count === 1 ? '' : ` part${count}`}`);
         }

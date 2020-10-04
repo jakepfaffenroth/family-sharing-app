@@ -24,6 +24,8 @@ export default {
   },
   emits: ['update-images'],
   setup(props, context) {
+    const toast = inject('toast');
+
     const uppy = new Uppy({
       meta: {
         ownerId: props.owner.ownerId,
@@ -206,6 +208,17 @@ export default {
     };
 
     uppy.on('complete', result => {
+      const upToast = toast.open({
+        type: 'info',
+        duration: 3000,
+        // dismissible: true,
+        message: `<div id="toast-message"><p id="msg-text">Upload complete.<br>${
+          result.successful.length
+        } files uploaded.${
+          result.failed.length ? ' ' + result.failed.length + ' failed.' : ''
+        }</p></div>`
+      });
+
       console.log('upload result:', {
         sucessful: result.successful,
         failed: result.failed

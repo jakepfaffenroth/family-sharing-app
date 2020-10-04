@@ -175,7 +175,7 @@ export default {
 
     async function renderUserType(userType) {
       let response;
-      console.log('userType:', userType);
+
       if (userType === 'owner') {
         const usageData = await axios({
           url: `${server}/files/get-usage`,
@@ -183,7 +183,6 @@ export default {
           data: { ownerId }
         });
         usage.value = usageData.data;
-        console.log('usage:', usage);
         // const storageInfo = usageData.data;
         // if (storageInfo.gb >= 1)
         //   usage.value = { value: storageInfo.gb.toFixed(2), unit: 'GB' };
@@ -308,7 +307,6 @@ export default {
       if (images.value.length === 0) {
         forceReloadKey.value++;
       }
-      console.log('forceReloadKey:', forceReloadKey.value);
       axios.post(`${server}/files/delete-image`, { fileId, fileName, ownerId });
     };
 

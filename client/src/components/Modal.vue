@@ -116,7 +116,6 @@ export default {
       const copyText = document.getElementById(
         this.shareUrl || this.singleImgUrl
       );
-      console.log('copyText:', copyText);
       /* Select the text field */
       copyText.select();
       copyText.setSelectionRange(0, 99999); /*For mobile devices*/
