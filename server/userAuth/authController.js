@@ -22,10 +22,10 @@ passport.use(
     bcrypt.compare(password, owner.password, (err, res) => {
       if (res) {
         // passwords match! log user in
-        console.log('password correct!');
+        verbose('password correct!');
         return done(null, owner);
       } else {
-        console.log('password incorrect...');
+        verbose('password incorrect...');
         // passwords do not match!
         return done(null, false, {
           msg: 'Incorrect password',
@@ -36,14 +36,12 @@ passport.use(
 );
 
 module.exports.login = (req, res, next) => {
-  console.log('attempting login...');
   passport.authenticate('local', function (err, owner, info) {
     if (err) {
       return next(err);
     }
     const username = req.body.username;
     const password = req.body.password;
-    console.log('username:', username);
 
     if (!owner || owner.length === 0) {
       res.locals.incorrectCred = true;
@@ -79,7 +77,7 @@ module.exports.login = (req, res, next) => {
 module.exports.logout = (req, res) => {
   req.logout();
   res.cookie('ownerId', '', { expires: new Date(0) });
-  info('Logged out');
+  verbose('Logged out');
   req.session.destroy((err) => {
     error('Session destroy error:', err);
   });
@@ -91,7 +89,7 @@ module.exports.checkSession = async (req, res, next) => {
 
   try {
     let [owner, images] = await db.multi(
-      'SELECT username, first_name, owner_id, guest_id, plan, quota FROM owners WHERE owner_id = ${ownerId};SELECT * FROM images WHERE owner_id = ${ownerId}',
+      'SELECT username, first_name, last_name, owner_id, guest_id, plan, quota FROM owners WHERE owner_id = ${ownerId};SELECT * FROM images WHERE owner_id = ${ownerId}',
       req.body
     );
 
@@ -106,7 +104,7 @@ module.exports.checkSession = async (req, res, next) => {
 
     return res.json({
       isLoggedIn: true,
-      owner: owner,
+      owner: { ...owner, images },
       images: images,
     });
   } catch (err) {

@@ -10,6 +10,6 @@ module.exports = async (job) => {
     return sendBrowserNotifications(job.data);
     // });
   } catch (err) {
-    error('Browser notifications error:', err);
+    console.log('Browser notifications error:', err);
   }
 };

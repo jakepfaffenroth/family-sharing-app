@@ -41,7 +41,7 @@ module.exports.sendEmailNotifications = async (data) => {
   const timeComparison = compareAsc(lastNotification, timeStamp);
   // If less than one hour has passed since last notification, do not send another email
   if (timeComparison > 0) {
-    info('🕑 Email notification sent within last hour');
+    success('🕑 Email notification sent within last hour');
     return;
   }
 
@@ -108,7 +108,7 @@ module.exports.sendEmailNotifications = async (data) => {
           if (err) {
             error('err: ', err.message);
           } else {
-            success('Email sent! Message ID: ', data.MessageId);
+            success('Email sent. Message ID: ', data.MessageId);
           }
         });
       }

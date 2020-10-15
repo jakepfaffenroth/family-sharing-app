@@ -24,7 +24,16 @@
             <a class="main-menu-link" @click="$refs.zip.downloadZip()">
               Download all photos
             </a>
-            <a class="main-menu-link" @click="toggleShare">Account</a>
+            <!-- <a class="main-menu-link" @click="changeView(Account)">
+              Account
+            </a> -->
+            <router-link
+              :to="{ name: 'account', params: { ownerId: owner.ownerId } }"
+              class="main-menu-link"
+            >
+              Account
+            </router-link>
+            <!-- <a class="main-menu-link" @click="toggleShare">Account</a> -->
             <a class="main-menu-link" @click="logout">Log out</a>
             <a class="main-menu-link" @click="nuke">Nuke</a>
             <a class="main-menu-link" @click="showToast">Toast</a>
@@ -74,12 +83,12 @@
 
 <script>
 import axios from 'axios';
-
 import ColorfulLogo from './ColorfulLogo';
 import DropMenu from './DropMenu';
 import ImageSorter from './ImageSorter';
 import DownloadZip from './DownloadZip';
 import Modal from './Modal';
+import Account from '../views/Account';
 
 export default {
   components: {
@@ -105,7 +114,8 @@ export default {
       isShareVisible: false,
       isMenuVisible: false,
       toastContent:
-        '<div class="font-sm p-0"><p class="font-bold">Title</p><p>message content</p></div>'
+        '<div class="font-sm p-0"><p class="font-bold">Title</p><p>message content</p></div>',
+      Account: Account
     };
   },
   computed: {
@@ -146,6 +156,10 @@ export default {
   //   }
   // },
   methods: {
+    // changeView(newView) {
+    //   this.changeHomeView(Account);
+    //   this.$router.push({ path: '/account/' + this.owner.ownerId });
+    // },
     showToast() {
       this.toast.open({
         type: 'info',

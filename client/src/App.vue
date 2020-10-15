@@ -1,114 +1,60 @@
 <template>
-  <div>
-    <div
-      v-show="isReadyToRender"
-      class="flex flex-col min-h-screen w-full px-2 py-2 sm:px-6 sm:py-4
-        xl:px-12 xl:py-6"
-    >
-      <!-- Header and Menu -->
-      <div class="flex flex-col sm:flex-row sm:justify-between">
+  <!-- <component
+    :is="view"
+    :owner="owner"
+    :images="images"
+    :usage="usage"
+  ></component> -->
+
+  <router-view :owner="owner" :images="images" :usage="usage"></router-view>
+
+  <!-- <router-view v-slot="{ Component }">
+    <transition name="slide" mode="out-in">
+      <keep-alive>
         <component
-          :is="user.typeMenu"
+          :is="Component"
           :owner="owner"
-          :guest="guest"
+          :images="images"
           :usage="usage"
-          :sub-options="subOptions"
-          @sort-images="sortImages"
-        ></component>
-      </div>
-
-      <!-- Image gallery -->
-      <gallery
-        :items="images"
-        :owner="owner"
-        :user-type="user.type"
-        @delete-image="showDeleteModal"
-      ></gallery>
-
-      <!-- Empty gallery  -->
-      <div
-        v-if="images.length === 0 && user.type === 'owner' && owner.ownerId"
-        id="empty-gallery"
-        class="uppy-select-files flex flex-grow justify-center rounded border-4 border-dashed border-gray-400 text-gray-500 hover:bg-gray-200 hover:text-gray-600 cursor-pointer transition-all duration-200 ease-in-out"
-      >
-        <p class="flex-grow self-center text-center text-2xl">
-          Upload some images!
-        </p>
-      </div>
-    </div>
-
-    <!-- Uppy file uploader -->
-    <uppy
-      v-if="user.type === 'owner'"
-      :key="forceReloadKey"
-      :owner="owner"
-      @update-images="updateImages"
-    ></uppy>
-
-    <delete-modal
-      v-show="isDeleteModalVisible"
-      :img-delete-info="imgDeleteInfo"
-      @toggle-form="isDeleteModalVisible = !isDeleteModalVisible"
-      @delete-image="deleteImage"
-    ></delete-modal>
-  </div>
+        />
+      </keep-alive>
+    </transition>
+  </router-view> -->
 </template>
 
-<script scoped>
-import { provide, ref, reactive, defineAsyncComponent } from 'vue';
-
+<script>
 import axios from 'axios';
+import { ref, shallowRef, reactive, provide } from 'vue';
 import { Notyf } from 'notyf';
 import 'notyf/notyf.min.css';
-import Toastify from 'toastify-js';
+import { useRoute } from 'vue-router';
 
-import ColorfulLogo from './components/ColorfulLogo';
-import OwnerMenu from './components/OwnerMenu';
-import GuestMenu from './components/GuestMenu';
-import Uppy from './components/Uppy';
-// import VuePictureSwipe from './components/VuePictureSwipe';
-import DeleteModal from './components/DeleteModal';
-
-// const Gallery = defineAsyncComponent(() =>
-//   import('./components/VuePictureSwipe.vue')
-// );
+import Home from './views/Home';
+import Account from './views/Account';
 
 export default {
-  components: {
-    ColorfulLogo,
-    OwnerMenu,
-    GuestMenu,
-    Uppy,
-    Gallery: defineAsyncComponent(() =>
-      import('./components/VuePictureSwipe.vue')
-    ),
-    DeleteModal
-  },
-
+  // components: { Home },
   setup() {
+    console.log('in App');
+    const route = useRoute();
     const server = process.env.VUE_APP_SERVER;
-    let isReadyToRender = ref(false);
-    let isDeleteModalVisible = ref(false);
-    let forceReloadKey = ref(0);
+    const isReadyToRender = ref(false);
+    // const view = shallowRef(Home);
 
-    const user = reactive({ type: null, typeMenu: null });
+    // provide('changeView', newView => {
+    //   console.log('view.value:', view.value);
+    //   view.value = newView;
+    //   console.log('view.value:', view.value);
+    // });
+
     const owner = reactive({});
+    const usage = ref('');
     const images = ref([]);
 
-    const toast = new Notyf({
-      position: { x: 'right', y: 'top' },
-      duration: 2000,
-      types: [
-        {
-          type: 'info'
-        }
-      ]
-    });
-
-    provide('images', images);
-    provide('userType', user.type);
     provide('owner', owner);
-    provide('toast', toast);
+    provide('usage', usage.value);
+    provide('images', images.value);
+
     // -------------------------------------
     // ------ INITIAL CONFIGURATION --------
     // ------------ & COOKIES --------------
@@ -116,17 +62,18 @@ export default {
     const ownerId = getCookie('ownerId');
     const guestId = getCookie('guestId');
 
+    if (ownerId) {
+      provide('userType', 'owner');
+      getOwnerData('owner');
+    }
+    if (guestId && !ownerId) {
+      provide('userType', 'guest');
+      getOwnerData('guest');
+    }
     // Prevent users from viewing app without login or guestId
     if (!guestId && !ownerId) {
       window.location = server;
     }
-
-    // Prevent right clicking images
-    document.addEventListener('contextmenu', event => {
-      if (event.target.nodeName === 'IMG') {
-        event.preventDefault();
-      }
-    });
 
     // owner or guest id is passed as query param from server after login
     // set cookie with id and clear query from url & history
@@ -161,20 +108,20 @@ export default {
       }
     }
 
-    // If logged in as an owner, directs to owner home.
-    // If NOT logged in as owner, but has a guestId (from owner's share URL)
-    // then direct to owner's guest page.
-    if (ownerId) {
-      renderUserType('owner');
-    }
-    if (guestId && !ownerId) {
-      renderUserType('guest');
-    }
-
-    let usage = ref('');
-
-    async function renderUserType(userType) {
-      let response;
+    async function getOwnerData(userType) {
+      let response = {};
+      let url = '';
+      let id = {};
+      switch (userType) {
+        case 'owner':
+          url = `${server}/auth/check-session`;
+          id = { ownerId: ownerId };
+          break;
+        case 'guest':
+          url = `${server}/user/get-owner`;
+          id = { guestId: guestId };
+          break;
+      }
 
       if (userType === 'owner') {
         const usageData = await axios({
@@ -183,174 +130,62 @@ export default {
           data: { ownerId }
         });
         usage.value = usageData.data;
-        // const storageInfo = usageData.data;
-        // if (storageInfo.gb >= 1)
-        //   usage.value = { value: storageInfo.gb.toFixed(2), unit: 'GB' };
-        // else if (storageInfo.mb >= 1)
-        //   usage.value = { value: storageInfo.mb.toFixed(2), unit: 'MB' };
-        // else usage.value = { value: storageInfo.kb.toFixed(2), unit: 'KB' };
-
-        response = await axios({
-          url: `${server}/auth/check-session`,
-          method: 'post',
-          data: { ownerId }
-        });
-        if (!response.data.isLoggedIn) {
-          window.location = `${server}/login`;
-        }
-      } else {
-        response = await axios({
-          url: `${server}/user/get-owner`,
-          method: 'post',
-          data: { guestId }
-        });
       }
-      const ownerArr = Object.keys(response.data.owner);
 
-      for (const key of ownerArr) {
+      response = await axios({
+        url: url,
+        method: 'post',
+        data: id
+      });
+
+      if (!response.data.isLoggedIn) {
+        window.location = `${server}/login`;
+      }
+      images.value = response.data.images;
+
+      // Response data contains all the owner data as key-value pairs
+      const ownerDataArr = Object.keys(response.data.owner);
+      // Get each key from response data and add it to the owner object
+      for (const key of ownerDataArr) {
         owner[key] = response.data.owner[key];
       }
+      // route.params.images = [];
+      // response.data.images.forEach(image => {
+      //   route.params.images.push(image);
+      // });
 
-      user.type = userType;
-      user.typeMenu = userType === 'owner' ? OwnerMenu : GuestMenu;
-      images.value = response.data.images.reverse();
+      // owner.images = response.data.images;
+      // route.params.images = response.data.images;
       isReadyToRender.value = true;
-      sortImages('captureTime');
+      // console.log('usage:', usage);
+      // provide('fetchedImages', response.data.images);
     }
 
-    // ------ IMAGE HANDLING --------
-    const nuke = () => {
-      const imagesArr = images.value;
-      images.value = [];
+    // function changeHomeView(newView) {
+    //   console.log('test:', newView);
+    //   view.value = newView;
+    // }
+    // provide('changeHomeView', changeHomeView);
 
-      forceReloadKey.value++; //force Uppy to reload
-
-      axios.post(`${server}/files/delete-image`, {
-        images: imagesArr.map(x => {
-          const { fileId, fileName } = x;
-          return { fileId, fileName };
-        }),
-        ownerId: owner.ownerId
-      });
-    };
-    provide('nuke', nuke);
-
-    const updateImages = fileInfo => {
-      const { fileId, filename, src, thumbnail, uploadTime } = fileInfo;
-      const newImg = {
-        fileId,
-        fileName: filename,
-        src,
-        thumbnail,
-        uploadTime,
-        w: fileInfo.metadata.w,
-        h: fileInfo.metadata.h,
-        ownerId: owner.ownerId,
-        exif: fileInfo.metadata.exif
-      };
-      images.value.unshift(newImg);
-    };
-    provide('updateImages', updateImages);
-
-    const sortImages = sortParameter => {
-      if (sortParameter === 'reverse') {
-        images.value.reverse();
-        return;
-      }
-
-      const compare = (a, b) => {
-        let fileA;
-        let fileB;
-
-        if (sortParameter === 'captureTime') {
-          fileA = a.exif.exif.DateTimeOriginal || null;
-          fileB = b.exif.exif.DateTimeOriginal || null;
+    const toast = new Notyf({
+      position: { x: 'right', y: 'top' },
+      duration: 2000,
+      types: [
+        {
+          type: 'info'
         }
-        if (sortParameter === 'uploadTime') {
-          fileA = a.uploadTime;
-          fileB = b.uploadTime;
-        }
-
-        let comparison = 0;
-        if (fileA > fileB) {
-          comparison = -1;
-        } else if (fileA < fileB) {
-          comparison = 1;
-        }
-        return comparison;
-      };
-      try {
-        images.value.sort(compare);
-      } catch (err) {
-        console.log('err: ', err);
-      }
-    };
-    provide('sortImages', sortImages);
-
-    let imgDeleteInfo = ref(null);
-
-    const showDeleteModal = imgInfo => {
-      imgDeleteInfo.value = { ...imgInfo };
-      isDeleteModalVisible.value = true;
-    };
-
-    const deleteImage = async imgInfo => {
-      isDeleteModalVisible = false;
-      const { date, fileId, smallFileId, fileName, ownerId, index } = imgInfo;
-
-      images.value.splice(
-        images.value.indexOf(images.value.find(x => x.fileId === fileId)),
-        1
-      );
-
-      // force Uppy to reload if there are zero images
-      if (images.value.length === 0) {
-        forceReloadKey.value++;
-      }
-      axios.post(`${server}/files/delete-image`, { fileId, fileName, ownerId });
-    };
+      ]
+    });
+    provide('toast', toast);
 
     return {
-      user,
+      // view,
+      route,
+      isReadyToRender,
       owner,
       images,
-      isReadyToRender,
-      isDeleteModalVisible,
-      forceReloadKey,
-      server,
-      nuke,
-      updateImages,
-      sortImages,
-      showDeleteModal,
-      imgDeleteInfo,
-      deleteImage,
       usage
     };
-  },
-  computed: {
-    imgGroups() {
-      let group = this.items.reduce((r, a) => {
-        const captureDate = a.exif.exif.DateTimeOriginal
-          ? format(
-              new Date(a.exif.exif.DateTimeOriginal.split('T').shift()),
-              'E, LLL dd'
-            )
-          : null;
-
-        const uploadDate = format(
-          new Date(parseInt(a.uploadTime)),
-          'E, LLL dd'
-        );
-
-        r[captureDate || uploadDate] = [
-          ...(r[captureDate || uploadDate] || []),
-          a
-        ];
-        return r;
-      }, {});
-
-      return group;
-    }
   }
 };
 </script>
@@ -369,43 +204,31 @@ export default {
 }
 
 .notyf__dismiss-btn {
-  @apply absolute -top-6 right-0 bg-transparent hover:bg-transparent;
+  @apply absolute -top-4 right-1 h-8 bg-transparent hover:bg-transparent;
 }
 
-.link {
-  @apply px-3  cursor-pointer;
+/* Page transitions */
+.slide-enter {
+  transform: translate(2em, 0);
+  opacity: 0;
 }
 
-.image-grid {
-  @apply mt-4;
+.slide-enter-to,
+.slide-leave {
+  opacity: 1;
+  transform: translate(0, 0);
 }
 
-.image {
-  @apply flex h-10 object-contain transition duration-200 ease-in-out;
-  /* flex: auto;
-  height: 250px;
-  min-width: 100px;
-  object-fit: contain;
-  transition: 0.2s ease-in-out; */
+.slide-leave-to {
+  transform: translate(-2em, 0);
+  opacity: 0;
 }
 
-.image-overlay {
-  @apply absolute top-0 left-0 w-full h-full opacity-0;
-  /* position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  opacity: 0; */
-}
-.delete-btn {
-  @apply absolute top-2 right-2 px-2 py-1 text-xs;
-  /* position: absolute;
-  top: 10px;
-  right: 10px; */
-}
-
-.text-input {
-  @apply appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:border-blue-300  sm:text-sm sm:leading-5;
+.slide-enter-active,
+.slide-leave-active {
+  transition-duration: 0.1s;
+  transition-property: height, opacity, transform;
+  transition-timing-function: cubic-bezier(0.55, 0, 0.1, 1);
+  overflow: hidden;
 }
 </style>

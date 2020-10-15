@@ -1,0 +1,7 @@
+.price {
+  @apply text-6xl;
+}
+
+.annual-detail {
+  @apply md:text-xs lg:text-sm mb-1 ml-1 self-end;
+}

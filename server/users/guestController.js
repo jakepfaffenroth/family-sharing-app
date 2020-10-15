@@ -150,7 +150,7 @@ module.exports.sendVerifyEmail = async (data) => {
     if (err) {
       error(err.message);
     } else {
-      success('Verification email sent! Message ID: ', data.MessageId);
+      success('Verification email sent: Message ID: ', data.MessageId);
     }
   });
 

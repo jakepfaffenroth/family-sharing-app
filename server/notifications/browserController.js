@@ -70,7 +70,7 @@ module.exports.sendBrowserNotifications = async (data) => {
 
       return;
     });
-    success('Browser notifications sent!');
+    success('Browser notifications sent');
   } catch (err) {
     return error(err);
   }

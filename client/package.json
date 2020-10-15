@@ -35,6 +35,7 @@
     "vue": "3.0.0",
     "vue-password-strength-meter": "^1.7.2",
     "vue-picture-swipe": "^1.2.0",
+    "vue-router": "^4.0.0-beta.13",
     "vue-toastification": "^1.7.7",
     "zxcvbn": "^4.4.2"
   },
