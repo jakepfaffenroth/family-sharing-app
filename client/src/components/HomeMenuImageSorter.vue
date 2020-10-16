@@ -1,8 +1,8 @@
 <template>
   <div
-    class="flex justify-end content-center divide-x divide-gray-600 text-gray-700"
+    class="flex justify-end content-center mt-2 divide-x divide-gray-600 text-gray-700"
   >
-    <drop-menu menu-type="sortMenu">
+    <base-drop-menu menu-type="sortMenu">
       <template #btnLabel>
         Sort
       </template>
@@ -17,7 +17,7 @@
           Date uploaded
         </a>
       </template>
-    </drop-menu>
+    </base-drop-menu>
 
     <button
       class="px-2 mt-0.5 hover:text-teal-500 focus:outline-none"
@@ -48,11 +48,11 @@
 </template>
 
 <script>
-import DropMenu from './DropMenu';
+import BaseDropMenu from './BaseDropMenu';
 
 export default {
   components: {
-    DropMenu
+    BaseDropMenu
   },
   // emits: ['sort-images'],
   inject: ['sortImages'],

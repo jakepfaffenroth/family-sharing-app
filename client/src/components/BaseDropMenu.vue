@@ -84,7 +84,7 @@ export default {
 }
 
 .main-menu-btn {
-  @apply w-8 h-8 bg-teal-500 rounded-r-lg  hover:bg-teal-600;
+  @apply w-8 h-8 bg-teal-600 rounded-r-lg  hover:bg-teal-500;
 }
 
 .main-menu-list {

@@ -5,15 +5,9 @@
     <span
       class="bg-clip-text text-transparent bg-gradient-to-r from-teal-400 to-orange-400 via-purple-400"
     >
-      {{ content }}
+      <slot>
+        carousel
+      </slot>
     </span>
   </h1>
 </template>
-
-<script>
-export default {
-  props: {
-    content: { type: String, default: 'carousel' }
-  }
-};
-</script>

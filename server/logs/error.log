@@ -2427,4 +2427,1129 @@ QueryResultError {
 }
 [object Object]
 
+'2020-10-15 09:31:29
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
+}
+[object Object]
+
+'2020-10-15 09:31:29
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
+}
+[object Object]
+
+'2020-10-15 09:32:35
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
+}
+[object Object]
+
+'2020-10-15 09:34:35
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
+}
+[object Object]
+
+'2020-10-15 09:34:58
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
+}
+[object Object]
+
+'2020-10-15 09:36:58
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
+}
+[object Object]
+
+'2020-10-15 09:39:36
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
+}
+[object Object]
+
+'2020-10-15 09:43:24
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
+}
+[object Object]
+
+'2020-10-15 09:44:26
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
+}
+[object Object]
+
+'2020-10-15 09:44:27
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
+}
+[object Object]
+
+'2020-10-15 09:45:39
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
+}
+[object Object]
+
+'2020-10-15 09:47:28
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
+}
+[object Object]
+
+'2020-10-15 09:47:29
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
+}
+[object Object]
+
+'2020-10-15 09:52:32
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
+}
+[object Object]
+
+'2020-10-15 09:54:32
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
+}
+[object Object]
+
+'2020-10-15 09:59:37
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
+}
+[object Object]
+
+'2020-10-15 10:00:09
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
+}
+[object Object]
+
+'2020-10-15 10:04:08
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
+}
+[object Object]
+
+'2020-10-15 10:05:12
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
+}
+[object Object]
+
+'2020-10-15 10:05:46
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
+}
+[object Object]
+
+'2020-10-15 10:07:23
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
+}
+[object Object]
+
+'2020-10-15 10:08:47
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
+}
+[object Object]
+
+'2020-10-15 10:09:13
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
+}
+[object Object]
+
+'2020-10-15 10:09:55
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
+}
+[object Object]
+
+'2020-10-15 10:14:44
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
+}
+[object Object]
+
+'2020-10-15 10:21:38
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
+}
+[object Object]
+
+'2020-10-15 10:28:06
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
+}
+[object Object]
+
+'2020-10-15 10:32:10
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
+}
+[object Object]
+
+'2020-10-15 10:33:44
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
+}
+[object Object]
+
+'2020-10-15 10:34:06
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
+}
+[object Object]
+
+'2020-10-15 10:40:33
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
+}
+[object Object]
+
+'2020-10-15 10:41:01
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
+}
+[object Object]
+
+'2020-10-15 10:42:41
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
+}
+[object Object]
+
+'2020-10-15 11:00:37
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
+}
+[object Object]
+
+'2020-10-15 11:01:16
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
+}
+[object Object]
+
+'2020-10-15 11:01:26
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
+}
+[object Object]
+
+'2020-10-15 11:01:27
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
+}
+[object Object]
+
+'2020-10-15 11:02:39
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT customer_id, subscription_id FROM owners WHERE owner_id = null"
+}
+[object Object]
+
+'2020-10-15 11:03:22
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT customer_id, subscription_id FROM owners WHERE owner_id = null"
+}
+[object Object]
+
+'2020-10-15 11:04:32
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT customer_id, subscription_id FROM owners WHERE owner_id = null"
+}
+[object Object]
+
+'2020-10-15 11:04:42
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT customer_id, subscription_id FROM owners WHERE owner_id = null"
+}
+[object Object]
+
+'2020-10-15 11:06:05
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
+}
+[object Object]
+
+'2020-10-15 11:08:05
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
+}
+[object Object]
+
+'2020-10-15 11:16:41
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
+}
+[object Object]
+
+'2020-10-15 11:16:42
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
+}
+[object Object]
+
+'2020-10-15 11:22:14
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
+}
+[object Object]
+
+'2020-10-15 11:22:16
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
+}
+[object Object]
+
+'2020-10-15 11:31:20
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
+}
+[object Object]
+
+'2020-10-15 11:33:19
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
+}
+[object Object]
+
+'2020-10-15 11:37:11
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
+}
+[object Object]
+
+'2020-10-15 11:37:30
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
+}
+[object Object]
+
+'2020-10-15 11:38:10
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
+}
+[object Object]
+
+'2020-10-15 11:40:55
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
+}
+[object Object]
+
+'2020-10-15 11:41:13
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
+}
+[object Object]
+
+'2020-10-15 11:43:13
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
+}
+[object Object]
+
+'2020-10-15 11:44:32
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
+}
+[object Object]
+
+'2020-10-15 11:46:32
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
+}
+[object Object]
+
+'2020-10-15 11:53:26
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
+}
+[object Object]
+
+'2020-10-15 11:55:26
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
+}
+[object Object]
+
+'2020-10-15 12:16:14
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
+}
+[object Object]
+
+'2020-10-15 12:18:14
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
+}
+[object Object]
+
+'2020-10-15 12:19:23
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
+}
+[object Object]
+
+'2020-10-15 12:19:30
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
+}
+[object Object]
+
+'2020-10-15 12:21:07
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
+}
+[object Object]
+
+'2020-10-15 12:21:22
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
+}
+[object Object]
+
+'2020-10-15 12:21:30
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
+}
+[object Object]
+
+'2020-10-15 12:21:42
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
+}
+[object Object]
+
+'2020-10-15 12:21:47
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
+}
+[object Object]
+
+'2020-10-15 12:21:53
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
+}
+[object Object]
+
+'2020-10-15 20:18:06
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
+}
+[object Object]
+
+'2020-10-15 20:21:36
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
+}
+[object Object]
+
+'2020-10-15 20:25:23
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
+}
+[object Object]
+
+'2020-10-15 21:25:52
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT plan FROM owners WHERE owner_id = 'undefined'"
+}
+[object Object]
+
+'2020-10-15 21:25:52
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT plan FROM owners WHERE owner_id = 'undefined'"
+}
+[object Object]
+
+'2020-10-15 21:25:52
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT plan FROM owners WHERE owner_id = 'undefined'"
+}
+[object Object]
+
+'2020-10-15 21:25:52
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT plan FROM owners WHERE owner_id = 'undefined'"
+}
+[object Object]
+
+'2020-10-15 21:25:52
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT plan FROM owners WHERE owner_id = 'undefined'"
+}
+[object Object]
+
+'2020-10-15 21:27:34
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT plan FROM owners WHERE owner_id = 'undefined'"
+}
+[object Object]
+
+'2020-10-15 21:27:34
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT plan FROM owners WHERE owner_id = 'undefined'"
+}
+[object Object]
+
+'2020-10-15 21:27:35
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT plan FROM owners WHERE owner_id = 'undefined'"
+}
+[object Object]
+
+'2020-10-15 21:27:35
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT plan FROM owners WHERE owner_id = 'undefined'"
+}
+[object Object]
+
+'2020-10-15 21:27:35
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT plan FROM owners WHERE owner_id = 'undefined'"
+}
+[object Object]
+
+'2020-10-15 21:28:35
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT plan FROM owners WHERE owner_id = 'undefined'"
+}
+[object Object]
+
+'2020-10-15 21:32:58
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT plan FROM owners WHERE owner_id = 'undefined'"
+}
+[object Object]
+
+'2020-10-16 07:49:49
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT plan FROM owners WHERE owner_id = 'undefined'"
+}
+[object Object]
+
+'2020-10-16 07:50:37
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT plan FROM owners WHERE owner_id = 'undefined'"
+}
+[object Object]
+
+'2020-10-16 10:00:51
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT plan FROM owners WHERE owner_id = 'undefined'"
+}
+[object Object]
+
+'2020-10-16 10:02:53
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT plan FROM owners WHERE owner_id = 'undefined'"
+}
+[object Object]
+
+'2020-10-16 10:04:11
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT plan FROM owners WHERE owner_id = 'undefined'"
+}
+[object Object]
+
+'2020-10-16 10:06:11
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT plan FROM owners WHERE owner_id = 'undefined'"
+}
+[object Object]
+
+'2020-10-16 10:06:41
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT plan FROM owners WHERE owner_id = 'undefined'"
+}
+[object Object]
+
+'2020-10-16 10:07:35
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT plan FROM owners WHERE owner_id = 'undefined'"
+}
+[object Object]
+
+'2020-10-16 10:48:35
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT plan FROM owners WHERE owner_id = 'undefined'"
+}
+[object Object]
+
+'2020-10-16 10:50:31
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT plan FROM owners WHERE owner_id = 'undefined'"
+}
+[object Object]
+
+'2020-10-16 10:51:51
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT plan FROM owners WHERE owner_id = 'undefined'"
+}
+[object Object]
+
+'2020-10-16 10:53:40
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT plan FROM owners WHERE owner_id = 'undefined'"
+}
+[object Object]
+
+'2020-10-16 11:08:53
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
+}
+[object Object]
+
+'2020-10-16 11:10:06
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = null AND file_id = '4_zc116088f5b87d73c742a0f11_f118ab23c513c749a_d20201016_m180932_c000_v0001074_t0025'"
+}
+[object Object]
+
+'2020-10-16 11:10:06
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = null AND file_id = '4_zc116088f5b87d73c742a0f11_f10910503787c64e2_d20201016_m144931_c000_v0001075_t0056'"
+}
+[object Object]
+
+'2020-10-16 11:10:06
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = null AND file_id = '4_zc116088f5b87d73c742a0f11_f1149d0d735f86398_d20201016_m180826_c000_v0001072_t0035'"
+}
+[object Object]
+
+'2020-10-16 11:10:06
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = null AND file_id = '4_zc116088f5b87d73c742a0f11_f1054a11078b3f577_d20201016_m151154_c000_v0001075_t0036'"
+}
+[object Object]
+
+'2020-10-16 11:10:06
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = null AND file_id = '4_zc116088f5b87d73c742a0f11_f1146525c806ed885_d20201016_m180852_c000_v0001075_t0009'"
+}
+[object Object]
+
+'2020-10-16 11:10:06
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = null AND file_id = '4_zc116088f5b87d73c742a0f11_f1178813be0ce05a5_d20201016_m144934_c000_v0001063_t0038'"
+}
+[object Object]
+
+'2020-10-16 11:10:06
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = null AND file_id = '4_zc116088f5b87d73c742a0f11_f101e3e1b2baa1c6d_d20201016_m151157_c000_v0001064_t0054'"
+}
+[object Object]
+
+'2020-10-16 11:14:53
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = null AND file_id = '4_zc116088f5b87d73c742a0f11_f1149d0d735f86398_d20201016_m180826_c000_v0001072_t0035'"
+}
+[object Object]
+
+'2020-10-16 11:14:54
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = null AND file_id = '4_zc116088f5b87d73c742a0f11_f1178813be0ce05a5_d20201016_m144934_c000_v0001063_t0038'"
+}
+[object Object]
+
+'2020-10-16 11:14:54
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = null AND file_id = '4_zc116088f5b87d73c742a0f11_f10910503787c64e2_d20201016_m144931_c000_v0001075_t0056'"
+}
+[object Object]
+
+'2020-10-16 11:14:54
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = null AND file_id = '4_zc116088f5b87d73c742a0f11_f118ab23c513c749a_d20201016_m180932_c000_v0001074_t0025'"
+}
+[object Object]
+
+'2020-10-16 11:14:54
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = null AND file_id = '4_zc116088f5b87d73c742a0f11_f101e3e1b2baa1c6d_d20201016_m151157_c000_v0001064_t0054'"
+}
+[object Object]
+
+'2020-10-16 11:14:54
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = null AND file_id = '4_zc116088f5b87d73c742a0f11_f1054a11078b3f577_d20201016_m151154_c000_v0001075_t0036'"
+}
+[object Object]
+
+'2020-10-16 11:14:54
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = null AND file_id = '4_zc116088f5b87d73c742a0f11_f1146525c806ed885_d20201016_m180852_c000_v0001075_t0009'"
+}
+[object Object]
+
+'2020-10-16 11:15:27
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = null AND file_id = '4_zc116088f5b87d73c742a0f11_f10910503787c64e2_d20201016_m144931_c000_v0001075_t0056'"
+}
+[object Object]
+
+'2020-10-16 11:15:27
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = null AND file_id = '4_zc116088f5b87d73c742a0f11_f1054a11078b3f577_d20201016_m151154_c000_v0001075_t0036'"
+}
+[object Object]
+
+'2020-10-16 11:15:27
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = null AND file_id = '4_zc116088f5b87d73c742a0f11_f118ab23c513c749a_d20201016_m180932_c000_v0001074_t0025'"
+}
+[object Object]
+
+'2020-10-16 11:15:27
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = null AND file_id = '4_zc116088f5b87d73c742a0f11_f1178813be0ce05a5_d20201016_m144934_c000_v0001063_t0038'"
+}
+[object Object]
+
+'2020-10-16 11:15:27
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = null AND file_id = '4_zc116088f5b87d73c742a0f11_f101e3e1b2baa1c6d_d20201016_m151157_c000_v0001064_t0054'"
+}
+[object Object]
+
+'2020-10-16 11:15:27
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = null AND file_id = '4_zc116088f5b87d73c742a0f11_f1149d0d735f86398_d20201016_m180826_c000_v0001072_t0035'"
+}
+[object Object]
+
+'2020-10-16 11:15:27
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = null AND file_id = '4_zc116088f5b87d73c742a0f11_f1146525c806ed885_d20201016_m180852_c000_v0001075_t0009'"
+}
+[object Object]
+
+'2020-10-16 11:17:24
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = null AND file_id = '4_zc116088f5b87d73c742a0f11_f1149d0d735f86398_d20201016_m180826_c000_v0001072_t0035'"
+}
+[object Object]
+
+'2020-10-16 11:17:24
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = null AND file_id = '4_zc116088f5b87d73c742a0f11_f1178813be0ce05a5_d20201016_m144934_c000_v0001063_t0038'"
+}
+[object Object]
+
+'2020-10-16 11:17:24
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = null AND file_id = '4_zc116088f5b87d73c742a0f11_f1054a11078b3f577_d20201016_m151154_c000_v0001075_t0036'"
+}
+[object Object]
+
+'2020-10-16 11:17:24
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = null AND file_id = '4_zc116088f5b87d73c742a0f11_f101e3e1b2baa1c6d_d20201016_m151157_c000_v0001064_t0054'"
+}
+[object Object]
+
+'2020-10-16 11:17:24
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = null AND file_id = '4_zc116088f5b87d73c742a0f11_f10910503787c64e2_d20201016_m144931_c000_v0001075_t0056'"
+}
+[object Object]
+
+'2020-10-16 11:17:24
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = null AND file_id = '4_zc116088f5b87d73c742a0f11_f1146525c806ed885_d20201016_m180852_c000_v0001075_t0009'"
+}
+[object Object]
+
+'2020-10-16 11:17:24
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = null AND file_id = '4_zc116088f5b87d73c742a0f11_f118ab23c513c749a_d20201016_m180932_c000_v0001074_t0025'"
+}
+[object Object]
+
 '

@@ -44,6 +44,16 @@
             "date": 1602702312351,
             "name": "logs/app/app-2020-10-14.log",
             "hash": "fb5ffc7c0faa8c10daa835b6497d5232"
+        },
+        {
+            "date": 1602785600418,
+            "name": "logs/app/app-2020-10-15.log",
+            "hash": "e69b1b15c2532c23de28f04b1556c9bc"
+        },
+        {
+            "date": 1602871806023,
+            "name": "logs/app/app-2020-10-16.log",
+            "hash": "147c01ea7cc97c6ec10e86565f0fa45f"
         }
     ]
 }

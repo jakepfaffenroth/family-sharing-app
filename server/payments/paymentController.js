@@ -212,29 +212,35 @@ module.exports = {
         newPriceId = price.id;
       }
     });
-
-    const updatedSubscription = await stripe.subscriptions.update(
-      customer.subscriptionId,
-      {
-        cancel_at_period_end: false,
-        items: [
-          {
-            id: subscription.items.data[0].id,
-            price: newPriceId,
-          },
-        ],
-      }
-    );
-
-    if (updatedSubscription) {
-      req.body.plan = lowercaseFirstLetter(
-        req.body.newPriceId.replace(' ', '')
+    try {
+      const updatedSubscription = await stripe.subscriptions.update(
+        customer.subscriptionId,
+        {
+          cancel_at_period_end: false,
+          items: [
+            {
+              id: subscription.items.data[0].id,
+              price: newPriceId,
+            },
+          ],
+        }
       );
-      req.body.customerId = customer.customerId;
-      savePlanToDb(req, res);
-    }
 
-    res.send(updatedSubscription);
+      if (updatedSubscription) {
+        req.body.plan = lowercaseFirstLetter(
+          req.body.newPriceId.replace(' ', '')
+        );
+        req.body.customerId = customer.customerId;
+        savePlanToDb(req, res);
+      }
+
+      res.send({ subUpdated: true, msg: 'none' });
+    } catch (err) {
+      console.log('err:', err);
+      if (err.message.toLowerCase().includes('no such subscription')) {
+        res.send({ subUpdated: false, msg: err.message });
+      }
+    }
   },
 
   paymentMethod: async (req, res) => {

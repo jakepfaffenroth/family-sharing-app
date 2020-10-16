@@ -34,7 +34,7 @@
                 :id="'menu-' + index"
                 @click.stop
               >
-                <drop-menu menu-type="imgMenu">
+                <base-drop-menu menu-type="imgMenu">
                   <template #btnLabel>
                     <svg
                       class="w-8 h-8 p-1 bg-gradient-to-r from-teal-400 to-purple-500 border border-white rounded-full shadow text-white"
@@ -65,7 +65,7 @@
                           userType === 'owner' &&
                           owner.ownerId
                       "
-                      class="img-menu-link"
+                      class="img-menu-link "
                       @click.stop="
                         $emit('delete-image', {
                           date,
@@ -80,7 +80,7 @@
                       Delete
                     </a>
                   </template>
-                </drop-menu>
+                </base-drop-menu>
               </div>
             </transition>
           </div>
@@ -104,7 +104,7 @@
     </div>
   </div>
 
-  <!-- <modal
+  <!-- <base-modal
     v-if="showSingleShareModal"
     :shareUrl="'example.com/&gid=1&pid=' + 'Picture Index (from pswp)'"
   /> -->
@@ -186,8 +186,8 @@ import PhotoSwipeUI_Default from 'photoswipe/dist/photoswipe-ui-default';
 import 'photoswipe/dist/photoswipe.css';
 import 'photoswipe/dist/default-skin/default-skin.css';
 import format from 'date-fns/format';
-import DropMenu from './DropMenu';
-// import Modal from './Modal';
+import BaseDropMenu from './BaseDropMenu';
+// import BaseModal from './BaseModal';
 import LazyLoadDirective from '../directives/LazyLoadDirective';
 
 export default {
@@ -195,8 +195,8 @@ export default {
     lazyload: LazyLoadDirective
   },
   components: {
-    DropMenu
-    // Modal
+    BaseDropMenu
+    // BaseModal
   },
   props: {
     owner: {

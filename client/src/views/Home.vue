@@ -1,58 +1,56 @@
 <template>
-  <div>
-    <div
-      v-show="isReadyToRender"
-      class="flex flex-col min-h-screen w-full px-2 py-2 sm:px-6 sm:py-4
-        xl:px-12 xl:py-6"
-    >
-      <!-- Header and Menu -->
-      <div class="flex flex-col sm:flex-row sm:justify-between">
-        <component
-          :is="user.typeMenu"
-          :owner="owner"
-          :guest="guest"
-          :usage="usage"
-          :sub-options="subOptions"
-          @sort-images="sortImages"
-        ></component>
-      </div>
+  <!-- Header and Menu -->
+  <component
+    :is="user.menuType"
+    :owner="owner"
+    :usage="usage"
+    @sort-images="sortImages"
+    @open-share-modal="isShareModalVisible = true"
+  ></component>
 
-      <!-- Image gallery -->
-      <gallery
-        :items="images"
-        :owner="owner"
-        :user-type="user.type"
-        @delete-image="showDeleteModal"
-      ></gallery>
+  <div v-if="owner.ownerId">
+    <!-- Image gallery -->
+    <home-gallery
+      :items="images"
+      :owner="owner"
+      :user-type="user.type"
+      @delete-image="showDeleteModal"
+    ></home-gallery>
 
-      <!-- Empty gallery  -->
-      <div
-        v-if="images.length === 0 && user.type === 'owner' && owner.ownerId"
-        id="empty-gallery"
-        class="uppy-select-files flex flex-grow justify-center rounded border-4 border-dashed border-gray-400 text-gray-500 hover:bg-gray-200 hover:text-gray-600 cursor-pointer transition-all duration-200 ease-in-out"
-      >
-        <p class="flex-grow self-center text-center text-2xl">
-          Upload some images!
-        </p>
-      </div>
-    </div>
+    <!-- Empty gallery  -->
+    <home-gallery-empty
+      v-show="images.length === 0 && user.type === 'owner' && owner.ownerId"
+      id="empty-gallery"
+      class="uppy-select-files"
+    ></home-gallery-empty>
 
     <!-- Uppy file uploader -->
-    <uppy
-      v-if="user.type === 'owner'"
+    <!-- Don't load until owner Info is fetched -->
+    <home-uploader
+      v-if="user.type === 'owner' && owner.ownerId"
       :key="forceReloadKey"
       :owner="owner"
       @update-images="updateImages"
-    ></uppy>
+    ></home-uploader>
 
-    <delete-modal
+    <home-modal-share
+      v-show="isShareModalVisible"
+      :share-url="`${server}/${owner.guestId}/guest`"
+      @close-share-modal="isShareModalVisible = !isShareModalVisible"
+    />
+
+    <home-modal-delete-image
       v-show="isDeleteModalVisible"
       :img-delete-info="imgDeleteInfo"
-      @toggle-form="isDeleteModalVisible = !isDeleteModalVisible"
+      @close-delete-modal="isDeleteModalVisible = !isDeleteModalVisible"
       @delete-image="deleteImage"
-    ></delete-modal>
+    ></home-modal-delete-image>
   </div>
 
+  <!-- Skeleton while content loads -->
+  <div v-else class="flex flex-wrap">
+    <base-skeleton-image v-for="n in 10" :key="n"></base-skeleton-image>
+  </div>
   <!-- <router-view></router-view> -->
 </template>
 
@@ -71,28 +69,43 @@ import {
 import { useRoute } from 'vue-router';
 import axios from 'axios';
 
-import ColorfulLogo from '../components/ColorfulLogo';
-import OwnerMenu from '../components/OwnerMenu';
-import GuestMenu from '../components/GuestMenu';
-import Uppy from '../components/Uppy';
-// import VuePictureSwipe from './components/VuePictureSwipe';
-import DeleteModal from '../components/DeleteModal';
+import BaseColorfulLogo from '../components/BaseColorfulLogo';
+// import HomeUploader from '../components/HomeUploader';
+import HomeGallery from '../components/HomeGallery';
+import HomeGalleryEmpty from '../components/HomeGalleryEmpty';
+import BaseSkeletonImage from '../components/BaseSkeletonImage';
+import HomeMenuOwner from '../components/HomeMenuOwner';
+// import HomeMenuGuest from '../components/HomeMenuGuest';
+// import HomeModalDeleteImage from '../components/HomeModalDeleteImage';
 
-// const Gallery = defineAsyncComponent(() =>
-//   import('./components/VuePictureSwipe.vue')
+// const HomeGallery = defineAsyncComponent(() =>
+//   import('../components/HomeGallery')
 // );
+const HomeUploader = defineAsyncComponent(() =>
+  import('../components/HomeUploader')
+);
+const HomeMenuGuest = defineAsyncComponent(() =>
+  import('../components/HomeMenuGuest')
+);
+const HomeModalShare = defineAsyncComponent(() =>
+  import('../components/HomeModalShare')
+);
+const HomeModalDeleteImage = defineAsyncComponent(() =>
+  import('../components/HomeModalDeleteImage')
+);
 
 export default {
   name: 'Home',
   components: {
-    ColorfulLogo,
-    OwnerMenu,
-    GuestMenu,
-    Uppy,
-    Gallery: defineAsyncComponent(() =>
-      import('../components/VuePictureSwipe.vue')
-    ),
-    DeleteModal
+    BaseColorfulLogo,
+    BaseSkeletonImage,
+    HomeMenuOwner,
+    HomeMenuGuest,
+    HomeUploader,
+    HomeGallery,
+    HomeGalleryEmpty,
+    HomeModalShare,
+    HomeModalDeleteImage
   },
   props: {
     owner: {
@@ -109,44 +122,22 @@ export default {
     }
   },
   setup(props) {
-    console.log('in Home');
     const route = useRoute();
     const server = process.env.VUE_APP_SERVER;
-    let isReadyToRender = ref(false);
-    let isDeleteModalVisible = ref(false);
-    let forceReloadKey = ref(0);
-
     const { owner, images, usage } = toRefs(props);
-    // const images = ref(props.images);
-    // const usage = ref(props.usage).value;
-    const user = reactive({ type: null, typeMenu: null });
-    const userType = inject('userType');
-    // provide('images', images);
-    // provide('userType', user.type);
+    const user = reactive({ type: null, menuType: null });
 
-    // If logged in as an owner, directs to owner home.
-    // If NOT logged in as owner, but has a guestId (from owner's share URL)
-    // then direct to owner's guest page.
-    // if (images.value) {
-    // }
-    // if (ownerId) {
-    //   renderUserType('owner');
-    // }
-    // if (guestId && !ownerId) {
-    //   renderUserType('guest');
-    // }
+    // App functionality and menu determined by user type
+    const userType = inject('userType');
+    let isShareModalVisible = ref(false);
     renderUserType(userType);
-    isReadyToRender.value = true;
 
     async function renderUserType(userType) {
-      // const response = await getOwnerData(userType);
       user.type = userType;
-      user.typeMenu =
-        userType === 'owner' ? markRaw(OwnerMenu) : markRaw(GuestMenu);
-      // images.value = images.value.reverse();
+      user.menuType =
+        userType === 'owner' ? markRaw(HomeMenuOwner) : markRaw(HomeMenuGuest);
       sortImages('captureTime');
     }
-    // ------ IMAGE HANDLING --------
 
     // Prevent right clicking images
     document.addEventListener('contextmenu', event => {
@@ -155,22 +146,7 @@ export default {
       }
     });
 
-    const nuke = () => {
-      const imagesArr = images.value;
-      images.value = [];
-
-      forceReloadKey.value++; //force Uppy to reload
-
-      axios.post(`${server}/files/delete-image`, {
-        images: imagesArr.map(x => {
-          const { fileId, fileName } = x;
-          return { fileId, fileName };
-        }),
-        ownerId: owner.ownerId
-      });
-    };
-    provide('nuke', nuke);
-
+    // Update gallery after new images uplaoded
     function updateImages(fileInfo) {
       const { fileId, filename, src, thumbnail, uploadTime } = fileInfo;
       const newImg = {
@@ -188,6 +164,7 @@ export default {
     }
     provide('updateImages', updateImages);
 
+    // Sorting logic
     function sortImages(sortParameter) {
       if (sortParameter === 'reverse') {
         images.value.reverse();
@@ -227,6 +204,8 @@ export default {
     }
     provide('sortImages', sortImages);
 
+    // Delete individual images
+    let isDeleteModalVisible = ref(false);
     let imgDeleteInfo = ref(null);
 
     function showDeleteModal(imgInfo) {
@@ -250,19 +229,38 @@ export default {
       axios.post(`${server}/files/delete-image`, { fileId, fileName, ownerId });
     }
 
+    // Nuke images for dev purposes
+    let forceReloadKey = ref(0); // Force reload after nuking
+    const nuke = () => {
+      console.log('owner.ownerId:', owner.ownerId);
+      const imagesArr = images.value;
+      images.value = [];
+
+      forceReloadKey.value++; //force Uppy to reload
+
+      axios.post(`${server}/files/delete-image`, {
+        images: imagesArr.map(x => {
+          const { fileId, fileName } = x;
+          return { fileId, fileName };
+        }),
+        ownerId: owner.ownerId
+      });
+    };
+    provide('nuke', nuke);
+
     return {
-      user,
-      isReadyToRender,
-      isDeleteModalVisible,
-      forceReloadKey,
       server,
-      nuke,
+      user,
+      usage,
       updateImages,
       sortImages,
+      isShareModalVisible,
+      isDeleteModalVisible,
       showDeleteModal,
       imgDeleteInfo,
       deleteImage,
-      usage
+      nuke,
+      forceReloadKey
     };
   },
   computed: {
@@ -304,27 +302,10 @@ export default {
 
 .image {
   @apply flex h-10 object-contain transition duration-200 ease-in-out;
-  /* flex: auto;
-  height: 250px;
-  min-width: 100px;
-  object-fit: contain;
-  transition: 0.2s ease-in-out; */
 }
 
 .image-overlay {
   @apply absolute top-0 left-0 w-full h-full opacity-0;
-  /* position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  opacity: 0; */
-}
-.delete-btn {
-  @apply absolute top-2 right-2 px-2 py-1 text-xs;
-  /* position: absolute;
-  top: 10px;
-  right: 10px; */
 }
 
 .text-input {

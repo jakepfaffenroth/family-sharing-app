@@ -1,6 +1,6 @@
 <template>
   <transition name="slide-fade">
-    <modal @close-modal="$emit('toggle-form')">
+    <base-modal @close-modal="$emit('toggle-form')">
       <div class="text-white">
         <h3 class="text-xl">
           Subscription methods
@@ -77,19 +77,19 @@
           </form>
         </div>
       </div>
-    </modal>
+    </base-modal>
   </transition>
 </template>
 
 <script>
 import axios from 'axios';
-import Modal from './Modal';
+import BaseModal from './BaseModal';
 
 import { reactive, isReactive, onMounted } from 'vue';
 
 export default {
   components: {
-    Modal
+    BaseModal
   },
   props: { owner: { type: Object, default: null } },
   emits: ['toggle-form'],

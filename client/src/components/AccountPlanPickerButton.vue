@@ -1,14 +1,20 @@
 <template>
-  <button :class="btn.style" :disabled="btn.isCurrent" @click="select">
+  <base-button-teal
+    class="mt-4"
+    :class="btn.style"
+    :disabled="btn.isCurrent"
+    @click="select"
+  >
     {{ btn.text }}
-  </button>
+  </base-button-teal>
 </template>
 
 <script>
+import BaseButtonTeal from './BaseButtonTeal';
 import { reactive, inject, computed, onUpdated, watch } from 'vue';
 
 export default {
-  // inject: ['planDetails'],
+  components: { BaseButtonTeal },
   props: {
     currentPlan: { type: String, default: '' },
     btnValue: { type: String, default: '' },
@@ -18,21 +24,18 @@ export default {
   setup(props, context) {
     const { btnValue, currentPlan } = reactive(props);
 
-    const baseStyle = 'w-36 mt-4 px-3 py-1 text-center';
-    const unselectedStyle =
-      ' bg-teal-600 rounded shadow hover:bg-teal-500 hover:shadow-lg transition duration-200 ease-in-out';
-    const currentPlanStyle =
-      ' italic cursor-default shadow-none transition-none text-purple-400 font-semibold';
+    const selectedStyle = 'selected';
+    const currentPlanStyle = 'current';
 
     const btn = reactive({
-      style: baseStyle + unselectedStyle,
+      style: null,
       selected: false,
       current: false,
       text: '',
       set isCurrent(currentPlan) {
         if (currentPlan) {
           this.current = true;
-          this.style = baseStyle + currentPlanStyle;
+          this.style = currentPlanStyle;
           this.text = 'Current Plan';
         } else {
           this.text = this.selected ? 'Selected' : 'Select';
@@ -52,7 +55,7 @@ export default {
     );
 
     function select() {
-      btn.style = btn.style.replaceAll('teal', 'purple');
+      btn.style = selectedStyle;
       btn.selected = true;
       btn.isCurrent = false;
       context.emit('reset-other-btns', props.btnValue);
@@ -61,7 +64,7 @@ export default {
 
     function toggleSelected() {
       if (!btn.current) {
-        btn.style = btn.style.replaceAll('purple', 'teal');
+        btn.style = null;
         btn.selected = !btn.selected;
       }
     }
@@ -75,7 +78,11 @@ export default {
 </script>
 
 <style scoped>
-.btn {
-  @apply w-36 mt-4 px-3 py-1 bg-teal-600 text-center rounded shadow hover:bg-teal-500 hover:shadow-lg transition duration-200 ease-in-out;
+.current {
+  @apply italic cursor-default bg-transparent hover:bg-transparent shadow-none transition-none text-purple-400 font-semibold;
+}
+
+.selected {
+  @apply bg-purple-600 hover:bg-purple-500;
 }
 </style>

@@ -154,6 +154,7 @@ module.exports.choosePlan = async (req, res) => {
   }
 };
 
+// For GUESTS - fetches owner info and images
 module.exports.getOwner = async (req, res) => {
   try {
     db.task(async (t) => {
