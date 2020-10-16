@@ -110,15 +110,17 @@ export default {
   props: {
     owner: {
       type: Object,
-      default: () => {
-        return {};
-      }
+      default: null
     },
     images: {
       type: Array,
       default: () => {
         return [];
       }
+    },
+    usage: {
+      type: Object,
+      default: null
     }
   },
   setup(props) {
@@ -126,7 +128,7 @@ export default {
     const server = process.env.VUE_APP_SERVER;
     const { owner, images, usage } = toRefs(props);
     const user = reactive({ type: null, menuType: null });
-
+    
     // App functionality and menu determined by user type
     const userType = inject('userType');
     let isShareModalVisible = ref(false);
@@ -251,7 +253,6 @@ export default {
     return {
       server,
       user,
-      usage,
       updateImages,
       sortImages,
       isShareModalVisible,

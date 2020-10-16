@@ -1,7 +1,7 @@
 <template>
   <transition name="slide-fade">
     <div
-      class="fixed inset-0 flex items-end sm:items-center sm:justify-center bg-black bg-opacity-25"
+      class="fixed inset-0 flex items-end sm:items-center sm:justify-center bg-black bg-opacity-50"
       @click.self="$emit('close-modal')"
       @keydown.escape="$emit('close-modal')"
     >

@@ -1,14 +1,15 @@
 <template>
-  <base-modal @close-modal="$emit('close-delete-modal')">
+  <base-modal v-if="imgDeleteInfo" @close-modal="$emit('close-delete-modal')">
     <template #header>
       <h3>
         Are you sure you want to delete this image?
       </h3>
     </template>
     <template #content>
-      <p class="mb-10">
+      <p class="mb-6">
         It can't be undone!
       </p>
+      <img class="mb-10 h-56" :src="imgDeleteInfo.thumb" />
     </template>
     <template #footer>
       <base-button-cancel @click.prevent="$emit('close-delete-modal')">

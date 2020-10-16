@@ -73,6 +73,7 @@
                           smallFileId: item.smallFileId,
                           fileName: item.fileName,
                           ownerId: owner.ownerId,
+                          thumb:item.thumbnail,
                           index
                         })
                       "

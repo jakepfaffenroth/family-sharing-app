@@ -157,7 +157,7 @@ export default {
         method: 'post',
         data: id
       });
-      
+
       if (userType === 'owner' && !response.data.isLoggedIn) {
         window.location = `${server}/login`;
       }
