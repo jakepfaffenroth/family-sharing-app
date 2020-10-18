@@ -1,5 +1,3 @@
-/* eslint-disable */
-
 <template>
   <div
     id="my-gallery"
@@ -189,7 +187,7 @@ import 'photoswipe/dist/default-skin/default-skin.css';
 import format from 'date-fns/format';
 import BaseDropMenu from './BaseDropMenu';
 // import BaseModal from './BaseModal';
-import LazyLoadDirective from '../directives/LazyLoadDirective';
+import LazyLoadDirective from '../utils/LazyLoadDirective';
 
 export default {
   directives: {
