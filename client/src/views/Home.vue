@@ -6,6 +6,7 @@
     :usage="usage"
     @sort-images="sortImages"
     @open-share-modal="isShareModalVisible = true"
+    @download-zip="downloadZip"
   ></component>
 
   <div v-if="owner.ownerId">
@@ -52,9 +53,11 @@
     <base-skeleton-image v-for="n in 10" :key="n"></base-skeleton-image>
   </div>
   <!-- <router-view></router-view> -->
+
+  <!-- <home-download-zip ref="zip" :images="images" class="hidden" /> -->
 </template>
 
-<script scoped>
+<script>
 import {
   provide,
   ref,
@@ -77,7 +80,6 @@ import BaseSkeletonImage from '../components/BaseSkeletonImage';
 import HomeMenuOwner from '../components/HomeMenuOwner';
 // import HomeMenuGuest from '../components/HomeMenuGuest';
 // import HomeModalDeleteImage from '../components/HomeModalDeleteImage';
-
 // const HomeGallery = defineAsyncComponent(() =>
 //   import('../components/HomeGallery')
 // );
@@ -90,9 +92,14 @@ const HomeMenuGuest = defineAsyncComponent(() =>
 const HomeModalShare = defineAsyncComponent(() =>
   import('../components/HomeModalShare')
 );
+// const HomeDownloadZip = defineAsyncComponent(() =>
+//   import('../components/HomeDownloadZip')
+// );
 const HomeModalDeleteImage = defineAsyncComponent(() =>
   import('../components/HomeModalDeleteImage')
 );
+
+import downloader from '../utils/downloadZip';
 
 export default {
   name: 'Home',
@@ -106,6 +113,8 @@ export default {
     HomeGalleryEmpty,
     HomeModalShare,
     HomeModalDeleteImage
+    // HomeDownloadZip
+    // downloadZip
   },
   props: {
     owner: {
@@ -128,7 +137,7 @@ export default {
     const server = process.env.VUE_APP_SERVER;
     const { owner, images, usage } = toRefs(props);
     const user = reactive({ type: null, menuType: null });
-    
+
     // App functionality and menu determined by user type
     const userType = inject('userType');
     let isShareModalVisible = ref(false);
@@ -206,6 +215,12 @@ export default {
     }
     provide('sortImages', sortImages);
 
+    // Download Zip file
+    const toast = inject('toast');
+    function downloadZip() {
+      downloader(images.value, toast);
+    }
+
     // Delete individual images
     let isDeleteModalVisible = ref(false);
     let imgDeleteInfo = ref(null);
@@ -261,7 +276,8 @@ export default {
       imgDeleteInfo,
       deleteImage,
       nuke,
-      forceReloadKey
+      forceReloadKey,
+      downloadZip
     };
   },
   computed: {

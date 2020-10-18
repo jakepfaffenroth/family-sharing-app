@@ -189,7 +189,7 @@ export default {
 
     // Define default toast configuration and provide
     const toast = new Notyf({
-      position: { x: 'right', y: 'top' },
+      position: { x: 'right', y: 'bottom' },
       duration: 2000,
       types: [
         {

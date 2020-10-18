@@ -1,6 +1,7 @@
 <template>
   <div ref="parent" class="h-screen p-6">
     <div
+      v-if="planDetails"
       id="price-form"
       class="flex justify-center w-full h-auto mx-auto my-6 overflow-hidden bg-white rounded-t-lg shadow-lg dark:bg-gray-800 sm:rounded-lg sm:w-4/5 text-white font-base font-thin overflow-y-auto"
       @close-modal="closeModal"
@@ -120,9 +121,7 @@ export default {
   props: {
     planDetails: {
       type: Object,
-      default: () => {
-        return {};
-      }
+      default: null
     }
   },
   emits: ['confirm-plan-change', 'close-modal', 'close-plan-change'],
@@ -180,6 +179,7 @@ export default {
     const getCurrentPlan = inject('getCurrentPlan');
 
     getCurrentPlan();
+    console.log('props.planDetails:', props.planDetails);
 
     function closeModal() {
       context.emit('close-plan-change');

@@ -1,10 +1,3 @@
-<template>
-  <div></div>
-  <!-- <p v-if="downloadProgress" >
-    {{ downloadProgress }}
-  </p> -->
-</template>
-
 <script>
 import JSZip from 'jszip';
 import axios from 'axios';
@@ -19,7 +12,8 @@ export default {
     let images = inject('images').value;
     const downloadProgress = ref(null);
 
-    const downloadZip = async () => {
+    const download = async () => {
+      console.log('test in downloadZip');
       if (!images || images.length === 0) {
         return;
       }
@@ -154,9 +148,8 @@ export default {
     return {
       // images,
       downloadProgress,
-      downloadZip
+      download
     };
   }
 };
 </script>
-

@@ -11,12 +11,28 @@
           Upload Files
         </base-button-purple>
         <base-drop-menu>
+          <template #btnLabel>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="m-auto mt-1 h-5 w-5 text-white"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M19 9l-7 7-7-7"
+              />
+            </svg>
+          </template>
           <template #listItems>
             <div class="p-1">
               <a class="main-menu-link" @click="$emit('open-share-modal')">
                 Share
               </a>
-              <a class="main-menu-link" @click="$refs.zip.downloadZip()">
+              <a class="main-menu-link" @click="$emit('download-zip')">
                 Download all photos
               </a>
               <router-link
@@ -50,11 +66,12 @@
                   ></div>
                 </div>
               </div>
-              <a
+              <router-link
+                :to="{ name: 'account', params: { goToChangePlan: true } }"
                 class="main-menu-link text-purple-500 font-semibold text-center"
               >
                 Get more storage
-              </a>
+              </router-link>
             </div>
           </template>
         </base-drop-menu>
@@ -63,7 +80,7 @@
     </template>
   </base-menu>
 
-  <home-download-zip ref="zip" :images="images" class="hidden" />
+  <!-- <home-download-zip ref="zip" :images="images" class="hidden" /> -->
 </template>
 
 <script>
@@ -77,15 +94,15 @@ import HomeMenuImageSorter from './HomeMenuImageSorter';
 import Account from '../views/Account';
 // import HomeModalShare from './HomeModalShare';
 
-const HomeDownloadZip = defineAsyncComponent(() => import('./HomeDownloadZip'));
+// const HomeDownloadZip = defineAsyncComponent(() => import('./HomeDownloadZip'));
 
 export default {
   components: {
     BaseMenu,
     BaseDropMenu,
     BaseButtonPurple,
-    HomeMenuImageSorter,
-    HomeDownloadZip
+    HomeMenuImageSorter
+    // HomeDownloadZip
   },
   inject: ['images', 'nuke', 'toast'],
   props: {
@@ -97,7 +114,7 @@ export default {
       }
     }
   },
-  emits: ['sort-images', 'open-share-modal'],
+  emits: ['sort-images', 'open-share-modal', 'download-zip'],
   data() {
     return {
       server: process.env.VUE_APP_SERVER,
@@ -158,7 +175,7 @@ export default {
         message: this.toastContent
       });
     },
-
+    // ! Zip download is broken
     downloadZip() {
       this.$refs.zip.downloadZip;
     },

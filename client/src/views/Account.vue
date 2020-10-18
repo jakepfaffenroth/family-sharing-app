@@ -4,11 +4,17 @@
   <transition appear name="slide" mode="out-in">
     <component
       :is="accountView"
+      v-if="planDetails"
+      :owner="owner"
+      :usage="usage"
       :plan-details="planDetails"
       @open-plan-change="openPlanChange"
       @close-plan-change="closePlanChange"
       @confirm-plan-change="confirmPlanChange"
     ></component>
+    <div v-else class="mx-auto mt-6 text-xl text-gray-900">
+      Loading...
+    </div>
   </transition>
 </template>
 
@@ -38,13 +44,14 @@ export default {
   props: {
     owner: {
       type: Object,
-      default: () => {
-        return {};
-      }
+      default: null
+    },
+    usage: {
+      type: Object,
+      default: null
     }
   },
   setup(props) {
-    console.log('in Account');
     const parent = ref(null);
     const accountView = shallowRef(AccountSummary);
     const route = useRoute();
@@ -53,13 +60,19 @@ export default {
     const toast = inject('toast');
 
     const { owner } = reactive(props);
+    const { goToChangePlan } = route.params;
     const elementClasses = reactive({});
-    let planDetails = ref({});
+    let planDetails = ref(null);
 
     elementClasses.planModal = 'invisible opacity-0';
     elementClasses.pricesForm = 'hidden opacity-0';
 
-    getCurrentPlan(owner.ownerId);
+    onBeforeMount(async () => {
+      await getCurrentPlan(owner.ownerId);
+
+      // Open straight into plan picker if goToChangePlan is true
+      goToChangePlan ? openPlanChange() : null;
+    });
 
     async function getCurrentPlan() {
       const response = await axios.post(
@@ -69,49 +82,17 @@ export default {
         }
       );
       planDetails.value = response.data;
-      console.log('planDetails.value:', planDetails.value);
       // return response.data;
     }
     provide('getCurrentPlan', getCurrentPlan);
 
-    function changeModalBtns(currentPlan) {
-      const btn = document.querySelector(
-        `#${currentPlan.toLowerCase().replace(' ', '-')} button`
-      );
-
-      btn.innerText = 'Current Plan';
-      btn.classList.remove('transition', 'plan-btn');
-      btn.classList.add(
-        'italic',
-        'cursor-default',
-        'shadow-none',
-        'transition-none',
-        'text-purple-400',
-        'font-semibold'
-      );
-      btn.disabled = 'true';
-    }
-
-    const showAccountSummary = ref(true);
-
     function openPlanChange() {
       accountView.value = AccountPlanPicker;
-
-      // router.push('account-plan-picker');
-
-      // setTimeout(() => {
-      //   showAccountSummary.value = false;
-      // }, 300);
     }
 
     function closePlanChange() {
       accountView.value = AccountSummary;
-      // First scroll up to account summary, then go 'back' in navigation history
-      // showAccountSummary.value = true;
       window.scrollTo({ top: 0, behavior: 'smooth' });
-      // setTimeout(() => {
-      //   router.go(-1);
-      // }, 500);
     }
 
     async function confirmPlanChange(newPriceId) {
@@ -122,7 +103,6 @@ export default {
           newPriceId: newPriceId
         }
       );
-      console.log('response.data:', response.data);
       const data = response.data;
       if (
         !data.subUpdated &&
@@ -212,70 +192,15 @@ export default {
       }
     }
 
-    // Show a spinner on subscription submission
-    function changeLoadingStatePrices(isLoading) {
-      if (isLoading) {
-        elementClasses.btnText = 'hidden';
-        elementClasses.loading = '';
-        // document.querySelector('#button-text').classList.add('hidden');
-        // document.querySelector('#loading').classList.remove('hidden');
-
-        // document.querySelector('#btn-basic').classList.add('invisible');
-        // document.querySelector('#btn-premium').classList.add('invisible');
-        // document.querySelector('#btn-premium-plus').classList.add('invisible');
-        if (document.getElementById('confirm-price-change-cancel')) {
-          elementClasses.confirmPriceChangeCancel = 'invisible';
-          // document
-          //   .getElementById('confirm-price-change-cancel')
-          //   .classList.add('invisible');
-        }
-      } else {
-        elementClasses.btnText = '';
-        elementClasses.loading = 'hidden';
-        // document.querySelector('#button-text').classList.remove('hidden');
-        // document.querySelector('#loading').classList.add('hidden');
-
-        elementClasses.btnBasic = '';
-        elementClasses.btnPremium = '';
-        elementClasses.btnPremiumPlus = '';
-        // document.querySelector('#btn-basic').classList.remove('invisible');
-        // document.querySelector('#btn-premium').classList.remove('invisible');
-        // document
-        //   .querySelector('#btn-premium-plus')
-        //   .classList.remove('invisible');
-        if (document.getElementById('confirm-price-change-cancel')) {
-          elementClasses.confirmPriceChangeCancel = '';
-          elementClasses.confirmPriceChangeSubmit = '';
-          // document
-          //   .getElementById('confirm-price-change-cancel')
-          //   .classList.remove('invisible');
-          // document
-          //   .getElementById('confirm-price-change-submit')
-          //   .classList.remove('invisible');
-        }
-      }
-    }
-
-    // Shows the cancellation response
-    function subscriptionCancelled(isSubCancelled) {
-      elementClasses.subscriptionCancelled = '';
-      elementClasses.subscriptionSettings = 'hidden';
-      // document
-      //   .querySelector('#subscription-cancelled')
-      //   .classList.remove('hidden');
-      document.querySelector('#subscription-settings').classList.add('hidden');
-    }
-
     return {
       accountView,
       parent,
-      showAccountSummary,
       openPlanChange,
       closePlanChange,
       confirmPlanChange,
       cancelSubscription,
       elementClasses,
-      planDetails
+      planDetails,
     };
   }
 };
