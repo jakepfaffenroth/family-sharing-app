@@ -1,20 +1,21 @@
 .DS_Store
 node_modules
 /dist
-
 # local env files
 .env*
 .env.*.local
 *.yaml
 
 # Log files
+*.log*
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 populateGuestIds*
 ngrok
-server/logs/error.log
+server/logs/
+.*audit.json
 
 # Local config files
 .nova*

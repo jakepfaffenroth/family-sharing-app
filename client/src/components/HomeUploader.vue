@@ -1,9 +1,13 @@
 <template>
   <div id="drop-area" />
+  <!-- <div v-if="owner.ownerId" id="drop-area" />
+  <div v-else>
+    Loading...
+  </div> -->
 </template>
 
 <script>
-import { inject, onMounted } from 'vue';
+import { reactive, inject, onMounted } from 'vue';
 import Uppy from '@uppy/core';
 import Dashboard from '@uppy/dashboard';
 import EmptyDashboard from '@uppy/dashboard';
@@ -25,18 +29,20 @@ export default {
   emits: ['update-images'],
   setup(props, context) {
     const toast = inject('toast');
+    // const { owner } = reactive(props);
+    const owner = reactive(inject('owner'));
 
     const uppy = new Uppy({
       meta: {
-        ownerId: props.owner.ownerId,
-        guestId: props.owner.guestId
+        ownerId: owner.ownerId,
+        guestId: owner.guestId
       },
       // logger: Uppy.debugLogger,
       autoProceed: false,
       restrictions: {
         allowedFileTypes: ['image/*'],
         // file size limit is 100mb for premium users, 10mb for basic users
-        maxFileSize: props.owner.premiumUser ? 1048576 * 100 : 1048576 * 10
+        maxFileSize: owner.premiumUser ? 1048576 * 100 : 1048576 * 10
       },
       onBeforeUpload: () => {
         uppy.getPlugin('Dashboard:StatusBar').setOptions({
@@ -55,12 +61,12 @@ export default {
 
       uppy.use(Dashboard, {
         target: '#drop-area',
-        trigger: '.uppy-select-files', // Defined in App.vue
+        trigger: '.uppy-select-files', // Upload Button and HomeEmptyGallery.vue
         closeModalOnClickOutside: true,
         theme: 'auto',
         inline: false,
         showProgressDetails: true,
-        note: props.owner.premiumUser ? premiumRestrictions : basicRestrictions,
+        note: owner.premiumUser ? premiumRestrictions : basicRestrictions,
         proudlyDisplayPoweredByUppy: false,
         locale: {
           strings: {
@@ -75,9 +81,12 @@ export default {
       //   target: '#empty-gallery',
       //   trigger: '.uppy-select-files', // Defined in App.vue
       //   closeModalOnClickOutside: true,
-      //   theme: 'auto',
+      //   theme: 'light',
       //   inline: true,
+      //   width: 1000,
+      //   height: 550,
       //   showProgressDetails: true,
+      //   proudlyDisplayPoweredByUppy: false,
       //   locale: {
       //     strings: {
       //       complete: 'Upload complete (You can leave this page)'
@@ -103,18 +112,12 @@ export default {
       method: 'post',
       fieldName: 'file',
       headers: {
-        id: props.owner.ownerId
+        id: owner.ownerId
       },
       bundle: false,
       timeout: 0,
       limit: 6
     });
-
-    const rws = new ReconnectingWebSocket(process.env.VUE_APP_WSS);
-
-    rws.onclose = () => {
-      console.log('WebSocket is closed.');
-    };
 
     uppy.on('file-added', async file => {
       uppy.setFileMeta(file.id, { uppyFileId: file.id });
@@ -124,12 +127,18 @@ export default {
       const files = await uppy.getFiles();
       axios.post(`${process.env.VUE_APP_SERVER}/files/initialize-upload`, {
         initializeUpload: true,
-        ownerId: props.owner.ownerId,
-        guestId: props.owner.guestId,
+        ownerId: owner.ownerId,
+        guestId: owner.guestId,
         fileCount: files.length,
         sampleImg: files[0].data.name
       });
     });
+
+    const rws = new ReconnectingWebSocket(process.env.VUE_APP_WSS);
+
+    rws.onclose = () => {
+      console.log('WebSocket is closed.');
+    };
 
     rws.onerror = error => {
       console.log('WebSocket error:', error);

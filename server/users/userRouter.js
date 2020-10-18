@@ -6,6 +6,7 @@ const guestController = require('./guestController');
 
 // Owner routers
 router.post('/create-owner', ownerController.create);
+router.post('/choose-plan', ownerController.choosePlan)
 router.post('/get-owner', ownerController.getOwner);
 
 // Guest routers

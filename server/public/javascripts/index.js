@@ -1,7 +1,6 @@
-import { signupModal, loginModal } from './home.js';
-import {priceToggle} from './pricing.js'
+// import { signupModal, loginModal } from './home.js';
+import { priceToggle } from './pricing.js';
 
-priceToggle()
-signupModal();
-loginModal();
-
+priceToggle();
+// signupModal();
+// loginModal();

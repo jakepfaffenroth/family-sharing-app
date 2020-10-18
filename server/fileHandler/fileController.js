@@ -16,7 +16,7 @@ module.exports.b2Auth = async (req, res, next) => {
   let credentials;
   axios
     .post(
-      `https://api.backblazeb2.com/b2api/v2/b2_authorize_account`,
+      'https://api.backblazeb2.com/b2api/v2/b2_authorize_account',
       {},
       {
         headers: { Authorization: 'Basic ' + encodedBase64 },
@@ -36,7 +36,7 @@ module.exports.b2Auth = async (req, res, next) => {
       success('B2 credentials retrieved');
       next();
     })
-    .catch(function (err) {
+    .catch((err) => {
       error('err: ', err.response.data); // an error occurred
     });
 };
@@ -83,7 +83,7 @@ module.exports.deleteImage = async (req, res, next) => {
           image
         );
       });
-      success('File was successfully removed from db');
+      success('File was removed from db');
       // res.end('File successfully deleted');
     } catch (err) {
       error('Image db deletion error:\n', err);
@@ -109,7 +109,7 @@ module.exports.deleteImage = async (req, res, next) => {
         },
         { headers: { Authorization: credentials.authorizationToken } }
       );
-      success('File was successfully deleted from B2');
+      verbose('File was deleted from B2');
     } catch (err) {
       error('Error deleting file from B2:', err);
       if (err.response.data.code !== 'file_not_present') {
@@ -161,7 +161,7 @@ module.exports.download = async (req, res) => {
       const destination = fs.createWriteStream(saveToPath);
 
       source.on('end', function () {
-        success('File successfully downloaded');
+        success('File downloaded');
         res.send(`Success - ${fileName} downloaded`); // successful response
       });
       source.pipe(destination);
@@ -196,7 +196,6 @@ module.exports.imgCompressor = async (req, res, next) => {
     'SELECT plan FROM owners WHERE owner_id = ${id}',
     req.headers
   );
-
   plan === null ? console.log('no owner found...') : null;
 
   const credentials = res.locals.credentials;
@@ -222,13 +221,15 @@ module.exports.imgCompressor = async (req, res, next) => {
   );
 
   busboy.on('file', async (fieldname, file, filename, encoding, mimetype) => {
-    info('File [' + filename + '] Started');
+    info('[' + filename + '] Started');
 
     fields.filename = filename;
     const chunks = [];
 
+    console.log('plan:', plan);
     // If premium user, fullRes image chunks are streamed straight into an array
-    if (plan === /premium/) {
+    if (plan.includes('premium')) {
+      console.log('premium 1');
       file.on('data', (data) => {
         chunks.push(data);
       });
@@ -245,7 +246,8 @@ module.exports.imgCompressor = async (req, res, next) => {
     file.on('end', async () => {
       // If premium user, create buffer from the array of chunks
       // get the metadata like normal, and pass it on to next step
-      if (plan === /premium/) {
+      if (plan.includes('premium')) {
+        console.log('premium 2');
         const fullResBuffer = Buffer.concat(chunks);
         const { format, size, width, height, exif } = await getMetadata(
           fullResBuffer
@@ -253,7 +255,7 @@ module.exports.imgCompressor = async (req, res, next) => {
         const info = { format, size, width, height, exif };
         receiveCompImgs(fullResBuffer, 'fullRes', info);
       }
-      info('File [' + filename + '] Finished');
+      info('[' + filename + '] Finished');
       res.json('test');
     });
   });

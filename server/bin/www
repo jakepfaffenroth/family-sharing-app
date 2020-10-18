@@ -4,9 +4,11 @@
  * Module dependencies.
  */
 const path = require('path');
-require(path.join(__dirname, './config'));
+require(path.join(__dirname, '../config/config'));
 const app = require('../app');
 const http = require('http');
+const logger = require('../config/winston');
+// const logger = require('../config/pino');
 
 /**
  * Get port from environment and store in Express.
@@ -97,5 +99,7 @@ function onListening() {
   const addr = server.address();
   const bind = typeof addr === 'string' ? 'PIPE ' + addr : 'PORT ' + addr.port;
 
-  success(`${process.env.ENV} Server listening on ${bind}`);
+  // success(`${process.env.ENV} Server listening on ${bind}`);
+  logger.success(`Env: ${process.env.ENV}`);
+  logger.success(`Server listening on ${bind}`);
 }

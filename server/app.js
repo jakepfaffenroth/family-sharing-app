@@ -3,8 +3,11 @@ const createError = require('http-errors');
 const compression = require('compression');
 const path = require('path');
 const cookieParser = require('cookie-parser');
-const logger = require('morgan');
+const morgan = require('morgan');
+const logger = require('./config/winston');
+// const logger = require('./config/pino');
 
+const app = express();
 const cors = require('cors');
 const passport = require('passport');
 const session = require('express-session');
@@ -14,10 +17,50 @@ const indexRouter = require('./indexRouter');
 const userRouter = require('./users/userRouter');
 const authRouter = require('./userAuth/authRouter');
 const fileRouter = require('./fileHandler/fileRouter');
+const paymentRouter = require('./payments/paymentRouter');
 
-const app = express();
+// const pino = require('express-pino-logger')({
+//   logger: logger,
+//   autoLogging: false,
+//   customLogLevel: function (res, err) {
+//     if (res.statusCode >= 400 && res.statusCode < 500) {
+//       return 'warn';
+//     } else if (res.statusCode >= 500 || err) {
+//       return 'error';
+//     }
+//     return 'info';
+//   },
+//   // Define a custom success message
+//   customSuccessMessage: function (res) {
+//     if (res.statusCode === 404) {
+//       return 'resource not found';
+//     }
+//     return 'request completed';
+//   },
+
+//   // Define a custom error message
+//   customErrorMessage: function (error, res) {
+//     return 'request errored with status code: ' + res.statusCode;
+//   },
+// });
+// // var pino = require('express-pino-logger')({ logger });
+// app.use(pino);
+
+app.use((req, res, next) => {
+  function makeHttpLog(statusCode) {
+    const statusColor =
+      statusCode >= 200 && statusCode < 400
+        ? '\033[38;2;149;196;121m'
+        : '\033[38;2;255;97;136m';
+    return `t ${req.method} ${req.url} ${statusColor}${res.statusCode}`;
+  }
+  // console.log('req:', req);
+  // logger.info(makeHttpLog(res.statusCode));
+  next();
+});
 app.use(compression());
 app.use(cors());
+app.use(require('body-parser').json());
 
 const ws = require('ws');
 const wsConfig = {
@@ -100,9 +143,28 @@ app.engine(
   })
 );
 
-app.use(logger('dev'));
+app.use(
+  morgan(
+    (tokens, req, res) => {
+      const makeHttpLog = (statusCode) => {
+        const statusColor =
+          statusCode >= 200 && statusCode < 400
+            ? '\033[38;2;149;196;121m'
+            : '\033[38;2;255;97;136m';
+        return `${statusColor}${statusCode}${'\033[39m'}`;
+      };
+      return [
+        '\u001b[38;5;247m' + tokens.method(req, res),
+        tokens.url(req, res),
+        makeHttpLog(tokens.status(req, res)),
+        tokens['response-time'](req, res) + ' ms',
+      ].join(' ');
+    },
+    { stream: logger.stream }
+  )
+);
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+// app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json({ limit: '50mb' }));
@@ -111,10 +173,20 @@ app.use(
 );
 
 //add routes
-app.use('/', indexRouter);
+app.use(
+  '/',
+  // (req, res, next) => {
+  //   pino(req, res)
+  //   // logger.info(`${req.method}`);
+  //   req.log.info();
+  //   next();
+  // },
+  indexRouter
+);
 app.use('/user', userRouter);
 app.use('/auth', authRouter);
 app.use('/files', fileRouter);
+app.use('/payment', paymentRouter);
 
 const { UI } = require('bull-board');
 const { info } = require('console');
@@ -129,6 +201,12 @@ app.use(function (err, req, res, next) {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
+
+  logger.error(
+    `${err.status || 500} - ${err.message} - ${req.originalUrl} - ${
+      req.method
+    } - ${req.ip}`
+  );
 
   // render the error page
   res

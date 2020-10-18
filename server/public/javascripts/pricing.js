@@ -2,7 +2,8 @@ const priceToggle = () => {
   // Don't run the pricing page logic if not on the pricing page
   if (
     window.location.pathname != '/pricing' &&
-    window.location.pathname != '/complete-signup'
+    window.location.pathname != '/complete-signup' &&
+    window.location.pathname != '/user/create-owner'
   ) {
     return;
   }
@@ -16,17 +17,17 @@ const priceToggle = () => {
   );
   const plusPrice = document.getElementById('plus-price');
   const plusLabel = document.getElementById('plus-monthly-or-annual-label');
-  toggleComponent ? toggleComponent.addEventListener('click', toggle) : null;
 
+  toggleComponent ? toggleComponent.addEventListener('click', toggle) : null;
   toggleCheckbox.checked = true;
   updatePrice();
-
+  
   function toggle() {
     toggleCheckbox.checked = !toggleCheckbox.checked;
     const translate = toggleCheckbox.checked ? '2rem' : '0rem';
-
     toggleCircle.style.transform = `translateX(${translate})`;
     updatePrice();
+    toggleSubscriptionTerm()
   }
 
   function updatePrice() {

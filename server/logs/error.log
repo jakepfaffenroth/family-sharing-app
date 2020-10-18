@@ -1,3277 +1,3555 @@
-1596922171085		QueryResultError {
-    code: queryResultErrorCode.noData
-    message: "No data returned from the query."
-    received: 0
-    query: "SELECT * FROM users WHERE user_id = null"
-}
+2020-10-08 12:37:40
+error: INSERT has more expressions than target columns
+[object Object]
 
-1596922171497		QueryResultError {
-    code: queryResultErrorCode.noData
-    message: "No data returned from the query."
-    received: 0
-    query: "SELECT * FROM users WHERE user_id = null"
-}
+'2020-10-08 12:38:25
+error: INSERT has more expressions than target columns
+[object Object]
 
-1596922172253		QueryResultError {
-    code: queryResultErrorCode.noData
-    message: "No data returned from the query."
-    received: 0
-    query: "SELECT * FROM users WHERE user_id = null"
-}
+'2020-10-08 12:39:28
+error: column "firstname" does not exist
+[object Object]
 
-1596922245024
-QueryResultError {
-    code: queryResultErrorCode.noData
-    message: "No data returned from the query."
-    received: 0
-    query: "SELECT * FROM users WHERE user_id = null"
-}
+'2020-10-08 12:41:08
+error: column "firstname" does not exist
+[object Object]
 
-1596922245413
-QueryResultError {
-    code: queryResultErrorCode.noData
-    message: "No data returned from the query."
-    received: 0
-    query: "SELECT * FROM users WHERE user_id = null"
-}
+'2020-10-09 10:18:23
+Error: Property 'plan' doesn't exist.
+[object Object]
 
-1596922246403
-QueryResultError {
-    code: queryResultErrorCode.noData
-    message: "No data returned from the query."
-    received: 0
-    query: "SELECT * FROM users WHERE user_id = null"
-}
+'2020-10-09 10:18:23
+Error: Property 'plan' doesn't exist.
+[object Object]
 
-2020-08-08 14:42:02
-QueryResultError {
-    code: queryResultErrorCode.noData
-    message: "No data returned from the query."
-    received: 0
-    query: "SELECT * FROM users WHERE user_id = null"
-}
+'2020-10-09 10:20:08
+Error: Property 'plan' doesn't exist.
+[object Object]
 
-2020-08-08 14:42:04
-QueryResultError {
-    code: queryResultErrorCode.noData
-    message: "No data returned from the query."
-    received: 0
-    query: "SELECT * FROM users WHERE user_id = null"
-}
+'2020-10-09 10:20:08
+Error: Property 'plan' doesn't exist.
+[object Object]
 
-2020-08-08 14:42:04
-QueryResultError {
-    code: queryResultErrorCode.noData
-    message: "No data returned from the query."
-    received: 0
-    query: "SELECT * FROM users WHERE user_id = null"
-}
+'2020-10-09 10:20:39
+Error: Property 'plan' doesn't exist.
+[object Object]
 
-2020-08-08 14:42:36
-QueryResultError {
-    code: queryResultErrorCode.noData
-    message: "No data returned from the query."
-    received: 0
-    query: "SELECT * FROM users WHERE user_id = null"
-}
+'2020-10-09 10:20:39
+Error: Property 'plan' doesn't exist.
+[object Object]
 
-2020-08-08 14:42:37
-QueryResultError {
-    code: queryResultErrorCode.noData
-    message: "No data returned from the query."
-    received: 0
-    query: "SELECT * FROM users WHERE user_id = null"
-}
+'2020-10-09 10:22:45
+Error: Property 'plan' doesn't exist.
+[object Object]
 
-2020-08-08 14:42:37
-QueryResultError {
-    code: queryResultErrorCode.noData
-    message: "No data returned from the query."
-    received: 0
-    query: "SELECT * FROM users WHERE user_id = null"
-}
+'2020-10-09 10:23:05
+Error: Property 'plan' doesn't exist.
+[object Object]
 
-2020-08-08 14:46:56
-QueryResultError {
-    code: queryResultErrorCode.noData
-    message: "No data returned from the query."
-    received: 0
-    query: "SELECT * FROM users WHERE user_id = null"
-}
+'2020-10-09 10:23:09
+Error: Property 'plan' doesn't exist.
+[object Object]
 
-2020-08-08 14:46:57
-QueryResultError {
-    code: queryResultErrorCode.noData
-    message: "No data returned from the query."
-    received: 0
-    query: "SELECT * FROM users WHERE user_id = null"
-}
+'2020-10-09 10:23:59
+Error: Property 'plan' doesn't exist.
+[object Object]
 
-2020-08-08 14:46:57
-QueryResultError {
-    code: queryResultErrorCode.noData
-    message: "No data returned from the query."
-    received: 0
-    query: "SELECT * FROM users WHERE user_id = null"
-}
+'2020-10-09 10:27:16
+Error: Property 'plan' doesn't exist.
+[object Object]
 
-2020-08-08 20:02:02
-QueryResultError {
-    code: queryResultErrorCode.multiple
-    message: "Multiple rows were not expected."
-    received: 2
-    query: "UPDATE images SET small_file_id = '4_zc116088f5b87d73c742a0f11_f117d85bfb48966da_d20200809_m030201_c000_v0001072_t0022' WHERE file_name = '9a2b6c2c-a379-4527-89a7-d9c93e22088e/full/mortProfiles1.jpg' AND owner_id = '9a2b6c2c-a379-4527-89a7-d9c93e22088e' RETURNING *"
-}
+'2020-10-09 10:31:32
+Error: Property 'plan' doesn't exist.
+[object Object]
 
-2020-08-08 21:00:30
+'2020-10-09 10:32:28
+Error: Property 'plan' doesn't exist.
+[object Object]
+
+'2020-10-09 10:33:34
+Error: Property 'plan' doesn't exist.
+[object Object]
+
+'2020-10-09 10:35:52
+Error: Property 'plan' doesn't exist.
+[object Object]
+
+'2020-10-09 10:45:37
+Error: Property 'plan' doesn't exist.
+[object Object]
+
+'2020-10-09 10:46:52
+Error: Property 'plan' doesn't exist.
+[object Object]
+
+'2020-10-09 10:47:42
+Error: Property 'plan' doesn't exist.
+[object Object]
+
+'2020-10-09 10:50:59
+Error: Property 'plan' doesn't exist.
+[object Object]
+
+'2020-10-09 10:52:23
+Error: Property 'plan' doesn't exist.
+[object Object]
+
+'2020-10-09 10:54:09
+Error: Property 'plan' doesn't exist.
+[object Object]
+
+'2020-10-09 10:55:55
+Error: Property 'plan' doesn't exist.
+[object Object]
+
+'2020-10-09 11:47:59
+Error: Property 'plan' doesn't exist.
+[object Object]
+
+'2020-10-09 11:49:31
+Error: Property 'ownerId' doesn't exist.
+[object Object]
+
+'2020-10-09 14:33:36
 error: syntax error at or near "$"
-
-2020-08-08 21:33:34
-Error: Property 'guestId' doesn't exist.
-[object Object]
-
-'2020-08-08 21:47:28
-error: syntax error at end of input
 [object Object]
 
-'2020-08-08 21:49:37
+'2020-10-09 14:40:04
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT * FROM subscribers WHERE owner_id = 'ad120b55-119f-41fc-9ef9-d3286f07a023' AND email ->> 'emailAddress' = 'pfaffej@wwu.edu'"
+    query: "SELECT customer_id, subscription_id FROM owners WHERE owner_id = null"
 }
-[object Object]
-
-'2020-08-09 16:30:45
-error: syntax error at or near "{"
-[object Object]
-
-'2020-08-09 16:30:45
-error: syntax error at or near "{"
 [object Object]
 
-'2020-08-09 16:40:08
+'2020-10-09 15:01:25
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "DELETE FROM images WHERE owner_id = '9a2b6c2c-a379-4527-89a7-d9c93e22088e' AND file_id = '4_zc116088f5b87d73c742a0f11_f104832b99686beb9_d20200809_m210805_c000_v0001028_t0043'"
+    query: "UPDATE owners SET plan = 'basic', quota = 2000 WHERE customer_id = 'sub_IAosOvTkhu36H3' RETURNING owner_id, plan"
 }
 [object Object]
 
-'2020-08-09 16:40:08
+'2020-10-09 15:24:53
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "DELETE FROM images WHERE owner_id = '9a2b6c2c-a379-4527-89a7-d9c93e22088e' AND file_id = '4_zc116088f5b87d73c742a0f11_f104832b99686bec3_d20200809_m210814_c000_v0001028_t0043'"
+    query: "SELECT customer_id, subscription_id FROM owners WHERE owner_id = null"
 }
-[object Object]
-
-'2020-08-09 16:40:57
-Error: Property 'guestId' doesn't exist.
-[object Object]
-
-'2020-08-09 16:40:57
-Error: Property 'guestId' doesn't exist.
 [object Object]
 
-'2020-08-09 16:41:30
+'2020-10-09 15:25:06
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "DELETE FROM images WHERE owner_id = '9a2b6c2c-a379-4527-89a7-d9c93e22088e' AND file_id = '4_zc116088f5b87d73c742a0f11_f111775a859111551_d20200809_m045346_c000_v0001072_t0052'"
+    query: "SELECT customer_id, subscription_id FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-08-09 16:41:30
+'2020-10-09 16:42:16
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "DELETE FROM images WHERE owner_id = '9a2b6c2c-a379-4527-89a7-d9c93e22088e' AND file_id = '4_zc116088f5b87d73c742a0f11_f111775a85911155d_d20200809_m045347_c000_v0001072_t0052'"
+    query: "SELECT customer_id FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-08-09 19:39:51
+'2020-10-09 16:42:32
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "DELETE FROM images WHERE owner_id = '9a2b6c2c-a379-4527-89a7-d9c93e22088e' AND file_id = '4_zc116088f5b87d73c742a0f11_f10599f1c14f89d7d_d20200809_m045228_c000_v0001073_t0015'"
+    query: "SELECT customer_id FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-08-09 19:39:52
+'2020-10-09 18:54:00
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "DELETE FROM images WHERE owner_id = '9a2b6c2c-a379-4527-89a7-d9c93e22088e' AND file_id = '4_zc116088f5b87d73c742a0f11_f10599f1c14f89d56_d20200809_m045227_c000_v0001073_t0015'"
+    query: "SELECT customer_id FROM owners WHERE owner_id = null"
 }
-[object Object]
-
-'2020-08-09 20:17:09
-error: syntax error at or near "ORDER"
-[object Object]
-
-'2020-08-09 21:03:39
-Error: Property 'userId' doesn't exist.
-[object Object]
-
-'2020-08-09 21:03:39
-Error: Property 'userId' doesn't exist.
-[object Object]
-
-'2020-08-09 21:03:39
-Error: Property 'userId' doesn't exist.
-[object Object]
-
-'2020-08-09 21:03:39
-Error: Property 'userId' doesn't exist.
-[object Object]
-
-'2020-08-09 21:03:39
-Error: Property 'userId' doesn't exist.
-[object Object]
-
-'2020-08-09 21:03:39
-Error: Property 'userId' doesn't exist.
-[object Object]
-
-'2020-08-09 21:03:39
-Error: Property 'userId' doesn't exist.
-[object Object]
-
-'2020-08-09 21:03:39
-Error: Property 'userId' doesn't exist.
-[object Object]
-
-'2020-08-09 21:03:39
-Error: Property 'userId' doesn't exist.
-[object Object]
-
-'2020-08-09 21:03:39
-Error: Property 'userId' doesn't exist.
-[object Object]
-
-'2020-08-09 21:03:39
-Error: Property 'userId' doesn't exist.
-[object Object]
-
-'2020-08-09 21:03:39
-Error: Property 'userId' doesn't exist.
-[object Object]
-
-'2020-08-09 21:03:52
-Error: Property 'userId' doesn't exist.
-[object Object]
-
-'2020-08-09 21:03:52
-Error: Property 'userId' doesn't exist.
-[object Object]
-
-'2020-08-09 21:03:52
-Error: Property 'userId' doesn't exist.
-[object Object]
-
-'2020-08-09 21:03:52
-Error: Property 'userId' doesn't exist.
-[object Object]
-
-'2020-08-09 21:03:52
-Error: Property 'userId' doesn't exist.
-[object Object]
-
-'2020-08-09 21:03:52
-Error: Property 'userId' doesn't exist.
-[object Object]
-
-'2020-08-09 21:03:52
-Error: Property 'userId' doesn't exist.
 [object Object]
 
-'2020-08-09 21:03:52
-Error: Property 'userId' doesn't exist.
+'2020-10-09 19:20:09
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT customer_id FROM owners WHERE owner_id = null"
+}
 [object Object]
 
-'2020-08-09 21:03:52
-Error: Property 'userId' doesn't exist.
+'2020-10-09 19:22:09
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT customer_id FROM owners WHERE owner_id = null"
+}
 [object Object]
 
-'2020-08-09 21:03:52
-Error: Property 'userId' doesn't exist.
+'2020-10-09 21:32:00
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT customer_id FROM owners WHERE owner_id = null"
+}
 [object Object]
 
-'2020-08-09 21:03:52
-Error: Property 'userId' doesn't exist.
+'2020-10-09 21:32:34
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT customer_id FROM owners WHERE owner_id = null"
+}
 [object Object]
 
-'2020-08-09 21:03:52
-Error: Property 'userId' doesn't exist.
+'2020-10-09 21:32:46
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT customer_id FROM owners WHERE owner_id = null"
+}
 [object Object]
 
-'2020-08-09 21:16:30
-Error: Querying against a released or lost connection.
+'2020-10-09 21:33:31
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT customer_id FROM owners WHERE owner_id = null"
+}
 [object Object]
 
-'2020-08-09 21:21:32
-Error: Querying against a released or lost connection.
+'2020-10-09 21:33:50
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT customer_id FROM owners WHERE owner_id = null"
+}
 [object Object]
 
-'2020-08-09 21:34:43
-Error: Property 'userId' doesn't exist.
+'2020-10-09 21:34:15
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT customer_id FROM owners WHERE owner_id = null"
+}
 [object Object]
 
-'2020-08-09 21:34:43
-Error: Property 'userId' doesn't exist.
+'2020-10-09 21:34:31
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT customer_id FROM owners WHERE owner_id = null"
+}
 [object Object]
 
-'2020-08-09 21:34:43
-Error: Property 'userId' doesn't exist.
+'2020-10-09 21:34:50
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT customer_id FROM owners WHERE owner_id = null"
+}
 [object Object]
 
-'2020-08-09 21:34:43
-Error: Property 'userId' doesn't exist.
+'2020-10-09 21:34:54
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT customer_id FROM owners WHERE owner_id = null"
+}
 [object Object]
 
-'2020-08-09 21:34:43
-Error: Property 'userId' doesn't exist.
+'2020-10-09 21:35:36
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT customer_id FROM owners WHERE owner_id = null"
+}
 [object Object]
 
-'2020-08-09 21:34:43
-Error: Property 'userId' doesn't exist.
+'2020-10-09 21:36:44
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT customer_id FROM owners WHERE owner_id = null"
+}
 [object Object]
 
-'2020-08-09 21:34:43
-Error: Property 'userId' doesn't exist.
+'2020-10-09 21:36:44
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT customer_id FROM owners WHERE owner_id = null"
+}
 [object Object]
 
-'2020-08-09 21:34:43
-Error: Property 'userId' doesn't exist.
+'2020-10-09 21:36:54
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT customer_id FROM owners WHERE owner_id = null"
+}
 [object Object]
 
-'2020-08-09 21:34:43
-Error: Property 'userId' doesn't exist.
+'2020-10-09 21:36:54
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT customer_id FROM owners WHERE owner_id = null"
+}
 [object Object]
 
-'2020-08-09 21:34:44
-Error: Property 'userId' doesn't exist.
+'2020-10-09 21:36:54
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT customer_id FROM owners WHERE owner_id = null"
+}
 [object Object]
 
-'2020-08-09 21:38:51
-Error: Property 'userId' doesn't exist.
+'2020-10-09 21:37:36
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT customer_id FROM owners WHERE owner_id = null"
+}
 [object Object]
 
-'2020-08-09 21:38:51
-Error: Property 'userId' doesn't exist.
+'2020-10-09 21:38:41
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT customer_id FROM owners WHERE owner_id = null"
+}
 [object Object]
 
-'2020-08-09 21:38:51
-Error: Property 'userId' doesn't exist.
+'2020-10-09 21:38:49
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT customer_id FROM owners WHERE owner_id = null"
+}
 [object Object]
 
-'2020-08-09 21:38:51
-Error: Property 'userId' doesn't exist.
+'2020-10-09 21:40:49
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT customer_id FROM owners WHERE owner_id = null"
+}
 [object Object]
 
-'2020-08-09 21:38:51
-Error: Property 'userId' doesn't exist.
+'2020-10-09 21:42:51
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT customer_id FROM owners WHERE owner_id = null"
+}
 [object Object]
 
-'2020-08-09 21:38:51
-Error: Property 'userId' doesn't exist.
+'2020-10-09 21:44:23
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT customer_id FROM owners WHERE owner_id = null"
+}
 [object Object]
 
-'2020-08-09 21:40:02
-Error: Property 'userId' doesn't exist.
+'2020-10-09 21:46:23
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT customer_id FROM owners WHERE owner_id = null"
+}
 [object Object]
 
-'2020-08-09 21:40:02
-Error: Property 'userId' doesn't exist.
+'2020-10-09 21:50:54
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT customer_id FROM owners WHERE owner_id = null"
+}
 [object Object]
 
-'2020-08-09 21:40:02
-Error: Property 'userId' doesn't exist.
+'2020-10-09 21:51:17
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT customer_id FROM owners WHERE owner_id = null"
+}
 [object Object]
 
-'2020-08-09 21:40:02
-Error: Property 'userId' doesn't exist.
+'2020-10-10 21:19:21
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT customer_id FROM owners WHERE owner_id = null"
+}
 [object Object]
 
-'2020-08-09 21:40:02
-Error: Property 'userId' doesn't exist.
+'2020-10-10 21:21:21
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT customer_id FROM owners WHERE owner_id = null"
+}
 [object Object]
 
-'2020-08-09 21:40:02
-Error: Property 'userId' doesn't exist.
+'2020-10-10 21:24:13
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f1161b63007282b79_d20201007_m190904_c000_v0001072_t0041'"
+}
 [object Object]
 
-'2020-08-09 21:41:40
-Error: Property 'fileId' doesn't exist.
+'2020-10-11 13:20:16
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT customer_id FROM owners WHERE owner_id = null"
+}
 [object Object]
 
-'2020-08-09 21:41:40
-Error: Property 'fileId' doesn't exist.
+'2020-10-11 13:20:31
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT customer_id FROM owners WHERE owner_id = null"
+}
 [object Object]
 
-'2020-08-09 21:41:40
-Error: Property 'fileId' doesn't exist.
+'2020-10-11 13:21:29
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT customer_id FROM owners WHERE owner_id = null"
+}
 [object Object]
 
-'2020-08-09 21:42:33
-Error: Property 'fileId' doesn't exist.
+'2020-10-11 13:21:48
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT customer_id FROM owners WHERE owner_id = null"
+}
 [object Object]
 
-'2020-08-09 21:42:33
-Error: Property 'fileId' doesn't exist.
+'2020-10-11 13:22:53
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT customer_id FROM owners WHERE owner_id = null"
+}
 [object Object]
 
-'2020-08-09 21:42:33
-Error: Property 'fileId' doesn't exist.
+'2020-10-11 13:23:36
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT customer_id FROM owners WHERE owner_id = null"
+}
 [object Object]
 
-'2020-08-09 21:45:06
+'2020-10-11 13:24:02
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '9a2b6c2c-a379-4527-89a7-d9c93e22088e' AND file_id = '4_zc116088f5b87d73c742a0f11_f116fdb3d4c75c501_d20200810_m044500_c000_v0001071_t0012'"
+    query: "SELECT customer_id FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-08-09 21:46:40
+'2020-10-11 13:30:57
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '9a2b6c2c-a379-4527-89a7-d9c93e22088e' AND file_id = '4_zc116088f5b87d73c742a0f11_f1169af0221b2a29f_d20200810_m044635_c000_v0001034_t0013'"
+    query: "SELECT customer_id FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-08-10 06:42:52
+'2020-10-11 13:31:27
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '9a2b6c2c-a379-4527-89a7-d9c93e22088e' AND file_id = '4_zc116088f5b87d73c742a0f11_f10444478f691f857_d20200810_m133716_c000_v0001010_t0026'"
+    query: "SELECT customer_id FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-08-10 06:42:52
+'2020-10-11 13:31:40
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '9a2b6c2c-a379-4527-89a7-d9c93e22088e' AND file_id = '4_zc116088f5b87d73c742a0f11_f10444478f691f859_d20200810_m133717_c000_v0001010_t0026'"
+    query: "SELECT customer_id FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-08-10 06:43:08
+'2020-10-11 13:33:22
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '9a2b6c2c-a379-4527-89a7-d9c93e22088e' AND file_id = '4_zc116088f5b87d73c742a0f11_f1057965653e6d94f_d20200810_m134237_c000_v0001063_t0048'"
+    query: "SELECT customer_id FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-08-10 06:44:22
+'2020-10-11 13:56:16
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '9a2b6c2c-a379-4527-89a7-d9c93e22088e' AND file_id = '4_zc116088f5b87d73c742a0f11_f1157f7cd773e999a_d20200810_m134151_c000_v0001073_t0002'"
+    query: "SELECT customer_id FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-08-10 06:45:58
+'2020-10-11 17:04:50
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '9a2b6c2c-a379-4527-89a7-d9c93e22088e' AND file_id = '4_zc116088f5b87d73c742a0f11_f114b298937d3e5a8_d20200810_m134330_c000_v0001071_t0008'"
+    query: "SELECT customer_id FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-08-10 08:03:33
+'2020-10-11 18:17:53
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '9a2b6c2c-a379-4527-89a7-d9c93e22088e' AND file_id = '4_zc116088f5b87d73c742a0f11_f112d1eeeb9eee158_d20200810_m150207_c000_v0001052_t0037'"
+    query: "SELECT customer_id FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-08-10 08:03:42
+'2020-10-11 19:15:33
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '9a2b6c2c-a379-4527-89a7-d9c93e22088e' AND file_id = '4_zc116088f5b87d73c742a0f11_f100dfbed96be153f_d20200810_m134603_c000_v0001010_t0013'"
+    query: "SELECT customer_id FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-08-10 08:03:42
+'2020-10-11 19:16:54
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '9a2b6c2c-a379-4527-89a7-d9c93e22088e' AND file_id = '4_zc116088f5b87d73c742a0f11_f100dfbed96be153d_d20200810_m134602_c000_v0001010_t0013'"
+    query: "SELECT customer_id FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-08-10 08:07:48
+'2020-10-11 19:18:54
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '9a2b6c2c-a379-4527-89a7-d9c93e22088e' AND file_id = '4_zc116088f5b87d73c742a0f11_f115cb9a9fe68975a_d20200810_m150343_c000_v0001071_t0031'"
+    query: "SELECT customer_id FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-08-10 08:07:48
+'2020-10-11 19:35:08
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '9a2b6c2c-a379-4527-89a7-d9c93e22088e' AND file_id = '4_zc116088f5b87d73c742a0f11_f115cb9a9fe689776_d20200810_m150344_c000_v0001071_t0031'"
+    query: "SELECT customer_id FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-08-10 08:07:48
+'2020-10-11 19:37:08
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '9a2b6c2c-a379-4527-89a7-d9c93e22088e' AND file_id = '4_zc116088f5b87d73c742a0f11_f115cb9a9fe68976c_d20200810_m150344_c000_v0001071_t0031'"
+    query: "SELECT customer_id FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-08-12 09:00:14
-error: null value in column "owner_id" violates not-null constraint
+'2020-10-11 19:38:01
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT customer_id FROM owners WHERE owner_id = null"
+}
 [object Object]
 
-'2020-08-12 09:00:16
+'2020-10-11 19:44:40
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "UPDATE images SET small_file_id = '4_zc116088f5b87d73c742a0f11_f115265833eed880e_d20200812_m160015_c000_v0001053_t0032' WHERE image_id = (SELECT image_id FROM images WHERE file_name = 'undefined/full/frame_detail_Scoop_SatinBlack.jpg' AND owner_id = null ORDER BY image_id DESC LIMIT 1) RETURNING *"
+    query: "SELECT customer_id FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-08-12 09:05:45
-error: null value in column "owner_id" violates not-null constraint
+'2020-10-11 19:52:24
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT customer_id FROM owners WHERE owner_id = null"
+}
 [object Object]
 
-'2020-08-12 09:05:46
+'2020-10-11 19:54:20
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "UPDATE images SET small_file_id = '4_zc116088f5b87d73c742a0f11_f1179fa9c5095240a_d20200812_m160545_c000_v0001073_t0050' WHERE image_id = (SELECT image_id FROM images WHERE file_name = 'undefined/full/frames_flat-black_550px.jpg' AND owner_id = null ORDER BY image_id DESC LIMIT 1) RETURNING *"
+    query: "SELECT customer_id FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-08-12 12:36:39
+'2020-10-11 19:56:18
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "UPDATE images SET small_file_id = '4_zc116088f5b87d73c742a0f11_f10310e041b4c34be_d20200812_m193545_c000_v0001072_t0035' WHERE image_id = (SELECT image_id FROM images WHERE file_name = '5eebb6c17f71e3812d1e91ab/full/14eb264e6edd404cb67f6ec1125e4679.jpg' AND owner_id = '5eebb6c17f71e3812d1e91ab' ORDER BY image_id DESC LIMIT 1) RETURNING *"
+    query: "SELECT customer_id FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-08-12 12:36:55
+'2020-10-11 20:08:00
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "UPDATE images SET small_file_id = '4_zc116088f5b87d73c742a0f11_f118267340975db24_d20200812_m193623_c000_v0001065_t0039' WHERE image_id = (SELECT image_id FROM images WHERE file_name = '5eebb6c17f71e3812d1e91ab/full/chad-peltola-771832-unsplash.jpg' AND owner_id = '5eebb6c17f71e3812d1e91ab' ORDER BY image_id DESC LIMIT 1) RETURNING *"
+    query: "SELECT customer_id FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-08-12 12:37:12
+'2020-10-11 20:10:00
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "UPDATE images SET small_file_id = '4_zc116088f5b87d73c742a0f11_f1043e9df180bf8c3_d20200812_m193544_c000_v0001070_t0003' WHERE image_id = (SELECT image_id FROM images WHERE file_name = '5eebb6c17f71e3812d1e91ab/full/brigitta-schneiter-193762-unsplash.jpg' AND owner_id = '5eebb6c17f71e3812d1e91ab' ORDER BY image_id DESC LIMIT 1) RETURNING *"
+    query: "SELECT customer_id FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-08-12 12:37:28
+'2020-10-11 20:30:10
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "UPDATE images SET small_file_id = '4_zc116088f5b87d73c742a0f11_f106b61f944252e5e_d20200812_m193614_c000_v0001072_t0024' WHERE image_id = (SELECT image_id FROM images WHERE file_name = '5eebb6c17f71e3812d1e91ab/full/ashim-d-silva-162286.jpg' AND owner_id = '5eebb6c17f71e3812d1e91ab' ORDER BY image_id DESC LIMIT 1) RETURNING *"
+    query: "SELECT customer_id FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-08-12 12:38:24
+'2020-10-11 20:37:29
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "UPDATE images SET small_file_id = '4_zc116088f5b87d73c742a0f11_f1109ab8cbb43621a_d20200812_m193559_c000_v0001073_t0039' WHERE image_id = (SELECT image_id FROM images WHERE file_name = '5eebb6c17f71e3812d1e91ab/full/buzz-andersen-145254-unsplash.jpg' AND owner_id = '5eebb6c17f71e3812d1e91ab' ORDER BY image_id DESC LIMIT 1) RETURNING *"
+    query: "SELECT customer_id FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-08-12 12:38:29
+'2020-10-11 20:38:49
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "UPDATE images SET small_file_id = '4_zc116088f5b87d73c742a0f11_f116327979612142a_d20200812_m193620_c000_v0001072_t0046' WHERE image_id = (SELECT image_id FROM images WHERE file_name = '5eebb6c17f71e3812d1e91ab/full/samuel-ferrara-1527pjeb6jg-unsplash(1).jpg' AND owner_id = '5eebb6c17f71e3812d1e91ab' ORDER BY image_id DESC LIMIT 1) RETURNING *"
+    query: "SELECT customer_id FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-08-12 12:38:46
+'2020-10-11 20:40:21
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "UPDATE images SET small_file_id = '4_zc116088f5b87d73c742a0f11_f119296370a1b5afb_d20200812_m193657_c000_v0001070_t0011' WHERE image_id = (SELECT image_id FROM images WHERE file_name = '5eebb6c17f71e3812d1e91ab/full/john-rodenn-castillo-504160-unsplash.jpg' AND owner_id = '5eebb6c17f71e3812d1e91ab' ORDER BY image_id DESC LIMIT 1) RETURNING *"
+    query: "SELECT customer_id FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-08-12 12:39:06
+'2020-10-11 20:42:21
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "UPDATE images SET small_file_id = '4_zc116088f5b87d73c742a0f11_f104521ef50238ae7_d20200812_m193707_c000_v0001069_t0010' WHERE image_id = (SELECT image_id FROM images WHERE file_name = '5eebb6c17f71e3812d1e91ab/full/jaromir-kavan-296728-unsplash.jpg' AND owner_id = '5eebb6c17f71e3812d1e91ab' ORDER BY image_id DESC LIMIT 1) RETURNING *"
+    query: "SELECT customer_id FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-08-12 12:39:19
+'2020-10-11 20:43:01
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "UPDATE images SET small_file_id = '4_zc116088f5b87d73c742a0f11_f110db93fe917cbec_d20200812_m193624_c000_v0001049_t0018' WHERE image_id = (SELECT image_id FROM images WHERE file_name = '5eebb6c17f71e3812d1e91ab/full/bailey-mahon-308932.jpg' AND owner_id = '5eebb6c17f71e3812d1e91ab' ORDER BY image_id DESC LIMIT 1) RETURNING *"
+    query: "SELECT customer_id FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-08-12 12:39:30
+'2020-10-11 20:45:01
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "UPDATE images SET small_file_id = '4_zc116088f5b87d73c742a0f11_f107cb58bea5cca60_d20200812_m193716_c000_v0001069_t0045' WHERE image_id = (SELECT image_id FROM images WHERE file_name = '5eebb6c17f71e3812d1e91ab/full/luca-bravo-415109-unsplash.jpg' AND owner_id = '5eebb6c17f71e3812d1e91ab' ORDER BY image_id DESC LIMIT 1) RETURNING *"
+    query: "SELECT customer_id FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-08-12 12:39:40
+'2020-10-11 21:33:20
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "UPDATE images SET small_file_id = '4_zc116088f5b87d73c742a0f11_f1129a33454722e6e_d20200812_m193720_c000_v0001069_t0024' WHERE image_id = (SELECT image_id FROM images WHERE file_name = '5eebb6c17f71e3812d1e91ab/full/ales-krivec-488377-unsplash.jpg' AND owner_id = '5eebb6c17f71e3812d1e91ab' ORDER BY image_id DESC LIMIT 1) RETURNING *"
+    query: "SELECT customer_id FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-08-12 15:44:13
-error: null value in column "owner_id" violates not-null constraint
+'2020-10-11 21:34:05
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT customer_id FROM owners WHERE owner_id = null"
+}
 [object Object]
 
-'2020-08-12 15:44:13
-error: null value in column "owner_id" violates not-null constraint
+'2020-10-12 10:05:34
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT customer_id FROM owners WHERE owner_id = null"
+}
 [object Object]
 
-'2020-08-12 15:44:14
-error: null value in column "owner_id" violates not-null constraint
+'2020-10-12 10:06:06
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT customer_id FROM owners WHERE owner_id = null"
+}
 [object Object]
 
-'2020-08-12 15:44:15
-error: null value in column "owner_id" violates not-null constraint
+'2020-10-12 10:06:13
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT customer_id FROM owners WHERE owner_id = null"
+}
 [object Object]
 
-'2020-08-12 15:44:26
+'2020-10-12 10:09:46
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "UPDATE images SET small_file_id = '4_zc116088f5b87d73c742a0f11_f1136a92413dcd555_d20200812_m224415_c000_v0001002_t0037' WHERE image_id = (SELECT image_id FROM images WHERE file_name = 'undefined/full/IMG_5513.jpg' AND owner_id = null ORDER BY image_id DESC LIMIT 1) RETURNING *"
+    query: "SELECT customer_id FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-08-12 15:44:26
+'2020-10-12 10:11:46
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "UPDATE images SET small_file_id = '4_zc116088f5b87d73c742a0f11_f1136a92413dcd564_d20200812_m224426_c000_v0001002_t0037' WHERE image_id = (SELECT image_id FROM images WHERE file_name = 'undefined/full/basicwood-frame-sample.jpg' AND owner_id = null ORDER BY image_id DESC LIMIT 1) RETURNING *"
+    query: "SELECT customer_id FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-08-12 15:44:27
+'2020-10-12 10:12:33
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "UPDATE images SET small_file_id = '4_zc116088f5b87d73c742a0f11_f1136a92413dcd566_d20200812_m224427_c000_v0001002_t0037' WHERE image_id = (SELECT image_id FROM images WHERE file_name = 'undefined/full/frame_detail_Scoop_SatinBlack.jpg' AND owner_id = null ORDER BY image_id DESC LIMIT 1) RETURNING *"
+    query: "SELECT customer_id FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-08-12 15:44:28
+'2020-10-12 10:12:45
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "UPDATE images SET small_file_id = '4_zc116088f5b87d73c742a0f11_f1136a92413dcd56a_d20200812_m224427_c000_v0001002_t0037' WHERE image_id = (SELECT image_id FROM images WHERE file_name = 'undefined/full/frames_flat-black_550px.jpg' AND owner_id = null ORDER BY image_id DESC LIMIT 1) RETURNING *"
+    query: "SELECT customer_id FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-08-12 15:45:43
+'2020-10-12 10:13:12
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f1099e7432b7b8449_d20200812_m223607_c000_v0001066_t0052'"
+    query: "SELECT customer_id FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-08-12 15:45:43
+'2020-10-12 10:13:44
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f1173642cd335e2f6_d20200812_m224219_c000_v0001064_t0023'"
+    query: "SELECT customer_id FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-08-12 15:45:43
+'2020-10-12 10:15:44
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f118541565168e910_d20200812_m224235_c000_v0001071_t0037'"
+    query: "SELECT customer_id FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-08-12 15:45:43
+'2020-10-12 10:15:53
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f105abeca02ae2808_d20200812_m224235_c000_v0001065_t0014'"
+    query: "SELECT customer_id FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-08-12 16:01:28
+'2020-10-12 10:16:38
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "UPDATE images SET small_file_id = '4_zc116088f5b87d73c742a0f11_f110ed64c436a1561_d20200812_m230127_c000_v0001070_t0023' WHERE image_id = (SELECT image_id FROM images WHERE file_name = '5eebb6c17f71e3812d1e91ab/full/ashim-d-silva-162286.jpg' AND owner_id = '5eebb6c17f71e3812d1e91ab' ORDER BY image_id DESC LIMIT 1) RETURNING *"
+    query: "SELECT customer_id FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-08-12 16:01:29
+'2020-10-12 10:17:02
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "UPDATE images SET small_file_id = '4_zc116088f5b87d73c742a0f11_f110ed64c436a1569_d20200812_m230128_c000_v0001070_t0023' WHERE image_id = (SELECT image_id FROM images WHERE file_name = '5eebb6c17f71e3812d1e91ab/full/bailey-mahon-308932.jpg' AND owner_id = '5eebb6c17f71e3812d1e91ab' ORDER BY image_id DESC LIMIT 1) RETURNING *"
+    query: "SELECT customer_id FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-08-12 16:01:30
+'2020-10-12 10:18:06
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "UPDATE images SET small_file_id = '4_zc116088f5b87d73c742a0f11_f110ed64c436a1576_d20200812_m230129_c000_v0001070_t0023' WHERE image_id = (SELECT image_id FROM images WHERE file_name = '5eebb6c17f71e3812d1e91ab/full/brigitta-schneiter-193762-unsplash.jpg' AND owner_id = '5eebb6c17f71e3812d1e91ab' ORDER BY image_id DESC LIMIT 1) RETURNING *"
+    query: "SELECT customer_id FROM owners WHERE owner_id = null"
 }
+[object Object]
+
+'2020-10-12 10:18:27
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT customer_id FROM owners WHERE owner_id = null"
+}
+[object Object]
+
+'2020-10-12 10:20:27
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT customer_id FROM owners WHERE owner_id = null"
+}
+[object Object]
+
+'2020-10-12 10:21:23
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT customer_id FROM owners WHERE owner_id = null"
+}
+[object Object]
+
+'2020-10-12 10:22:06
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT customer_id FROM owners WHERE owner_id = null"
+}
+[object Object]
+
+'2020-10-12 10:22:16
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT customer_id FROM owners WHERE owner_id = null"
+}
+[object Object]
+
+'2020-10-12 10:26:07
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
+}
+[object Object]
+
+'2020-10-12 10:29:21
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
+}
+[object Object]
+
+'2020-10-12 11:13:05
+error: column "premium_user" does not exist
+[object Object]
+
+'2020-10-12 11:15:05
+error: column "premium_user" does not exist
+[object Object]
+
+'2020-10-12 11:59:41
+error: column "premium_user" does not exist
+[object Object]
+
+'2020-10-12 11:59:43
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT customer_id, subscription_id FROM owners WHERE owner_id = '{"isTrusted":true}'"
+}
+[object Object]
+
+'2020-10-12 12:01:26
+error: column "premium_user" does not exist
+[object Object]
+
+'2020-10-12 12:01:28
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT customer_id, subscription_id FROM owners WHERE owner_id = '{"isTrusted":true}'"
+}
+[object Object]
+
+'2020-10-12 12:03:26
+error: column "premium_user" does not exist
+[object Object]
+
+'2020-10-12 12:03:28
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT customer_id, subscription_id FROM owners WHERE owner_id = '{"isTrusted":true}'"
+}
+[object Object]
+
+'2020-10-12 12:03:36
+error: column "premium_user" does not exist
+[object Object]
+
+'2020-10-12 12:03:37
+QueryResultError {
+    code: queryResultErrorCode.noData
+    message: "No data returned from the query."
+    received: 0
+    query: "SELECT customer_id, subscription_id FROM owners WHERE owner_id = '{"isTrusted":true}'"
+}
+[object Object]
+
+'2020-10-12 12:04:05
+error: column "premium_user" does not exist
+[object Object]
+
+'2020-10-12 12:05:00
+error: column "premium_user" does not exist
+[object Object]
+
+'2020-10-12 12:05:28
+error: column "premium_user" does not exist
+[object Object]
+
+'2020-10-12 12:05:53
+error: column "premium_user" does not exist
+[object Object]
+
+'2020-10-12 12:07:11
+error: column "premium_user" does not exist
+[object Object]
+
+'2020-10-12 12:07:21
+error: column "premium_user" does not exist
+[object Object]
+
+'2020-10-12 12:07:37
+error: column "premium_user" does not exist
+[object Object]
+
+'2020-10-12 12:07:54
+error: column "premium_user" does not exist
+[object Object]
+
+'2020-10-12 12:08:59
+error: column "premium_user" does not exist
+[object Object]
+
+'2020-10-12 12:09:19
+error: column "premium_user" does not exist
+[object Object]
+
+'2020-10-12 12:10:04
+error: column "premium_user" does not exist
+[object Object]
+
+'2020-10-12 12:12:04
+error: column "premium_user" does not exist
+[object Object]
+
+'2020-10-12 12:13:48
+error: column "premium_user" does not exist
+[object Object]
+
+'2020-10-12 12:14:59
+error: column "premium_user" does not exist
+[object Object]
+
+'2020-10-12 12:15:12
+error: column "premium_user" does not exist
+[object Object]
+
+'2020-10-12 12:16:09
+error: column "premium_user" does not exist
+[object Object]
+
+'2020-10-12 12:16:33
+error: column "premium_user" does not exist
+[object Object]
+
+'2020-10-12 12:16:45
+error: column "premium_user" does not exist
+[object Object]
+
+'2020-10-12 12:17:23
+error: column "premium_user" does not exist
+[object Object]
+
+'2020-10-12 12:17:35
+error: column "premium_user" does not exist
+[object Object]
+
+'2020-10-12 12:17:51
+error: column "premium_user" does not exist
+[object Object]
+
+'2020-10-12 12:17:59
+error: column "premium_user" does not exist
+[object Object]
+
+'2020-10-12 12:19:59
+error: column "premium_user" does not exist
+[object Object]
+
+'2020-10-12 12:28:18
+error: column "premium_user" does not exist
+[object Object]
+
+'2020-10-12 12:28:57
+error: column "premium_user" does not exist
+[object Object]
+
+'2020-10-12 12:29:09
+error: column "premium_user" does not exist
+[object Object]
+
+'2020-10-12 12:29:40
+error: column "premium_user" does not exist
+[object Object]
+
+'2020-10-12 12:29:47
+error: column "premium_user" does not exist
+[object Object]
+
+'2020-10-12 12:29:56
+error: column "premium_user" does not exist
+[object Object]
+
+'2020-10-12 12:30:08
+error: column "premium_user" does not exist
+[object Object]
+
+'2020-10-12 12:32:08
+error: column "premium_user" does not exist
+[object Object]
+
+'2020-10-12 12:32:36
+error: column "premium_user" does not exist
+[object Object]
+
+'2020-10-12 12:32:40
+error: column "premium_user" does not exist
+[object Object]
+
+'2020-10-12 12:33:03
+error: column "premium_user" does not exist
+[object Object]
+
+'2020-10-12 12:33:17
+error: column "premium_user" does not exist
+[object Object]
+
+'2020-10-12 12:33:34
+error: column "premium_user" does not exist
+[object Object]
+
+'2020-10-12 12:34:20
+error: column "premium_user" does not exist
+[object Object]
+
+'2020-10-12 12:34:40
+error: column "premium_user" does not exist
+[object Object]
+
+'2020-10-12 12:35:12
+error: column "premium_user" does not exist
+[object Object]
+
+'2020-10-12 12:36:14
+error: column "premium_user" does not exist
+[object Object]
+
+'2020-10-12 12:36:38
+error: column "premium_user" does not exist
+[object Object]
+
+'2020-10-12 12:38:32
+error: column "premium_user" does not exist
+[object Object]
+
+'2020-10-12 12:39:08
+error: column "premium_user" does not exist
+[object Object]
+
+'2020-10-12 12:39:31
+error: column "premium_user" does not exist
+[object Object]
+
+'2020-10-12 12:40:31
+error: column "premium_user" does not exist
+[object Object]
+
+'2020-10-12 12:42:31
+error: column "premium_user" does not exist
+[object Object]
+
+'2020-10-12 12:42:50
+error: column "premium_user" does not exist
+[object Object]
+
+'2020-10-12 12:43:21
+error: column "premium_user" does not exist
+[object Object]
+
+'2020-10-12 12:43:54
+error: column "premium_user" does not exist
+[object Object]
+
+'2020-10-12 12:44:27
+error: column "premium_user" does not exist
+[object Object]
+
+'2020-10-12 12:44:55
+error: column "premium_user" does not exist
+[object Object]
+
+'2020-10-12 12:46:55
+error: column "premium_user" does not exist
+[object Object]
+
+'2020-10-12 13:32:09
+error: column "premium_user" does not exist
+[object Object]
+
+'2020-10-12 13:32:48
+error: column "premium_user" does not exist
+[object Object]
+
+'2020-10-12 13:33:11
+error: column "premium_user" does not exist
+[object Object]
+
+'2020-10-12 13:33:38
+error: column "premium_user" does not exist
+[object Object]
+
+'2020-10-12 13:34:43
+error: column "premium_user" does not exist
+[object Object]
+
+'2020-10-12 13:35:22
+error: column "premium_user" does not exist
+[object Object]
+
+'2020-10-12 13:36:11
+error: column "premium_user" does not exist
+[object Object]
+
+'2020-10-12 13:36:39
+error: column "premium_user" does not exist
+[object Object]
+
+'2020-10-12 13:37:56
+error: column "premium_user" does not exist
+[object Object]
+
+'2020-10-12 13:39:56
+error: column "premium_user" does not exist
+[object Object]
+
+'2020-10-12 13:41:12
+error: column "premium_user" does not exist
+[object Object]
+
+'2020-10-12 13:41:35
+error: column "premium_user" does not exist
+[object Object]
+
+'2020-10-12 13:42:11
+error: column "premium_user" does not exist
+[object Object]
+
+'2020-10-12 13:42:40
+error: column "premium_user" does not exist
+[object Object]
+
+'2020-10-12 13:44:05
+error: column "premium_user" does not exist
+[object Object]
+
+'2020-10-12 13:44:50
+error: column "premium_user" does not exist
+[object Object]
+
+'2020-10-12 13:45:10
+error: column "premium_user" does not exist
+[object Object]
+
+'2020-10-12 13:45:25
+error: column "premium_user" does not exist
+[object Object]
+
+'2020-10-12 13:47:26
+error: column "premium_user" does not exist
+[object Object]
+
+'2020-10-12 13:55:00
+error: column "premium_user" does not exist
+[object Object]
+
+'2020-10-12 13:56:24
+error: column "premium_user" does not exist
+[object Object]
+
+'2020-10-12 13:57:23
+error: column "premium_user" does not exist
+[object Object]
+
+'2020-10-12 13:58:22
+error: column "premium_user" does not exist
+[object Object]
+
+'2020-10-12 14:00:22
+error: column "premium_user" does not exist
+[object Object]
+
+'2020-10-12 14:00:24
+error: column "premium_user" does not exist
+[object Object]
+
+'2020-10-12 14:01:15
+error: column "premium_user" does not exist
+[object Object]
+
+'2020-10-12 14:01:48
+error: column "premium_user" does not exist
+[object Object]
+
+'2020-10-12 14:02:51
+error: column "premium_user" does not exist
+[object Object]
+
+'2020-10-12 14:04:25
+error: column "premium_user" does not exist
+[object Object]
+
+'2020-10-12 14:06:21
+error: column "premium_user" does not exist
+[object Object]
+
+'2020-10-12 14:07:02
+error: column "premium_user" does not exist
+[object Object]
+
+'2020-10-12 14:08:41
+error: column "premium_user" does not exist
+[object Object]
+
+'2020-10-12 14:10:41
+error: column "premium_user" does not exist
+[object Object]
+
+'2020-10-12 14:10:46
+error: column "premium_user" does not exist
+[object Object]
+
+'2020-10-12 14:12:10
+error: column "premium_user" does not exist
+[object Object]
+
+'2020-10-12 14:13:08
+error: column "premium_user" does not exist
+[object Object]
+
+'2020-10-12 14:15:08
+error: column "premium_user" does not exist
+[object Object]
+
+'2020-10-12 14:16:42
+error: column "premium_user" does not exist
+[object Object]
+
+'2020-10-12 14:18:35
+error: column "premium_user" does not exist
+[object Object]
+
+'2020-10-12 14:18:52
+error: column "premium_user" does not exist
+[object Object]
+
+'2020-10-12 14:19:12
+error: column "premium_user" does not exist
+[object Object]
+
+'2020-10-12 14:19:50
+error: column "premium_user" does not exist
+[object Object]
+
+'2020-10-12 14:20:37
+error: column "premium_user" does not exist
+[object Object]
+
+'2020-10-12 14:20:45
+error: column "premium_user" does not exist
+[object Object]
+
+'2020-10-12 14:21:46
+error: column "premium_user" does not exist
+[object Object]
+
+'2020-10-12 14:23:30
+error: column "premium_user" does not exist
+[object Object]
+
+'2020-10-12 14:25:30
+error: column "premium_user" does not exist
+[object Object]
+
+'2020-10-12 14:29:09
+error: column "premium_user" does not exist
+[object Object]
+
+'2020-10-12 14:29:51
+error: column "premium_user" does not exist
+[object Object]
+
+'2020-10-12 14:30:05
+error: column "premium_user" does not exist
+[object Object]
+
+'2020-10-12 14:30:29
+error: column "premium_user" does not exist
+[object Object]
+
+'2020-10-12 14:31:24
+error: column "premium_user" does not exist
+[object Object]
+
+'2020-10-12 14:32:06
+error: column "premium_user" does not exist
+[object Object]
+
+'2020-10-12 14:32:24
+error: column "premium_user" does not exist
+[object Object]
+
+'2020-10-12 14:32:36
+error: column "premium_user" does not exist
+[object Object]
+
+'2020-10-12 14:32:53
+error: column "premium_user" does not exist
+[object Object]
+
+'2020-10-12 14:33:25
+error: column "premium_user" does not exist
+[object Object]
+
+'2020-10-12 14:35:25
+error: column "premium_user" does not exist
+[object Object]
+
+'2020-10-12 14:36:50
+error: column "premium_user" does not exist
+[object Object]
+
+'2020-10-12 14:37:01
+error: column "premium_user" does not exist
 [object Object]
 
-'2020-08-12 16:01:34
-QueryResultError {
-    code: queryResultErrorCode.noData
-    message: "No data returned from the query."
-    received: 0
-    query: "UPDATE images SET small_file_id = '4_zc116088f5b87d73c742a0f11_f110ed64c436a1586_d20200812_m230130_c000_v0001070_t0023' WHERE image_id = (SELECT image_id FROM images WHERE file_name = '5eebb6c17f71e3812d1e91ab/full/buzz-andersen-145254-unsplash.jpg' AND owner_id = '5eebb6c17f71e3812d1e91ab' ORDER BY image_id DESC LIMIT 1) RETURNING *"
-}
+'2020-10-12 14:37:25
+error: column "premium_user" does not exist
 [object Object]
 
-'2020-08-12 16:01:35
-QueryResultError {
-    code: queryResultErrorCode.noData
-    message: "No data returned from the query."
-    received: 0
-    query: "UPDATE images SET small_file_id = '4_zc116088f5b87d73c742a0f11_f110ed64c436a15dc_d20200812_m230135_c000_v0001070_t0023' WHERE image_id = (SELECT image_id FROM images WHERE file_name = '5eebb6c17f71e3812d1e91ab/full/chad-peltola-771832-unsplash.jpg' AND owner_id = '5eebb6c17f71e3812d1e91ab' ORDER BY image_id DESC LIMIT 1) RETURNING *"
-}
+'2020-10-12 14:37:41
+error: column "premium_user" does not exist
 [object Object]
 
-'2020-08-12 16:01:37
-QueryResultError {
-    code: queryResultErrorCode.noData
-    message: "No data returned from the query."
-    received: 0
-    query: "UPDATE images SET small_file_id = '4_zc116088f5b87d73c742a0f11_f110ed64c436a15ec_d20200812_m230136_c000_v0001070_t0023' WHERE image_id = (SELECT image_id FROM images WHERE file_name = '5eebb6c17f71e3812d1e91ab/full/jaromir-kavan-296728-unsplash.jpg' AND owner_id = '5eebb6c17f71e3812d1e91ab' ORDER BY image_id DESC LIMIT 1) RETURNING *"
-}
+'2020-10-12 14:38:36
+error: column "premium_user" does not exist
 [object Object]
 
-'2020-08-12 16:01:38
-QueryResultError {
-    code: queryResultErrorCode.noData
-    message: "No data returned from the query."
-    received: 0
-    query: "UPDATE images SET small_file_id = '4_zc116088f5b87d73c742a0f11_f110ed64c436a1608_d20200812_m230137_c000_v0001070_t0023' WHERE image_id = (SELECT image_id FROM images WHERE file_name = '5eebb6c17f71e3812d1e91ab/full/john-rodenn-castillo-504160-unsplash.jpg' AND owner_id = '5eebb6c17f71e3812d1e91ab' ORDER BY image_id DESC LIMIT 1) RETURNING *"
-}
+'2020-10-12 14:38:42
+error: column "premium_user" does not exist
 [object Object]
 
-'2020-08-12 16:01:40
-QueryResultError {
-    code: queryResultErrorCode.noData
-    message: "No data returned from the query."
-    received: 0
-    query: "UPDATE images SET small_file_id = '4_zc116088f5b87d73c742a0f11_f110ed64c436a161b_d20200812_m230139_c000_v0001070_t0023' WHERE image_id = (SELECT image_id FROM images WHERE file_name = '5eebb6c17f71e3812d1e91ab/full/john-towner-154060-unsplash.jpg' AND owner_id = '5eebb6c17f71e3812d1e91ab' ORDER BY image_id DESC LIMIT 1) RETURNING *"
-}
+'2020-10-12 14:39:37
+error: column "premium_user" does not exist
 [object Object]
 
-'2020-08-12 16:09:43
-QueryResultError {
-    code: queryResultErrorCode.noData
-    message: "No data returned from the query."
-    received: 0
-    query: "UPDATE images SET small_file_id = '4_zc116088f5b87d73c742a0f11_f1041c45ac64a3d52_d20200812_m230633_c000_v0001068_t0014' WHERE image_id = (SELECT image_id FROM images WHERE file_name = '5eebb6c17f71e3812d1e91ab/full/bailey-mahon-308932.jpg' AND owner_id = '5eebb6c17f71e3812d1e91ab' ORDER BY image_id DESC LIMIT 1) RETURNING *"
-}
+'2020-10-12 14:40:01
+error: column "premium_user" does not exist
 [object Object]
 
-'2020-08-13 12:16:44
-QueryResultError {
-    code: queryResultErrorCode.noData
-    message: "No data returned from the query."
-    received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f106792cd625502c6_d20200813_m191335_c000_v0001072_t0034'"
-}
+'2020-10-12 14:41:22
+error: column "premium_user" does not exist
 [object Object]
 
-'2020-08-13 12:16:44
-QueryResultError {
-    code: queryResultErrorCode.noData
-    message: "No data returned from the query."
-    received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f1068bae503b8a313_d20200813_m191323_c000_v0001069_t0026'"
-}
+'2020-10-12 14:43:22
+error: column "premium_user" does not exist
 [object Object]
 
-'2020-08-13 12:16:44
-QueryResultError {
-    code: queryResultErrorCode.noData
-    message: "No data returned from the query."
-    received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f117ed1b29dcf499f_d20200813_m190726_c000_v0001069_t0003'"
-}
+'2020-10-12 14:43:29
+error: column "premium_user" does not exist
 [object Object]
 
-'2020-08-13 12:16:44
-QueryResultError {
-    code: queryResultErrorCode.noData
-    message: "No data returned from the query."
-    received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f117fdc258211bc74_d20200813_m190613_c000_v0001034_t0001'"
-}
+'2020-10-12 14:45:29
+error: column "premium_user" does not exist
 [object Object]
 
-'2020-08-13 12:16:44
-QueryResultError {
-    code: queryResultErrorCode.noData
-    message: "No data returned from the query."
-    received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f111cd7e46a304e8b_d20200813_m185736_c000_v0001072_t0018'"
-}
+'2020-10-12 14:46:36
+error: column "premium_user" does not exist
 [object Object]
 
-'2020-08-13 12:16:44
-QueryResultError {
-    code: queryResultErrorCode.noData
-    message: "No data returned from the query."
-    received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f1029688f74bde314_d20200813_m190820_c000_v0001072_t0017'"
-}
+'2020-10-12 14:47:11
+error: column "premium_user" does not exist
 [object Object]
 
-'2020-08-13 12:16:44
-QueryResultError {
-    code: queryResultErrorCode.noData
-    message: "No data returned from the query."
-    received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f10222e4a4cce39a9_d20200813_m185546_c000_v0001069_t0007'"
-}
+'2020-10-12 14:49:11
+error: column "premium_user" does not exist
 [object Object]
 
-'2020-08-13 12:16:44
-QueryResultError {
-    code: queryResultErrorCode.noData
-    message: "No data returned from the query."
-    received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f109066cdb961eb6e_d20200813_m190525_c000_v0001073_t0045'"
-}
+'2020-10-12 14:49:46
+error: column "premium_user" does not exist
 [object Object]
 
-'2020-08-13 12:19:33
-QueryResultError {
-    code: queryResultErrorCode.noData
-    message: "No data returned from the query."
-    received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f1109285492a65ba4_d20200813_m191513_c000_v0001067_t0053'"
-}
+'2020-10-12 14:51:46
+error: column "premium_user" does not exist
 [object Object]
 
-'2020-08-13 12:24:18
-QueryResultError {
-    code: queryResultErrorCode.noData
-    message: "No data returned from the query."
-    received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f116cecac0e050e14_d20200813_m191800_c000_v0001073_t0033'"
-}
+'2020-10-12 14:52:02
+error: column "premium_user" does not exist
 [object Object]
 
-'2020-08-13 12:38:55
-QueryResultError {
-    code: queryResultErrorCode.noData
-    message: "No data returned from the query."
-    received: 0
-    query: "UPDATE images SET small_file_id = '4_zc116088f5b87d73c742a0f11_f10477cc6f97dc404_d20200813_m193833_c000_v0001072_t0045' WHERE image_id = (SELECT image_id FROM images WHERE file_name = '5eebb6c17f71e3812d1e91ab/full/ales-krivec-488377-unsplash.jpg' AND owner_id = '5eebb6c17f71e3812d1e91ab' ORDER BY image_id DESC LIMIT 1) RETURNING *"
-}
+'2020-10-12 14:52:34
+error: column "premium_user" does not exist
 [object Object]
 
-'2020-08-13 12:40:09
-QueryResultError {
-    code: queryResultErrorCode.noData
-    message: "No data returned from the query."
-    received: 0
-    query: "UPDATE images SET small_file_id = '4_zc116088f5b87d73c742a0f11_f1093652ff35f36ee_d20200813_m193919_c000_v0001069_t0025' WHERE image_id = (SELECT image_id FROM images WHERE file_name = '5eebb6c17f71e3812d1e91ab/full/ales-krivec-488377-unsplash.jpg' AND owner_id = '5eebb6c17f71e3812d1e91ab' ORDER BY image_id DESC LIMIT 1) RETURNING *"
-}
+'2020-10-12 14:53:03
+error: column "premium_user" does not exist
 [object Object]
 
-'2020-08-13 12:43:01
-QueryResultError {
-    code: queryResultErrorCode.noData
-    message: "No data returned from the query."
-    received: 0
-    query: "UPDATE images SET small_file_id = '4_zc116088f5b87d73c742a0f11_f1082ecfd0c8eadc1_d20200813_m194126_c000_v0001072_t0018' WHERE image_id = (SELECT image_id FROM images WHERE file_name = '5eebb6c17f71e3812d1e91ab/full/brigitta-schneiter-193762-unsplash.jpg' AND owner_id = '5eebb6c17f71e3812d1e91ab' ORDER BY image_id DESC LIMIT 1) RETURNING *"
-}
+'2020-10-12 14:55:03
+error: column "premium_user" does not exist
 [object Object]
 
-'2020-08-13 12:43:04
-QueryResultError {
-    code: queryResultErrorCode.noData
-    message: "No data returned from the query."
-    received: 0
-    query: "UPDATE images SET small_file_id = '4_zc116088f5b87d73c742a0f11_f101666589a3f1b03_d20200813_m194241_c000_v0001073_t0054' WHERE image_id = (SELECT image_id FROM images WHERE file_name = '5eebb6c17f71e3812d1e91ab/full/stefan-stefancik-105376.jpg' AND owner_id = '5eebb6c17f71e3812d1e91ab' ORDER BY image_id DESC LIMIT 1) RETURNING *"
-}
+'2020-10-12 14:55:07
+error: column "premium_user" does not exist
 [object Object]
 
-'2020-08-13 12:43:16
-QueryResultError {
-    code: queryResultErrorCode.noData
-    message: "No data returned from the query."
-    received: 0
-    query: "UPDATE images SET small_file_id = '4_zc116088f5b87d73c742a0f11_f104b8887258dc9f5_d20200813_m194158_c000_v0001050_t0049' WHERE image_id = (SELECT image_id FROM images WHERE file_name = '5eebb6c17f71e3812d1e91ab/full/john-rodenn-castillo-504160-unsplash.jpg' AND owner_id = '5eebb6c17f71e3812d1e91ab' ORDER BY image_id DESC LIMIT 1) RETURNING *"
-}
+'2020-10-12 14:55:32
+error: column "premium_user" does not exist
 [object Object]
 
-'2020-08-13 13:12:34
-QueryResultError {
-    code: queryResultErrorCode.noData
-    message: "No data returned from the query."
-    received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f1049a7f5475c3fd9_d20200813_m200530_c000_v0001070_t0027'"
-}
+'2020-10-12 14:57:32
+error: column "premium_user" does not exist
 [object Object]
 
-'2020-08-13 13:12:34
-QueryResultError {
-    code: queryResultErrorCode.noData
-    message: "No data returned from the query."
-    received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f111a92d824acd0aa_d20200813_m195355_c000_v0001073_t0025'"
-}
+'2020-10-12 15:08:20
+error: column "premium_user" does not exist
 [object Object]
 
-'2020-08-13 13:12:34
-QueryResultError {
-    code: queryResultErrorCode.noData
-    message: "No data returned from the query."
-    received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f1051a5d2724b4186_d20200813_m195434_c000_v0001073_t0009'"
-}
+'2020-10-12 15:08:54
+error: column "premium_user" does not exist
 [object Object]
 
-'2020-08-13 13:12:34
-QueryResultError {
-    code: queryResultErrorCode.noData
-    message: "No data returned from the query."
-    received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f119c1ebd0d34c974_d20200813_m200514_c000_v0001002_t0013'"
-}
+'2020-10-12 15:10:27
+error: column "premium_user" does not exist
 [object Object]
 
-'2020-08-13 13:20:22
-QueryResultError {
-    code: queryResultErrorCode.noData
-    message: "No data returned from the query."
-    received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f107e7fa224881137_d20200813_m201304_c000_v0001073_t0044'"
-}
+'2020-10-12 15:11:47
+error: column "premium_user" does not exist
 [object Object]
 
-'2020-08-13 13:20:22
+'2020-10-12 15:26:50
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f108a8fbed9af16ce_d20200813_m201304_c000_v0001067_t0037'"
+    query: "SELECT customer_id, subscription_id FROM owners WHERE owner_id = '{"isTrusted":true}'"
 }
 [object Object]
 
-'2020-08-13 13:20:22
+'2020-10-12 15:27:46
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f102274893a86ade9_d20200813_m201051_c000_v0001071_t0003'"
+    query: "SELECT customer_id, subscription_id FROM owners WHERE owner_id = '{"isTrusted":true}'"
 }
 [object Object]
 
-'2020-08-13 13:20:22
+'2020-10-12 15:28:19
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f102274893a86adc5_d20200813_m201046_c000_v0001071_t0003'"
+    query: "SELECT customer_id, subscription_id FROM owners WHERE owner_id = '{"isTrusted":true}'"
 }
 [object Object]
 
-'2020-08-13 13:45:11
+'2020-10-12 15:28:53
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "UPDATE images SET small_file_id = '4_zc116088f5b87d73c742a0f11_f10725a89a3ebf81b_d20200813_m204450_c000_v0001066_t0012' WHERE image_id = (SELECT image_id FROM images WHERE file_name = '5eebb6c17f71e3812d1e91ab/full/ales-krivec-488377-unsplash.jpg' AND owner_id = '5eebb6c17f71e3812d1e91ab' ORDER BY image_id DESC LIMIT 1) RETURNING *"
+    query: "SELECT customer_id, subscription_id FROM owners WHERE owner_id = '{"isTrusted":true}'"
 }
 [object Object]
 
-'2020-08-13 13:49:45
+'2020-10-12 15:31:34
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f115db025ea8a3cb0_d20200813_m204555_c000_v0001067_t0003'"
+    query: "SELECT customer_id, subscription_id FROM owners WHERE owner_id = '{"isTrusted":true}'"
 }
 [object Object]
 
-'2020-08-13 13:49:45
+'2020-10-12 15:31:39
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f1042452c2d613f47_d20200813_m204555_c000_v0001063_t0026'"
+    query: "SELECT customer_id, subscription_id FROM owners WHERE owner_id = '{"isTrusted":true}'"
 }
 [object Object]
 
-'2020-08-13 14:14:43
+'2020-10-12 15:33:08
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f1128dafd39a60635_d20200813_m205753_c000_v0001067_t0008'"
+    query: "SELECT customer_id, subscription_id FROM owners WHERE owner_id = '{"isTrusted":true}'"
 }
 [object Object]
 
-'2020-08-13 14:14:43
+'2020-10-12 15:34:52
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f1154c43613c8b9b1_d20200813_m211156_c000_v0001071_t0007'"
+    query: "SELECT customer_id, subscription_id FROM owners WHERE owner_id = '{"isTrusted":true}'"
 }
 [object Object]
 
-'2020-08-13 14:14:43
+'2020-10-12 15:36:06
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f1074ff985e52bc56_d20200813_m210900_c000_v0001072_t0034'"
+    query: "SELECT customer_id, subscription_id FROM owners WHERE owner_id = '{"isTrusted":true}'"
 }
 [object Object]
 
-'2020-08-13 14:14:43
+'2020-10-12 15:36:51
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f110968b9c2248025_d20200813_m211233_c000_v0001071_t0040'"
+    query: "SELECT customer_id, subscription_id FROM owners WHERE owner_id = '{"isTrusted":true}'"
 }
 [object Object]
 
-'2020-08-13 14:14:43
+'2020-10-12 15:37:41
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f119efc5a4494048e_d20200813_m210732_c000_v0001063_t0020'"
+    query: "SELECT customer_id, subscription_id FROM owners WHERE owner_id = '{"isTrusted":true}'"
 }
 [object Object]
 
-'2020-08-13 14:21:29
+'2020-10-12 15:39:25
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f117328cdaa876b21_d20200813_m211827_c000_v0001066_t0012'"
+    query: "SELECT customer_id, subscription_id FROM owners WHERE owner_id = '{"isTrusted":true}'"
 }
 [object Object]
 
-'2020-08-13 14:21:29
+'2020-10-12 15:39:49
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f10516d2c66fe9e64_d20200813_m211644_c000_v0001069_t0022'"
+    query: "SELECT customer_id, subscription_id FROM owners WHERE owner_id = '{"isTrusted":true}'"
 }
 [object Object]
 
-'2020-08-13 14:21:29
+'2020-10-12 15:40:12
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f110968b9c22480e2_d20200813_m211247_c000_v0001071_t0040'"
+    query: "SELECT customer_id, subscription_id FROM owners WHERE owner_id = '{"isTrusted":true}'"
 }
 [object Object]
 
-'2020-08-13 14:54:15
+'2020-10-12 15:40:17
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f1033511a73f88d12_d20200813_m214620_c000_v0001072_t0008'"
+    query: "SELECT customer_id, subscription_id FROM owners WHERE owner_id = '{"isTrusted":true}'"
 }
 [object Object]
 
-'2020-08-13 14:54:15
+'2020-10-12 15:41:52
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f118a721aaabea769_d20200813_m214424_c000_v0001063_t0013'"
+    query: "SELECT customer_id, subscription_id FROM owners WHERE owner_id = '{"isTrusted":true}'"
 }
 [object Object]
 
-'2020-08-13 14:54:15
+'2020-10-12 15:41:54
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f103413b3aa3000c5_d20200813_m214906_c000_v0001071_t0043'"
+    query: "SELECT customer_id, subscription_id FROM owners WHERE owner_id = '{"isTrusted":true}'"
 }
 [object Object]
 
-'2020-08-13 14:58:29
+'2020-10-12 15:43:52
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f10843dfd36173d39_d20200813_m215506_c000_v0001069_t0057'"
+    query: "SELECT customer_id, subscription_id FROM owners WHERE owner_id = '{"isTrusted":true}'"
 }
 [object Object]
 
-'2020-08-13 20:33:29
+'2020-10-12 15:43:54
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f106792cd625f88f3_d20200814_m033044_c000_v0001072_t0004'"
+    query: "SELECT customer_id, subscription_id FROM owners WHERE owner_id = '{"isTrusted":true}'"
 }
 [object Object]
 
-'2020-08-13 21:09:42
+'2020-10-12 16:07:51
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f103413b3aa361219_d20200814_m033141_c000_v0001071_t0020'"
+    query: "SELECT customer_id, subscription_id FROM owners WHERE owner_id = '{"isTrusted":true}'"
 }
 [object Object]
 
-'2020-08-14 07:42:11
+'2020-10-12 16:07:52
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f1173d8dc4303abc9_d20200814_m135653_c000_v0001063_t0010'"
+    query: "SELECT customer_id, subscription_id FROM owners WHERE owner_id = '{"isTrusted":true}'"
 }
 [object Object]
 
-'2020-08-14 07:42:11
+'2020-10-12 16:07:56
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f115f41de831c2965_d20200814_m040747_c000_v0001063_t0051'"
+    query: "SELECT customer_id, subscription_id FROM owners WHERE owner_id = '{"isTrusted":true}'"
 }
 [object Object]
 
-'2020-08-14 07:42:11
+'2020-10-12 16:09:51
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f10725a89a3f31429_d20200814_m135750_c000_v0001066_t0058'"
+    query: "SELECT customer_id, subscription_id FROM owners WHERE owner_id = '{"isTrusted":true}'"
 }
 [object Object]
 
-'2020-08-14 07:42:11
+'2020-10-12 16:09:53
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f1167440ad1869ce3_d20200814_m135458_c000_v0001068_t0023'"
+    query: "SELECT customer_id, subscription_id FROM owners WHERE owner_id = '{"isTrusted":true}'"
 }
 [object Object]
 
-'2020-08-14 07:42:11
+'2020-10-12 16:09:56
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f1050211451840dc2_d20200814_m135019_c000_v0001067_t0034'"
+    query: "SELECT customer_id, subscription_id FROM owners WHERE owner_id = '{"isTrusted":true}'"
 }
 [object Object]
 
-'2020-08-14 07:42:11
+'2020-10-12 16:11:38
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f114dbc38af37666f_d20200814_m044447_c000_v0001072_t0026'"
+    query: "SELECT customer_id, subscription_id FROM owners WHERE owner_id = '{"isTrusted":true}'"
 }
 [object Object]
 
-'2020-08-14 07:42:11
+'2020-10-12 16:12:51
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f10422f3ff7c42315_d20200814_m134831_c000_v0001064_t0031'"
+    query: "SELECT customer_id, subscription_id FROM owners WHERE owner_id = '{"isTrusted":true}'"
 }
 [object Object]
 
-'2020-08-14 07:42:11
+'2020-10-12 16:12:57
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f11386e59dee81609_d20200814_m135545_c000_v0001028_t0039'"
+    query: "SELECT customer_id, subscription_id FROM owners WHERE owner_id = '{"isTrusted":true}'"
 }
-[object Object]
-
-'2020-08-14 07:43:58
-error: insert or update on table "images" violates foreign key constraint "images_users_user_id_fk"
 [object Object]
 
-'2020-08-14 07:44:01
+'2020-10-12 16:13:10
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "UPDATE images SET small_file_id = '4_zc116088f5b87d73c742a0f11_f116cecac0e203948_d20200814_m144358_c000_v0001073_t0008' WHERE image_id = (SELECT image_id FROM images WHERE file_name = 'testUserId/full/14eb264e6edd404cb67f6ec1125e4679.jpg' AND owner_id = 'testUserId' ORDER BY image_id DESC LIMIT 1) RETURNING *"
+    query: "SELECT customer_id, subscription_id FROM owners WHERE owner_id = '{"isTrusted":true}'"
 }
-[object Object]
-
-'2020-08-14 07:45:02
-error: insert or update on table "images" violates foreign key constraint "images_users_user_id_fk"
 [object Object]
 
-'2020-08-14 07:45:05
+'2020-10-12 16:15:10
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "UPDATE images SET small_file_id = '4_zc116088f5b87d73c742a0f11_f107b9d8650b12a91_d20200814_m144503_c000_v0001069_t0041' WHERE image_id = (SELECT image_id FROM images WHERE file_name = 'testUserId/full/14eb264e6edd404cb67f6ec1125e4679.jpg' AND owner_id = 'testUserId' ORDER BY image_id DESC LIMIT 1) RETURNING *"
+    query: "SELECT customer_id, subscription_id FROM owners WHERE owner_id = '{"isTrusted":true}'"
 }
-[object Object]
-
-'2020-08-14 07:46:40
-error: insert or update on table "images" violates foreign key constraint "images_users_user_id_fk"
 [object Object]
 
-'2020-08-14 07:46:44
+'2020-10-12 16:17:10
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "UPDATE images SET small_file_id = '4_zc116088f5b87d73c742a0f11_f1148595b827d0e37_d20200814_m144641_c000_v0001073_t0041' WHERE image_id = (SELECT image_id FROM images WHERE file_name = 'testUserId/full/14eb264e6edd404cb67f6ec1125e4679.jpg' AND owner_id = 'testUserId' ORDER BY image_id DESC LIMIT 1) RETURNING *"
+    query: "SELECT customer_id, subscription_id FROM owners WHERE owner_id = '{"isTrusted":true}'"
 }
-[object Object]
-
-'2020-08-14 07:48:27
-error: insert or update on table "images" violates foreign key constraint "images_users_user_id_fk"
 [object Object]
 
-'2020-08-14 07:48:30
+'2020-10-12 16:22:04
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "UPDATE images SET small_file_id = '4_zc116088f5b87d73c742a0f11_f105c77a33e894f49_d20200814_m144828_c000_v0001072_t0006' WHERE image_id = (SELECT image_id FROM images WHERE file_name = 'testUserId/full/14eb264e6edd404cb67f6ec1125e4679.jpg' AND owner_id = 'testUserId' ORDER BY image_id DESC LIMIT 1) RETURNING *"
+    query: "SELECT customer_id, subscription_id FROM owners WHERE owner_id = null"
 }
-[object Object]
-
-'2020-08-14 07:49:11
-error: insert or update on table "images" violates foreign key constraint "images_users_user_id_fk"
 [object Object]
 
-'2020-08-14 07:49:14
+'2020-10-12 19:39:16
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "UPDATE images SET small_file_id = '4_zc116088f5b87d73c742a0f11_f1029688f74d658b6_d20200814_m144912_c000_v0001072_t0022' WHERE image_id = (SELECT image_id FROM images WHERE file_name = 'testUserId/full/14eb264e6edd404cb67f6ec1125e4679.jpg' AND owner_id = 'testUserId' ORDER BY image_id DESC LIMIT 1) RETURNING *"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
-[object Object]
-
-'2020-08-14 07:50:06
-error: insert or update on table "images" violates foreign key constraint "images_users_user_id_fk"
 [object Object]
 
-'2020-08-14 07:50:09
+'2020-10-12 19:40:33
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "UPDATE images SET small_file_id = '4_zc116088f5b87d73c742a0f11_f116120b18b766fa2_d20200814_m145006_c000_v0001071_t0059' WHERE image_id = (SELECT image_id FROM images WHERE file_name = 'testUserId/full/14eb264e6edd404cb67f6ec1125e4679.jpg' AND owner_id = 'testUserId' ORDER BY image_id DESC LIMIT 1) RETURNING *"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = 'change-plan'"
 }
-[object Object]
-
-'2020-08-14 07:51:48
-error: insert or update on table "images" violates foreign key constraint "images_users_user_id_fk"
 [object Object]
 
-'2020-08-14 07:51:51
+'2020-10-12 19:40:49
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "UPDATE images SET small_file_id = '4_zc116088f5b87d73c742a0f11_f10250bfd6858ca69_d20200814_m145148_c000_v0001073_t0055' WHERE image_id = (SELECT image_id FROM images WHERE file_name = 'testUserId/full/14eb264e6edd404cb67f6ec1125e4679.jpg' AND owner_id = 'testUserId' ORDER BY image_id DESC LIMIT 1) RETURNING *"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = 'change-plan'"
 }
-[object Object]
-
-'2020-08-14 07:53:47
-error: insert or update on table "images" violates foreign key constraint "images_users_user_id_fk"
 [object Object]
 
-'2020-08-14 07:53:50
+'2020-10-12 19:41:02
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "UPDATE images SET small_file_id = '4_zc116088f5b87d73c742a0f11_f118571d0e5ca3fa1_d20200814_m145348_c000_v0001065_t0004' WHERE image_id = (SELECT image_id FROM images WHERE file_name = 'testUserId/full/14eb264e6edd404cb67f6ec1125e4679.jpg' AND owner_id = 'testUserId' ORDER BY image_id DESC LIMIT 1) RETURNING *"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = 'change-plan'"
 }
-[object Object]
-
-'2020-08-14 08:07:15
-error: insert or update on table "images" violates foreign key constraint "images_users_user_id_fk"
 [object Object]
 
-'2020-08-14 08:07:18
+'2020-10-12 19:41:03
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "UPDATE images SET small_file_id = '4_zc116088f5b87d73c742a0f11_f10516d2c670c82e5_d20200814_m150716_c000_v0001069_t0038' WHERE image_id = (SELECT image_id FROM images WHERE file_name = 'testUserId/full/14eb264e6edd404cb67f6ec1125e4679.jpg' AND owner_id = 'testUserId' ORDER BY image_id DESC LIMIT 1) RETURNING *"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = 'change-plan'"
 }
-[object Object]
-
-'2020-08-14 08:09:18
-error: insert or update on table "images" violates foreign key constraint "images_users_user_id_fk"
 [object Object]
 
-'2020-08-14 08:09:21
+'2020-10-12 20:35:40
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "UPDATE images SET small_file_id = '4_zc116088f5b87d73c742a0f11_f1128107858dbf772_d20200814_m150918_c000_v0001073_t0015' WHERE image_id = (SELECT image_id FROM images WHERE file_name = 'testUserId/full/14eb264e6edd404cb67f6ec1125e4679.jpg' AND owner_id = 'testUserId' ORDER BY image_id DESC LIMIT 1) RETURNING *"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = 'change-plan'"
 }
-[object Object]
-
-'2020-08-14 08:11:06
-error: insert or update on table "images" violates foreign key constraint "images_users_user_id_fk"
 [object Object]
 
-'2020-08-14 08:11:08
+'2020-10-14 20:23:23
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "UPDATE images SET small_file_id = '4_zc116088f5b87d73c742a0f11_f119c8f27c1a7ac55_d20200814_m151106_c000_v0001045_t0025' WHERE image_id = (SELECT image_id FROM images WHERE file_name = 'testUserId/full/14eb264e6edd404cb67f6ec1125e4679.jpg' AND owner_id = 'testUserId' ORDER BY image_id DESC LIMIT 1) RETURNING *"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
-[object Object]
-
-'2020-08-14 08:11:29
-error: insert or update on table "images" violates foreign key constraint "images_users_user_id_fk"
 [object Object]
 
-'2020-08-14 08:11:39
+'2020-10-14 20:23:31
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "UPDATE images SET small_file_id = '4_zc116088f5b87d73c742a0f11_f106792cd626e068f_d20200814_m151129_c000_v0001072_t0055' WHERE image_id = (SELECT image_id FROM images WHERE file_name = 'testUserId/full/john-rodenn-castillo-504160-unsplash.jpg' AND owner_id = 'testUserId' ORDER BY image_id DESC LIMIT 1) RETURNING *"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
-[object Object]
-
-'2020-08-14 09:33:16
-error: insert or update on table "images" violates foreign key constraint "images_users_user_id_fk"
 [object Object]
 
-'2020-08-14 09:33:18
+'2020-10-14 20:24:15
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "UPDATE images SET small_file_id = '4_zc116088f5b87d73c742a0f11_f11330061e75626ce_d20200814_m163316_c000_v0001071_t0041' WHERE image_id = (SELECT image_id FROM images WHERE file_name = 'testUserId/full/14eb264e6edd404cb67f6ec1125e4679.jpg' AND owner_id = 'testUserId' ORDER BY image_id DESC LIMIT 1) RETURNING *"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
-[object Object]
-
-'2020-08-14 09:35:16
-error: insert or update on table "images" violates foreign key constraint "images_users_user_id_fk"
 [object Object]
 
-'2020-08-14 09:35:19
+'2020-10-14 20:26:27
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "UPDATE images SET small_file_id = '4_zc116088f5b87d73c742a0f11_f100bae0628e01be8_d20200814_m163516_c000_v0001071_t0025' WHERE image_id = (SELECT image_id FROM images WHERE file_name = 'testUserId/full/14eb264e6edd404cb67f6ec1125e4679.jpg' AND owner_id = 'testUserId' ORDER BY image_id DESC LIMIT 1) RETURNING *"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
-[object Object]
-
-'2020-08-14 09:38:29
-error: insert or update on table "images" violates foreign key constraint "images_users_user_id_fk"
 [object Object]
 
-'2020-08-14 09:38:32
+'2020-10-14 20:26:33
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "UPDATE images SET small_file_id = '4_zc116088f5b87d73c742a0f11_f1131fe1dcac7611e_d20200814_m163830_c000_v0001072_t0033' WHERE image_id = (SELECT image_id FROM images WHERE file_name = 'testUserId/full/14eb264e6edd404cb67f6ec1125e4679.jpg' AND owner_id = 'testUserId' ORDER BY image_id DESC LIMIT 1) RETURNING *"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
-[object Object]
-
-'2020-08-14 09:40:29
-error: insert or update on table "images" violates foreign key constraint "images_users_user_id_fk"
 [object Object]
 
-'2020-08-14 09:40:32
+'2020-10-14 20:28:00
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "UPDATE images SET small_file_id = '4_zc116088f5b87d73c742a0f11_f1015684a0e2b02ba_d20200814_m164030_c000_v0001068_t0017' WHERE image_id = (SELECT image_id FROM images WHERE file_name = 'testUserId/full/14eb264e6edd404cb67f6ec1125e4679.jpg' AND owner_id = 'testUserId' ORDER BY image_id DESC LIMIT 1) RETURNING *"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
-[object Object]
-
-'2020-08-14 09:40:34
-error: insert or update on table "images" violates foreign key constraint "images_users_user_id_fk"
 [object Object]
 
-'2020-08-14 09:40:36
+'2020-10-14 20:28:33
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "UPDATE images SET small_file_id = '4_zc116088f5b87d73c742a0f11_f1051d775ae8c7bd2_d20200814_m164034_c000_v0001071_t0012' WHERE image_id = (SELECT image_id FROM images WHERE file_name = 'testUserId/full/14eb264e6edd404cb67f6ec1125e4679.jpg' AND owner_id = 'testUserId' ORDER BY image_id DESC LIMIT 1) RETURNING *"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
-[object Object]
-
-'2020-08-14 09:42:35
-error: insert or update on table "images" violates foreign key constraint "images_users_user_id_fk"
 [object Object]
 
-'2020-08-14 09:42:38
+'2020-10-14 20:34:30
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "UPDATE images SET small_file_id = '4_zc116088f5b87d73c742a0f11_f10725a89a3f3e81c_d20200814_m164235_c000_v0001066_t0023' WHERE image_id = (SELECT image_id FROM images WHERE file_name = 'testUserId/full/14eb264e6edd404cb67f6ec1125e4679.jpg' AND owner_id = 'testUserId' ORDER BY image_id DESC LIMIT 1) RETURNING *"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
-[object Object]
-
-'2020-08-14 09:43:07
-error: insert or update on table "images" violates foreign key constraint "images_users_user_id_fk"
 [object Object]
 
-'2020-08-14 09:43:10
+'2020-10-14 20:34:46
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "UPDATE images SET small_file_id = '4_zc116088f5b87d73c742a0f11_f114b2870bb5e5288_d20200814_m164307_c000_v0001064_t0016' WHERE image_id = (SELECT image_id FROM images WHERE file_name = 'testUserId/full/14eb264e6edd404cb67f6ec1125e4679.jpg' AND owner_id = 'testUserId' ORDER BY image_id DESC LIMIT 1) RETURNING *"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
-[object Object]
-
-'2020-08-14 09:45:09
-error: insert or update on table "images" violates foreign key constraint "images_users_user_id_fk"
 [object Object]
 
-'2020-08-14 09:45:13
+'2020-10-14 20:35:37
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "UPDATE images SET small_file_id = '4_zc116088f5b87d73c742a0f11_f118cd8fa0dae3d83_d20200814_m164510_c000_v0001066_t0059' WHERE image_id = (SELECT image_id FROM images WHERE file_name = 'testUserId/full/14eb264e6edd404cb67f6ec1125e4679.jpg' AND owner_id = 'testUserId' ORDER BY image_id DESC LIMIT 1) RETURNING *"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
-[object Object]
-
-'2020-08-14 10:02:51
-error: insert or update on table "images" violates foreign key constraint "images_users_user_id_fk"
 [object Object]
 
-'2020-08-14 10:02:54
+'2020-10-14 20:36:35
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "UPDATE images SET small_file_id = '4_zc116088f5b87d73c742a0f11_f107459c1bbf6c9ad_d20200814_m170251_c000_v0001067_t0029' WHERE image_id = (SELECT image_id FROM images WHERE file_name = 'testUserId/full/14eb264e6edd404cb67f6ec1125e4679.jpg' AND owner_id = 'testUserId' ORDER BY image_id DESC LIMIT 1) RETURNING *"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
-[object Object]
-
-'2020-08-14 10:04:43
-error: insert or update on table "images" violates foreign key constraint "images_users_user_id_fk"
 [object Object]
 
-'2020-08-14 10:04:46
+'2020-10-14 20:38:15
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "UPDATE images SET small_file_id = '4_zc116088f5b87d73c742a0f11_f1152bffd7ceebf0e_d20200814_m170444_c000_v0001049_t0037' WHERE image_id = (SELECT image_id FROM images WHERE file_name = 'testUserId/full/14eb264e6edd404cb67f6ec1125e4679.jpg' AND owner_id = 'testUserId' ORDER BY image_id DESC LIMIT 1) RETURNING *"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
-[object Object]
-
-'2020-08-14 10:05:32
-error: insert or update on table "images" violates foreign key constraint "images_users_user_id_fk"
 [object Object]
 
-'2020-08-14 10:05:37
+'2020-10-14 20:38:23
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "UPDATE images SET small_file_id = '4_zc116088f5b87d73c742a0f11_f101666589a5d54d7_d20200814_m170533_c000_v0001073_t0050' WHERE image_id = (SELECT image_id FROM images WHERE file_name = 'testUserId/full/14eb264e6edd404cb67f6ec1125e4679.jpg' AND owner_id = 'testUserId' ORDER BY image_id DESC LIMIT 1) RETURNING *"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
-[object Object]
-
-'2020-08-14 10:07:32
-error: insert or update on table "images" violates foreign key constraint "images_users_user_id_fk"
 [object Object]
 
-'2020-08-14 10:07:35
+'2020-10-14 20:38:36
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "UPDATE images SET small_file_id = '4_zc116088f5b87d73c742a0f11_f11862c5a861ddf3a_d20200814_m170732_c000_v0001070_t0003' WHERE image_id = (SELECT image_id FROM images WHERE file_name = 'testUserId/full/14eb264e6edd404cb67f6ec1125e4679.jpg' AND owner_id = 'testUserId' ORDER BY image_id DESC LIMIT 1) RETURNING *"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
-[object Object]
-
-'2020-08-14 10:09:57
-error: insert or update on table "images" violates foreign key constraint "images_users_user_id_fk"
 [object Object]
 
-'2020-08-14 10:10:00
+'2020-10-14 20:39:08
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "UPDATE images SET small_file_id = '4_zc116088f5b87d73c742a0f11_f10972c6a757938d8_d20200814_m170957_c000_v0001064_t0015' WHERE image_id = (SELECT image_id FROM images WHERE file_name = 'testUserId/full/14eb264e6edd404cb67f6ec1125e4679.jpg' AND owner_id = 'testUserId' ORDER BY image_id DESC LIMIT 1) RETURNING *"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
-[object Object]
-
-'2020-08-14 10:10:46
-error: insert or update on table "images" violates foreign key constraint "images_users_user_id_fk"
 [object Object]
 
-'2020-08-14 10:10:49
+'2020-10-14 20:39:17
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "UPDATE images SET small_file_id = '4_zc116088f5b87d73c742a0f11_f102274893a9759db_d20200814_m171046_c000_v0001071_t0024' WHERE image_id = (SELECT image_id FROM images WHERE file_name = 'testUserId/full/14eb264e6edd404cb67f6ec1125e4679.jpg' AND owner_id = 'testUserId' ORDER BY image_id DESC LIMIT 1) RETURNING *"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
-[object Object]
-
-'2020-08-14 10:12:03
-error: insert or update on table "images" violates foreign key constraint "images_users_user_id_fk"
 [object Object]
 
-'2020-08-14 10:12:06
+'2020-10-14 20:39:23
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "UPDATE images SET small_file_id = '4_zc116088f5b87d73c742a0f11_f118cd8fa0dae5a82_d20200814_m171203_c000_v0001066_t0050' WHERE image_id = (SELECT image_id FROM images WHERE file_name = 'testUserId/full/14eb264e6edd404cb67f6ec1125e4679.jpg' AND owner_id = 'testUserId' ORDER BY image_id DESC LIMIT 1) RETURNING *"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
-[object Object]
-
-'2020-08-14 10:14:03
-error: insert or update on table "images" violates foreign key constraint "images_users_user_id_fk"
 [object Object]
 
-'2020-08-14 10:14:06
+'2020-10-14 20:41:17
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "UPDATE images SET small_file_id = '4_zc116088f5b87d73c742a0f11_f1117b4151ffd8b11_d20200814_m171403_c000_v0001071_t0049' WHERE image_id = (SELECT image_id FROM images WHERE file_name = 'testUserId/full/14eb264e6edd404cb67f6ec1125e4679.jpg' AND owner_id = 'testUserId' ORDER BY image_id DESC LIMIT 1) RETURNING *"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-08-15 08:31:57
+'2020-10-14 20:41:23
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f111f4b44236aea66_d20200815_m152203_c000_v0001067_t0059'"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-08-15 08:31:57
+'2020-10-14 20:41:57
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f118a0d74fa02e141_d20200815_m152859_c000_v0001014_t0016'"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-08-15 08:48:47
+'2020-10-14 20:45:16
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f118e9af4eb03c86a_d20200815_m154608_c000_v0001073_t0012'"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-08-15 08:48:47
+'2020-10-14 20:45:45
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f115db025ea9dc4ea_d20200815_m154425_c000_v0001067_t0050'"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-08-15 12:37:01
+'2020-10-14 20:46:26
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f101666589a7eea92_d20200815_m182249_c000_v0001073_t0053'"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-08-15 12:37:01
+'2020-10-14 20:48:26
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f105c77a33eb7776a_d20200815_m182249_c000_v0001072_t0001'"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-08-15 12:37:01
+'2020-10-14 20:51:33
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f11923f209fea3d2a_d20200815_m191603_c000_v0001051_t0037'"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-08-15 12:37:01
+'2020-10-14 20:57:38
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f1044f1d1f209bf07_d20200815_m190503_c000_v0001062_t0000'"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-08-15 12:37:01
+'2020-10-14 21:03:34
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f1100ca3865bd0764_d20200815_m160015_c000_v0001072_t0044'"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-08-15 12:37:01
+'2020-10-14 21:04:49
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f11885ce6d8d5dfc4_d20200815_m181915_c000_v0001072_t0030'"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-08-15 12:37:01
+'2020-10-14 21:06:25
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f105c77a33eb865d1_d20200815_m190835_c000_v0001072_t0019'"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-08-15 12:37:01
+'2020-10-14 21:10:28
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f114ce30b9752fb1d_d20200815_m191052_c000_v0001070_t0024'"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-08-15 12:37:01
+'2020-10-14 21:12:28
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f11138490b85d34b4_d20200815_m181915_c000_v0001069_t0032'"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-08-15 12:37:01
+'2020-10-14 21:13:10
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f104d56d892dad317_d20200815_m155915_c000_v0001066_t0009'"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-08-15 12:37:01
+'2020-10-14 21:13:11
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f101696e224bb5748_d20200815_m185200_c000_v0001069_t0032'"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-08-15 12:37:01
+'2020-10-14 21:14:25
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f105762b380824336_d20200815_m155947_c000_v0001064_t0025'"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-08-15 12:37:01
+'2020-10-14 21:15:26
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f101666589a7fb974_d20200815_m190402_c000_v0001073_t0036'"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-08-15 12:37:01
+'2020-10-14 21:15:49
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f113483db5f0d7a41_d20200815_m190309_c000_v0001063_t0041'"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-08-15 12:37:01
+'2020-10-14 21:20:07
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f1137fd42cdf48acc_d20200815_m155618_c000_v0001073_t0015'"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-08-15 12:37:01
+'2020-10-14 21:20:46
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f101a2b24c907a74a_d20200815_m185336_c000_v0001070_t0000'"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-08-15 12:37:01
+'2020-10-14 21:21:32
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f1168917b26afe2e3_d20200815_m155553_c000_v0001070_t0017'"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-08-15 12:37:01
+'2020-10-14 21:23:32
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f107e7fa224c59bb5_d20200815_m190718_c000_v0001073_t0050'"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-08-15 12:37:01
+'2020-10-14 21:24:22
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f11138490b85b5b04_d20200815_m155346_c000_v0001069_t0050'"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-08-15 12:37:01
+'2020-10-14 21:24:34
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f112eed9e3902f33b_d20200815_m185114_c000_v0001062_t0015'"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-08-15 12:37:01
+'2020-10-14 21:24:34
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f1067608cb3601ac0_d20200815_m155228_c000_v0001068_t0013'"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-08-15 12:37:01
+'2020-10-14 21:25:19
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f117628801f09a048_d20200815_m184839_c000_v0001050_t0042'"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-08-15 12:37:01
+'2020-10-14 21:26:04
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f11903f0731dbd83e_d20200815_m154657_c000_v0001072_t0005'"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-08-15 12:37:01
+'2020-10-14 21:27:13
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f11330061e76e5612_d20200815_m184652_c000_v0001071_t0014'"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-08-15 12:37:01
+'2020-10-14 21:29:14
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f118f44fe0c62ae1f_d20200815_m193310_c000_v0001010_t0010'"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-08-15 12:37:01
+'2020-10-14 21:40:06
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f1083afb4dcaabe7f_d20200815_m184520_c000_v0001073_t0042'"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-08-15 12:37:01
+'2020-10-14 21:45:39
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f1082ecfd0cced3df_d20200815_m160015_c000_v0001072_t0041'"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-08-15 12:37:01
+'2020-10-14 21:46:00
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f117c447e29dcee63_d20200815_m190632_c000_v0001071_t0004'"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-08-15 12:37:01
+'2020-10-14 21:49:49
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f106792cd629579dc_d20200815_m193006_c000_v0001072_t0008'"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-08-15 12:37:01
+'2020-10-14 21:51:06
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f11138490b85d7446_d20200815_m184029_c000_v0001069_t0031'"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-08-15 12:37:01
+'2020-10-14 21:51:48
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f10539f8ef4d45a65_d20200815_m183630_c000_v0001035_t0004'"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-08-15 12:37:01
+'2020-10-14 21:53:48
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f112810785900aa8f_d20200815_m183630_c000_v0001073_t0045'"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-08-15 12:37:01
+'2020-10-14 21:55:45
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f104b68a60c5b1ba2_d20200815_m191949_c000_v0001027_t0025'"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-08-15 12:37:01
+'2020-10-14 21:57:06
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f11484736d97c01ff_d20200815_m191755_c000_v0001066_t0037'"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-08-15 12:37:01
+'2020-10-14 21:57:36
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f1072455fea5ad066_d20200815_m182607_c000_v0001071_t0047'"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
-[object Object]
-
-'2020-08-15 14:49:26
-error: null value in column "owner_id" violates not-null constraint
-[object Object]
-
-'2020-08-15 14:49:48
-error: null value in column "owner_id" violates not-null constraint
-[object Object]
-
-'2020-08-15 14:49:56
-error: null value in column "owner_id" violates not-null constraint
 [object Object]
 
-'2020-08-15 14:50:32
+'2020-10-14 22:01:36
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "UPDATE images SET small_file_id = '4_zc116088f5b87d73c742a0f11_f108a8fbed9c56615_d20200815_m214926_c000_v0001067_t0021' WHERE image_id = (SELECT image_id FROM images WHERE file_name = 'undefined/full/Complete' AND owner_id = null ORDER BY image_id DESC LIMIT 1) RETURNING *"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-08-15 14:50:48
+'2020-10-14 22:03:27
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "UPDATE images SET small_file_id = '4_zc116088f5b87d73c742a0f11_f118e9af4eb0ae254_d20200815_m214956_c000_v0001073_t0049' WHERE image_id = (SELECT image_id FROM images WHERE file_name = 'undefined/full/Complete' AND owner_id = null ORDER BY image_id DESC LIMIT 1) RETURNING *"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-08-15 14:51:05
+'2020-10-15 09:31:29
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "UPDATE images SET small_file_id = '4_zc116088f5b87d73c742a0f11_f107e7fa224c9ec99_d20200815_m214949_c000_v0001073_t0004' WHERE image_id = (SELECT image_id FROM images WHERE file_name = 'undefined/full/Complete' AND owner_id = null ORDER BY image_id DESC LIMIT 1) RETURNING *"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
-[object Object]
-
-'2020-08-15 14:51:19
-error: null value in column "owner_id" violates not-null constraint
-[object Object]
-
-'2020-08-15 14:51:26
-error: null value in column "owner_id" violates not-null constraint
-[object Object]
-
-'2020-08-15 14:52:06
-error: null value in column "owner_id" violates not-null constraint
 [object Object]
 
-'2020-08-15 14:52:30
+'2020-10-15 09:31:29
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "UPDATE images SET small_file_id = '4_zc116088f5b87d73c742a0f11_f1123788555cb0eaf_d20200815_m215127_c000_v0001072_t0055' WHERE image_id = (SELECT image_id FROM images WHERE file_name = 'undefined/full/Complete' AND owner_id = null ORDER BY image_id DESC LIMIT 1) RETURNING *"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-08-15 14:52:34
+'2020-10-15 09:32:35
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "UPDATE images SET small_file_id = '4_zc116088f5b87d73c742a0f11_f1045309163896b15_d20200815_m215119_c000_v0001069_t0024' WHERE image_id = (SELECT image_id FROM images WHERE file_name = 'undefined/full/Complete' AND owner_id = null ORDER BY image_id DESC LIMIT 1) RETURNING *"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-08-15 14:52:45
+'2020-10-15 09:34:35
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "UPDATE images SET small_file_id = '4_zc116088f5b87d73c742a0f11_f118c4888b1d4430a_d20200815_m215206_c000_v0001064_t0010' WHERE image_id = (SELECT image_id FROM images WHERE file_name = 'undefined/full/Complete' AND owner_id = null ORDER BY image_id DESC LIMIT 1) RETURNING *"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-08-15 16:24:52
+'2020-10-15 09:34:58
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "UPDATE images SET small_file_id = '4_zc116088f5b87d73c742a0f11_f1083afb4dcb06b05_d20200815_m232449_c000_v0001073_t0037' WHERE image_id = (SELECT image_id FROM images WHERE file_name = '5eebb6c17f71e3812d1e91ab/full/14eb264e6edd404cb67f6ec1125e4679.jpg' AND owner_id = '5eebb6c17f71e3812d1e91ab' ORDER BY image_id DESC LIMIT 1) RETURNING *"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-08-15 16:24:54
+'2020-10-15 09:36:58
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "UPDATE images SET small_file_id = '4_zc116088f5b87d73c742a0f11_f1083afb4dcb06b45_d20200815_m232453_c000_v0001073_t0037' WHERE image_id = (SELECT image_id FROM images WHERE file_name = '5eebb6c17f71e3812d1e91ab/full/ales-krivec-488377-unsplash.jpg' AND owner_id = '5eebb6c17f71e3812d1e91ab' ORDER BY image_id DESC LIMIT 1) RETURNING *"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-08-15 16:24:55
+'2020-10-15 09:39:36
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "UPDATE images SET small_file_id = '4_zc116088f5b87d73c742a0f11_f1083afb4dcb06b5b_d20200815_m232454_c000_v0001073_t0037' WHERE image_id = (SELECT image_id FROM images WHERE file_name = '5eebb6c17f71e3812d1e91ab/full/ashim-d-silva-162286.jpg' AND owner_id = '5eebb6c17f71e3812d1e91ab' ORDER BY image_id DESC LIMIT 1) RETURNING *"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-08-15 16:24:57
+'2020-10-15 09:43:24
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "UPDATE images SET small_file_id = '4_zc116088f5b87d73c742a0f11_f1083afb4dcb06b83_d20200815_m232455_c000_v0001073_t0037' WHERE image_id = (SELECT image_id FROM images WHERE file_name = '5eebb6c17f71e3812d1e91ab/full/bailey-mahon-308932.jpg' AND owner_id = '5eebb6c17f71e3812d1e91ab' ORDER BY image_id DESC LIMIT 1) RETURNING *"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-08-15 16:24:58
+'2020-10-15 09:44:26
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "UPDATE images SET small_file_id = '4_zc116088f5b87d73c742a0f11_f1083afb4dcb06b9d_d20200815_m232457_c000_v0001073_t0037' WHERE image_id = (SELECT image_id FROM images WHERE file_name = '5eebb6c17f71e3812d1e91ab/full/brigitta-schneiter-193762-unsplash.jpg' AND owner_id = '5eebb6c17f71e3812d1e91ab' ORDER BY image_id DESC LIMIT 1) RETURNING *"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-08-15 16:25:00
+'2020-10-15 09:44:27
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "UPDATE images SET small_file_id = '4_zc116088f5b87d73c742a0f11_f1083afb4dcb06bc6_d20200815_m232458_c000_v0001073_t0037' WHERE image_id = (SELECT image_id FROM images WHERE file_name = '5eebb6c17f71e3812d1e91ab/full/buzz-andersen-145254-unsplash.jpg' AND owner_id = '5eebb6c17f71e3812d1e91ab' ORDER BY image_id DESC LIMIT 1) RETURNING *"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-08-15 16:25:02
+'2020-10-15 09:45:39
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "UPDATE images SET small_file_id = '4_zc116088f5b87d73c742a0f11_f1083afb4dcb06be4_d20200815_m232500_c000_v0001073_t0037' WHERE image_id = (SELECT image_id FROM images WHERE file_name = '5eebb6c17f71e3812d1e91ab/full/chad-peltola-771832-unsplash.jpg' AND owner_id = '5eebb6c17f71e3812d1e91ab' ORDER BY image_id DESC LIMIT 1) RETURNING *"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-08-19 08:50:58
+'2020-10-15 09:47:28
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "UPDATE images SET small_file_id = '4_zc116088f5b87d73c742a0f11_f1042452c2d8ec4df_d20200819_m155058_c000_v0001063_t0041' WHERE image_id = (SELECT image_id FROM images WHERE file_name = '5eebb6c17f71e3812d1e91ab/thumb/009-010.jpg' AND owner_id = null ORDER BY image_id DESC LIMIT 1) RETURNING *"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
-[object Object]
-
-'2020-08-19 08:51:00
-error: null value in column "w" violates not-null constraint
 [object Object]
 
-'2020-08-19 08:52:15
+'2020-10-15 09:47:29
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "UPDATE images SET small_file_id = '4_zc116088f5b87d73c742a0f11_f101a86987090b4d1_d20200819_m155215_c000_v0001071_t0043' WHERE image_id = (SELECT image_id FROM images WHERE file_name = '5eebb6c17f71e3812d1e91ab/thumb/009-010.jpg' AND owner_id = null ORDER BY image_id DESC LIMIT 1) RETURNING *"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
-[object Object]
-
-'2020-08-19 08:52:17
-error: null value in column "w" violates not-null constraint
 [object Object]
 
-'2020-08-19 08:54:04
+'2020-10-15 09:52:32
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "UPDATE images SET small_file_id = '4_zc116088f5b87d73c742a0f11_f110129d027f9adb1_d20200819_m155404_c000_v0001073_t0042' WHERE image_id = (SELECT image_id FROM images WHERE file_name = '5eebb6c17f71e3812d1e91ab/thumb/009-010.jpg' AND owner_id = null ORDER BY image_id DESC LIMIT 1) RETURNING *"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
-[object Object]
-
-'2020-08-19 08:54:05
-error: null value in column "w" violates not-null constraint
-[object Object]
-
-'2020-08-19 09:04:40
-error: null value in column "w" violates not-null constraint
 [object Object]
 
-'2020-08-19 09:04:41
+'2020-10-15 09:54:32
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "UPDATE images SET small_file_id = '4_zc116088f5b87d73c742a0f11_f104c614d41bdf4e4_d20200819_m160440_c000_v0001049_t0023' WHERE image_id = (SELECT image_id FROM images WHERE file_name = '5eebb6c17f71e3812d1e91ab/thumb/009-010.jpg' AND owner_id = null ORDER BY image_id DESC LIMIT 1) RETURNING *"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
-[object Object]
-
-'2020-08-19 09:06:57
-error: null value in column "w" violates not-null constraint
 [object Object]
 
-'2020-08-19 09:06:58
+'2020-10-15 09:59:37
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "UPDATE images SET small_file_id = '4_zc116088f5b87d73c742a0f11_f1039dcbebb0693eb_d20200819_m160657_c000_v0001045_t0012' WHERE image_id = (SELECT image_id FROM images WHERE file_name = '5eebb6c17f71e3812d1e91ab/thumb/009-010.jpg' AND owner_id = null ORDER BY image_id DESC LIMIT 1) RETURNING *"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
-[object Object]
-
-'2020-08-19 09:09:51
-error: null value in column "w" violates not-null constraint
 [object Object]
 
-'2020-08-19 09:09:52
+'2020-10-15 10:00:09
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "UPDATE images SET small_file_id = '4_zc116088f5b87d73c742a0f11_f10007076d7bac140_d20200819_m160951_c000_v0001072_t0046' WHERE image_id = (SELECT image_id FROM images WHERE file_name = '5eebb6c17f71e3812d1e91ab/thumb/009-010.jpg' AND owner_id = null ORDER BY image_id DESC LIMIT 1) RETURNING *"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
-[object Object]
-
-'2020-08-19 09:14:36
-error: null value in column "owner_id" violates not-null constraint
 [object Object]
 
-'2020-08-19 09:14:38
+'2020-10-15 10:04:08
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "UPDATE images SET small_file_id = '4_zc116088f5b87d73c742a0f11_f112f83d7710780d0_d20200819_m161437_c000_v0001070_t0032' WHERE image_id = (SELECT image_id FROM images WHERE file_name = '5eebb6c17f71e3812d1e91ab/thumb/009-010.jpg' AND owner_id = null ORDER BY image_id DESC LIMIT 1) RETURNING *"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
-[object Object]
-
-'2020-08-19 09:16:50
-error: null value in column "owner_id" violates not-null constraint
-[object Object]
-
-'2020-08-19 09:17:56
-error: null value in column "owner_id" violates not-null constraint
-[object Object]
-
-'2020-08-19 09:26:03
-error: null value in column "owner_id" violates not-null constraint
 [object Object]
 
-'2020-08-19 09:26:03
+'2020-10-15 10:05:12
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "UPDATE images SET small_file_id = '4_zc116088f5b87d73c742a0f11_f10156a401b86b6e2_d20200819_m162603_c000_v0001007_t0034' WHERE image_id = (SELECT image_id FROM images WHERE file_name = '5eebb6c17f71e3812d1e91ab/thumb/009-010.jpg' AND owner_id = null ORDER BY image_id DESC LIMIT 1) RETURNING *"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
-[object Object]
-
-'2020-08-19 09:26:28
-error: null value in column "owner_id" violates not-null constraint
 [object Object]
 
-'2020-08-19 09:26:30
+'2020-10-15 10:05:46
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "UPDATE images SET small_file_id = '4_zc116088f5b87d73c742a0f11_f110826ae291f3986_d20200819_m162629_c000_v0001053_t0044' WHERE image_id = (SELECT image_id FROM images WHERE file_name = '5eebb6c17f71e3812d1e91ab/thumb/009-010.jpg' AND owner_id = null ORDER BY image_id DESC LIMIT 1) RETURNING *"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
-[object Object]
-
-'2020-08-19 09:27:27
-error: null value in column "owner_id" violates not-null constraint
 [object Object]
 
-'2020-08-19 09:27:29
+'2020-10-15 10:07:23
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "UPDATE images SET small_file_id = '4_zc116088f5b87d73c742a0f11_f1068bae5041edb50_d20200819_m162727_c000_v0001069_t0056' WHERE image_id = (SELECT image_id FROM images WHERE file_name = '5eebb6c17f71e3812d1e91ab/thumb/009-010.jpg' AND owner_id = null ORDER BY image_id DESC LIMIT 1) RETURNING *"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
-[object Object]
-
-'2020-08-19 09:28:12
-Error: Property 'userId' doesn't exist.
 [object Object]
 
-'2020-08-19 09:28:16
+'2020-10-15 10:08:47
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "UPDATE images SET small_file_id = '4_zc116088f5b87d73c742a0f11_f1027ad216cf7cd18_d20200819_m162814_c000_v0001046_t0002' WHERE image_id = (SELECT image_id FROM images WHERE file_name = '5eebb6c17f71e3812d1e91ab/thumb/009-010.jpg' AND owner_id = '5eebb6c17f71e3812d1e91ab' ORDER BY image_id DESC LIMIT 1) RETURNING *"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-08-19 09:28:43
+'2020-10-15 10:09:13
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "UPDATE images SET small_file_id = '4_zc116088f5b87d73c742a0f11_f1170b00501ad0b6c_d20200819_m162843_c000_v0001067_t0056' WHERE image_id = (SELECT image_id FROM images WHERE file_name = '5eebb6c17f71e3812d1e91ab/thumb/009-010.jpg' AND owner_id = '5eebb6c17f71e3812d1e91ab' ORDER BY image_id DESC LIMIT 1) RETURNING *"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-08-21 18:51:30
+'2020-10-15 10:09:55
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f1074ff985f37ba32_d20200821_m023158_c000_v0001072_t0001'"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-08-23 10:43:07
+'2020-10-15 10:14:44
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f1123788556b3ba21_d20200823_m173522_c000_v0001072_t0056'"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-08-23 10:43:07
+'2020-10-15 10:21:38
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f11092854931b2f82_d20200823_m173218_c000_v0001067_t0041'"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-08-23 10:43:07
+'2020-10-15 10:28:06
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f1072455feaf3d4a8_d20200823_m172854_c000_v0001071_t0037'"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-08-23 10:43:07
+'2020-10-15 10:32:10
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f107b9d8651411f71_d20200823_m173546_c000_v0001069_t0042'"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-08-23 10:43:07
+'2020-10-15 10:33:44
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f11470aefe3a38d0d_d20200823_m173544_c000_v0001071_t0045'"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-08-23 10:43:07
+'2020-10-15 10:34:06
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f11330061e80aa9a8_d20200823_m173429_c000_v0001071_t0034'"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-08-23 10:43:07
+'2020-10-15 10:40:33
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f1033511a75307a80_d20200823_m173427_c000_v0001072_t0047'"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-08-23 10:43:07
+'2020-10-15 10:41:01
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f1137fd42cf015d29_d20200823_m173518_c000_v0001073_t0055'"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-08-23 10:43:07
+'2020-10-15 10:42:41
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f10696903b46097d6_d20200823_m172806_c000_v0001064_t0052'"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-08-23 10:43:07
+'2020-10-15 11:00:37
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f1168917b272a5525_d20200823_m172644_c000_v0001070_t0015'"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-08-23 10:43:07
+'2020-10-15 11:01:16
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f111528c4fe4ee503_d20200823_m173404_c000_v0001062_t0022'"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-08-23 10:43:07
+'2020-10-15 11:01:26
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f113a581015d70c00_d20200823_m173054_c000_v0001067_t0057'"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-08-23 10:43:07
+'2020-10-15 11:01:27
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f1124f0fdaf7544ae_d20200823_m173342_c000_v0001068_t0000'"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-08-26 19:18:38
+'2020-10-15 11:02:39
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f100c605035d5df0d_d20200826_m201216_c000_v0001073_t0019'"
+    query: "SELECT customer_id, subscription_id FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-08-26 19:36:23
+'2020-10-15 11:03:22
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f116bc4d495f29544_d20200827_m023421_c000_v0001070_t0009'"
+    query: "SELECT customer_id, subscription_id FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-08-26 19:36:23
+'2020-10-15 11:04:32
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f1081546d5d672e46_d20200827_m022435_c000_v0001055_t0057'"
+    query: "SELECT customer_id, subscription_id FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-08-26 19:36:23
+'2020-10-15 11:04:42
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f115c9669ea79a842_d20200827_m022318_c000_v0001074_t0022'"
+    query: "SELECT customer_id, subscription_id FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-08-26 19:36:23
+'2020-10-15 11:06:05
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f109067c21fb4efb8_d20200827_m022453_c000_v0001071_t0003'"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
-[object Object]
-
-'2020-09-09 20:56:38
-error: column "guestid" does not exist
-[object Object]
-
-'2020-09-14 13:50:04
-error: column "guestid" does not exist
-[object Object]
-
-'2020-09-14 13:52:02
-Error: Property 'keys.auth' doesn't exist.
-[object Object]
-
-'2020-09-14 13:55:13
-Error: Property 'keys.auth' doesn't exist.
 [object Object]
 
-'2020-09-20 20:39:33
+'2020-10-15 11:08:05
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f113dfd14ede33fc0_d20200917_m164153_c000_v0001074_t0018'"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-09-21 09:33:10
+'2020-10-15 11:16:41
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f1042de11433266e8_d20200917_m031334_c000_v0001070_t0039'"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
-[object Object]
-
-'2020-09-23 16:14:18
-Error: Property 'ownerId' doesn't exist.
 [object Object]
 
-'2020-09-23 16:17:18
+'2020-10-15 11:16:42
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f102ad3c334a3cd18_d20200923_m213158_c000_v0001067_t0030'"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
-[object Object]
-
-'2020-09-23 16:45:47
-Error: Property 'ownerId' doesn't exist.
-[object Object]
-
-'2020-09-23 16:48:14
-Error: Property 'ownerId' doesn't exist.
-[object Object]
-
-'2020-09-23 16:49:45
-Error: Property 'ownerId' doesn't exist.
-[object Object]
-
-'2020-09-23 16:50:21
-Error: Property 'ownerId' doesn't exist.
-[object Object]
-
-'2020-09-23 16:53:29
-Error: Property 'ownerId' doesn't exist.
-[object Object]
-
-'2020-09-23 16:54:56
-Error: Property 'ownerId' doesn't exist.
-[object Object]
-
-'2020-09-23 16:56:28
-Error: Property 'ownerId' doesn't exist.
 [object Object]
 
-'2020-09-23 17:01:51
+'2020-10-15 11:22:14
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f103f9afa5469f8ba_d20200923_m213158_c000_v0001073_t0010'"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-09-23 21:35:27
+'2020-10-15 11:22:16
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f114f5cd1bee5aac4_d20200924_m043237_c000_v0001075_t0030'"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-09-23 21:42:33
+'2020-10-15 11:31:20
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f11672aceaf6aca4d_d20200924_m043847_c000_v0001073_t0022'"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-09-23 21:47:33
+'2020-10-15 11:33:19
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f1096f2ad18558215_d20200924_m044500_c000_v0001067_t0011'"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-09-23 21:48:26
+'2020-10-15 11:37:11
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f1148c57f374b504b_d20200924_m044613_c000_v0001074_t0045'"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-09-23 21:51:32
+'2020-10-15 11:37:30
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f107f9bbb91978df9_d20200924_m044922_c000_v0001073_t0054'"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-09-23 22:15:34
+'2020-10-15 11:38:10
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f108ca453bfbd146f_d20200924_m051255_c000_v0001067_t0028'"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-09-23 22:15:34
+'2020-10-15 11:40:55
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f11672aceaf6b8432_d20200924_m051255_c000_v0001073_t0037'"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-09-23 22:15:34
+'2020-10-15 11:41:13
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f112f304e37d5678d_d20200924_m051255_c000_v0001074_t0034'"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-09-23 22:15:34
+'2020-10-15 11:43:13
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f102881db67913a85_d20200924_m051255_c000_v0001071_t0058'"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-09-24 08:29:00
+'2020-10-15 11:44:32
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f111a89ea622ee16b_d20200924_m053635_c000_v0001074_t0048'"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-09-24 08:29:00
+'2020-10-15 11:46:32
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f112a1476f23d8d77_d20200924_m053746_c000_v0001075_t0013'"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-09-24 08:29:00
+'2020-10-15 11:53:26
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f107c57365345e4fa_d20200924_m152828_c000_v0001074_t0054'"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-09-24 08:29:00
+'2020-10-15 11:55:26
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f105ceacba4a2b966_d20200924_m053711_c000_v0001070_t0038'"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-09-24 08:29:00
+'2020-10-15 12:16:14
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f11758da99c9cf244_d20200924_m053617_c000_v0001067_t0011'"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-09-24 08:29:00
+'2020-10-15 12:18:14
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f104341ab798b59aa_d20200924_m053737_c000_v0001074_t0041'"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-09-24 08:29:00
+'2020-10-15 12:19:23
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f1153430c4e640ef2_d20200924_m053722_c000_v0001073_t0021'"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-09-24 08:29:00
+'2020-10-15 12:19:30
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f1133e2bfbf1eed2d_d20200924_m053733_c000_v0001074_t0059'"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-09-24 08:29:00
+'2020-10-15 12:21:07
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f112a1476f23d8dfa_d20200924_m053750_c000_v0001075_t0033'"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-09-24 08:29:00
+'2020-10-15 12:21:22
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f100dafc531ecc292_d20200924_m053733_c000_v0001073_t0021'"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-09-24 08:29:00
+'2020-10-15 12:21:30
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f107f9bbb9198a538_d20200924_m053740_c000_v0001073_t0023'"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-09-24 08:29:00
+'2020-10-15 12:21:42
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f100dafc531ecc2ed_d20200924_m053740_c000_v0001073_t0006'"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-09-24 08:29:00
+'2020-10-15 12:21:47
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f1020e19b8b539273_d20200924_m053656_c000_v0001074_t0015'"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-09-24 08:29:00
+'2020-10-15 12:21:53
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f111f94e452d4c8be_d20200924_m053702_c000_v0001007_t0011'"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-09-24 08:29:00
+'2020-10-15 20:18:06
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f1028eea668a1a414_d20200924_m053536_c000_v0001066_t0033'"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-09-24 08:29:00
+'2020-10-15 20:21:36
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f107dcc8ac7d27278_d20200924_m053720_c000_v0001074_t0059'"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-09-24 08:29:00
+'2020-10-15 20:25:23
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f116026fc92665e10_d20200924_m053715_c000_v0001075_t0054'"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-09-24 08:29:00
+'2020-10-15 21:25:52
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f118506af85deeb11_d20200924_m053630_c000_v0001073_t0006'"
+    query: "SELECT plan FROM owners WHERE owner_id = 'undefined'"
 }
 [object Object]
 
-'2020-09-24 08:29:00
+'2020-10-15 21:25:52
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f1081718b8298cc49_d20200924_m053708_c000_v0001073_t0040'"
+    query: "SELECT plan FROM owners WHERE owner_id = 'undefined'"
 }
 [object Object]
 
-'2020-09-24 08:29:00
+'2020-10-15 21:25:52
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f1060a3717f862ebc_d20200924_m053658_c000_v0001074_t0002'"
+    query: "SELECT plan FROM owners WHERE owner_id = 'undefined'"
 }
 [object Object]
 
-'2020-09-24 08:29:00
+'2020-10-15 21:25:52
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f119dcb2c3d817c44_d20200924_m053620_c000_v0001073_t0024'"
+    query: "SELECT plan FROM owners WHERE owner_id = 'undefined'"
 }
 [object Object]
 
-'2020-09-24 08:29:00
+'2020-10-15 21:25:52
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f1081718b8298cbd5_d20200924_m053702_c000_v0001073_t0055'"
+    query: "SELECT plan FROM owners WHERE owner_id = 'undefined'"
 }
 [object Object]
 
-'2020-09-24 08:29:00
+'2020-10-15 21:27:34
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f1152eadb324feaf7_d20200924_m152605_c000_v0001075_t0025'"
+    query: "SELECT plan FROM owners WHERE owner_id = 'undefined'"
 }
 [object Object]
 
-'2020-09-24 08:29:00
+'2020-10-15 21:27:34
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f10637ec118d5cf65_d20200924_m053718_c000_v0001066_t0018'"
+    query: "SELECT plan FROM owners WHERE owner_id = 'undefined'"
 }
 [object Object]
 
-'2020-09-24 08:29:00
+'2020-10-15 21:27:35
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f1197e04e42889445_d20200924_m053751_c000_v0001063_t0050'"
+    query: "SELECT plan FROM owners WHERE owner_id = 'undefined'"
 }
 [object Object]
 
-'2020-09-24 08:29:00
+'2020-10-15 21:27:35
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f11463801662b83b4_d20200924_m053651_c000_v0001014_t0000'"
+    query: "SELECT plan FROM owners WHERE owner_id = 'undefined'"
 }
 [object Object]
 
-'2020-09-24 08:29:00
+'2020-10-15 21:27:35
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f1193073205108dcf_d20200924_m053625_c000_v0001075_t0033'"
+    query: "SELECT plan FROM owners WHERE owner_id = 'undefined'"
 }
 [object Object]
 
-'2020-09-24 08:29:00
+'2020-10-15 21:28:35
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f1118f13241200169_d20200924_m053631_c000_v0001034_t0021'"
+    query: "SELECT plan FROM owners WHERE owner_id = 'undefined'"
 }
 [object Object]
 
-'2020-09-24 08:29:00
+'2020-10-15 21:32:58
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f1153430c4e640b6f_d20200924_m053642_c000_v0001073_t0038'"
+    query: "SELECT plan FROM owners WHERE owner_id = 'undefined'"
 }
 [object Object]
 
-'2020-09-24 08:29:00
+'2020-10-16 07:49:49
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f109acaad4c00d66f_d20200924_m053553_c000_v0001073_t0044'"
+    query: "SELECT plan FROM owners WHERE owner_id = 'undefined'"
 }
 [object Object]
 
-'2020-09-24 08:29:00
+'2020-10-16 07:50:37
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f1114ef7a995fdce2_d20200924_m053647_c000_v0001071_t0009'"
+    query: "SELECT plan FROM owners WHERE owner_id = 'undefined'"
 }
 [object Object]
 
-'2020-09-24 08:29:00
+'2020-10-16 10:00:51
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f119b854121c376e1_d20200924_m053632_c000_v0001069_t0039'"
+    query: "SELECT plan FROM owners WHERE owner_id = 'undefined'"
 }
 [object Object]
 
-'2020-09-24 08:29:00
+'2020-10-16 10:02:53
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f108bc8097bd5a890_d20200924_m053554_c000_v0001072_t0029'"
+    query: "SELECT plan FROM owners WHERE owner_id = 'undefined'"
 }
 [object Object]
 
-'2020-09-24 08:29:00
+'2020-10-16 10:04:11
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f11712317ac8148f4_d20200924_m053544_c000_v0001075_t0016'"
+    query: "SELECT plan FROM owners WHERE owner_id = 'undefined'"
 }
 [object Object]
 
-'2020-09-24 08:29:00
+'2020-10-16 10:06:11
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f1153430c4e6404d1_d20200924_m053526_c000_v0001073_t0034'"
+    query: "SELECT plan FROM owners WHERE owner_id = 'undefined'"
 }
 [object Object]
 
-'2020-09-24 08:29:00
+'2020-10-16 10:06:41
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f1037b1cdbfd083df_d20200924_m053529_c000_v0001070_t0014'"
+    query: "SELECT plan FROM owners WHERE owner_id = 'undefined'"
 }
 [object Object]
 
-'2020-09-24 08:29:00
+'2020-10-16 10:07:35
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f11726dcf80c8240d_d20200924_m053510_c000_v0001074_t0036'"
+    query: "SELECT plan FROM owners WHERE owner_id = 'undefined'"
 }
 [object Object]
 
-'2020-09-24 08:29:00
+'2020-10-16 10:48:35
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f10881030587ba9e0_d20200924_m053536_c000_v0001074_t0039'"
+    query: "SELECT plan FROM owners WHERE owner_id = 'undefined'"
 }
 [object Object]
 
-'2020-09-24 08:29:00
+'2020-10-16 10:50:31
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f1060a3717f86262a_d20200924_m053534_c000_v0001074_t0024'"
+    query: "SELECT plan FROM owners WHERE owner_id = 'undefined'"
 }
 [object Object]
 
-'2020-09-24 08:29:00
+'2020-10-16 10:51:51
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f110e6132d1f5cb36_d20200924_m053552_c000_v0001071_t0058'"
+    query: "SELECT plan FROM owners WHERE owner_id = 'undefined'"
 }
 [object Object]
 
-'2020-09-24 08:29:01
+'2020-10-16 10:53:40
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f112f304e37d5c3cb_d20200924_m053450_c000_v0001074_t0027'"
+    query: "SELECT plan FROM owners WHERE owner_id = 'undefined'"
 }
 [object Object]
 
-'2020-09-24 08:29:01
+'2020-10-16 11:08:53
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f107b290b401cf7ec_d20200924_m053423_c000_v0001054_t0051'"
+    query: "SELECT customer_id, plan FROM owners WHERE owner_id = null"
 }
 [object Object]
 
-'2020-09-24 08:29:00
+'2020-10-16 11:10:06
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f103e05c6d5df4134_d20200924_m053540_c000_v0001071_t0027'"
+    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = null AND file_id = '4_zc116088f5b87d73c742a0f11_f118ab23c513c749a_d20201016_m180932_c000_v0001074_t0025'"
 }
 [object Object]
 
-'2020-09-24 08:29:00
+'2020-10-16 11:10:06
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f11413376b00c06e2_d20200924_m053518_c000_v0001068_t0030'"
+    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = null AND file_id = '4_zc116088f5b87d73c742a0f11_f10910503787c64e2_d20201016_m144931_c000_v0001075_t0056'"
 }
 [object Object]
 
-'2020-09-24 08:29:01
+'2020-10-16 11:10:06
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f100bc3e313f6d809_d20200924_m053425_c000_v0001074_t0038'"
+    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = null AND file_id = '4_zc116088f5b87d73c742a0f11_f1149d0d735f86398_d20201016_m180826_c000_v0001072_t0035'"
 }
 [object Object]
 
-'2020-09-24 08:29:01
+'2020-10-16 11:10:06
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f101adabd311f666a_d20200924_m053526_c000_v0001074_t0016'"
+    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = null AND file_id = '4_zc116088f5b87d73c742a0f11_f1054a11078b3f577_d20201016_m151154_c000_v0001075_t0036'"
 }
 [object Object]
 
-'2020-09-24 08:29:01
+'2020-10-16 11:10:06
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f107dcc8ac7d26524_d20200924_m053437_c000_v0001074_t0030'"
+    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = null AND file_id = '4_zc116088f5b87d73c742a0f11_f1146525c806ed885_d20201016_m180852_c000_v0001075_t0009'"
 }
 [object Object]
 
-'2020-09-24 08:29:01
+'2020-10-16 11:10:06
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f101adabd311f62fa_d20200924_m053447_c000_v0001074_t0016'"
+    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = null AND file_id = '4_zc116088f5b87d73c742a0f11_f1178813be0ce05a5_d20201016_m144934_c000_v0001063_t0038'"
 }
 [object Object]
 
-'2020-09-24 08:29:01
+'2020-10-16 11:10:06
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f1147d682316e52c9_d20200924_m053426_c000_v0001073_t0050'"
+    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = null AND file_id = '4_zc116088f5b87d73c742a0f11_f101e3e1b2baa1c6d_d20201016_m151157_c000_v0001064_t0054'"
 }
 [object Object]
 
-'2020-09-24 08:29:01
+'2020-10-16 11:14:53
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f103f9afa547573ac_d20200924_m053437_c000_v0001073_t0027'"
+    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = null AND file_id = '4_zc116088f5b87d73c742a0f11_f1149d0d735f86398_d20201016_m180826_c000_v0001072_t0035'"
 }
 [object Object]
 
-'2020-09-24 08:29:01
+'2020-10-16 11:14:54
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f11044d52fc2156b6_d20200924_m053416_c000_v0001068_t0012'"
+    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = null AND file_id = '4_zc116088f5b87d73c742a0f11_f1178813be0ce05a5_d20201016_m144934_c000_v0001063_t0038'"
 }
 [object Object]
 
-'2020-09-24 08:29:01
+'2020-10-16 11:14:54
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f102610b575e9d6c4_d20200924_m053423_c000_v0001075_t0000'"
+    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = null AND file_id = '4_zc116088f5b87d73c742a0f11_f10910503787c64e2_d20201016_m144931_c000_v0001075_t0056'"
 }
 [object Object]
 
-'2020-09-24 08:29:01
+'2020-10-16 11:14:54
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f102610b575e9dcca_d20200924_m053503_c000_v0001075_t0010'"
+    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = null AND file_id = '4_zc116088f5b87d73c742a0f11_f118ab23c513c749a_d20201016_m180932_c000_v0001074_t0025'"
 }
 [object Object]
 
-'2020-09-24 08:29:01
+'2020-10-16 11:14:54
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f1052b58cf707be9a_d20200924_m053451_c000_v0001072_t0046'"
+    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = null AND file_id = '4_zc116088f5b87d73c742a0f11_f101e3e1b2baa1c6d_d20201016_m151157_c000_v0001064_t0054'"
 }
 [object Object]
 
-'2020-09-24 08:29:01
+'2020-10-16 11:14:54
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f118506af85dee684_d20200924_m053517_c000_v0001073_t0057'"
+    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = null AND file_id = '4_zc116088f5b87d73c742a0f11_f1054a11078b3f577_d20201016_m151154_c000_v0001075_t0036'"
 }
 [object Object]
 
-'2020-09-24 08:29:01
+'2020-10-16 11:14:54
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f1153430c4e63fe27_d20200924_m053412_c000_v0001073_t0021'"
+    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = null AND file_id = '4_zc116088f5b87d73c742a0f11_f1146525c806ed885_d20201016_m180852_c000_v0001075_t0009'"
 }
 [object Object]
 
-'2020-09-24 08:29:01
+'2020-10-16 11:15:27
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f118c97f19c263cd1_d20200924_m053428_c000_v0001072_t0003'"
+    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = null AND file_id = '4_zc116088f5b87d73c742a0f11_f10910503787c64e2_d20201016_m144931_c000_v0001075_t0056'"
 }
 [object Object]
 
-'2020-09-24 08:29:01
+'2020-10-16 11:15:27
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f111978052a4025a9_d20200924_m053340_c000_v0001073_t0010'"
+    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = null AND file_id = '4_zc116088f5b87d73c742a0f11_f1054a11078b3f577_d20201016_m151154_c000_v0001075_t0036'"
 }
 [object Object]
 
-'2020-09-24 08:29:01
+'2020-10-16 11:15:27
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f104c9951e1e3faf9_d20200924_m053340_c000_v0001075_t0019'"
+    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = null AND file_id = '4_zc116088f5b87d73c742a0f11_f118ab23c513c749a_d20201016_m180932_c000_v0001074_t0025'"
 }
 [object Object]
 
-'2020-09-24 08:29:01
+'2020-10-16 11:15:27
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f112f304e37d5be01_d20200924_m053340_c000_v0001074_t0025'"
+    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = null AND file_id = '4_zc116088f5b87d73c742a0f11_f1178813be0ce05a5_d20201016_m144934_c000_v0001063_t0038'"
 }
 [object Object]
 
-'2020-09-24 08:29:01
+'2020-10-16 11:15:27
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f100dafc531ecb709_d20200924_m053337_c000_v0001073_t0024'"
+    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = null AND file_id = '4_zc116088f5b87d73c742a0f11_f101e3e1b2baa1c6d_d20201016_m151157_c000_v0001064_t0054'"
 }
 [object Object]
 
-'2020-09-24 08:29:01
+'2020-10-16 11:15:27
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f101be6aadabeef8a_d20200924_m053337_c000_v0001073_t0057'"
+    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = null AND file_id = '4_zc116088f5b87d73c742a0f11_f1149d0d735f86398_d20201016_m180826_c000_v0001072_t0035'"
 }
 [object Object]
 
-'2020-09-24 08:29:01
+'2020-10-16 11:15:27
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f11726dcf80c820c9_d20200924_m053435_c000_v0001074_t0028'"
+    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = null AND file_id = '4_zc116088f5b87d73c742a0f11_f1146525c806ed885_d20201016_m180852_c000_v0001075_t0009'"
 }
 [object Object]
 
-'2020-09-24 08:29:01
+'2020-10-16 11:17:24
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f10303d78215a2032_d20200924_m053425_c000_v0001074_t0032'"
+    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = null AND file_id = '4_zc116088f5b87d73c742a0f11_f1149d0d735f86398_d20201016_m180826_c000_v0001072_t0035'"
 }
 [object Object]
 
-'2020-09-24 08:29:01
+'2020-10-16 11:17:24
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f11887457f9a7aa0b_d20200924_m053426_c000_v0001055_t0019'"
+    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = null AND file_id = '4_zc116088f5b87d73c742a0f11_f1178813be0ce05a5_d20201016_m144934_c000_v0001063_t0038'"
 }
 [object Object]
 
-'2020-09-24 08:29:01
+'2020-10-16 11:17:24
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f1139bfdf5713d350_d20200924_m053412_c000_v0001071_t0013'"
+    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = null AND file_id = '4_zc116088f5b87d73c742a0f11_f1054a11078b3f577_d20201016_m151154_c000_v0001075_t0036'"
 }
 [object Object]
 
-'2020-09-24 08:29:01
+'2020-10-16 11:17:24
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f10881030587ba15e_d20200924_m053353_c000_v0001074_t0014'"
+    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = null AND file_id = '4_zc116088f5b87d73c742a0f11_f101e3e1b2baa1c6d_d20201016_m151157_c000_v0001064_t0054'"
 }
 [object Object]
 
-'2020-09-24 08:29:01
+'2020-10-16 11:17:24
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f10181a4dcdb43b6f_d20200924_m053356_c000_v0001075_t0055'"
+    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = null AND file_id = '4_zc116088f5b87d73c742a0f11_f10910503787c64e2_d20201016_m144931_c000_v0001075_t0056'"
 }
 [object Object]
 
-'2020-09-24 08:29:01
+'2020-10-16 11:17:24
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f1091a0f3479e26fb_d20200924_m053342_c000_v0001075_t0054'"
+    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = null AND file_id = '4_zc116088f5b87d73c742a0f11_f1146525c806ed885_d20201016_m180852_c000_v0001075_t0009'"
 }
 [object Object]
 
-'2020-09-24 08:29:01
+'2020-10-16 11:17:24
 QueryResultError {
     code: queryResultErrorCode.noData
     message: "No data returned from the query."
     received: 0
-    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = '5eebb6c17f71e3812d1e91ab' AND file_id = '4_zc116088f5b87d73c742a0f11_f110c3c3d2875a7cf_d20200924_m053356_c000_v0001075_t0041'"
+    query: "SELECT file_id, small_file_id FROM images WHERE owner_id = null AND file_id = '4_zc116088f5b87d73c742a0f11_f118ab23c513c749a_d20201016_m180932_c000_v0001074_t0025'"
 }
-[object Object]
-
-'2020-09-24 13:41:13
-error: null value in column "w" violates not-null constraint
-[object Object]
-
-'2020-09-24 13:41:54
-error: null value in column "w" violates not-null constraint
-[object Object]
-
-'2020-09-24 13:42:47
-error: null value in column "w" violates not-null constraint
-[object Object]
-
-'2020-09-24 13:43:17
-error: null value in column "w" violates not-null constraint
 [object Object]
 
 '

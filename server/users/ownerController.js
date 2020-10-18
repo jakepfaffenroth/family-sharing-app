@@ -4,6 +4,8 @@ const { body, validationResult } = require('express-validator');
 const { sanitizeBody } = require('express-validator');
 const db = require('../db').pgPromise;
 const { v4: uuidv4 } = require('uuid');
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+const { error } = require('winston');
 
 passport.initialize();
 
@@ -11,6 +13,7 @@ module.exports.create = [
   // VALIDATE FIELDS
   // username and password must not be empty
   body('username', 'Username must not be empty.').trim().isLength({ min: 1 }),
+  body('email', 'Email must not be empty.').trim(),
   body('password', 'Password must not be empty.').trim(),
   body('password', 'Password must be at least 6 characters.').isLength({
     min: 6,
@@ -88,22 +91,34 @@ module.exports.create = [
 
         if (err) return next(err);
 
+        const customer = await stripe.customers.create({
+          name: `${req.body.lastName}, ${req.body.firstName}`,
+          email: req.body.email,
+        });
+
         const owner = await db.one(
-          'INSERT INTO owners (owner_id, username, first_name, last_name, password, guest_id) VALUES (${id}, ${username}, ${firstName}, ${lastName}, ${password}, ${guestId}) RETURNING *',
+          'INSERT INTO owners (owner_id, username, first_name, last_name, email, password, guest_id, customer_id) VALUES (${id}, ${username}, ${firstName}, ${lastName}, ${email}, ${password}, ${guestId}, ${customerId}) RETURNING username, first_name',
           {
             id: uuidv4(),
             username: req.body.username,
             firstName: req.body.firstName,
             lastName: req.body.lastName,
+            email: req.body.email,
             password: hashedPassword,
             guestId: uuidv4(),
+            customerId: customer.id,
           }
         );
 
         success('User ' + owner.username + ' created');
 
         //Account created; redirect to account completion screen (choose plan)
-        res.redirect('/complete-signup' + '?owner=' + owner.ownerId);
+        // res.render('/complete-signup' + '?owner=' + owner.ownerId, {name: owner.firstName});
+        res.render('accountCompletion', {
+          name: owner.firstName,
+          customerId: customer.id,
+          OwnerId: owner.id,
+        });
 
         // Account created; redirect to login screen
         // res.redirect('/login');
@@ -111,7 +126,7 @@ module.exports.create = [
     }
   },
 ];
-
+// TODO - debug this module
 module.exports.choosePlan = async (req, res) => {
   const quota = setQuota(req.body.plan);
   function setQuota(plan) {
@@ -125,23 +140,26 @@ module.exports.choosePlan = async (req, res) => {
     }
   }
 
+  const obj = { ...req.body, quota };
+
   try {
     const owner = await db.oneOrNone(
-      'UPDATE owners SET plan = $plan, quota = $quota WHERE owner_id = $ownerId RETURNING *',
+      'UPDATE owners SET plan = ${plan}, quota = ${quota} WHERE owner_id = ${ownerId} RETURNING *',
       { ...req.body, quota }
     );
-    console.log('owner.plan:', owner.plan);
-    console.log('owner.quota:', owner.quota);
+
+    res.redirect('/login');
   } catch (err) {
     error('err:', err);
   }
 };
 
+// For GUESTS - fetches owner info and images
 module.exports.getOwner = async (req, res) => {
   try {
     db.task(async (t) => {
       const owner = await db.oneOrNone(
-        'SELECT first_name, last_name, owner_id, guest_id, premium_user FROM owners WHERE guest_id = ${guestId}',
+        'SELECT first_name, last_name, owner_id, guest_id, plan FROM owners WHERE guest_id = ${guestId}',
         req.body
       );
 
@@ -155,7 +173,7 @@ module.exports.getOwner = async (req, res) => {
         owner
       );
       return res.json({
-        owner: owner,
+        owner: { ...owner, images },
         images: images,
       });
     });

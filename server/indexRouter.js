@@ -31,6 +31,7 @@ router.get('/pricing', (req, res) => {
   res.render('pricing');
 });
 
+
 router.get('/login', (req, res) => {
   req.query.q ? (isErrVisible = true) : (isErrVisible = false);
   res.render('login', {
@@ -51,7 +52,7 @@ router.get('/logout', (req, res) => {
   // req.session.destroy();
   req.logout();
   res.redirect('/login');
-  console.log('Logged out');
+  verbose('Logged out');
 });
 
 module.exports = router;

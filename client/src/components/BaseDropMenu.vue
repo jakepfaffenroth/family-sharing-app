@@ -2,33 +2,54 @@
   <div class="relative" @mouseleave="closeMenu">
     <!-- Menu toggle button -->
     <button class="btn" :class="btnStyle" @click="openMenu">
-      <slot name="btnLabel">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          class="m-auto mt-1 h-5 w-5 text-white"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M19 9l-7 7-7-7"
-          />
-        </svg>
-      </slot>
+      <slot name="btnLabel"></slot>
     </button>
 
+    <!-- <div style="/*! display: none; */" class="absolute -right-4 z-40 w-56">
+      <div
+        class="grid my-2 mx-4 p-1 bg-white rounded border border-teal-300 transition-all duration-150 ease-in-out shadow-xl"
+      >
+        <div class="p-1">
+          <a class="main-menu-link">Share</a>
+          <a class="main-menu-link">Download all photos</a>
+          <a href="/account" class="main-menu-link">Account</a>
+          <a class="main-menu-link">Log out</a>
+          <a class="main-menu-link">Nuke</a>
+          <a class="main-menu-link">Toast</a>
+          <hr class="mt-1" />
+          <div class="mt-3 mb-1 text-center text-sm text-teal-500">
+            <p>You've used</p>
+            <p>1.37 MB of 2 GB</p>
+            <div
+              class="relative flex h-2 w-5/6 my-2 mx-auto rounded-sm overflow-hidden"
+            >
+              <div
+                class="left-0 h-full border rounded-l-sm bg-green-400 border-green-400"
+                style="width: 2%;"
+              ></div>
+              <div
+                class="flex-grow border-t border-b border-r border-gray-400 rounded-r-sm"
+              ></div>
+            </div>
+          </div>
+          <a class="main-menu-link text-purple-500 font-semibold text-center">
+            Get more storage
+          </a>
+        </div>
+      </div>
+    </div> -->
+
     <!-- Menu list -->
-    <transition name="slide-fade">
+    <transition name="slide-fade" mode="out-in">
       <div
         v-show="isMenuVisible"
-        class="absolute right-0 overflow-hidden shadow-xl z-40"
+        id="invisible-wrapper"
+        class="absolute -right-4 z-40 w-56"
         :class="menuStyle"
       >
         <div
-          class="grid mt-2 p-1 bg-white rounded border border-teal-300 transition-all duration-150 ease-in-out"
+          id="menu-list"
+          class="grid my-2 mx-4  p-1 bg-white rounded border border-teal-300 shadow-xl transition-all duration-150 ease-in-out"
           @click="closeMenu($event)"
         >
           <slot name="listItems"></slot>
@@ -48,7 +69,8 @@ export default {
       btnStyle: 'main-menu-btn',
       menuStyle: 'main-menu-list',
       linkStyle: 'main-menu-link',
-      isMenuVisible: false
+      isMenuVisible: false,
+      preventClose: false
     };
   },
   beforeMount() {
@@ -66,9 +88,17 @@ export default {
   },
   methods: {
     openMenu() {
+      this.preventClose = true;
+      setTimeout(() => {
+        this.preventClose = false;
+      }, 500);
       this.isMenuVisible = true;
     },
     closeMenu(event) {
+      // Help prevent accidentally closing menu immediately after opening
+      if (event.type === 'mouseleave' && this.preventClose) {
+        return;
+      }
       //Only close the menu on mouseleave or if a link is clicked
       event.type === 'click' && event.target.tagName != 'A'
         ? null // don't close menu
@@ -84,7 +114,7 @@ export default {
 }
 
 .main-menu-btn {
-  @apply w-8 h-8 bg-teal-500 rounded-r-lg  hover:bg-teal-600;
+  @apply w-8 h-8 bg-teal-600 rounded-r-lg  hover:bg-teal-500;
 }
 
 .main-menu-list {
