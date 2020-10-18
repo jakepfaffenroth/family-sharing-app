@@ -15,6 +15,7 @@ pnpm-debug.log*
 populateGuestIds*
 ngrok
 server/logs/
+.*audit.json
 
 # Local config files
 .nova*
