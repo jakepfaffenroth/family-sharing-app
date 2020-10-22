@@ -94,7 +94,6 @@ module.exports.checkSession = async (req, res, next) => {
     );
 
     owner = owner[0]; //Extract owner from array; if row not found, owner === undefined
-
     if (!owner) {
       info('Could not find user logged in');
       return res.json({ isLoggedIn: false });

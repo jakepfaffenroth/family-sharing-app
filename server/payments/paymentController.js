@@ -248,7 +248,7 @@ module.exports = {
       'SELECT customer_id, plan FROM owners WHERE owner_id = ${ownerId}',
       { ownerId: req.body.ownerId }
     );
-
+console.log('customer:', customer);
     const response = await stripe.paymentMethods.list({
       customer: customer.customerId,
       type: 'card',

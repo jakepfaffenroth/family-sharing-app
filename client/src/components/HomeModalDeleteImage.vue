@@ -1,5 +1,5 @@
 <template>
-  <base-modal v-if="imgDeleteInfo" @close-modal="$emit('close-delete-modal')">
+  <base-modal v-if="imgDeleteInfo" @close-modal="$emit('close-modal')">
     <template #header>
       <h3>
         Are you sure you want to delete this image?
@@ -9,10 +9,10 @@
       <p class="mb-6">
         It can't be undone!
       </p>
-      <img class="mb-10 h-56" :src="imgDeleteInfo.thumb" />
+      <img class="mb-10 h-56 rounded shadow" :src="imgDeleteInfo.thumbnail" />
     </template>
     <template #footer>
-      <base-button-cancel @click.prevent="$emit('close-delete-modal')">
+      <base-button-cancel @click.prevent="$emit('close-modal')">
         Cancel
       </base-button-cancel>
       <base-button-purple @click="deleteAndCloseModal">
@@ -39,14 +39,12 @@ export default {
       default: null
     }
   },
-  emits: ['close-delete-modal', 'delete-image'],
+  emits: ['close-modal', 'delete-image'],
   methods: {
     deleteAndCloseModal() {
       this.$emit('delete-image', this.imgDeleteInfo);
-      this.$emit('close-delete-modal');
+      this.$emit('close-modal');
     }
   }
 };
 </script>
-
-<style scoped></style>

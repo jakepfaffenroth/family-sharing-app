@@ -187,7 +187,6 @@
       return;
     }
     let result = zxcvbn(input);
-    console.log('result:', result);
 
     let suggs = '';
     if (result.feedback.suggestions) {
@@ -225,7 +224,6 @@
   }
 
   function changeBarStyle(barIndex, color) {
-    console.log('barIndex:', barIndex);
     const baseStyle =
       'w-1/5 border rounded-sm left-0 h-2 transition-all duration-300 ease-out';
     if (barIndex < bars.length - 1) {

@@ -47,16 +47,19 @@
                 Usage
               </h3>
               <p>
+                {{ imageCount }} image{{ imageCount != 1 ? 's' : '' }} uploaded
+              </p>
+              <p>
                 You've used {{ usageValue.num }} {{ usageValue.unit }} of
-                {{ owner.quota / 1000 }} GB
+                {{ quota / 1000 }} GB
               </p>
               <div
                 class="relative flex h-2 my-2 mx-auto rounded-sm overflow-hidden"
               >
                 <div
                   class="left-0 h-full border rounded-l-sm"
-                  :class="'bg-' + barColor + ' border-' + barColor"
-                  :style="barWidth"
+                  :class="'bg-' + usageBarColor + ' border-' + usageBarColor"
+                  :style="usageBarWidth"
                 ></div>
                 <div
                   class="flex-grow border-t border-b border-r border-gray-400 rounded-r-sm"
@@ -113,52 +116,19 @@
 
 <script>
 import axios from 'axios';
-import { ref, reactive, inject, computed } from 'vue';
+import { inject, computed } from 'vue';
+import { useStore } from 'vuex';
 
 export default {
   name: 'AccountSummary',
-  props: {
-    owner: {
-      type: Object,
-      default: null
-    },
-    planDetails: {
-      type: Object,
-      default: null
-    },
-    usage: {
-      type: Object,
-      default: null
-    }
-  },
   emits: ['open-plan-change'],
-  setup(props) {
+  setup() {
+    const store = useStore();
     const server = process.env.VUE_APP_SERVER;
     const toast = inject('toast');
-    const { owner, usage } = reactive(props);
 
-    const storagePercentage = computed(() => {
-      return (usage.mb / owner.quota) * 100;
-    });
-    const usageValue = computed(() => {
-      if (usage.gb >= 1) return { num: usage.gb.toFixed(2), unit: 'GB' };
-      else if (usage.mb >= 1) return { num: usage.mb.toFixed(2), unit: 'MB' };
-      else return { num: usage.kb.toFixed(2), unit: 'KB' };
-    });
-    const barWidth = computed(() => {
-      return storagePercentage.value > 2
-        ? 'width: ' + storagePercentage() + '%'
-        : 'width: ' + 2 + '%';
-    });
-    const barColor = computed(() => {
-      if (storagePercentage.value < 40) {
-        return 'green-400';
-      } else if (storagePercentage.value < 90) {
-        return 'orange-400';
-      } else {
-        return 'red-500';
-      }
-    });
+    const owner = computed(() => store.state.ownerStore.owner);
+    const storagePercentage = computed(() => store.getters.storagePercentage);
 
     // TODO - Add update billing functionality
     async function updateBilling() {
@@ -180,63 +150,64 @@ export default {
       });
     }
 
-    async function cancelSubscription() {
-      const owner = inject('owner');
+    // async function cancelSubscription() {
+    //   const response = await axios(
+    //     process.env.VUE_APP_SERVER + '/payment/cancel-subscription',
+    //     {
+    //       method: 'post',
+    //       headers: {
+    //         'Content-Type': 'application/json'
+    //       },
+    //       data: JSON.stringify({
+    //         ownerId: owner.value.ownerId
+    //       })
+    //     }
+    //   );
 
-      const response = await axios(
-        process.env.VUE_APP_SERVER + '/payment/cancel-subscription',
-        {
-          method: 'post',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          data: JSON.stringify({
-            ownerId: owner.ownerId
-          })
-        }
-      );
-
-      const data = response.data;
-      if (
-        !data.subCancelled &&
-        data.msg.toLowerCase().includes('no such subscription')
-      ) {
-        toast.open({
-          type: 'info',
-          duration: 0,
-          dismissible: true,
-          message: '<div id="toast-message"><p id="msg-text"></p></div>'
-        });
-        document.getElementById('toast-message').innerText =
-          'Your subscription was not found. Please contact support or try again.';
-      } else if (!data.subCancelled) {
-        toast.open({
-          type: 'info',
-          duration: 0,
-          dismissible: true,
-          message: '<div id="toast-message"><p id="msg-text"></p></div>'
-        });
-        document.getElementById('msg-text').innerText =
-          'Your subscription could not be cancelled right now.\nPlease contact support or try again.';
-      }
-      if (data.subCancelled) {
-        toast.open({
-          type: 'info',
-          duration: 5000,
-          // dismissible: true,
-          message: '<div id="toast-message"><p id="msg-text"></p></div>'
-        });
-        document.getElementById('msg-text').innerText =
-          'Subscription cancelled\n' + response;
-      }
-    }
+    //   const data = response.data;
+    //   if (
+    //     !data.subCancelled &&
+    //     data.msg.toLowerCase().includes('no such subscription')
+    //   ) {
+    //     toast.open({
+    //       type: 'error',
+    //       duration: 0,
+    //       dismissible: true,
+    //       message: '<div id="toast-message"><p id="msg-text"></p></div>'
+    //     });
+    //     document.getElementById('toast-message').innerText =
+    //       'Your subscription was not found. Please contact support or try again.';
+    //   } else if (!data.subCancelled) {
+    //     toast.open({
+    //       type: 'error',
+    //       duration: 0,
+    //       dismissible: true,
+    //       message: '<div id="toast-message"><p id="msg-text"></p></div>'
+    //     });
+    //     document.getElementById('msg-text').innerText =
+    //       'Your subscription could not be cancelled right now.\nPlease contact support or try again.';
+    //   }
+    //   if (data.subCancelled) {
+    //     toast.open({
+    //       type: 'success',
+    //       duration: 5000,
+    //       // dismissible: true,
+    //       message: '<div id="toast-message"><p id="msg-text"></p></div>'
+    //     });
+    //     document.getElementById('msg-text').innerText =
+    //       'Subscription cancelled\n' + response;
+    //   }
+    // }
 
     return {
-      usageValue,
+      imageCount: computed(() => store.getters.imageCount),
+      planDetails: computed(() => store.getters.planDetails),
+      quota: computed(() => store.getters.quota),
+      usageValue: computed(() => store.getters.usageValue),
+      usageBarWidth: computed(() => store.getters.usageBarWidth),
+      usageBarColor: computed(() => store.getters.usageBarColor),
       updateBilling,
-      deleteAccount,
-      barWidth,
-      barColor
+      deleteAccount
       // cancelSubscription
     };
   }

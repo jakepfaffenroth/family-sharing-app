@@ -2,20 +2,23 @@
   <div
     class="flex justify-end content-center mt-2 divide-x divide-gray-600 text-gray-700 transition duration-150 ease-in-out"
   >
-    <base-drop-menu menu-type="sortMenu">
-      <template #btnLabel>
-        Sort
+    <base-drop-menu>
+      <template #button>
+        <p
+          class="w-10 rounded hover:text-teal-500 focus:outline-none cursor-pointer"
+        >
+          Sort
+        </p>
       </template>
       <template #listItems>
-        <a
-          class="img-menu-link"
-          @click="sortImages('captureTime'), closeMenu()"
-        >
-          Capture time
-        </a>
-        <a class="img-menu-link" @click="sortImages('uploadTime'), closeMenu()">
-          Date uploaded
-        </a>
+        <div class="w-32">
+          <a class="menu-item" @click="sortImages('captureTime'), closeMenu()">
+            Capture time
+          </a>
+          <a class="menu-item" @click="sortImages('uploadTime'), closeMenu()">
+            Date uploaded
+          </a>
+        </div>
       </template>
     </base-drop-menu>
 
@@ -46,8 +49,7 @@ export default {
   components: {
     BaseDropMenu
   },
-  // emits: ['sort-images'],
-  inject: ['sortImages'],
+  inject: ['sortImages'], // Provided in Home
   data() {
     return {
       isMenuVisible: false,
@@ -62,4 +64,8 @@ export default {
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+.menu-item {
+  @apply block px-2 py-1 text-sm rounded cursor-pointer text-gray-800 hover:bg-teal-400 hover:text-white;
+}
+</style>

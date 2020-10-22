@@ -40,7 +40,7 @@ export default {
     shareUrl: { type: String, default: null },
     singleImgUrl: { type: String, default: null }
   },
-  emits: ['close-share-modal'],
+  emits: ['close-modal'],
   data() {
     return {
       copyBtnTxt: 'Copy link',
@@ -49,7 +49,7 @@ export default {
   },
   methods: {
     closeModal() {
-      this.$emit('close-share-modal');
+      this.$emit('close-modal');
     },
     copyShareUrl() {
       this.btnColor = 'copied';

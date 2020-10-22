@@ -2,20 +2,18 @@
   <!-- Header and Menu -->
   <component
     :is="user.menuType"
-    :owner="owner"
-    :usage="usage"
+    @open-modal="visibleModal = $event"
     @sort-images="sortImages"
     @open-share-modal="isShareModalVisible = true"
+    @open-subscribe-form="isSubscribeModalVisible = true"
     @download-zip="downloadZip"
   ></component>
 
-  <div v-if="owner.ownerId">
+  <div v-if="owner.ownerId" class="flex flex-grow">
     <!-- Image gallery -->
     <home-gallery
-      :items="images"
-      :owner="owner"
       :user-type="user.type"
-      @delete-image="showDeleteModal"
+      @open-delete-modal="openDeleteModal"
     ></home-gallery>
 
     <!-- Empty gallery  -->
@@ -30,20 +28,24 @@
     <home-uploader
       v-if="user.type === 'owner' && owner.ownerId"
       :key="forceReloadKey"
-      :owner="owner"
-      @update-images="updateImages"
     ></home-uploader>
 
     <home-modal-share
-      v-show="isShareModalVisible"
+      v-show="visibleModal === 'ownerShare'"
       :share-url="`${server}/${owner.guestId}/guest`"
-      @close-share-modal="isShareModalVisible = !isShareModalVisible"
+      @close-modal="visibleModal = null"
     />
 
+    <home-modal-guest-subscribe
+      v-show="visibleModal === 'guestSubscribe'"
+      :owner="owner"
+      @close-modal="visibleModal = null"
+    ></home-modal-guest-subscribe>
+
     <home-modal-delete-image
-      v-show="isDeleteModalVisible"
+      v-show="visibleModal === 'deleteImage'"
       :img-delete-info="imgDeleteInfo"
-      @close-delete-modal="isDeleteModalVisible = !isDeleteModalVisible"
+      @close-modal="visibleModal = null"
       @delete-image="deleteImage"
     ></home-modal-delete-image>
   </div>
@@ -52,37 +54,29 @@
   <div v-else class="flex flex-wrap">
     <base-skeleton-image v-for="n in 10" :key="n"></base-skeleton-image>
   </div>
-  <!-- <router-view></router-view> -->
-
-  <!-- <home-download-zip ref="zip" :images="images" class="hidden" /> -->
 </template>
 
 <script>
 import {
-  provide,
   ref,
   reactive,
+  computed,
+  provide,
   inject,
   defineAsyncComponent,
-  onMounted,
-  toRefs,
-  isReactive,
   markRaw
 } from 'vue';
 import { useRoute } from 'vue-router';
+import { useStore } from 'vuex';
 import axios from 'axios';
 
 import BaseColorfulLogo from '../components/BaseColorfulLogo';
-// import HomeUploader from '../components/HomeUploader';
 import HomeGallery from '../components/HomeGallery';
 import HomeGalleryEmpty from '../components/HomeGalleryEmpty';
 import BaseSkeletonImage from '../components/BaseSkeletonImage';
 import HomeMenuOwner from '../components/HomeMenuOwner';
-// import HomeMenuGuest from '../components/HomeMenuGuest';
-// import HomeModalDeleteImage from '../components/HomeModalDeleteImage';
-// const HomeGallery = defineAsyncComponent(() =>
-//   import('../components/HomeGallery')
-// );
+import HomeModalGuestSubscribe from '../components/HomeModalGuestSubscribe';
+
 const HomeUploader = defineAsyncComponent(() =>
   import('../components/HomeUploader')
 );
@@ -92,9 +86,6 @@ const HomeMenuGuest = defineAsyncComponent(() =>
 const HomeModalShare = defineAsyncComponent(() =>
   import('../components/HomeModalShare')
 );
-// const HomeDownloadZip = defineAsyncComponent(() =>
-//   import('../components/HomeDownloadZip')
-// );
 const HomeModalDeleteImage = defineAsyncComponent(() =>
   import('../components/HomeModalDeleteImage')
 );
@@ -112,34 +103,24 @@ export default {
     HomeGallery,
     HomeGalleryEmpty,
     HomeModalShare,
+    HomeModalGuestSubscribe,
     HomeModalDeleteImage
-    // HomeDownloadZip
-    // downloadZip
   },
-  props: {
-    owner: {
-      type: Object,
-      default: null
-    },
-    images: {
-      type: Array,
-      default: () => {
-        return [];
-      }
-    },
-    usage: {
-      type: Object,
-      default: null
-    }
-  },
+  props: { userType: { type: String, default: '' } },
   setup(props) {
+    const store = useStore();
     const route = useRoute();
     const server = process.env.VUE_APP_SERVER;
-    const { owner, images, usage } = toRefs(props);
+
+    const owner = computed(() => store.state.ownerStore.owner);
+    const images = computed(() => store.state.imageStore.images);
+
     const user = reactive({ type: null, menuType: null });
 
+    const visibleModal = ref(null);
+
     // App functionality and menu determined by user type
-    const userType = inject('userType');
+    const { userType } = reactive(props);
     let isShareModalVisible = ref(false);
     renderUserType(userType);
 
@@ -158,22 +139,22 @@ export default {
     });
 
     // Update gallery after new images uplaoded
-    function updateImages(fileInfo) {
-      const { fileId, filename, src, thumbnail, uploadTime } = fileInfo;
-      const newImg = {
-        fileId,
-        fileName: filename,
-        src,
-        thumbnail,
-        uploadTime,
-        w: fileInfo.metadata.w,
-        h: fileInfo.metadata.h,
-        ownerId: owner.ownerId,
-        exif: fileInfo.metadata.exif
-      };
-      images.value.unshift(newImg);
-    }
-    provide('updateImages', updateImages);
+    // function updateImages(fileInfo) {
+    //   const { fileId, filename, src, thumbnail, uploadTime } = fileInfo;
+    //   const newImg = {
+    //     fileId,
+    //     fileName: filename,
+    //     src,
+    //     thumbnail,
+    //     uploadTime,
+    //     w: fileInfo.metadata.w,
+    //     h: fileInfo.metadata.h,
+    //     ownerId: owner.value.ownerId,
+    //     exif: fileInfo.metadata.exif
+    //   };
+    //   images.value.unshift(newImg);
+    // }
+    // provide('updateImages', updateImages);
 
     // Sorting logic
     function sortImages(sortParameter) {
@@ -187,6 +168,8 @@ export default {
         let fileB;
 
         // If no image exif, add it as empty string
+        a.exif = a.exif || { ...a.exif, exif: '' };
+        b.exif = b.exif || { ...a.exif, exif: '' };
         a.exif.exif = a.exif.exif || '';
         b.exif.exif = b.exif.exif || '';
 
@@ -210,7 +193,7 @@ export default {
       try {
         images.value.sort(compare);
       } catch (err) {
-        console.log('err: ', err);
+        console.error('err: ', err);
       }
     }
     provide('sortImages', sortImages);
@@ -225,54 +208,91 @@ export default {
     let isDeleteModalVisible = ref(false);
     let imgDeleteInfo = ref(null);
 
-    function showDeleteModal(imgInfo) {
+    function openDeleteModal(imgInfo) {
+      visibleModal.value = 'deleteImage';
       imgDeleteInfo.value = { ...imgInfo };
-      isDeleteModalVisible.value = true;
     }
 
     async function deleteImage(imgInfo) {
-      isDeleteModalVisible = false;
-      const { date, fileId, smallFileId, fileName, ownerId, index } = imgInfo;
+      visibleModal.value = null;
+      const { date, fileId, thumbFileId, fileName, ownerId, index } = imgInfo;
 
-      images.value.splice(
-        images.value.indexOf(images.value.find(x => x.fileId === fileId)),
-        1
-      );
-
+      store.dispatch('removeFromImages', imgInfo);
       // force Uppy to reload if there are zero images
       if (images.value.length === 0) {
         forceReloadKey.value++;
       }
-      axios.post(`${server}/files/delete-image`, { fileId, fileName, ownerId });
+      const response = await axios.post(`${server}/files/delete-image`, {
+        singleImage: true,
+        fileId,
+        thumbFileId,
+        fileName,
+        ownerId
+      });
+      if (response.status != 200) {
+        console.log(
+          `Deletion error: ${response.status} - ${response.statusText}`
+        );
+        store.dispatch('addToImages', imgInfo);
+      }
+      store.dispatch('getUsageData', { ownerId: owner.value.ownerId });
     }
 
-    // Nuke images for dev purposes
-    let forceReloadKey = ref(0); // Force reload after nuking
-    const nuke = () => {
-      console.log('owner.ownerId:', owner.ownerId);
-      const imagesArr = images.value;
-      images.value = [];
+    //Delete multiple images at once (user-selected, NOT nuking)
+    let forceReloadKey = ref(0); // Force reload after deleting multiple images or nuking
+    const deleteMultiple = async () => {
+      const imagesArr = store.state.imageStore.images;
+      store.dispatch('removeMultipleImages');
 
       forceReloadKey.value++; //force Uppy to reload
 
-      axios.post(`${server}/files/delete-image`, {
+      const response = await axios.post(`${server}/files/delete-image`, {
+        multipleImages: true,
         images: imagesArr.map(x => {
-          const { fileId, fileName } = x;
-          return { fileId, fileName };
+          const { fileId, thumbFileId, fileName, ownerId } = x;
+          return { fileId, thumbFileId, fileName, ownerId };
         }),
-        ownerId: owner.ownerId
+        ownerId: owner.value.ownerId
       });
+      if (response.status != 200) {
+        console.error(
+          `Deletion error: ${response.status} - ${response.statusText}`
+        );
+      }
+      store.dispatch('getUsageData', { ownerId: owner.value.ownerId });
+    };
+
+    // Nuke images for dev purposes
+    const nuke = async () => {
+      store.dispatch('nukeImages');
+
+      forceReloadKey.value++; //force Uppy to reload
+
+      const response = await axios.post(`${server}/files/delete-image`, {
+        nuke: true,
+        ownerId: owner.value.ownerId
+      });
+      console.log('response:', response);
+      if (response.status != 200) {
+        console.error(
+          `Nuking error: ${response.status} - ${response.statusText}`
+        );
+      }
+      store.dispatch('getUsageData', { ownerId: owner.value.ownerId });
     };
     provide('nuke', nuke);
 
     return {
       server,
+      owner,
+      images,
       user,
-      updateImages,
       sortImages,
+      visibleModal,
+      isSubscribeModalVisible: false,
       isShareModalVisible,
       isDeleteModalVisible,
-      showDeleteModal,
+      openDeleteModal,
       imgDeleteInfo,
       deleteImage,
       nuke,
@@ -282,6 +302,9 @@ export default {
   },
   computed: {
     imgGroups() {
+      if (!this.items) {
+        return;
+      }
       let group = this.items.reduce((r, a) => {
         const captureDate = a.exif.exif.DateTimeOriginal
           ? format(
@@ -304,28 +327,11 @@ export default {
 
       return group;
     }
+  },
+  methods: {
+    openSubscribeForm() {
+      this.isFormVisible = true;
+    }
   }
 };
 </script>
-
-<style>
-.link {
-  @apply px-3  cursor-pointer;
-}
-
-.image-grid {
-  @apply mt-4;
-}
-
-.image {
-  @apply flex h-10 object-contain transition duration-200 ease-in-out;
-}
-
-.image-overlay {
-  @apply absolute top-0 left-0 w-full h-full opacity-0;
-}
-
-.text-input {
-  @apply appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:border-blue-300  sm:text-sm sm:leading-5;
-}
-</style>

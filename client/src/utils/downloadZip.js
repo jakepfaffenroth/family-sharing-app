@@ -7,7 +7,7 @@ export default async (images, toast) => {
   if (!images || images.length === 0) {
     return;
   }
-  
+
   let downloadProgress = null;
   let zipSize = 0;
   const zipSizeLimit = 1048576 * 500; // 500 MB limit
@@ -47,9 +47,7 @@ export default async (images, toast) => {
           zipMsg.innerText = `Preparing file ${images.indexOf(file)} of ${
             images.length
           }`;
-          // downloadProgress.value = `Downloading file ${images.indexOf(
-          //   file
-          // )} of ${images.length}`;
+
           const response = await axios.get(
             `https://cdn.jakepfaf.dev/file/JFP001/${escape(file.fileName)}`,
             {
@@ -111,10 +109,12 @@ export default async (images, toast) => {
           }
           saveAs(data, `images${count === 1 ? '' : ` part${count}`}.zip`);
           downloadProgress = null;
-          zipMsg.innerText = 'Complete';
-          setTimeout(() => {
-            toast.dismiss(zipToast);
-          }, 2000);
+          toast.dismiss(zipToast);
+          toast.success('Download complete');
+          // zipMsg.innerText = 'Complete';
+          // setTimeout(() => {
+          //   toast.dismiss(zipToast);
+          // }, 2000);
         });
     }
 
@@ -127,11 +127,13 @@ export default async (images, toast) => {
       }, 2000);
     }
   } catch (err) {
-    const toastMessage = document.getElementById('toast-message');
-    toastMessage.innerText = 'An error occurred while downloading images';
-    setTimeout(() => {
-      toast.dismiss(zipToast);
-    }, 3000);
+    toast.dismiss(zipToast);
+    toast.error('An error occurred while downloading images');
+    // const toastMessage = document.getElementById('toast-message');
+    // toastMessage.innerText = 'An error occurred while downloading images';
+    // setTimeout(() => {
+    //   toast.dismiss(zipToast);
+    // }, 3000);
     console.log('error downloading zip file:', err);
   }
 

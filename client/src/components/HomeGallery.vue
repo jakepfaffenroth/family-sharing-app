@@ -20,7 +20,7 @@
           itemscope
           itemtype="http://schema.org/ImageObject"
           :src="item.src"
-          class="image-container h-24 xs:h-28 sm:h-36 md:h-64"
+          class="image-container h-24 xs:h-28 sm:h-36 md:h-64 z-0"
           @mouseenter="item.isMenuVisible = true"
           @mouseleave="item.isMenuVisible = false"
         >
@@ -32,21 +32,28 @@
                 :id="'menu-' + index"
                 @click.stop
               >
-                <base-drop-menu menu-type="imgMenu">
-                  <template #btnLabel>
-                    <svg
-                      class="w-8 h-8 p-1 bg-gradient-to-r from-teal-400 to-purple-500 border border-white rounded-full shadow text-white"
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                    >
-                      <path
-                        d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM16 12a2 2 0 100-4 2 2 0 000 4z"
-                      />
-                    </svg>
+                <base-drop-menu>
+                  <template #button>
+                    <div class="h-6 mb-1">
+                      <button
+                        class="w-5 h-4 hover:text-teal-500 focus:shadow-outline"
+                      >
+                        <svg
+                          class="w-8 h-8 p-1 bg-gradient-to-r from-teal-400 to-purple-500 border border-white rounded-full shadow text-white"
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 20 20"
+                          fill="currentColor"
+                        >
+                          <path
+                            d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM16 12a2 2 0 100-4 2 2 0 000 4z"
+                          />
+                        </svg>
+                      </button>
+                    </div>
                   </template>
                   <template #listItems>
-                    <!-- <a
+                    <div class="w-24 -m-1">
+                      <!-- <a
                       v-if="
                         items.length >= 0 &&
                           userType === 'owner' &&
@@ -57,27 +64,24 @@
                     >
                       Share
                     </a> -->
-                    <a
-                      v-if="
-                        items.length >= 0 &&
-                          userType === 'owner' &&
-                          owner.ownerId
-                      "
-                      class="img-menu-link "
-                      @click.stop="
-                        $emit('delete-image', {
-                          date,
-                          fileId: item.fileId,
-                          smallFileId: item.smallFileId,
-                          fileName: item.fileName,
-                          ownerId: owner.ownerId,
-                          thumb:item.thumbnail,
-                          index
-                        })
-                      "
-                    >
-                      Delete
-                    </a>
+                      <a
+                        v-if="
+                          items.length >= 0 &&
+                            userType === 'owner' &&
+                            owner.ownerId
+                        "
+                        class="block px-2 py-1 text-sm rounded cursor-pointer text-gray-800 hover:bg-teal-400 hover:text-white"
+                        @click.stop="
+                          $emit('open-delete-modal', {
+                            date,
+                            ...item,
+                            index
+                          })
+                        "
+                      >
+                        Delete
+                      </a>
+                    </div>
                   </template>
                 </base-drop-menu>
               </div>
@@ -102,11 +106,6 @@
       </div>
     </div>
   </div>
-
-  <!-- <base-modal
-    v-if="showSingleShareModal"
-    :shareUrl="'example.com/&gid=1&pid=' + 'Picture Index (from pswp)'"
-  /> -->
 
   <!-- Image lightbox -->
   <div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
@@ -186,7 +185,6 @@ import 'photoswipe/dist/photoswipe.css';
 import 'photoswipe/dist/default-skin/default-skin.css';
 import format from 'date-fns/format';
 import BaseDropMenu from './BaseDropMenu';
-// import BaseModal from './BaseModal';
 import LazyLoadDirective from '../utils/LazyLoadDirective';
 
 export default {
@@ -195,28 +193,15 @@ export default {
   },
   components: {
     BaseDropMenu
-    // BaseModal
   },
   props: {
-    owner: {
-      type: Object,
-      default() {
-        return {};
-      }
-    },
     userType: { type: String, default: '' },
-    items: {
-      default() {
-        return [];
-      },
-      type: Array
-    },
     options: {
       default: () => ({}),
       type: Object
     }
   },
-  emits: ['delete-image'],
+  emits: ['open-delete-modal', 'open-modal', 'img-delete-info'],
   data() {
     return {
       pswp: null,
@@ -228,6 +213,12 @@ export default {
     };
   },
   computed: {
+    owner() {
+      return this.$store.state.ownerStore.owner;
+    },
+    items() {
+      return this.$store.state.imageStore.images;
+    },
     imgGroups() {
       const currentYear = new Date().getFullYear().toString();
 
@@ -501,6 +492,18 @@ export default {
     initPhotoSwipeFromDOM('.my-gallery');
   },
   methods: {
+    openDeleteModal(date, item, index) {
+      this.$emit('open-modal', 'deleteImage');
+      this.$emit('img-delete-info', {
+        date,
+        fileId: item.fileId,
+        thumbFileId: item.thumbFileId,
+        fileName: item.fileName,
+        ownerId: this.owner.ownerId,
+        thumb: item.thumbnail,
+        index
+      });
+    },
     shareImage(item) {
       this.showSingleShareModal = true;
       this.itemToShare = item;
@@ -522,22 +525,16 @@ export default {
     },
     getImgSize() {
       const innerWidth = window.innerWidth;
-      console.log('innerWidth:', innerWidth);
       const rowCount = (innerWidth / 250 > 6 ? 6 : innerWidth / 250).toFixed();
-      console.log('rowCount:', rowCount);
       const imgWidth = (innerWidth / 4 < 200 ? 200 : innerWidth / 4).toFixed();
-      console.log('imgWidth:', imgWidth + 'px');
       return imgWidth + 'px';
     }
   }
 };
 </script>
+
 <style scoped>
 @import 'https://fonts.googleapis.com/icon?family=Material+Icons';
-
-/* .menu-link-scoped {
-  @apply hover:bg-teal-500 hover:text-white !important;
-} */
 
 .img-menu-btn:hover .img-menu-list {
   @apply visible opacity-100;
@@ -559,10 +556,6 @@ figure {
   @apply inline;
 }
 
-/* .my-gallery {
-  @apply flex flex-wrap justify-center p-6;
-} */
-
 .group-container {
   @apply relative mr-2 mb-6 overflow-hidden;
 }
@@ -577,15 +570,6 @@ figure {
   transition: all 0.2s ease-in-out;
 }
 
-.image-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  opacity: 0;
-}
-
 .image-container:hover .image {
   scale: 1;
   object-fit: cover;
@@ -593,22 +577,5 @@ figure {
 
 .image-container:hover .img-menu-btn {
   color: black;
-}
-
-.image-container:hover .image-info {
-  opacity: 1;
-}
-
-.fade-enter-active {
-  @apply transition-all duration-150 ease-out;
-}
-
-.fade-leave-active {
-  @apply transition-all duration-100 ease-in;
-}
-
-.fade-enter-from,
-.fade-leave-to {
-  @apply transform invisible opacity-0;
 }
 </style>

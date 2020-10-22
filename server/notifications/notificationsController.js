@@ -9,19 +9,19 @@ app.use(bodyParser.json());
 
 module.exports.addToNotifsQueue = async (req, res, next) => {
   if (req.body.initializeUpload) {
-    const { guestId, ownerId, fileCount, sampleImg } = req.body;
+    const { guestId, ownerId, sessionUploadCount, sampleImg } = req.body;
     const thumbPath = `${process.env.CDN_PATH}${ownerId}/thumb/${sampleImg}`;
     const queues = require('../tasks');
     // Add file upload info to email notification queue
     await queues.emailSender.add({
       guestId,
-      fileCount,
+      sessionUploadCount,
       thumbPath,
     });
     await queues.browserSender.add({
       ownerId,
       guestId,
-      fileCount,
+      sessionUploadCount,
       thumbPath,
     });
     res.json('ok');

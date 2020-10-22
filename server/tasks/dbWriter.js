@@ -7,7 +7,7 @@ const writeToDb = async (data) => {
     ownerId: data.ownerId,
     fileId: data.fileId,
     fileName: data.fileName,
-    smallFileId: '',
+    thumbFileId: '',
     src: process.env.CDN_PATH + escape(fileName),
     thumbnail:
       process.env.CDN_PATH + escape(fileName.replace('/full/', '/thumb/')),
@@ -28,17 +28,38 @@ const writeToDb = async (data) => {
       return;
     }
   } else if (data.resolution === 'thumbRes') {
+    // const foundImage = await db.one(
+    //   'SELECT * FROM images WHERE file_id = ${fileId}',
+    //   imageInfo
+    // );
     // When a thumb res fileId is ready to added to the db, loop through until the full res record has been added; then update it with the thumbnail id.
-    let fullResRecordExists = false;
-    while (!fullResRecordExists) {
-      fullResRecordExists = await updateRecordWithThumb();
-      // If fullResRecordExists, break the loop
+    let fullResRecordExists = await updateRecordWithThumb();
+    // console.log('fullResRecordExists:', fullResRecordExists);
+    if (!fullResRecordExists) {
+      const loop = setInterval(async () => {
+        // console.log(`Looping ${imageInfo.fileName}...`);
+        fullResRecordExists = await updateRecordWithThumb();
+        // console.log('fullResRecordExists:', fullResRecordExists);
+        if (fullResRecordExists) {
+          clearInterval(loop);
+          // success(`Broke   ${imageInfo.fileName}`);
+        }
+      }, 3000);
     }
+    // while (!fullResRecordExists) {
+    //   console.log(`Looping ${imageInfo.fileName}...`);
+    //   // If fullResRecordExists, break the loop
+    //   fullResRecordExists = await updateRecordWithThumb();
+    //   console.log('fullResRecordExists:', fullResRecordExists);
+    //   if (fullResRecordExists) {
+    //     success(`Broke   ${imageInfo.fileName}`);
+    //   }
+    // }
   }
 
   return {
     fileId: imageInfo.fileId,
-    smallFileId: imageInfo.smallFileId,
+    thumbFileId: imageInfo.thumbFileId,
     fileName: imageInfo.fileName,
     exif: imageInfo.exif,
     uploadTime: imageInfo.uploadTime,
@@ -46,16 +67,31 @@ const writeToDb = async (data) => {
 
   async function updateRecordWithThumb() {
     try {
-      imageInfo.smallFileId = imageInfo.fileId;
+      imageInfo.thumbFileId = imageInfo.fileId;
       imageInfo.fileName = imageInfo.fileName.replace('/thumb/', '/full/');
       // Find the full size uploaded image. Gets most recent upload in case multiple with same filename exist.
-      const fullResRecord = await db.oneOrNone(
-        'UPDATE images SET small_file_id = ${fileId} WHERE image_id = (SELECT image_id FROM images WHERE file_name = ${fileName} AND owner_id = ${ownerId} ORDER BY image_id DESC LIMIT 1) RETURNING *',
+      const updatedRecord = await db.oneOrNone(
+        'UPDATE images SET thumb_file_id = ${fileId} WHERE image_id = (SELECT image_id FROM images WHERE file_name = ${fileName} AND owner_id = ${ownerId} ORDER BY image_id DESC LIMIT 1) RETURNING *',
         imageInfo
       );
-      if (fullResRecord) {
+      // console.log(
+      //   'updatedRecord ?',
+      //   updatedRecord ? true : false
+      // );
+      if (updatedRecord) {
+        // DB record is compelete
+        // Send the file info back to client to update images state
+        const ws = require('../app').locals.ws;
+        ws.send(
+          Buffer.from(
+            JSON.stringify({
+              type: 'fileUploaded',
+              fileInfo: updatedRecord,
+            })
+          )
+        );
       }
-      return fullResRecord ? true : false;
+      return updatedRecord ? true : false;
     } catch (err) {
       error('Err updating image record with thumb info:', err);
       return;

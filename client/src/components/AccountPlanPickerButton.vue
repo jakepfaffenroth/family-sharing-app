@@ -11,7 +11,7 @@
 
 <script>
 import BaseButtonTeal from './BaseButtonTeal';
-import { reactive, inject, computed, onUpdated, watch } from 'vue';
+import { reactive, computed, watch } from 'vue';
 
 export default {
   components: { BaseButtonTeal },
@@ -21,7 +21,7 @@ export default {
     resetBtnsExcept: { type: String, default: '' }
   },
   emits: ['reset-other-btns', 'show-confirmation'],
-  setup(props, context) {
+  setup(props, { emit }) {
     const { btnValue, currentPlan } = reactive(props);
 
     const selectedStyle = 'selected';
@@ -58,8 +58,8 @@ export default {
       btn.style = selectedStyle;
       btn.selected = true;
       btn.isCurrent = false;
-      context.emit('reset-other-btns', props.btnValue);
-      context.emit('show-confirmation', props.btnValue);
+      emit('reset-other-btns', props.btnValue);
+      emit('show-confirmation', props.btnValue);
     }
 
     function toggleSelected() {

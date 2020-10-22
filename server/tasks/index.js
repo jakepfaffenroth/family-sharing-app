@@ -1,6 +1,7 @@
 const Redis = require('ioredis');
 const queue = require('bull');
 const { setQueues } = require('bull-board');
+const app = require('../app.js');
 
 const redisConfig = {
   port: 6379,
@@ -49,7 +50,7 @@ const {
 } = queues;
 
 getB2Auth.pause();
-// Pause notification processing until after thumbnail first thumbnail uploaded
+// Pause notification processing until after first thumbnail uploaded
 emailSender.pause();
 browserSender.pause();
 
@@ -61,6 +62,14 @@ verifyEmailSender.process(require('./verifyEmailSender'));
 browserSender.process(require('./browserSender'));
 
 uploader.on('completed', async (job, fileInfo) => {
+  // Counter defined in fileRouter /upload
+  // Track file completions in the counter
+  // When counter reaches zero, send msg to client
+  app.locals.uploadCounter--;
+  if (app.locals.uploadCounter === 0) {
+    const ws = app.locals.ws;
+    ws.send('uploadsComplete');
+  }
   emailSender.resume();
   browserSender.resume();
 });
@@ -101,7 +110,7 @@ for (const key in queues) {
   setQueues(queue);
 
   queue.on('stalled', function (job) {
-    error('stalled:', {
+    error('stalled: %o', {
       job: job.name,
       file: job.data.image,
       ownerId: job.data.ownerId,

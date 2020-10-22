@@ -7,11 +7,12 @@
 </template>
 
 <script>
-import { reactive, inject, onMounted } from 'vue';
+import { computed, inject, onMounted } from 'vue';
+import { useStore } from 'vuex';
 import Uppy from '@uppy/core';
 import Dashboard from '@uppy/dashboard';
 import EmptyDashboard from '@uppy/dashboard';
-import ImageEditor from '@uppy/image-editor';
+// import ImageEditor from '@uppy/image-editor';
 import xhr from '@uppy/xhr-upload';
 import ReconnectingWebSocket from 'reconnecting-websocket';
 import axios from 'axios';
@@ -20,29 +21,22 @@ import '@uppy/core/dist/style.css';
 import '@uppy/dashboard/dist/style.css';
 
 export default {
-  props: {
-    owner: {
-      type: Object,
-      default: null
-    }
-  },
-  emits: ['update-images'],
   setup(props, context) {
+    const store = useStore();
     const toast = inject('toast');
-    // const { owner } = reactive(props);
-    const owner = reactive(inject('owner'));
+    const owner = computed(() => store.state.ownerStore.owner);
 
     const uppy = new Uppy({
       meta: {
-        ownerId: owner.ownerId,
-        guestId: owner.guestId
+        ownerId: owner.value.ownerId,
+        guestId: owner.value.guestId
       },
       // logger: Uppy.debugLogger,
       autoProceed: false,
       restrictions: {
         allowedFileTypes: ['image/*'],
         // file size limit is 100mb for premium users, 10mb for basic users
-        maxFileSize: owner.premiumUser ? 1048576 * 100 : 1048576 * 10
+        maxFileSize: owner.value.premiumUser ? 1048576 * 100 : 1048576 * 10
       },
       onBeforeUpload: () => {
         uppy.getPlugin('Dashboard:StatusBar').setOptions({
@@ -66,7 +60,8 @@ export default {
         theme: 'auto',
         inline: false,
         showProgressDetails: true,
-        note: owner.premiumUser ? premiumRestrictions : basicRestrictions,
+        disableInformer: true,
+        note: owner.value.premiumUser ? premiumRestrictions : basicRestrictions,
         proudlyDisplayPoweredByUppy: false,
         locale: {
           strings: {
@@ -94,17 +89,17 @@ export default {
       //   }
       // });
 
-      uppy.use(ImageEditor, {
-        id: 'ImageEditor',
-        target: Dashboard,
-        quality: 1,
-        cropperOptions: {
-          viewMode: 1,
-          background: false,
-          autoCropArea: 1,
-          responsive: true
-        }
-      });
+      // uppy.use(ImageEditor, {
+      //   id: 'ImageEditor',
+      //   target: Dashboard,
+      //   quality: 1,
+      //   cropperOptions: {
+      //     viewMode: 1,
+      //     background: false,
+      //     autoCropArea: 1,
+      //     responsive: true
+      //   }
+      // });
     });
 
     uppy.use(xhr, {
@@ -112,11 +107,24 @@ export default {
       method: 'post',
       fieldName: 'file',
       headers: {
-        id: owner.ownerId
+        id: owner.value.ownerId
       },
       bundle: false,
       timeout: 0,
       limit: 6
+    });
+
+    uppy.on('restriction-failed', (file, error) => {
+      // do some customized logic like showing system notice to users
+      const restrictToast = toast.open({
+        type: 'error',
+        duration: 6000,
+        // dismissible: true,
+        message: `<div id="toast-message"><p id="msg-text">${error.message.replace(
+          'This file',
+          file.data.name
+        )}</p></div>`
+      });
     });
 
     uppy.on('file-added', async file => {
@@ -127,9 +135,9 @@ export default {
       const files = await uppy.getFiles();
       axios.post(`${process.env.VUE_APP_SERVER}/files/initialize-upload`, {
         initializeUpload: true,
-        ownerId: owner.ownerId,
-        guestId: owner.guestId,
-        fileCount: files.length,
+        ownerId: owner.value.ownerId,
+        guestId: owner.value.guestId,
+        sessionUploadCount: files.length,
         sampleImg: files[0].data.name
       });
     });
@@ -149,6 +157,11 @@ export default {
     };
 
     rws.onmessage = async msg => {
+      if (msg.data === 'uploadsComplete') {
+        store.dispatch('getUsageData', { ownerId: owner.value.ownerId });
+        return;
+      }
+
       // ----- TURN OFF STATUS UPDATES ----- //
       // return
       // ----------------------------------- //
@@ -158,29 +171,23 @@ export default {
         return newObj;
       });
 
-      const msgParser = async msg =>
+      const data =
         msg.data instanceof Blob ? JSON.parse(await msg.data.text()) : msg.data;
 
-      const data = await msgParser(msg);
+      getMsg(data);
 
-      const getUppyFileId = (data, files) => {
-        console.log('data:', data);
-        console.log('files:', files);
+      function getUppyFileId(data, files) {
         const filename = unescape(data.fileInfo.filename.split('/').pop());
-        console.log('filename:', filename);
         return files.filter(item => {
           if (item[filename]) return true;
         })[0][filename];
-      };
+      }
 
-      // console.log('parsed msg: ', data);
-
-      function getMsg(type, data) {
+      function getMsg(data) {
         const msgTypes = {
           fileUploaded: async () => {
-            context.emit('update-images', data.fileInfo);
+            store.dispatch('addToImages', data.fileInfo);
           },
-
           statusUpdate: async () => {
             data.uppyFileId = getUppyFileId(data, files);
             return await uppy.setFileState(data.uppyFileId, {
@@ -197,7 +204,6 @@ export default {
             const state = await uppy.getState();
 
             if (Object.values(state.files).every(item => item.complete)) {
-              console.log('file state: ', await uppy.getFile(data.uppyFileId));
               await uppy.getPlugin('Dashboard:StatusBar').setOptions({
                 locale: {
                   strings: {
@@ -210,15 +216,13 @@ export default {
           },
           default: () => console.log(`%c${data}`, 'color: #E46AFF')
         };
-        return (msgTypes[type] || msgTypes.default)();
+        return (msgTypes[data.type] || msgTypes.default)();
       }
-
-      getMsg(data.type, data);
     };
 
     uppy.on('complete', result => {
       const upToast = toast.open({
-        type: 'info',
+        type: 'success',
         duration: 3000,
         // dismissible: true,
         message: `<div id="toast-message"><p id="msg-text">Upload complete.<br>${
@@ -227,17 +231,17 @@ export default {
           result.failed.length ? ' ' + result.failed.length + ' failed.' : ''
         }</p></div>`
       });
-
       console.log('upload result:', {
-        sucessful: result.successful,
+        successful: result.successful,
         failed: result.failed
       });
     });
 
     uppy.on('upload-error', (file, error, response) => {
-      console.log('error with file:', file);
-      console.log('error message:', error);
-      console.log('error response:', response);
+      toast.error('Error uploading file');
+      console.error('error with file:', file);
+      console.error('error message:', error);
+      console.error('error response:', response);
       if (error.isNetworkError) {
         uppy.retryUpload(file.id);
       }
@@ -253,16 +257,3 @@ export default {
   }
 };
 </script>
-
-<style scoped>
-#uppy-select-files {
-  color: white;
-  background-color: green;
-  padding: 0.25rem 1rem;
-  border: none;
-  border-radius: 5px;
-}
-#uppy-select-files:hover {
-  cursor: pointer;
-}
-</style>

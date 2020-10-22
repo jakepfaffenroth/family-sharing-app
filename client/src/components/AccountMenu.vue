@@ -27,13 +27,14 @@
 </template>
 
 <script>
-import BaseMenu from './BaseMenu'
+import BaseMenu from './BaseMenu';
 
 export default {
-  components:{BaseMenu},
-  props: { owner: { type: Object, default: null } },
-  setup() {}
+  components: { BaseMenu },
+  computed: {
+    owner() {
+      return this.$store.state.ownerStore.owner;
+    }
+  }
 };
 </script>
-
-<style scoped></style>

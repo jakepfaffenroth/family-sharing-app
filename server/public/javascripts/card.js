@@ -21,7 +21,6 @@ function toggleSubscriptionTerm() {
 toggleSubscriptionTerm();
 
 Object.keys(btns).forEach((key) => {
-  console.log('btns[key].value:', btns[key].value);
   if (btns[key].value.includes('basic')) {
     btns[key].addEventListener('click', () => {
       showSubscriptionCompleteModal(btns[key].value);
@@ -367,7 +366,7 @@ function confirmPriceChange() {
 async function createCustomer() {
   let billingEmail = document.querySelector('#email').value;
   let name = document.getElementById('name').value;
-  console.log('name:', name);
+  
   return await fetch('/create-customer', {
     method: 'post',
     headers: {

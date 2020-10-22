@@ -1,5 +1,5 @@
 <template>
-  <div ref="parent" class="h-screen p-6">
+  <div class="h-screen p-6">
     <div
       v-if="planDetails"
       id="price-form"
@@ -96,14 +96,8 @@
 </template>
 
 <script>
-import {
-  ref,
-  reactive,
-  inject,
-  onMounted,
-  onBeforeUpdate,
-  defineAsyncComponent
-} from 'vue';
+import { ref, computed, defineAsyncComponent } from 'vue';
+import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
 import BaseButtonPurple from '../components/BaseButtonPurple';
 import BaseButtonCancel from '../components/BaseButtonCancel';
@@ -118,15 +112,9 @@ export default {
     BaseButtonCancel,
     AccountPlanPickerButton
   },
-  props: {
-    planDetails: {
-      type: Object,
-      default: null
-    }
-  },
   emits: ['confirm-plan-change', 'close-modal', 'close-plan-change'],
-  setup(props, context) {
-    const parent = ref(null);
+  setup(props, { emit }) {
+    const store = useStore();
     const router = useRouter();
 
     const plans = {
@@ -170,25 +158,13 @@ export default {
       }
     };
 
-    // onMounted(() => {
-    //   parent.value.scrollIntoView({ behavior: 'smooth' });
-    // });
-
     const newPlan = ref('');
 
-    const getCurrentPlan = inject('getCurrentPlan');
-
-    getCurrentPlan();
-    console.log('props.planDetails:', props.planDetails);
+    const planDetails = computed(() => store.state.planStore.planDetails);
+    store.dispatch('getPlanDetails');
 
     function closeModal() {
-      context.emit('close-plan-change');
-      // hideConfirmation();
-      // router.go(-1);
-    }
-
-    function getParentId(child) {
-      return child.parentElement.id;
+      emit('close-plan-change');
     }
 
     const showChangeConfirmation = ref(
@@ -199,9 +175,6 @@ export default {
       newPlan.value = newPriceId;
       showChangeConfirmation.value =
         'transform -translate-y-0 visible opacity-1';
-      // document
-      //   .getElementById('change-confirmation')
-      //   .classList.remove('hidden', 'opacity-0');
     }
 
     function hideConfirmation() {
@@ -213,7 +186,7 @@ export default {
       resetBtnsExcept.value = selectedBtn;
     }
     return {
-      parent,
+      planDetails,
       plans,
       newPlan,
       closeModal,
@@ -229,9 +202,5 @@ export default {
 <style scoped>
 .price-column {
   @apply flex flex-col w-1/3 mx-3 justify-between items-center;
-}
-
-.plan-btn {
-  @apply mt-4 bg-teal-600 hover:bg-teal-500;
 }
 </style>

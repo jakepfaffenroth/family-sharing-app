@@ -9,10 +9,10 @@
         id="modal"
         class="w-full px-6 py-4 overflow-hidden bg-white rounded-t-lg shadow-lg dark:bg-gray-800 sm:rounded-lg sm:m-4 sm:max-w-xl z-50"
       >
-        <div class="mb-4 text-white text-xl font-bold">
+        <div class="mb-4 text-gray-900 dark:text-white text-xl font-bold">
           <slot name="header"></slot>
         </div>
-        <div class="text-white">
+        <div class="mb-4 text-gray-900 dark:text-white">
           <slot name="content"></slot>
         </div>
         <div

@@ -126,6 +126,7 @@ const upload = async (auth, data) => {
 module.exports = async (job) => {
   try {
     let uploadUrl = await getB2UploadAuth(job.data.credentials);
+
     if (!uploadUrl || uploadUrl.status === '401') {
       const getNew = true;
       const newCreds = await require('../tasks/getB2Auth')(getNew);
@@ -136,22 +137,7 @@ module.exports = async (job) => {
       uploadAuthorizationToken: uploadUrl.data.authorizationToken,
       uploadUrl: uploadUrl.data.uploadUrl,
     };
-    const result = await upload(uploadAuth, job.data);
-    const ws = require('../app').locals.ws;
-    if (result.resolution === 'fullRes') {
-      ws.send(
-        Buffer.from(
-          JSON.stringify({
-            type: 'fileUploaded',
-            fileInfo: {
-              ...result,
-              src: result.src.replace('/thumb/', '/full/'),
-            },
-          })
-        )
-      );
-    }
-    return result;
+    return await upload(uploadAuth, job.data);
   } catch (err) {
     error(err);
   }

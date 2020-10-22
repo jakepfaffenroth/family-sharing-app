@@ -21,7 +21,6 @@ router.get('/checkout', (req, res) => {
 router.post('/save-basic', paymentController.savePlanToDb);
 
 router.post('/charge', (req, res) => {
-  console.log('req.body:', req.body);
   try {
     stripe.customers
       .create({

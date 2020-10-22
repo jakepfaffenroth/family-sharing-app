@@ -12,7 +12,7 @@ const initOptions = {
     monitor.error(err, e);
     const log = async (err, e) => {
       try {
-        const writeStream = fs.createWriteStream('./logs/error.log', {
+        const writeStream = fs.createWriteStream('./logs/db-error.log', {
           flags: 'a',
         });
         writeStream.write(
@@ -31,11 +31,12 @@ const initOptions = {
     }
 
     if (e.query) {
-      // query string is available
+      // // query string is available
       // console.info('DB query error:', {
       //   query: e.query,
       //   msg: err.message,
       //   received: err.received,
+      //   stack: err.stack
       //   // duration: err.result.duration + ' ms',
       // });
     }

@@ -58,41 +58,67 @@ module.exports.listFiles = async (req, res) => {
         prefix: filePrefix + '/',
       },
     });
-
     return response.data.files;
-    // res.json(response.data);
   } catch (err) {
-    error('listFiles error: ', err);
+    error('listFiles error: \n%0', err.response);
   }
 };
 
 module.exports.deleteImage = async (req, res, next) => {
+  const { singleImage, multipleImages, nuke } = req.body;
   const credentials = res.locals.credentials;
 
-  const deleteImage = async (image) => {
-    let data;
-    // Remove image info from database
-    try {
-      await db.task(async (t) => {
-        data = await t.one(
-          'SELECT file_id, small_file_id FROM images WHERE owner_id = ${ownerId} AND file_id = ${fileId}',
-          image
-        );
-        await t.none(
-          'DELETE FROM images WHERE owner_id = ${ownerId} AND file_id = ${fileId}',
-          image
-        );
-      });
-      success('File was removed from db');
-      // res.end('File successfully deleted');
-    } catch (err) {
-      error('Image db deletion error:\n', err);
-      res.status(500).json('An error occurred during file deletion');
-    }
+  // Deletes single image
+  if (singleImage) {
+    deletionStatus = deleteImage(req.body);
+  }
 
+  // Deletes multiple images (user-selected - NOT nuking)
+  if (multipleImages) {
+    req.body.images.forEach((image) => {
+      deleteImage(image);
+    });
+  }
+
+  // NUKE images totally from B2 and DB
+  if (nuke) {
+    const files = await module.exports.listFiles(req, res);
     try {
+      files.forEach(async (image) => {
+        const dbDeleteResult = await db.oneOrNone(
+          'DELETE FROM images WHERE owner_id = ${ownerId} AND file_id = ${fileId} RETURNING *',
+          { ...image, ownerId: image.fileName.split('/')[0] }
+        );
+
+        // Delete full res image file from B2
+        const fileDeleteResult = await axios.post(
+          credentials.apiUrl + '/b2api/v1/b2_delete_file_version',
+          {
+            fileName: unescape(image.fileName),
+            fileId: image.fileId,
+          },
+          { headers: { Authorization: credentials.authorizationToken } }
+        );
+        if (dbDeleteResult && fileDeleteResult) {
+          success('File was NUKED from B2 and db');
+        }
+      });
+      res.status(200).send('ok');
+    } catch (err) {
+      error('Nuke error:\n%0', err);
+      res.status(500).json(deletionStatus.err);
+    }
+  }
+
+  async function deleteImage(image) {
+    try {
+      const dbDeleteResult = db.oneOrNone(
+        'DELETE FROM images WHERE owner_id = ${ownerId} AND file_id = ${fileId} RETURNING *',
+        { ...image, ownerId: image.fileName.split('/')[0] }
+      );
+
       // Delete full res image file from B2
-      await axios.post(
+      const fullResDeleteResult = axios.post(
         credentials.apiUrl + '/b2api/v1/b2_delete_file_version',
         {
           fileName: unescape(image.fileName),
@@ -100,39 +126,34 @@ module.exports.deleteImage = async (req, res, next) => {
         },
         { headers: { Authorization: credentials.authorizationToken } }
       );
-      // Delete small image file from B2
-      await axios.post(
+
+      // Delete thumb res image file from B2
+      const thumbResDeleteResult = axios.post(
         credentials.apiUrl + '/b2api/v1/b2_delete_file_version',
         {
           fileName: unescape(image.fileName).replace('/full/', '/thumb/'),
-          fileId: data.smallFileId,
+          fileId: image.thumbFileId,
         },
         { headers: { Authorization: credentials.authorizationToken } }
       );
-      verbose('File was deleted from B2');
-    } catch (err) {
-      error('Error deleting file from B2:', err);
-      if (err.response.data.code !== 'file_not_present') {
-        // return res.json('An error occurred during file deletion');
-        return;
+
+      const results = await Promise.all([
+        dbDeleteResult,
+        fullResDeleteResult,
+        thumbResDeleteResult,
+      ]);
+
+      if (results[0] === null && image.fileName.includes('full')) {
+        throw new Error('Could not find full res file in DB.');
       }
+
+      success('File was deleted from B2');
+      success('File was removed from db');
+      res.status(200).send('ok');
+    } catch (err) {
+      res.status(500).json(deletionStatus.err);
     }
-  };
-
-  // Deletes single image
-  if (!req.body.images) {
-    return deleteImage(req.body);
   }
-
-  // Deletes multiple images
-  req.body.images.forEach((image) => {
-    deleteImage({
-      fileId: image.fileId,
-      fileName: image.fileName,
-      ownerId: req.body.ownerId,
-    });
-  });
-  res.status(200).json('Deleted');
 };
 
 // TODO - Downloads corrupt file - encoding problem?
@@ -173,7 +194,6 @@ module.exports.download = async (req, res) => {
 
 module.exports.getUsage = async (req, res) => {
   const files = await this.listFiles(req, res);
-
   let totalStorageUsed = files.reduce(
     (accumulator, currentValue) => accumulator + currentValue.contentLength,
     0
@@ -226,10 +246,8 @@ module.exports.imgCompressor = async (req, res, next) => {
     fields.filename = filename;
     const chunks = [];
 
-    console.log('plan:', plan);
     // If premium user, fullRes image chunks are streamed straight into an array
     if (plan.includes('premium')) {
-      console.log('premium 1');
       file.on('data', (data) => {
         chunks.push(data);
       });
@@ -247,7 +265,6 @@ module.exports.imgCompressor = async (req, res, next) => {
       // If premium user, create buffer from the array of chunks
       // get the metadata like normal, and pass it on to next step
       if (plan.includes('premium')) {
-        console.log('premium 2');
         const fullResBuffer = Buffer.concat(chunks);
         const { format, size, width, height, exif } = await getMetadata(
           fullResBuffer

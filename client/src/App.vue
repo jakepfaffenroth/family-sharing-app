@@ -1,94 +1,42 @@
 <template>
   <div
-    v-if="owner.ownerId"
+    v-if="owner"
     class="flex flex-col min-h-screen w-full px-2 py-2 sm:px-6 sm:py-4 xl:px-12 xl:py-6"
   >
-    <!-- <component
-    :is="view"
-    :owner="owner"
-    :images="images"
-    :usage="usage"
-  ></component> -->
-    <!-- <div v-if="owner.ownerId"> -->
-    <router-view :owner="owner" :images="images" :usage="usage"></router-view>
-    <!-- </div> -->
-    <!-- <div v-else class="fixed m-auto">
-    <svg
-      class="animate-spin mx-auto h-24 w-24 text-purple-500"
-      xmlns="http://www.w3.org/2000/svg"
-      fill="none"
-      viewBox="0 0 24 24"
-    >
-      <circle
-        class="opacity-25"
-        cx="12"
-        cy="12"
-        r="10"
-        stroke="currentColor"
-        stroke-width="4"
-      ></circle>
-      <path
-        class="opacity-75"
-        fill="currentColor"
-        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-      ></path>
-    </svg>
-  </div> -->
-
-    <!-- <router-view v-slot="{ Component }">
-    <transition name="slide" mode="out-in">
-      <keep-alive>
-        <component
-          :is="Component"
-          :owner="owner"
-          :images="images"
-          :usage="usage"
-        />
-      </keep-alive>
-    </transition>
-  </router-view> -->
+    <router-view :user-type="userType"></router-view>
   </div>
 </template>
 
 <script>
 import axios from 'axios';
-import { ref, reactive, provide } from 'vue';
+import { ref, reactive, computed, provide } from 'vue';
 import { Notyf } from 'notyf';
 import 'notyf/notyf.min.css';
 import { useRoute } from 'vue-router';
+import { useStore, mapState, mapGetters } from 'vuex';
 
 import Home from './views/Home';
 import Account from './views/Account';
 
 export default {
-  // components: { Home },
   setup() {
+    var err = new Error();
+    const store = useStore();
     const route = useRoute();
     const server = process.env.VUE_APP_SERVER;
-    const isReadyToRender = ref(false);
-
-    const owner = reactive({});
-    const usage = ref('');
-    const images = ref([]);
-
-    provide('owner', owner);
-    provide('images', images.value);
-
-    // -------------------------------------
-    // ------ INITIAL CONFIGURATION --------
-    // ------------ & COOKIES --------------
-    // -------------------------------------
 
     const ownerId = getCookie('ownerId');
     const guestId = getCookie('guestId');
+    let userType = ref('');
+    store.dispatch('saveIdCookies', { ownerId, guestId });
 
     if (ownerId) {
-      provide('userType', 'owner');
-      getOwnerData('owner');
+      userType.value = 'owner';
+      getOwnerData(ownerId, 'owner');
     }
     if (guestId && !ownerId) {
-      provide('userType', 'guest');
-      getOwnerData('guest');
+      userType.value = 'guest';
+      getOwnerData(guestId, 'guest');
     }
     // Prevent users from viewing app without login or guestId
     if (!guestId && !ownerId) {
@@ -128,64 +76,9 @@ export default {
       }
     }
 
-    async function getOwnerData(userType) {
-      let response = {};
-      let url = '';
-      let id = {};
-      switch (userType) {
-        case 'owner':
-          url = `${server}/auth/check-session`;
-          id = { ownerId };
-          break;
-        case 'guest':
-          url = `${server}/user/get-owner`;
-          id = { guestId };
-          break;
-      }
-
-      if (userType === 'owner') {
-        const usageData = await axios({
-          url: `${server}/files/get-usage`,
-          method: 'post',
-          data: { ownerId }
-        });
-        usage.value = usageData.data;
-      }
-
-      response = await axios({
-        url: url,
-        method: 'post',
-        data: id
-      });
-
-      if (userType === 'owner' && !response.data.isLoggedIn) {
-        window.location = `${server}/login`;
-      }
-      images.value = response.data.images;
-
-      // Response data contains all the owner data as key-value pairs
-      const ownerDataArr = Object.keys(response.data.owner);
-      // Get each key from response data and add it to the owner object
-      for (const key of ownerDataArr) {
-        owner[key] = response.data.owner[key];
-      }
-      // route.params.images = [];
-      // response.data.images.forEach(image => {
-      //   route.params.images.push(image);
-      // });
-
-      // owner.images = response.data.images;
-      // route.params.images = response.data.images;
-      isReadyToRender.value = true;
-      // console.log('usage:', usage);
-      // provide('fetchedImages', response.data.images);
+    async function getOwnerData(id, userType) {
+      await store.dispatch('getOwnerData', { id, userType });
     }
-
-    // function changeHomeView(newView) {
-    //   console.log('test:', newView);
-    //   view.value = newView;
-    // }
-    // provide('changeHomeView', changeHomeView);
 
     // Define default toast configuration and provide
     const toast = new Notyf({
@@ -193,27 +86,28 @@ export default {
       duration: 2000,
       types: [
         {
-          type: 'info'
+          type: 'info',
+          background: '#2563eb'
         }
       ]
     });
     provide('toast', toast);
 
     return {
-      // view,
       route,
-      isReadyToRender,
-      owner,
-      images,
-      usage
+      userType
     };
-  }
+  },
+  computed: mapState({
+    owner: state => state.ownerStore.owner,
+    images: state => state.imageStore.images
+  })
 };
 </script>
 
 <style>
 .notyf__toast {
-  @apply flex justify-between content-center w-56 h-auto p-0 text-sm font-light bg-gradient-to-r from-teal-400 to-purple-500 rounded-md;
+  @apply flex justify-between content-center w-64 h-auto p-0 rounded text-sm font-light;
 }
 
 .notyf__wrapper {
@@ -251,5 +145,19 @@ export default {
   transition-property: height, opacity, transform;
   transition-timing-function: cubic-bezier(0.55, 0, 0.1, 1);
   overflow: hidden;
+}
+
+/* Modal and drop menu transitions */
+.slide-fade-enter-active {
+  @apply transition-all duration-200 ease-out;
+}
+
+.slide-fade-leave-active {
+  @apply transition-all duration-150 ease-in;
+}
+
+.slide-fade-enter-from,
+.slide-fade-leave-to {
+  @apply transform -translate-y-2 opacity-0;
 }
 </style>
