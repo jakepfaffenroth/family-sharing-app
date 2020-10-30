@@ -48,7 +48,7 @@ export default {
     const { goToChangePlan } = route.params;
     // const elementClasses = reactive({});
 
-    const planDetails = computed(() => store.state.planStore.planDetails);
+    const planDetails = computed(() => store.getters.planDetails);
 
     if (!planDetails.value) {
       (async () => {
@@ -70,6 +70,7 @@ export default {
 
     function closePlanChange() {
       accountView.value = AccountSummary;
+      console.log('accountView.value:', accountView.value);
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
@@ -100,7 +101,8 @@ export default {
           type: 'error',
           duration: 0,
           dismissible: true,
-          message: 'Your subscription could not be changed right now.\nPlease contact support or try again.'
+          message:
+            'Your subscription could not be changed right now.\nPlease contact support or try again.'
         });
         // document.getElementById('msg-text').innerText =
         //   'Your subscription could not be changed right now.\nPlease contact support or try again.';

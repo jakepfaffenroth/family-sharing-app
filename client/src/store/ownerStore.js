@@ -1,12 +1,11 @@
 const server = process.env.VUE_APP_SERVER;
 import axios from 'axios';
-import { createStore } from 'vuex';
 
 export default {
   state: {
     ownerIdCookie: '',
     guestIdCookie: '',
-    owner: null
+    owner: {}
   },
   getters: {
     owner: state => state.owner,
@@ -20,6 +19,7 @@ export default {
     },
     updateOwner(state, ownerData) {
       state.owner = ownerData;
+      console.log('owner data updated');
     }
   },
   actions: {
@@ -46,11 +46,7 @@ export default {
         }
 
         // Fetch owner data
-        const response = await axios({
-          url: url,
-          method: 'post',
-          data: id
-        });
+        const response = await axios.post(url, id);
         // Redirect to login page if owner is not signed in
         if (userType === 'owner' && !response.data.isLoggedIn) {
           window.location = `${server}/login`;

@@ -1,13 +1,79 @@
 {
-	"version": "2.0.0",
-	"tasks": [
-		{
-			"type": "npm",
-			"script": "dev",
-			"path": "server/",
-			"problemMatcher": [],
-			"label": "npm: dev - server",
-			"detail": "NODE_ENV=development nodemon --config ./bin/nodemon.json -r ./bin/config.js ./bin/www"
-		}
-	]
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "type": "npm",
+      "script": "dev",
+      "path": "server/",
+      "problemMatcher": [],
+      "label": "npm: dev - server",
+      "detail": "NODE_ENV=development nodemon --config ./bin/nodemon.json -r ./bin/config.js ./bin/www"
+    },
+    {
+      "label": "Launch Servers",
+      "dependsOn": ["Dev Server - Client", "Dev Server - Server"],
+      "problemMatcher": []
+    },
+    {
+      "label": "Dev Server - Client",
+      "type": "shell",
+      "command": "npm run serve",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "group": "dev servers"
+      },
+      "options": {
+        "cwd": "${workspaceFolder}/client"
+      }
+    },
+    {
+      "label": "Dev Server - Server",
+      "type": "shell",
+      "command": "npm run dev",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "group": "dev servers"
+      },
+      "options": {
+        "cwd": "${workspaceFolder}/server"
+      }
+    },
+    {
+      "label": "Test:Unit - All",
+      "dependsOn": ["Test:Unit - Client", "Test:Unit - Server"],
+      "problemMatcher": []
+    },
+    {
+      "label": "Test:Unit - Client",
+      "type": "shell",
+      "command": "npx vue-cli-service test:unit ${input:watch} --noStackTrace -t ${input:testNamePattern}",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      },
+      "options": {
+        "cwd": "${workspaceFolder}/client"
+      }
+    }
+  ],
+  "inputs": [
+    {
+      "id": "watch",
+      "type": "pickString",
+      "description": "watch?",
+      "options": ["", "--watch", "--watchAll"],
+      "default": ""
+    },
+    {
+      "id": "testNamePattern",
+      "type": "promptString",
+      "description": "Specify specific tests.",
+      "default": ""
+    }
+  ]
 }

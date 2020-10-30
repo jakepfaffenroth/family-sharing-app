@@ -2,17 +2,21 @@
   <base-menu>
     <template #buttons>
       <div
+        data-test="ownerMenu"
         class="flex rounded-lg shadow divide-x divide-gray-400 h-8 border border-transparent transition-colors duration-150"
       >
         <base-button-purple
-          id="uppy-select-files"
+          data-test="uploadBtn"
           class="uppy-select-files w-40 h-8 mt-0 px-5 rounded-l-lg rounded-r-none"
         >
           Upload Files
         </base-button-purple>
         <base-drop-menu>
           <template #button>
-            <button class="w-8 h-8 bg-teal-600 rounded-r-lg hover:bg-teal-500">
+            <button
+              class="w-8 h-8 bg-teal-600 rounded-r-lg hover:bg-teal-500"
+              data-test="menuBtn"
+            >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 class="m-auto mt-1 h-5 w-5 text-white"
@@ -33,7 +37,8 @@
             <div class="w-46">
               <a
                 class="main-menu-link"
-                @click="$emit('open-modal', 'ownerShare')"
+                data-test="openShareModalBtn"
+                @click="$emit('open-modal', 'HomeModalShare')"
               >
                 Share
               </a>
@@ -43,15 +48,18 @@
               <router-link
                 :to="{
                   name: 'account',
-                  params: { ownerId: owner.ownerId }
+                  params: { ownerId }
                 }"
                 class="main-menu-link"
+                data-test="accountBtn"
               >
                 Account
               </router-link>
-              <a class="main-menu-link" @click="logout">Log out</a>
+              <a class="main-menu-link" data-test="logoutBtn" @click="logout">Log out</a>
               <a class="main-menu-link" @click="nuke">Nuke</a>
-              <a class="main-menu-link" @click="showToast">Toast</a>
+              <a class="main-menu-link" data-test="toastBtn" @click="showToast">
+                Toast
+              </a>
               <hr class="mt-1" />
               <home-menu-owner-usage></home-menu-owner-usage>
             </div>
@@ -64,7 +72,6 @@
 </template>
 
 <script>
-import { mapState, mapGetters } from 'vuex';
 import axios from 'axios';
 import BaseMenu from './BaseMenu';
 import BaseDropMenu from './BaseDropMenu';
@@ -75,6 +82,7 @@ import HomeMenuImageSorter from './HomeMenuImageSorter';
 import logout from '../utils/logout';
 
 export default {
+  name: 'OwnerMenu',
   components: {
     BaseMenu,
     BaseDropMenu,
@@ -83,22 +91,25 @@ export default {
     HomeMenuImageSorter
   },
   inject: ['nuke', 'toast'],
+  // props: { owner: { type: Object, default: null } },
   emits: ['open-modal', 'download-zip'],
   data() {
     return {
       logout
     };
   },
+  // TODO - Move this usage stuff to a new component
+  // This component should only be the menu and list items
   computed: {
-    ...mapState({
-      owner: state => state.ownerStore.owner,
-    }),
-    ...mapGetters('planStore', [
-      'storagePercentage',
-      'usageValue',
-      'usageBarWidth',
-      'usageBarColor'
-    ])
+    ownerId() {
+      return this.$store.getters.ownerId;
+    }
+    // ...mapGetters('planStore', [
+    //   'storagePercentage',
+    //   'usageValue',
+    //   'usageBarWidth',
+    //   'usageBarColor',
+    // ]),
   },
   methods: {
     showToast() {
@@ -109,7 +120,7 @@ export default {
         message:
           '<div class="font-sm p-0"><p class="font-bold">Title</p><p>message content</p></div>'
       });
-    },
+    }
   }
 };
 </script>

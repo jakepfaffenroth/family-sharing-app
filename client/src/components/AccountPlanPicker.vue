@@ -46,6 +46,7 @@
               :btn-value="plan.heading"
               :reset-btns-except="resetBtnsExcept"
               :current-plan="planDetails.plan"
+              :data-test="plan.id + 'Btn'"
               @reset-other-btns="resetOtherBtns"
               @show-confirmation="showConfirmation"
             ></account-plan-picker-button>
@@ -54,6 +55,7 @@
         <transition appear name="slide" mode="out-in">
           <div
             id="change-confirmation"
+            data-test="planChangeConfirmation"
             class="flex justify-between mt-8  bg-white rounded-lg text-gray-900 font-medium transition-all duration-150 ease-in"
             :class="showChangeConfirmation"
           >
@@ -75,6 +77,7 @@
             <div class="flex self-end m-3">
               <base-button-purple
                 class="mt-4"
+                data-test="confirmPlanChangeBtn"
                 @click="$emit('confirm-plan-change', newPlan)"
               >
                 Confirm change
@@ -101,10 +104,7 @@ import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
 import BaseButtonPurple from '../components/BaseButtonPurple';
 import BaseButtonCancel from '../components/BaseButtonCancel';
-
-const AccountPlanPickerButton = defineAsyncComponent(() =>
-  import('./AccountPlanPickerButton')
-);
+import AccountPlanPickerButton from '../components/AccountPlanPickerButton'
 
 export default {
   components: {
@@ -160,7 +160,7 @@ export default {
 
     const newPlan = ref('');
 
-    const planDetails = computed(() => store.state.planStore.planDetails);
+    const planDetails = computed(() => store.getters.planDetails);
     store.dispatch('getPlanDetails');
 
     function closeModal() {
@@ -181,7 +181,7 @@ export default {
       howChangeConfirmation.value = false;
     }
 
-    const resetBtnsExcept = ref('');
+    const resetBtnsExcept = ref(null);
     function resetOtherBtns(selectedBtn) {
       resetBtnsExcept.value = selectedBtn;
     }

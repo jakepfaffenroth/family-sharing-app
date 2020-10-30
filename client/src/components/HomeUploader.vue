@@ -1,5 +1,5 @@
 <template>
-  <div id="drop-area" />
+  <div></div>
   <!-- <div v-if="owner.ownerId" id="drop-area" />
   <div v-else>
     Loading...
@@ -21,6 +21,7 @@ import '@uppy/core/dist/style.css';
 import '@uppy/dashboard/dist/style.css';
 
 export default {
+  name: 'Uploader',
   setup(props, context) {
     const store = useStore();
     const toast = inject('toast');
@@ -53,23 +54,28 @@ export default {
       const basicRestrictions = 'Images only, up to 10 MB each';
       const premiumRestrictions = 'Images only, up to 100 MB each';
 
-      uppy.use(Dashboard, {
-        target: '#drop-area',
-        trigger: '.uppy-select-files', // Upload Button and HomeEmptyGallery.vue
-        closeModalOnClickOutside: true,
-        theme: 'auto',
-        inline: false,
-        showProgressDetails: true,
-        disableInformer: true,
-        note: owner.value.premiumUser ? premiumRestrictions : basicRestrictions,
-        proudlyDisplayPoweredByUppy: false,
-        locale: {
-          strings: {
-            complete: 'Upload complete (You can leave this page)'
+      try {
+        uppy.use(Dashboard, {
+          target: '#uploader',
+          trigger: '.uppy-select-files', // Upload Button and HomeEmptyGallery.vue
+          closeModalOnClickOutside: true,
+          theme: 'auto',
+          inline: false,
+          showProgressDetails: true,
+          disableInformer: true,
+          note: owner.value.premiumUser
+            ? premiumRestrictions
+            : basicRestrictions,
+          proudlyDisplayPoweredByUppy: false,
+          locale: {
+            strings: {
+              complete: 'Upload complete (You can leave this page)'
+            }
           }
-        }
-      });
-
+        });
+      } catch (err) {
+        // console.error(err);
+      }
       //  TODO - Replace empty gallery with this uppy uploader
       // uppy.use(EmptyDashboard, {
       //   id: EmptyDashboard,
@@ -88,7 +94,6 @@ export default {
       //     }
       //   }
       // });
-
       // uppy.use(ImageEditor, {
       //   id: 'ImageEditor',
       //   target: Dashboard,

@@ -6,9 +6,7 @@
       </h3>
     </template>
     <template #content>
-      <p
-        class="mb-2 "
-      >
+      <p class="mb-2 ">
         Share this link with family and friends.
       </p>
       <textarea
@@ -35,10 +33,12 @@ import BaseButtonPurple from './BaseButtonPurple';
 import BaseButtonCancel from './BaseButtonCancel';
 
 export default {
+  name: 'ShareModal',
   components: { BaseModal, BaseButtonPurple, BaseButtonCancel },
   props: {
-    shareUrl: { type: String, default: null },
-    singleImgUrl: { type: String, default: null }
+    // owner: {type:Object, default:null},
+    // shareUrl: { type: String, default: null },
+    imgInfo: { type: Object, default: null }
   },
   emits: ['close-modal'],
   data() {
@@ -46,6 +46,10 @@ export default {
       copyBtnTxt: 'Copy link',
       btnColor: null
     };
+  },
+  computed:{
+    owner(){return this.$store.state.ownerStore.owner},
+    shareUrl(){return `${process.env.VUE_APP_SERVER}/${this.owner.guestId}/guest`}
   },
   methods: {
     closeModal() {

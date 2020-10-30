@@ -20,6 +20,7 @@
   <router-link
     :to="{ name: 'account', params: { goToChangePlan: true } }"
     class="main-menu-link text-purple-500 font-semibold text-center"
+    data-test="getMoreStorageBtn"
   >
     Get more storage
   </router-link>

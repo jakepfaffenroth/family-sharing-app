@@ -1,6 +1,8 @@
 <template>
   <div
     id="my-gallery"
+    data-test="gallery"
+    v-bind="$attrs"
     class="my-gallery flex flex-wrap justify-start py-2 sm:py-4"
     itemscope
     itemtype="http://schema.org/ImageGallery"
@@ -70,14 +72,9 @@
                             userType === 'owner' &&
                             owner.ownerId
                         "
+                        data-test="imgDeleteBtn"
                         class="block px-2 py-1 text-sm rounded cursor-pointer text-gray-800 hover:bg-teal-400 hover:text-white"
-                        @click.stop="
-                          $emit('open-delete-modal', {
-                            date,
-                            ...item,
-                            index
-                          })
-                        "
+                        @click.stop="openDeleteModal(date, item, index)"
                       >
                         Delete
                       </a>
@@ -188,6 +185,7 @@ import BaseDropMenu from './BaseDropMenu';
 import LazyLoadDirective from '../utils/LazyLoadDirective';
 
 export default {
+  name: 'HomeGallery',
   directives: {
     lazyload: LazyLoadDirective
   },
@@ -201,7 +199,7 @@ export default {
       type: Object
     }
   },
-  emits: ['open-delete-modal', 'open-modal', 'img-delete-info'],
+  emits: ['open-modal', 'img-delete-info'],
   data() {
     return {
       pswp: null,
@@ -217,7 +215,7 @@ export default {
       return this.$store.state.ownerStore.owner;
     },
     items() {
-      return this.$store.state.imageStore.images;
+      return this.$store.getters.images;
     },
     imgGroups() {
       const currentYear = new Date().getFullYear().toString();
@@ -493,13 +491,13 @@ export default {
   },
   methods: {
     openDeleteModal(date, item, index) {
-      this.$emit('open-modal', 'deleteImage');
+      this.$emit('open-modal', 'HomeModalDeleteImage');
       this.$emit('img-delete-info', {
         date,
         fileId: item.fileId,
         thumbFileId: item.thumbFileId,
         fileName: item.fileName,
-        ownerId: this.owner.ownerId,
+        ownerId: this.$store.getters.ownerId,
         thumb: item.thumbnail,
         index
       });

@@ -2,23 +2,24 @@
   <!-- Header and Menu -->
   <component
     :is="user.menuType"
+    :data-test="user.type === 'owner' ? 'ownerMenu' : 'guestMenu'"
+    :owner="owner"
     @open-modal="visibleModal = $event"
     @sort-images="sortImages"
-    @open-share-modal="isShareModalVisible = true"
-    @open-subscribe-form="isSubscribeModalVisible = true"
     @download-zip="downloadZip"
   ></component>
 
-  <div v-if="owner.ownerId" class="flex flex-grow">
+  <div v-if="owner.ownerId && images" class="flex flex-grow">
     <!-- Image gallery -->
     <home-gallery
       :user-type="user.type"
-      @open-delete-modal="openDeleteModal"
+      @open-modal="visibleModal = $event"
+      @img-delete-info="imgInfo = $event"
     ></home-gallery>
 
     <!-- Empty gallery  -->
     <home-gallery-empty
-      v-show="images.length === 0 && user.type === 'owner' && owner.ownerId"
+      v-if="images.length === 0 && user.type === 'owner' && owner"
       id="empty-gallery"
       class="uppy-select-files"
     ></home-gallery-empty>
@@ -26,34 +27,26 @@
     <!-- Uppy file uploader -->
     <!-- Don't load until owner Info is fetched -->
     <home-uploader
-      v-if="user.type === 'owner' && owner.ownerId"
+      v-if="user.type === 'owner' && owner"
       :key="forceReloadKey"
     ></home-uploader>
 
-    <home-modal-share
-      v-show="visibleModal === 'ownerShare'"
-      :share-url="`${server}/${owner.guestId}/guest`"
+    <!-- Modals -->
+    <component
+      :is="visibleModal"
+      v-if="visibleModal"
+      data-test="homeModal"
+      :img-info="imgInfo"
       @close-modal="visibleModal = null"
-    />
-
-    <home-modal-guest-subscribe
-      v-show="visibleModal === 'guestSubscribe'"
-      :owner="owner"
-      @close-modal="visibleModal = null"
-    ></home-modal-guest-subscribe>
-
-    <home-modal-delete-image
-      v-show="visibleModal === 'deleteImage'"
-      :img-delete-info="imgDeleteInfo"
-      @close-modal="visibleModal = null"
-      @delete-image="deleteImage"
-    ></home-modal-delete-image>
+    ></component>
   </div>
 
   <!-- Skeleton while content loads -->
   <div v-else class="flex flex-wrap">
     <base-skeleton-image v-for="n in 10" :key="n"></base-skeleton-image>
   </div>
+
+  <div id="uploader"></div>
 </template>
 
 <script>
@@ -64,38 +57,39 @@ import {
   provide,
   inject,
   defineAsyncComponent,
-  markRaw
+  markRaw,
+  onMounted
 } from 'vue';
 import { useRoute } from 'vue-router';
 import { useStore } from 'vuex';
 import axios from 'axios';
 
-import BaseColorfulLogo from '../components/BaseColorfulLogo';
 import HomeGallery from '../components/HomeGallery';
 import HomeGalleryEmpty from '../components/HomeGalleryEmpty';
 import BaseSkeletonImage from '../components/BaseSkeletonImage';
 import HomeMenuOwner from '../components/HomeMenuOwner';
 import HomeModalGuestSubscribe from '../components/HomeModalGuestSubscribe';
-
+import HomeModalDeleteImage from '../components/HomeModalDeleteImage';
+// import HomeUploader from '../components/HomeUploader';
 const HomeUploader = defineAsyncComponent(() =>
   import('../components/HomeUploader')
 );
 const HomeMenuGuest = defineAsyncComponent(() =>
   import('../components/HomeMenuGuest')
 );
-const HomeModalShare = defineAsyncComponent(() =>
-  import('../components/HomeModalShare')
-);
-const HomeModalDeleteImage = defineAsyncComponent(() =>
-  import('../components/HomeModalDeleteImage')
-);
+import HomeModalShare from '../components/HomeModalShare';
+// const HomeModalShare = defineAsyncComponent(() =>
+//   import('../components/HomeModalShare')
+// );
+// const HomeModalDeleteImage = defineAsyncComponent(() =>
+//   import('../components/HomeModalDeleteImage')
+// );
 
 import downloader from '../utils/downloadZip';
 
 export default {
   name: 'Home',
   components: {
-    BaseColorfulLogo,
     BaseSkeletonImage,
     HomeMenuOwner,
     HomeMenuGuest,
@@ -106,7 +100,10 @@ export default {
     HomeModalGuestSubscribe,
     HomeModalDeleteImage
   },
-  props: { userType: { type: String, default: '' } },
+  props: {
+    // owner: { type: Object, default: null },
+    userType: { type: String, default: '' }
+  },
   setup(props) {
     const store = useStore();
     const route = useRoute();
@@ -122,9 +119,9 @@ export default {
     // App functionality and menu determined by user type
     const { userType } = reactive(props);
     let isShareModalVisible = ref(false);
-    renderUserType(userType);
+    onMounted(() => renderUserType(userType));
 
-    async function renderUserType(userType) {
+    function renderUserType(userType) {
       user.type = userType;
       user.menuType =
         userType === 'owner' ? markRaw(HomeMenuOwner) : markRaw(HomeMenuGuest);
@@ -204,39 +201,39 @@ export default {
       downloader(images.value, toast);
     }
 
-    // Delete individual images
-    let isDeleteModalVisible = ref(false);
-    let imgDeleteInfo = ref(null);
+    // const isDeleteModalVisible = ref(false);
+    const imgInfo = ref(null);
 
-    function openDeleteModal(imgInfo) {
-      visibleModal.value = 'deleteImage';
-      imgDeleteInfo.value = { ...imgInfo };
-    }
+    // function openDeleteModal(imgInfo) {
+    //   visibleModal.value = 'deleteImage';
+    //   imgDeleteInfo.value = { ...imgInfo };
+    // }
 
-    async function deleteImage(imgInfo) {
-      visibleModal.value = null;
-      const { date, fileId, thumbFileId, fileName, ownerId, index } = imgInfo;
+    // // Delete individual images
+    // async function deleteImage(imgInfo) {
+    //   visibleModal.value = null;
+    //   const { date, fileId, thumbFileId, fileName, ownerId, index } = imgInfo;
 
-      store.dispatch('removeFromImages', imgInfo);
-      // force Uppy to reload if there are zero images
-      if (images.value.length === 0) {
-        forceReloadKey.value++;
-      }
-      const response = await axios.post(`${server}/files/delete-image`, {
-        singleImage: true,
-        fileId,
-        thumbFileId,
-        fileName,
-        ownerId
-      });
-      if (response.status != 200) {
-        console.log(
-          `Deletion error: ${response.status} - ${response.statusText}`
-        );
-        store.dispatch('addToImages', imgInfo);
-      }
-      store.dispatch('getUsageData', { ownerId: owner.value.ownerId });
-    }
+    //   store.dispatch('removeFromImages', imgInfo);
+    //   // force Uppy to reload if there are zero images
+    //   if (images.value.length === 0) {
+    //     forceReloadKey.value++;
+    //   }
+    //   const response = await axios.post(`${server}/files/delete-image`, {
+    //     singleImage: true,
+    //     fileId,
+    //     thumbFileId,
+    //     fileName,
+    //     ownerId
+    //   });
+    //   if (response.status != 200) {
+    //     console.log(
+    //       `Deletion error: ${response.status} - ${response.statusText}`
+    //     );
+    //     store.dispatch('addToImages', imgInfo);
+    //   }
+    //   store.dispatch('getUsageData', { ownerId: owner.value.ownerId });
+    // }
 
     //Delete multiple images at once (user-selected, NOT nuking)
     let forceReloadKey = ref(0); // Force reload after deleting multiple images or nuking
@@ -289,12 +286,7 @@ export default {
       user,
       sortImages,
       visibleModal,
-      isSubscribeModalVisible: false,
-      isShareModalVisible,
-      isDeleteModalVisible,
-      openDeleteModal,
-      imgDeleteInfo,
-      deleteImage,
+      imgInfo,
       nuke,
       forceReloadKey,
       downloadZip

@@ -1,17 +1,16 @@
 <template>
   <div
-    v-if="owner"
     class="flex flex-col min-h-screen w-full px-2 py-2 sm:px-6 sm:py-4 xl:px-12 xl:py-6"
   >
     <router-view :user-type="userType"></router-view>
   </div>
+  
 </template>
 
 <script>
 import axios from 'axios';
-import { ref, reactive, computed, provide } from 'vue';
-import { Notyf } from 'notyf';
-import 'notyf/notyf.min.css';
+import toast from './utils/Toast';
+import { ref, reactive, computed, provide, onErrorCaptured } from 'vue';
 import { useRoute } from 'vue-router';
 import { useStore, mapState, mapGetters } from 'vuex';
 
@@ -19,6 +18,8 @@ import Home from './views/Home';
 import Account from './views/Account';
 
 export default {
+  name: 'App',
+  provide: { toast },
   setup() {
     var err = new Error();
     const store = useStore();
@@ -40,7 +41,7 @@ export default {
     }
     // Prevent users from viewing app without login or guestId
     if (!guestId && !ownerId) {
-      window.location = server;
+      window.location.assign(server);
     }
 
     // owner or guest id is passed as query param from server after login
@@ -81,27 +82,28 @@ export default {
     }
 
     // Define default toast configuration and provide
-    const toast = new Notyf({
-      position: { x: 'right', y: 'bottom' },
-      duration: 2000,
-      types: [
-        {
-          type: 'info',
-          background: '#2563eb'
-        }
-      ]
-    });
-    provide('toast', toast);
+    // const toast = new Notyf({
+    //   position: { x: 'right', y: 'bottom' },
+    //   duration: 2000,
+    //   types: [
+    //     {
+    //       type: 'info',
+    //       background: '#2563eb'
+    //     }
+    //   ]
+    // });
 
     return {
       route,
       userType
+      // owner: computed(() => store.state.ownerStore.owner),
+      // images: computed(() => store.state.imageStore.images)
     };
-  },
-  computed: mapState({
-    owner: state => state.ownerStore.owner,
-    images: state => state.imageStore.images
-  })
+  }
+  // computed: mapState({
+  //   owner: (state) => state.ownerStore.owner,
+  //   images: (state) => state.imageStore.images,
+  // }),
 };
 </script>
 

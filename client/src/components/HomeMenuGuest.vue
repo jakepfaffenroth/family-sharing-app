@@ -6,7 +6,7 @@
     <template #buttons>
       <base-button-purple
         class="w-48 rounded-lg"
-        @click="$emit('open-modal', 'guestSubscribe')"
+        @click="$emit('open-modal', 'HomeModalGuestSubscribe')"
       >
         Subscribe to updates
       </base-button-purple>
@@ -25,6 +25,7 @@ import BaseColorfulLogo from './BaseColorfulLogo';
 import HomeMenuImageSorter from './HomeMenuImageSorter';
 
 export default {
+  name: 'GuestMenu',
   components: {
     BaseMenu,
     BaseButtonPurple,

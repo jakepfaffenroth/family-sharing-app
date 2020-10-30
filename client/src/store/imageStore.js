@@ -12,6 +12,7 @@ export default {
       state.images.push(imgToAdd);
     },
     removeFromImages(state, indexToRemove) {
+      let images = state.images;
       state.images.splice(indexToRemove, 1);
     }
   },
@@ -28,9 +29,13 @@ export default {
     },
     removeFromImages({ commit, state }, imgToRemove) {
       const indexToRemove = state.images.findIndex(
-        img => img.fileId == imgToRemove.fileId
+        x => x.fileId === imgToRemove.fileId
       );
-      commit('removeFromImages', indexToRemove);
+      if (indexToRemove === -1) {
+        console.error('oops');
+      } else {
+        commit('removeFromImages', indexToRemove);
+      }
     }
   }
 };

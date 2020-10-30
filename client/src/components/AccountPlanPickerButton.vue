@@ -14,11 +14,12 @@ import BaseButtonTeal from './BaseButtonTeal';
 import { reactive, computed, watch } from 'vue';
 
 export default {
+  name: 'PlanPickerBtn',
   components: { BaseButtonTeal },
   props: {
     currentPlan: { type: String, default: '' },
     btnValue: { type: String, default: '' },
-    resetBtnsExcept: { type: String, default: '' }
+    resetBtnsExcept: { type: String, default: null }
   },
   emits: ['reset-other-btns', 'show-confirmation'],
   setup(props, { emit }) {

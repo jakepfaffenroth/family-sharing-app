@@ -62,7 +62,7 @@ export default {
         const response = await axios.post(`${server}/files/get-usage`, id);
         commit('updateUsage', response.data);
       } catch (err) {
-        error(new Error('%o'), err);
+        console.error(new Error(err));
       }
     }
   }

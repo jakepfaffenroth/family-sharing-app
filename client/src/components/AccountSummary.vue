@@ -22,6 +22,7 @@
                 </h3>
                 <span
                   id="subscribed-price"
+                  data-test="currentPlanInSummary"
                   class="font-semibold text-xl"
                   :class="{
                     'font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-teal-400 to-orange-400 via-purple-400': planDetails.plan
@@ -80,6 +81,7 @@
                 </div>
                 <div
                   class="flex justify-between mt-2 mb-2 text-gray-900 font-bold text-xl cursor-pointer"
+                  data-test="changePlanBtn"
                   @click="$emit('open-plan-change')"
                 >
                   <span>
