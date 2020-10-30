@@ -1,4 +1,4 @@
-aimport { expect, should } from 'chai';
+import { expect, should } from 'chai';
 should();
 import { mount } from '@vue/test-utils';
 import { nextTick } from 'vue';
