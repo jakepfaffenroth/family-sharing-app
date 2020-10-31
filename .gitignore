@@ -19,3 +19,6 @@ server/logs/
 
 # Local config files
 .nova*
+
+# Testing files
+coverage/

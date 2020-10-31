@@ -1,6 +1,6 @@
 <template>
-  <div class="relative" @mouseleave="closeMenu">
-    <div @click="openMenu">
+  <div data-test="baseDropMenu" class="relative" @mouseleave="closeMenu">
+    <div data-test="openBaseDropMenu" @click="openMenu">
       <slot name="button"></slot>
     </div>
     <!-- Menu list -->
@@ -12,6 +12,7 @@
       >
         <div
           id="menu-list"
+          data-test="baseDropMenuList"
           class="grid my-2 mx-4 p-2 bg-white rounded border border-teal-600 shadow-xl transition-all duration-150 ease-in-out"
           @click="closeMenu($event)"
         >
@@ -24,6 +25,7 @@
 
 <script>
 export default {
+  name: 'BaseDropMenu',
   data() {
     return {
       isMenuVisible: false,

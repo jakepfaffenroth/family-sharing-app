@@ -175,21 +175,21 @@ describe('Routing', () => {
     expect(wrapper.findComponent({ name: 'Account' }).exists()).to.be.true;
   });
 
-  test('menu btn navigates to Account view', async () => {
-    await wrapper.find('[data-test="menuBtn"]').trigger('click');
-    await wrapper.find('[data-test="accountBtn"]').trigger('click');
-    await flushPromises();
+  // test('menu btn navigates to Account view', async () => {
+  //   await wrapper.find('[data-test="menuBtn"]').trigger('click');
+  //   await wrapper.find('[data-test="accountBtn"]').trigger('click');
+  //   await flushPromises();
 
-    expect(wrapper.findComponent({ name: 'Account' }).exists()).to.be.true;
-  });
+  //   expect(wrapper.findComponent({ name: 'Account' }).exists()).to.be.true;
+  // });
 
-  test('menu btn navigates to Get More Storage', async () => {
-    await wrapper.find('[data-test="menuBtn"]').trigger('click');
-    await wrapper.find('[data-test="getMoreStorageBtn"]').trigger('click');
-    await flushPromises();
+  // test('menu btn navigates to Get More Storage', async () => {
+  //   await wrapper.find('[data-test="menuBtn"]').trigger('click');
+  //   await wrapper.find('[data-test="getMoreStorageBtn"]').trigger('click');
+  //   await flushPromises();
 
-    expect(wrapper.text()).to.include('Change your plan');
-  });
+  //   expect(wrapper.text()).to.include('Change your plan');
+  // });
 });
 
 test('logout deletes cookie', async () => {

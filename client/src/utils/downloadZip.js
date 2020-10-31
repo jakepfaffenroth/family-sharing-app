@@ -20,6 +20,7 @@ export default async (images, toast) => {
     message:
       '<div id="toast-message"><p id="msg-text"></p><div class="flex justify-end mt-2"><button id="zip-cancel-btn">Cancel</button></div></div>'
   });
+  // let testOutput;
 
   try {
     const zipMsg = document.getElementById('msg-text');
@@ -32,7 +33,9 @@ export default async (images, toast) => {
     const initZip = () => new JSZip();
     let zip = initZip();
     const count = await zipImages();
-    finishZip(count);
+    const output = await finishZip(count);
+    console.log('output:', output);
+    return output;
 
     // ------------------ //
     async function zipImages() {
@@ -55,6 +58,7 @@ export default async (images, toast) => {
               encoding: null
             }
           );
+          console.log('response.data:', response.data);
           // Check if zip file will exceed size limit by adding latest downloaded file
           if (zipSize + response.data.size < zipSizeLimit) {
             // Will not exceed limit; add file to zip and continue
@@ -65,7 +69,7 @@ export default async (images, toast) => {
             zipSize = 0;
             finishZip(count);
             count++;
-            zip = startZip();
+            // zip = startZip();
             folder = createFolder(count);
             folder.file(
               file.fileName.slice(file.fileName.indexOf('/')),
@@ -84,7 +88,7 @@ export default async (images, toast) => {
       return zip.folder(`images${count === 1 ? '' : ` part${count}`}`);
     }
 
-    function finishZip(count) {
+    async function finishZip(count) {
       if (count === 0) {
         return;
       }
@@ -103,10 +107,15 @@ export default async (images, toast) => {
           }
           zipMsg.innerText = `Preparing download: ${metadata.percent.toFixed()}%`;
         })
-        .then(data => {
+        .then(async data => {
           if (keepZipping === false) {
             return;
           }
+          if (process.env.NODE_ENV == 'test') {
+            console.log('data:', data.size);
+            return data;
+          }
+          return data;
           saveAs(data, `images${count === 1 ? '' : ` part${count}`}.zip`);
           downloadProgress = null;
           toast.dismiss(zipToast);
@@ -137,7 +146,7 @@ export default async (images, toast) => {
     console.log('error downloading zip file:', err);
   }
 
-  return {
-    downloadProgress
-  };
+  // return {
+  //   downloadProgress
+  // };
 };

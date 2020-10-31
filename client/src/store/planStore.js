@@ -13,15 +13,18 @@ export default {
     },
     usageValue: state => {
       if (state.usage.gb >= 1)
-        return { num: state.usage.gb.toFixed(2), unit: 'GB' };
+        return { num: Number(state.usage.gb.toFixed(2)), unit: 'GB' };
       else if (state.usage.mb >= 1)
-        return { num: state.usage.mb.toFixed(2), unit: 'MB' };
-      else return { num: state.usage.kb.toFixed(2), unit: 'KB' };
+        return { num: Number(state.usage.mb.toFixed(2)), unit: 'MB' };
+      else if (state.usage.mb >= 0) {
+        return { num: Number(state.usage.kb.toFixed(2)), unit: 'KB' };
+      } else return { num: '', unit: 'error' };
     },
     usageBarWidth: (state, getters) => {
+      if (getters.storagePercentage <= 0) return 'width: 0%';
       return getters.storagePercentage > 2
         ? 'width: ' + getters.storagePercentage + '%'
-        : 'width: ' + 2 + '%';
+        : 'width: 2%';
     },
     usageBarColor: (state, getters) => {
       if (getters.storagePercentage < 40) {

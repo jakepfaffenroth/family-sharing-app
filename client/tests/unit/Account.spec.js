@@ -68,6 +68,7 @@ const store = createStore({
 });
 
 jest.mock('reconnecting-websocket');
+
 const mountOptions = {
   global: {
     plugins: [router, store],
@@ -89,10 +90,10 @@ const mountOptions = {
     };
   }
 };
-// let assignMock = jest.fn();
 
 delete window.location;
 window.location = { assign: jest.fn() };
+
 describe('change plan', () => {
   let wrapper;
 

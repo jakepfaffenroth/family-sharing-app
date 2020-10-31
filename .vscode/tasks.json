@@ -43,6 +43,17 @@
       }
     },
     {
+      "label": "Start Local Redis Server",
+      "type": "shell",
+      "command": "sudo /etc/init.d/redis_6379 start",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "focus": true,
+        "panel": "new"
+      }
+    },
+    {
       "label": "Test:Unit - All",
       "dependsOn": ["Test:Unit - Client", "Test:Unit - Server"],
       "problemMatcher": []
@@ -50,7 +61,7 @@
     {
       "label": "Test:Unit - Client",
       "type": "shell",
-      "command": "npx vue-cli-service test:unit ${input:watch} --noStackTrace -t ${input:testNamePattern}",
+      "command": "npx vue-cli-service test:unit ${input:watch} -t ${input:testNamePattern}",
       "problemMatcher": [],
       "presentation": {
         "reveal": "always",

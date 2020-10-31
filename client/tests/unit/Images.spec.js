@@ -4,13 +4,16 @@ import { flushPromises, mount } from '@vue/test-utils';
 import App from '@/App';
 import Home from '@/views/Home';
 import Account from '@/views/Account';
+import downloadZip from '@/utils/downloadZip';
 import { nextTick } from 'vue';
 import { createRouter, createWebHistory } from 'vue-router';
 import { createStore } from 'vuex';
+import { Notyf } from 'notyf';
 import rws from 'reconnecting-websocket';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 const mockAxios = new MockAdapter(axios);
+import mockImage from '../assets/mockImage.jpg';
 
 process.env.VUE_APP_SERVER = 'http://localhost:3400';
 
@@ -107,13 +110,6 @@ const setCookies = () => {
 
 describe('images update in display', () => {
   let wrapper;
-  // jest.mock('axios', () => ({
-  //   get: () => Promise.resolve({ data: { ownerId: 'testOwnerId' } }),
-  //   post: () =>
-  //     Promise.resolve({
-  //       status: 200
-  //     })
-  // }));
 
   beforeEach(async () => {
     setCookies();
@@ -205,6 +201,77 @@ describe('images update in display', () => {
 
     expect(wrapper.find('[src="newImg"]').exists()).to.be.false;
   });
+});
 
-  
+describe('download images', () => {
+  let wrapper;
+  let mockImage;
+  async function toDataURL(src, callback) {
+    var image = new Image();
+    image.crossOrigin = 'Anonymous';
+
+    image.onload = function() {
+      var canvas = document.createElement('canvas');
+      var context = canvas.getContext('2d');
+      canvas.height = this.naturalHeight;
+      canvas.width = this.naturalWidth;
+      context.drawImage(this, 0, 0);
+      var dataURL = canvas.toDataURL('image/jpeg');
+      callback(dataURL);
+    };
+
+    image.src = src;
+  }
+
+  // const mockImage = new Blob(
+  //   // Math.pow(123456789123456789, 10000)
+  //   //   .toString()
+  //   //   .split(''),
+  //   ['1', '2', '3'],
+  //   {
+  //     type: 'image/jpeg'
+  //   }
+  // );
+
+  // mockImage['name'] = 'mockImage.jpg';
+
+  mockAxios.onGet().reply(200, mockImage);
+  mockAxios.onPost().reply(200, {
+    owner: { ownerId: 'testOwnerId' },
+    images: [{ uploadTime: Date.now() }, { uploadTime: Date.now() }]
+  });
+
+  beforeEach(async () => {
+    setCookies();
+    router.push('/');
+    await router.isReady();
+    wrapper = mount(App, mountOptions);
+  });
+
+  afterEach(async () => {
+    wrapper.unmount();
+    jest.resetModules();
+    jest.clearAllMocks();
+    mockAxios.reset();
+    store.state.imageStore.images = [
+      { fileId: '1', uploadTime: Date.now() },
+      { fileId: '2', uploadTime: Date.now() }
+    ];
+  });
+
+  test.skip('downloads zip file', async () => {
+    // TODO - Fix this test 
+    await toDataURL('../assets/mockImage.jpg', function(dataURL) {
+      // do something with dataURL
+      mockImage = dataURL;
+    });
+    console.log('mockImage:', mockImage);
+    jest.mock('notyf');
+    const toast = new Notyf();
+
+    const progress = await downloadZip([{ fileName: 'mockImage.jpg' }], toast);
+    console.log('progress:', progress);
+
+    expect(progress).to.equal(mockImage);
+  });
 });

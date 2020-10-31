@@ -19,7 +19,6 @@ export default {
     },
     updateOwner(state, ownerData) {
       state.owner = ownerData;
-      console.log('owner data updated');
     }
   },
   actions: {
@@ -49,7 +48,7 @@ export default {
         const response = await axios.post(url, id);
         // Redirect to login page if owner is not signed in
         if (userType === 'owner' && !response.data.isLoggedIn) {
-          window.location = `${server}/login`;
+          window.location.assign(`${server}/login`);
         }
         commit('updateOwner', response.data.owner);
         commit('updateImages', response.data.images);

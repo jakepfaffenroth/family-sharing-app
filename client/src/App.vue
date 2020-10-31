@@ -4,7 +4,6 @@
   >
     <router-view :user-type="userType"></router-view>
   </div>
-  
 </template>
 
 <script>
@@ -51,7 +50,7 @@ export default {
     const params = new URLSearchParams(window.location.search);
     const uId = params.get('owner');
     const gId = params.get('guest');
-
+    
     if (uId) {
       document.cookie = `ownerId=${uId}`;
       window.history.replaceState(null, '', '/');
