@@ -126,7 +126,7 @@ describe('change plan', () => {
     jest.clearAllMocks();
   });
 
-  test('change plan button opens plan picker', async () => {
+  test('change plan button navigates to plan picker', async () => {
     await wrapper.find('[data-test="changePlanBtn"]').trigger('click');
     await flushPromises();
 

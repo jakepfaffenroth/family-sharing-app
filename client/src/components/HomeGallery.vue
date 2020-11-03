@@ -7,7 +7,12 @@
     itemscope
     itemtype="http://schema.org/ImageGallery"
   >
-    <div v-for="(group, date) in imgGroups" :key="date" class="group-container">
+    <div
+      v-for="(group, date) in imgGroups"
+      :key="date"
+      data-test="imgGroup"
+      class="group-container"
+    >
       <div class="flex justify-between">
         <p class="mb-1 text-sm sm:text-base">
           {{ date }}
@@ -219,19 +224,18 @@ export default {
     },
     imgGroups() {
       const currentYear = new Date().getFullYear().toString();
-
       let group = this.items.reduce((r, a) => {
         let captureDate =
           a.exif && a.exif.exif && a.exif.exif.DateTimeOriginal
             ? format(
                 new Date(a.exif.exif.DateTimeOriginal.split('T').shift()),
-                'E, LLL dd yyyy'
+                'E, LLL d yyyy'
               )
             : null;
 
         let uploadDate = format(
           new Date(parseInt(a.uploadTime)),
-          'E, LLL dd yyyy'
+          'E, LLL d yyyy'
         );
 
         if (captureDate && captureDate.substr(-4, 4) === currentYear) {

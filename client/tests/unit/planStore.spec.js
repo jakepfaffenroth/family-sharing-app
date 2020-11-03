@@ -96,3 +96,45 @@ describe('getters', () => {
     }
   );
 });
+
+describe('actions', () => {
+  test.each(['mockOwnerId', null])('getPlanActions', async ownerId => {
+    mockAxios.onPost().reply(config => {
+      switch (config.url) {
+        case 'undefined/payment/retrieve-payment-method':
+          return [200, { plan: 'Premium', paymentMethod: 'mockPaymentMethod' }];
+          break;
+        case 'undefined/auth/check-session':
+          return [
+            200,
+            { isLoggedIn: true, owner: { ownerId: 'mockOwnerId' }, images: [] }
+          ];
+          break;
+        case 'undefined/user/get-owner':
+          return [200, { isLoggedIn: true, images: [] }];
+          break;
+        case 'undefined/files/get-usage':
+          return [
+            200,
+            {
+              usage: { kb: 0, mb: 0, gb: 0 },
+              planDetails: {
+                plan: 'Premium',
+                paymentMethod: 'mockPaymentMethod'
+              }
+            }
+          ];
+          break;
+        default:
+          return [200];
+          break;
+      }
+    });
+
+    store.state.ownerStore.owner = { ownerId: ownerId, isLoggedIn: true };
+    
+    await store.dispatch('getPlanDetails');
+
+    expect(store.state.planStore.planDetails.plan).to.equal('Premium');
+  });
+});

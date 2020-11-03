@@ -7,29 +7,55 @@ const mockAxios = new MockAdapter(axios);
 
 process.env.VUE_APP_SERVER = 'http://localhost:3400';
 
-test('remove from images', () => {
-  store.state.imageStore.images = [{ fileId: 1 }, { fileId: 2 }, { fileId: 3 }];
-  expect(store.state.imageStore.images.length).to.equal(3);
+describe('actions', () => {
+  test('nuke images', () => {
+    store.state.imageStore.images = [
+      { fileId: 1 },
+      { fileId: 2 },
+      { fileId: 3 }
+    ];
+    expect(store.state.imageStore.images.length).to.equal(3);
 
-  store.dispatch('removeFromImages', { fileId: 2 });
+    store.dispatch('nukeImages');
 
-  expect(store.state.imageStore.images.length).to.equal(2);
-});
+    expect(store.state.imageStore.images.length).to.equal(0);
+  });
 
-test('add to images', () => {
-  store.state.imageStore.images = [{ fileId: 1 }, { fileId: 2 }, { fileId: 3 }];
-  expect(store.state.imageStore.images.length).to.equal(3);
+  test('update images', () => {
+    store.state.imageStore.images = [
+      { fileId: 1 },
+      { fileId: 2 },
+      { fileId: 3 }
+    ];
 
-  store.dispatch('addToImages', { fileId: 'mock' });
+    store.dispatch('updateImages', [{ fileId: 4 }]);
 
-  expect(store.state.imageStore.images.length).to.equal(4);
-});
+    expect(store.state.imageStore.images.length).to.equal(1);
+  });
 
-test('nuke images', () => {
-  store.state.imageStore.images = [{ fileId: 1 }, { fileId: 2 }, { fileId: 3 }];
-  expect(store.state.imageStore.images.length).to.equal(3);
+  test('add to images', () => {
+    store.state.imageStore.images = [
+      { fileId: 1 },
+      { fileId: 2 },
+      { fileId: 3 }
+    ];
+    expect(store.state.imageStore.images.length).to.equal(3);
 
-  store.dispatch('nukeImages');
+    store.dispatch('addToImages', { fileId: 'mock' });
 
-  expect(store.state.imageStore.images.length).to.equal(0);
+    expect(store.state.imageStore.images.length).to.equal(4);
+  });
+
+  test('remove from images', () => {
+    store.state.imageStore.images = [
+      { fileId: 1 },
+      { fileId: 2 },
+      { fileId: 3 }
+    ];
+    expect(store.state.imageStore.images.length).to.equal(3);
+
+    store.dispatch('removeFromImages', { fileId: 2 });
+
+    expect(store.state.imageStore.images.length).to.equal(2);
+  });
 });

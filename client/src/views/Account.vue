@@ -70,7 +70,6 @@ export default {
 
     function closePlanChange() {
       accountView.value = AccountSummary;
-      console.log('accountView.value:', accountView.value);
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
@@ -125,63 +124,63 @@ export default {
       return response.data;
     }
 
-    async function cancelSubscription() {
-      const response = await axios(
-        process.env.VUE_APP_SERVER + '/payment/cancel-subscription',
-        {
-          method: 'post',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          data: JSON.stringify({
-            ownerId: owner.value.ownerId
-          })
-        }
-      );
-      const data = response.data;
-      if (
-        !data.subCancelled &&
-        data.msg.toLowerCase().includes('no such subscription')
-      ) {
-        toast.open({
-          type: 'error',
-          duration: 0,
-          dismissible: true,
-          message:
-            'Your subscription was not found. Please contact support or try again.'
-        });
-        // document.getElementById('toast-message').innerText =
-        //   'Your subscription was not found. Please contact support or try again.';
-      } else if (!data.subCancelled) {
-        toast.open({
-          type: 'error',
-          duration: 0,
-          dismissible: true,
-          message:
-            'Your subscription could not be cancelled right now.\nPlease contact support or try again.'
-        });
-        // document.getElementById('msg-text').innerText =
-        //   'Your subscription could not be cancelled right now.\nPlease contact support or try again.';
-      }
-      if (data.subCancelled) {
-        toast.open({
-          type: 'success',
-          duration: 5000,
-          // dismissible: true,
-          message: 'Subscription cancelled\n' + response
-        });
-        // document.getElementById('msg-text').innerText =
-        //   'Subscription cancelled\n' + response;
-        // subscriptionCancelled(response);
-      }
-    }
+    // async function cancelSubscription() {
+    //   const response = await axios(
+    //     process.env.VUE_APP_SERVER + '/payment/cancel-subscription',
+    //     {
+    //       method: 'post',
+    //       headers: {
+    //         'Content-Type': 'application/json'
+    //       },
+    //       data: JSON.stringify({
+    //         ownerId: owner.value.ownerId
+    //       })
+    //     }
+    //   );
+    //   const data = response.data;
+    //   if (
+    //     !data.subCancelled &&
+    //     data.msg.toLowerCase().includes('no such subscription')
+    //   ) {
+    //     toast.open({
+    //       type: 'error',
+    //       duration: 0,
+    //       dismissible: true,
+    //       message:
+    //         'Your subscription was not found. Please contact support or try again.'
+    //     });
+    //     // document.getElementById('toast-message').innerText =
+    //     //   'Your subscription was not found. Please contact support or try again.';
+    //   } else if (!data.subCancelled) {
+    //     toast.open({
+    //       type: 'error',
+    //       duration: 0,
+    //       dismissible: true,
+    //       message:
+    //         'Your subscription could not be cancelled right now.\nPlease contact support or try again.'
+    //     });
+    //     // document.getElementById('msg-text').innerText =
+    //     //   'Your subscription could not be cancelled right now.\nPlease contact support or try again.';
+    //   }
+    //   if (data.subCancelled) {
+    //     toast.open({
+    //       type: 'success',
+    //       duration: 5000,
+    //       // dismissible: true,
+    //       message: 'Subscription cancelled\n' + response
+    //     });
+    //     // document.getElementById('msg-text').innerText =
+    //     //   'Subscription cancelled\n' + response;
+    //     // subscriptionCancelled(response);
+    //   }
+    // }
 
     return {
       accountView,
       openPlanChange,
       closePlanChange,
       confirmPlanChange,
-      cancelSubscription,
+      // cancelSubscription,
       // elementClasses,
       planDetails
     };

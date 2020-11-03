@@ -11,6 +11,7 @@ import { createStore } from 'vuex';
 import { Notyf } from 'notyf';
 import rws from 'reconnecting-websocket';
 import axios from 'axios';
+import format from 'date-fns/format';
 import MockAdapter from 'axios-mock-adapter';
 const mockAxios = new MockAdapter(axios);
 import mockImage from '../assets/mockImage.jpg';
@@ -53,7 +54,10 @@ const store = createStore({
       planDetails: { plan: 'Basic', paymentMethod: 'Visa •••• 4242' }
     },
     imageStore: {
-      images: [{ uploadTime: Date.now() }, { uploadTime: Date.now() }]
+      images: [
+        { uploadTime: Date.now().toString(), exif: {} },
+        { uploadTime: Date.now().toString(), exif: {} }
+      ]
     }
   },
   getters: {
@@ -104,7 +108,7 @@ const mountOptions = {
 const setCookies = () => {
   Object.defineProperty(window.document, 'cookie', {
     writable: true,
-    value: 'ownerId=testOwnerId'
+    value: 'ownerId=mockOwnerId'
   });
 };
 
@@ -126,8 +130,8 @@ describe('images update in display', () => {
     jest.clearAllMocks();
     mockAxios.reset();
     store.state.imageStore.images = [
-      { fileId: '1', uploadTime: Date.now() },
-      { fileId: '2', uploadTime: Date.now() }
+      { fileId: '1', uploadTime: Date.now().toString() },
+      { fileId: '2', uploadTime: Date.now().toString() }
     ];
   });
 
@@ -137,7 +141,7 @@ describe('images update in display', () => {
 
   test('displays new image after adding to state', async () => {
     store.state.imageStore.images.push({
-      uploadTime: Date.now(),
+      uploadTime: Date.now().toString(),
       src: 'newImg',
       thumbnail: 'newImg'
     });
@@ -147,7 +151,7 @@ describe('images update in display', () => {
 
   test('delete confirmation modal displays', async () => {
     store.state.imageStore.images.push({
-      uploadTime: Date.now(),
+      uploadTime: Date.now().toString(),
       src: 'newImg',
       thumbnail: 'newImg'
     });
@@ -163,7 +167,7 @@ describe('images update in display', () => {
 
   test('removes image from display after removing from state', async () => {
     store.state.imageStore.images.push({
-      uploadTime: Date.now(),
+      uploadTime: Date.now().toString(),
       src: 'newImg',
       thumbnail: 'newImg'
     });
@@ -183,7 +187,7 @@ describe('images update in display', () => {
     mockAxios.onPost().reply(200);
     store.state.imageStore.images.push({
       fileId: '3',
-      uploadTime: Date.now(),
+      uploadTime: Date.now().toString(),
       src: 'newImg',
       thumbnail: 'newImg'
     });
@@ -200,6 +204,67 @@ describe('images update in display', () => {
     await flushPromises();
 
     expect(wrapper.find('[src="newImg"]').exists()).to.be.false;
+  });
+});
+
+describe('group images by date', () => {
+  let wrapper;
+  const uploadTime = Date.now().toString;
+
+  beforeEach(async () => {
+    setCookies();
+    router.push('/');
+    await router.isReady();
+    store.state.imageStore.images = [];
+    wrapper = mount(App, mountOptions);
+  });
+
+  afterEach(async () => {
+    // await router.replace('/');
+    // await router.isReady();
+    wrapper.unmount();
+    jest.resetModules();
+    jest.clearAllMocks();
+    mockAxios.reset();
+    store.state.imageStore.images = [];
+  });
+
+  test.each([
+    [[new Date(Date.now()), new Date(Date.now())]],
+    [[new Date(Date.now()), new Date('1/21/2000')]],
+    [
+      [
+        new Date('1/21/2000'),
+        new Date('1/21/2000'),
+        new Date('5/13/2005'),
+        new Date('5/13/2005'),
+        new Date('9/26/1986')
+      ]
+    ],
+    [[null, null]],
+    [[new Date('1/21/2000'), new Date('1/21/2000'), null]],
+    [[null, new Date('1/21/2000'), new Date('1/21/2050')]]
+  ])('images should be grouped by date', async dates => {
+    // store.state.imageStore.images = [];
+
+    dates.forEach(date => {
+      store.state.imageStore.images.push({
+        exif: date
+          ? { exif: { DateTimeOriginal: date.toLocaleString() } }
+          : null,
+        uploadTime: Date.now().toString(),
+        src: 'mockUrl'
+      });
+    });
+
+    await nextTick();
+
+    const gallery = wrapper.find('[data-test="gallery"]');
+    dates.forEach(date => {
+      expect(gallery.text()).to.include(
+        format(date ? date : new Date(Date.now()), 'E, LLL d')
+      );
+    });
   });
 });
 
@@ -238,7 +303,10 @@ describe('download images', () => {
   mockAxios.onGet().reply(200, mockImage);
   mockAxios.onPost().reply(200, {
     owner: { ownerId: 'testOwnerId' },
-    images: [{ uploadTime: Date.now() }, { uploadTime: Date.now() }]
+    images: [
+      { uploadTime: Date.now().toString() },
+      { uploadTime: Date.now().toString() }
+    ]
   });
 
   beforeEach(async () => {
@@ -254,13 +322,13 @@ describe('download images', () => {
     jest.clearAllMocks();
     mockAxios.reset();
     store.state.imageStore.images = [
-      { fileId: '1', uploadTime: Date.now() },
-      { fileId: '2', uploadTime: Date.now() }
+      { fileId: '1', uploadTime: Date.now().toString() },
+      { fileId: '2', uploadTime: Date.now().toString() }
     ];
   });
 
   test.skip('downloads zip file', async () => {
-    // TODO - Fix this test 
+    // TODO - Fix this test
     await toDataURL('../assets/mockImage.jpg', function(dataURL) {
       // do something with dataURL
       mockImage = dataURL;

@@ -11,6 +11,16 @@ delete window.location;
 window.location = { assign: jest.fn() };
 
 describe('actions', () => {
+  test('saveIdCookies', () => {
+    store.dispatch('saveIdCookies', {
+      ownerId: 'mockOwnerId',
+      guestId: 'mockGuestId'
+    });
+
+    expect(store.state.ownerStore.ownerIdCookie).to.equal('mockOwnerId');
+    expect(store.state.ownerStore.guestIdCookie).to.equal('mockGuestId');
+  });
+
   test.each(['owner', 'guest'])(
     'getOwnerData - correct API is reached for user type "%s"',
     async userType => {

@@ -1,10 +1,11 @@
 import { expect, should } from 'chai';
 should();
-import { flushPromises, mount } from '@vue/test-utils';
+const jestExpect = global.expect;
+import { flushPromises, mount, VueWrapper } from '@vue/test-utils';
 import { createRouter, createWebHistory } from 'vue-router';
 import Home from '@/views/Home';
 import Account from '@/views/Account';
-import BaseDropMenu from '@/components/BaseDropMenu';
+import HomeModalShare from '@/components/HomeModalShare';
 import { nextTick, h } from 'vue';
 import { createStore } from 'vuex';
 import axios from 'axios';
@@ -29,11 +30,11 @@ const store = createStore({
   state: {
     ownerStore: {
       owner: {
-        ownerId: 'testOwnerId',
+        ownerId: 'mockOwnerId',
         username: 'alice',
         firstName: 'Alice',
         lastName: 'Doe',
-        guestId: 'testGuestId'
+        guestId: 'mockGuestId'
       },
       ownerIdCookie: '',
       guestIdCookie: ''
@@ -44,7 +45,7 @@ const store = createStore({
     }
   },
   getters: {
-    ownerId: () => 'testOwnerId',
+    ownerId: state => state.ownerStore.owner.ownerId,
     storageValue: () => 20,
     usageValue: () => ({ num: 50, unit: 'mb' }),
     quota: () => 2000,
@@ -60,6 +61,13 @@ const store = createStore({
 const toast = () => null;
 const nuke = () => null;
 const sortImages = () => null;
+
+const setCookies = () => {
+  Object.defineProperty(window.document, 'cookie', {
+    writable: true,
+    value: 'ownerId=mockOwnerId'
+  });
+};
 
 describe('basic modal functionality', () => {
   const router = createRouter({
@@ -78,11 +86,11 @@ describe('basic modal functionality', () => {
     state: {
       ownerStore: {
         owner: {
-          ownerId: 'testOwnerId',
+          ownerId: 'mockOwnerId',
           username: 'alice',
           firstName: 'Alice',
           lastName: 'Doe',
-          guestId: 'testGuestId'
+          guestId: 'mockGuestId'
         },
         ownerIdCookie: '',
         guestIdCookie: ''
@@ -93,7 +101,7 @@ describe('basic modal functionality', () => {
       }
     },
     getters: {
-      ownerId: () => 'testOwnerId',
+      ownerId: state => state.ownerStore.owner.ownerId,
       storageValue: () => 20,
       usageValue: () => ({ num: 50, unit: 'mb' }),
       quota: () => 2000,
@@ -177,21 +185,17 @@ describe('basic modal functionality', () => {
   });
 });
 
-describe('guest subscribe modal', () => {
+describe('share modal', () => {
   let wrapper;
   jest.mock('@uppy/dashboard');
 
-  Object.defineProperty(window.document, 'cookie', {
-    writable: true,
-    value: 'ownerId=testOwnerId'
-  });
-
   mockAxios.onPost().reply(200, {
-    owner: { ownerId: 'testOwnerId' },
+    owner: { ownerId: 'mockOwnerId' },
     images: [{ uploadTime: Date.now() }, { uploadTime: Date.now() }]
   });
 
   beforeEach(async () => {
+    setCookies();
     router.push('/');
     await router.isReady();
     wrapper = mount(Home, {
@@ -213,8 +217,6 @@ describe('guest subscribe modal', () => {
   });
 
   afterEach(async () => {
-    await router.replace('/');
-    await router.isReady();
     wrapper.unmount();
     mockAxios.reset();
     jest.resetModules();
@@ -222,14 +224,63 @@ describe('guest subscribe modal', () => {
   });
 
   test('correct share url is in share modal', async () => {
-    const menuBtn = wrapper.find('[data-test="menuBtn"]');
-    const openShareModalBtn = wrapper.find('[data-test="openShareModalBtn"]');
+    await wrapper.find('[data-test="menuBtn"]').trigger('click');
+    await wrapper.find('[data-test="openShareModalBtn"]').trigger('click');
+    expect(wrapper.find('[data-test="homeModal"]').exists()).to.be.true;
 
-    await menuBtn.trigger('click');
-    await openShareModalBtn.trigger('click');
-
-    expect(wrapper.find('[data-test="homeModal"]').html()).to.include(
-      'localhost:3400/testGuestId/guest'
+    expect(wrapper.find('[data-test="shareUrl"]').text()).to.include(
+      'localhost:3400/mockGuestId/guest'
     );
+  });
+
+  test('share modal copies text to clipboard', async () => {
+    let copiedText;
+    jest.useFakeTimers();
+    jest.spyOn(global, 'setTimeout');
+
+    Object.assign(navigator, {
+      clipboard: {
+        writeText: x => {
+          copiedText = x;
+        }
+      }
+    });
+    jest.spyOn(navigator.clipboard, 'writeText');
+
+    router.push('/');
+    await router.isReady();
+    const wrapper = mount(HomeModalShare, {
+      global: {
+        plugins: [router, store],
+        provide: {
+          toast,
+          nuke,
+          sortImages
+        },
+        stubs: {
+          HomeGallery: true,
+          HomeUploader: true
+        }
+      },
+      props: {
+        userType: 'owner'
+      },
+      data() {
+        return {
+          visibleModal: 'HomeModalShare',
+          imgInfo: null
+        };
+      }
+    });
+
+    await wrapper.find('[data-test="copyBtn"]').trigger('click');
+
+    expect(copiedText).to.equal(wrapper.vm.shareUrl);
+    
+    jest.runAllTimers();
+
+    jestExpect(navigator.clipboard.writeText).toBeCalledTimes(1);
+    jestExpect(setTimeout).toBeCalledTimes(1);
+    jestExpect(setTimeout).toBeCalledWith(jestExpect.any(Function), 10000);
   });
 });

@@ -9,18 +9,23 @@
       <p class="mb-2 ">
         Share this link with family and friends.
       </p>
-      <textarea
-        :id="shareUrl || singleImgUrl"
-        class="w-full text-sm  bg-transparent outline-none resize-none"
-        readonly="readonly"
-        :value="shareUrl || singleImgUrl"
-      ></textarea>
+      <p
+        id="shareUrl"
+        data-test="shareUrl"
+        class="w-full text-sm text-gray-100 font-light tracking-wide bg-transparent outline-none"
+      >
+        {{ shareUrl }}
+      </p>
     </template>
     <template #footer>
       <base-button-cancel @click="closeModal">
         Cancel
       </base-button-cancel>
-      <base-button-purple :class="btnColor" @click="copyShareUrl">
+      <base-button-purple
+        data-test="copyBtn"
+        :class="btnColor"
+        @click="copyShareUrl"
+      >
         {{ copyBtnTxt }}
       </base-button-purple>
     </template>
@@ -43,32 +48,27 @@ export default {
   emits: ['close-modal'],
   data() {
     return {
+      server: process.env.VUE_APP_SERVER,
       copyBtnTxt: 'Copy link',
       btnColor: null
     };
   },
-  computed:{
-    owner(){return this.$store.state.ownerStore.owner},
-    shareUrl(){return `${process.env.VUE_APP_SERVER}/${this.owner.guestId}/guest`}
+  computed: {
+    owner() {
+      return this.$store.state.ownerStore.owner;
+    },
+    shareUrl() {
+      return `${process.env.VUE_APP_SERVER}/${this.owner.guestId}/guest`;
+    }
   },
   methods: {
     closeModal() {
       this.$emit('close-modal');
     },
-    copyShareUrl() {
+    async copyShareUrl() {
       this.btnColor = 'copied';
 
-      /* Get the text field */
-      const copyText = document.getElementById(
-        this.shareUrl || this.singleImgUrl
-      );
-      /* Select the text field */
-      copyText.select();
-      copyText.setSelectionRange(0, 99999); /*For mobile devices*/
-
-      /* Copy the text inside the text field */
-      document.execCommand('copy');
-      copyText.selectionEnd = copyText.selectionStart;
+      await navigator.clipboard.writeText(this.shareUrl);
 
       this.copyBtnTxt = 'Copied!';
 
