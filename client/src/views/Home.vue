@@ -1,4 +1,16 @@
 <template>
+  <!-- <p class="text-xs">
+    {{ albums }}
+  </p>
+  <p class="text-xs">
+    {{ 'images.length: ' + images.length }}
+  </p>
+  <p class="text-xs">
+    {{ 'allImages.length: ' + allImages.length }}
+  </p>
+  <p class="text-xs">
+    {{ 'activeGallery: ' + activeGallery }}
+  </p> -->
   <!-- Header and Menu -->
   <component
     :is="user.menuType"
@@ -9,13 +21,73 @@
     @download-zip="downloadZip"
   ></component>
 
-  <div v-if="owner.ownerId && images" class="flex flex-grow">
+  <!-- Album tab bar -->
+  <div
+    v-if="albums"
+    data-test="albumTabBar"
+    class="flex space-x-2 p-2 pb-0 border-b-2 border-purple-200 text-sm font-medium"
+  >
+    <!-- <button
+      class="mb-1 px-8 border-2 border-white rounded transition-all duration-150 ease-in-out"
+      :class="{
+        'bg-teal-200 text-teal-900': activeGallery === 'All',
+        'hover:bg-teal-100 hover:border-2 hover:border-teal-200':
+          activeGallery !== 'All'
+      }"
+      @click="activeGallery = 'All'"
+    >
+      All
+    </button> -->
+    <button
+      v-for="album in albums"
+      :key="album"
+      :data-test="'albumTab_' + album.albumName"
+      class="mb-1 px-6 border-2 border-white rounded transition-all duration-150 ease-in-out"
+      :class="{
+        'bg-teal-200 text-teal-900 rounded': activeGallery === album.albumName,
+        'hover:bg-teal-100 hover:border-2 hover:border-teal-200':
+          activeGallery !== album.albumName
+      }"
+      @click="activeGallery = album.albumName"
+    >
+      {{ album.albumName }}
+    </button>
+  </div>
+  <p>{{ 'owner.ownerId:' + owner.ownerId }}</p>
+  <p>{{ 'images:' + images }}</p>
+  <div
+    v-if="owner.ownerId && images"
+    class="relative flex flex-grow overflow-hidden"
+  >
     <!-- Image gallery -->
-    <home-gallery
-      :user-type="user.type"
-      @open-modal="visibleModal = $event"
-      @img-delete-info="imgInfo = $event"
-    ></home-gallery>
+    <transition-group appear name="album" mode="out-in">
+      <!-- <div v-show="activeGallery === 'All'" class="absolute">
+        <home-gallery
+          :user-type="user.type"
+          :items="allImages"
+          @open-modal="visibleModal = $event"
+          @img-delete-info="imgInfo = $event"
+        ></home-gallery>
+      </div> -->
+      <div
+        v-for="(album, index) in albums"
+        v-show="activeGallery === album.albumName"
+        :key="index"
+        class="absolute"
+      >
+        <home-gallery
+          :data-test="'albumGallery_' + album.albumName"
+          :user-type="userType"
+          :items="
+            album.albumId === 0
+              ? allImages
+              : images.filter(x => x.albumId === album.albumId)
+          "
+          @open-modal="visibleModal = $event"
+          @img-delete-info="imgInfo = $event"
+        ></home-gallery>
+      </div>
+    </transition-group>
 
     <!-- Empty gallery  -->
     <home-gallery-empty
@@ -64,6 +136,7 @@ import { useRoute } from 'vue-router';
 import { useStore } from 'vuex';
 import axios from 'axios';
 
+import HomeAlbum from '../components/HomeAlbum';
 import HomeGallery from '../components/HomeGallery';
 import HomeGalleryEmpty from '../components/HomeGalleryEmpty';
 import BaseSkeletonImage from '../components/BaseSkeletonImage';
@@ -94,6 +167,7 @@ export default {
     HomeMenuOwner,
     HomeMenuGuest,
     HomeUploader,
+    HomeAlbum,
     HomeGallery,
     HomeGalleryEmpty,
     HomeModalShare,
@@ -111,9 +185,15 @@ export default {
 
     const owner = computed(() => store.state.ownerStore.owner);
     const images = computed(() => store.state.imageStore.images);
+    const allImages = computed(() => store.getters.allImages);
+    const albums = computed(() => [
+      { albumId: 0, albumName: 'All' },
+      ...store.state.imageStore.albums
+    ]);
 
     const user = reactive({ type: null, menuType: null });
 
+    const activeGallery = ref('All');
     const visibleModal = ref(null);
 
     // App functionality and menu determined by user type
@@ -283,8 +363,11 @@ export default {
       server,
       owner,
       images,
+      allImages,
+      albums,
       user,
       sortImages,
+      activeGallery,
       visibleModal,
       imgInfo,
       nuke,
@@ -327,3 +410,18 @@ export default {
   }
 };
 </script>
+
+<style scoped>
+.album-enter-active {
+  @apply transition-all duration-200 ease-out;
+}
+
+.album-leave-active {
+  @apply transition-all duration-150 ease-in;
+}
+
+.album-enter-from,
+.album-leave-to {
+  @apply transform -translate-y-10 opacity-0;
+}
+</style>

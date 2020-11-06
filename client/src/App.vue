@@ -7,7 +7,7 @@
 </template>
 
 <script>
-import axios from 'axios';
+// import axios from 'axios';
 import toast from './utils/Toast';
 import { ref, reactive, computed, provide, onErrorCaptured } from 'vue';
 import { useRoute } from 'vue-router';

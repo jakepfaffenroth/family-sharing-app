@@ -1,16 +1,19 @@
 import { expect, should } from 'chai';
 should();
-import store from '@/store';
-import axios from 'axios';
-import MockAdapter from 'axios-mock-adapter';
-const mockAxios = new MockAdapter(axios);
-
-process.env.VUE_APP_SERVER = 'http://localhost:3400';
-
-delete window.location;
-window.location = { assign: jest.fn() };
+import {
+  setMountOptions,
+  store,
+  resetStore,
+  router,
+  mockAxios,
+  setCookies
+} from '../setup/jest.setup.js';
 
 describe('getters', () => {
+  afterEach(() => {
+    resetStore();
+  });
+
   test.each([
     [0, 2000, 0],
     [500, 2000, 25],
@@ -98,6 +101,10 @@ describe('getters', () => {
 });
 
 describe('actions', () => {
+  afterEach(() => {
+    resetStore();
+  });
+
   test.each(['mockOwnerId', null])('getPlanActions', async ownerId => {
     mockAxios.onPost().reply(config => {
       switch (config.url) {
@@ -132,7 +139,7 @@ describe('actions', () => {
     });
 
     store.state.ownerStore.owner = { ownerId: ownerId, isLoggedIn: true };
-    
+
     await store.dispatch('getPlanDetails');
 
     expect(store.state.planStore.planDetails.plan).to.equal('Premium');

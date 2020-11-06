@@ -168,13 +168,24 @@ module.exports.getOwner = async (req, res) => {
         return res.redirect(process.env.SERVER);
       }
 
-      const images = await db.any(
-        'SELECT * FROM images WHERE owner_id = ${ownerId}',
+      // const images = await db.any(
+      //   'SELECT * FROM images WHERE owner_id = ${ownerId}',
+      //   owner
+      // );
+
+      const albums = await db.any(
+        'SELECT album_id, album_name FROM albums WHERE owner_id = ${ownerId}',
         owner
       );
+
+      const images = await db.any(
+        'SELECT * FROM images RIGHT JOIN album_images ON images.image_id = album_images.image_id WHERE images.owner_id = ${ownerId}',
+        owner
+      );
+      console.log('images:', images);
       return res.json({
-        owner: { ...owner, images },
-        images: images,
+        owner: { ...owner, images, albums },
+        images,
       });
     });
   } catch (err) {

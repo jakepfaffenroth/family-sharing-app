@@ -1,17 +1,17 @@
 import { expect, should } from 'chai';
 should();
 import { flushPromises, mount } from '@vue/test-utils';
-import { createRouter, createWebHistory } from 'vue-router';
 import Home from '@/views/Home';
-import Account from '@/views/Account';
 import BaseDropMenu from '@/components/BaseDropMenu';
 import { nextTick, h } from 'vue';
-import { createStore } from 'vuex';
-import axios from 'axios';
-import MockAdapter from 'axios-mock-adapter';
-const mockAxios = new MockAdapter(axios);
-
-process.env.VUE_APP_SERVER = 'http://localhost:3400';
+import {
+  setMountOptions,
+  store,
+  resetStore,
+  router,
+  mockAxios,
+  setCookies
+} from '../setup/jest.setup.js';
 
 describe('BaseDropMenu', () => {
   let wrapper;
@@ -71,94 +71,35 @@ describe('BaseDropMenu', () => {
 });
 
 describe('modals', () => {
-  const router = createRouter({
-    history: createWebHistory(),
-    routes: [
-      {
-        name: 'home',
-        path: '/',
-        component: Home
-      },
-      { name: 'account', path: '/account', component: Account }
-    ]
-  });
-
-  const store = createStore({
-    state: {
-      ownerStore: {
-        owner: {
-          ownerId: 'testOwnerId',
-          username: 'alice',
-          firstName: 'Alice',
-          lastName: 'Doe',
-          guestId: 'testGuestId'
-        },
-        ownerIdCookie: '',
-        guestIdCookie: ''
-      },
-      planStore: { usage: { kb: 0, mb: 0, gb: 0 }, planDetails: null },
-      imageStore: {
-        images: [{ uploadTime: Date.now() }, { uploadTime: Date.now() }]
-      }
-    },
-    getters: {
-      ownerId: () => 'testOwnerId',
-      storageValue: () => 20,
-      usageValue: () => ({ num: 50, unit: 'mb' }),
-      quota: () => 2000,
-      usageBarColor: () => 'green-400',
-      usageBarWidth: () => 'width: ' + 2 + '%'
-    },
-    actions: {
-      saveIdCookies() {},
-      getOwnerData() {}
-    }
-  });
-
-  const toast = () => null;
-  const nuke = () => null;
-  const sortImages = () => null;
-
   let wrapper;
-  jest.mock('@uppy/dashboard');
-
-  Object.defineProperty(window.document, 'cookie', {
-    writable: true,
-    value: 'ownerId=testOwnerId'
-  });
-
-  mockAxios.onPost().reply(200, {
-    owner: { ownerId: 'testOwnerId' },
-    images: [{ uploadTime: Date.now() }, { uploadTime: Date.now() }]
-  });
+  // jest.mock('@uppy/dashboard');
 
   beforeEach(async () => {
+    setCookies();
     router.push('/');
     await router.isReady();
-    wrapper = mount(Home, {
-      global: {
-        plugins: [router, store],
-        provide: { toast, nuke, sortImages },
+    wrapper = mount(
+      Home,
+      setMountOptions({
         stubs: {
           HomeGallery: true,
           HomeUploader: true
-        }
-      },
-      props: { userType: 'owner' },
-      data() {
-        return {
+        },
+        props: { userType: 'owner' },
+        data: {
           visibleModal: null,
           imgInfo: null
-        };
-      }
-    });
+        }
+      })
+    );
   });
 
   afterEach(async () => {
+    resetStore();
     await router.replace('/');
     await router.isReady();
     wrapper.unmount();
-    mockAxios.reset();
+    // mockAxios.reset();
     jest.resetModules();
     jest.clearAllMocks();
   });
@@ -170,12 +111,23 @@ describe('modals', () => {
   ])('click outside %s modal closes modal', async modalName => {
     if (modalName.includes('GuestSubscribe')) {
       wrapper.setProps({ userType: 'guest' });
+      await store.dispatch('getOwnerData', {
+        ownerId: 'mockOwnerId',
+        userType: 'guest'
+      });
+    } else {
+      await store.dispatch('getOwnerData', {
+        ownerId: 'mockOwnerId',
+        userType: 'owner'
+      });
     }
     if (modalName.includes('Delete')) {
       wrapper.vm.imgInfo = { fileId: '1' };
     }
     wrapper.vm.visibleModal = modalName;
     await nextTick();
+    // console.log('wrapper.exists():', wrapper.exists());
+    // console.log('wrapper.html():', wrapper.html());
     expect(wrapper.find('[data-test="modal"]').exists()).to.be.true;
 
     await wrapper.find('[data-test="modalBackdrop"]').trigger('click');

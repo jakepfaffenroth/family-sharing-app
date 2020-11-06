@@ -88,8 +88,8 @@ module.exports.checkSession = async (req, res, next) => {
   // console.log('Checking for user session -- ownerId:', req.body.ownerId);
 
   try {
-    let [owner, images] = await db.multi(
-      'SELECT username, first_name, last_name, owner_id, guest_id, plan, quota FROM owners WHERE owner_id = ${ownerId};SELECT * FROM images WHERE owner_id = ${ownerId}',
+    let [owner, images, albums] = await db.multi(
+      'SELECT username, first_name, last_name, owner_id, guest_id, plan, quota FROM owners WHERE owner_id = ${ownerId};SELECT * FROM images RIGHT JOIN album_images ON images.image_id = album_images.image_id WHERE images.owner_id = ${ownerId}; SELECT album_id, album_name FROM albums WHERE owner_id = ${ownerId}',
       req.body
     );
 
@@ -103,8 +103,9 @@ module.exports.checkSession = async (req, res, next) => {
 
     return res.json({
       isLoggedIn: true,
-      owner: { ...owner, images },
+      owner: { ...owner },
       images: images,
+      albums: albums,
     });
   } catch (err) {
     error(err);

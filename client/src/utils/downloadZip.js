@@ -1,6 +1,6 @@
 import JSZip from 'jszip';
 import axios from 'axios';
-import { saveAs } from 'file-saver';
+// import FileSaver from 'file-saver';
 import path from 'path';
 
 export default async (images, toast) => {
@@ -28,12 +28,12 @@ export default async (images, toast) => {
     zipCancelBtn.addEventListener('click', () => {
       cancelZip();
     });
-
+    let output;
     // Begin download and zipping files
     const initZip = () => new JSZip();
     let zip = initZip();
     const count = await zipImages();
-    const output = await finishZip(count);
+    await finishZip(count);
     console.log('output:', output);
     return output;
 
@@ -58,7 +58,7 @@ export default async (images, toast) => {
               encoding: null
             }
           );
-          console.log('response.data:', response.data);
+          // console.log('response:', response);
           // Check if zip file will exceed size limit by adding latest downloaded file
           if (zipSize + response.data.size < zipSizeLimit) {
             // Will not exceed limit; add file to zip and continue
@@ -105,26 +105,30 @@ export default async (images, toast) => {
           if (keepZipping === false) {
             return;
           }
+          output = metadata;
           zipMsg.innerText = `Preparing download: ${metadata.percent.toFixed()}%`;
         })
-        .then(async data => {
+        .then(data => {
           if (keepZipping === false) {
             return;
           }
-          if (process.env.NODE_ENV == 'test') {
-            console.log('data:', data.size);
-            return data;
+          // output = data;
+          console.log('data:', data);
+          if (process.env.NODE_ENV != 'test') {
+            saveAs(
+              data,
+              `images${count === 1 ? '' : ` part${count}`}.zip`
+            );
+            downloadProgress = null;
+            toast.dismiss(zipToast);
+            toast.success('Download complete');
           }
-          return data;
-          saveAs(data, `images${count === 1 ? '' : ` part${count}`}.zip`);
-          downloadProgress = null;
-          toast.dismiss(zipToast);
-          toast.success('Download complete');
-          // zipMsg.innerText = 'Complete';
-          // setTimeout(() => {
-          //   toast.dismiss(zipToast);
-          // }, 2000);
         });
+
+      // zipMsg.innerText = 'Complete';
+      // setTimeout(() => {
+      //   toast.dismiss(zipToast);
+      // }, 2000);
     }
 
     function cancelZip() {

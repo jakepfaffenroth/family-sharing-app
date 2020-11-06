@@ -1,8 +1,14 @@
 export default {
-  state: { images: [] },
+  state: { images: [], albums: [] },
   getters: {
     images: state => state.images,
-    imageCount: state => state.images.length
+    albums: state => state.albums,
+    imageCount: (state, getters) => getters.allImages.length,
+    allImages: state =>
+      state.images.filter(
+        (current, index, array) =>
+          array.findIndex(x => x.fileId === current.fileId) === index
+      )
   },
   mutations: {
     updateImages(state, imagesArr) {
@@ -14,6 +20,9 @@ export default {
     removeFromImages(state, indexToRemove) {
       let images = state.images;
       state.images.splice(indexToRemove, 1);
+    },
+    updateAlbums(state, albumArr) {
+      state.albums = albumArr;
     }
   },
   actions: {
@@ -36,6 +45,9 @@ export default {
       } else {
         commit('removeFromImages', indexToRemove);
       }
+    },
+    updateAlbums({ commit, state }, albumArr) {
+      commit('updateAlbums', albumArr);
     }
   }
 };

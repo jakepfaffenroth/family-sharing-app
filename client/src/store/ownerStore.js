@@ -41,9 +41,8 @@ export default {
       try {
         // Fetch usage data
         if (userType == 'owner') {
-          dispatch('getUsageData', id);
+          await dispatch('getUsageData', id);
         }
-
         // Fetch owner data
         const response = await axios.post(url, id);
         // Redirect to login page if owner is not signed in
@@ -52,8 +51,9 @@ export default {
         }
         commit('updateOwner', response.data.owner);
         commit('updateImages', response.data.images);
+        commit('updateAlbums', response.data.albums);
       } catch (err) {
-        console.error('error:', err);
+        console.error(new Error(err));
       }
     }
   }

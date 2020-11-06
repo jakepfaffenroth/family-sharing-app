@@ -1,116 +1,21 @@
+const jestExpect = global.expect;
 import { expect, should } from 'chai';
 should();
 import { flushPromises, mount } from '@vue/test-utils';
 import App from '@/App';
-import Home from '@/views/Home';
-import Account from '@/views/Account';
 import downloadZip from '@/utils/downloadZip';
+import FileSaver from 'file-saver';
 import { nextTick } from 'vue';
-import { createRouter, createWebHistory } from 'vue-router';
-import { createStore } from 'vuex';
 import { Notyf } from 'notyf';
-import rws from 'reconnecting-websocket';
-import axios from 'axios';
 import format from 'date-fns/format';
-import MockAdapter from 'axios-mock-adapter';
-const mockAxios = new MockAdapter(axios);
-import mockImage from '../assets/mockImage.jpg';
-
-process.env.VUE_APP_SERVER = 'http://localhost:3400';
-
-const router = createRouter({
-  history: createWebHistory(),
-  routes: [
-    {
-      name: 'home',
-      path: '/',
-      component: Home,
-      props: true
-    },
-    {
-      name: 'account',
-      path: '/account',
-      component: Account,
-      props: true
-    }
-  ]
-});
-
-const store = createStore({
-  state: {
-    ownerStore: {
-      owner: {
-        ownerId: 'testOwnerId',
-        username: 'alice',
-        firstName: 'Alice',
-        lastName: 'Doe',
-        guestId: 'testGuestId'
-      },
-      ownerIdCookie: '',
-      guestIdCookie: ''
-    },
-    planStore: {
-      usage: { kb: 10, mb: 20, gb: 30 },
-      planDetails: { plan: 'Basic', paymentMethod: 'Visa •••• 4242' }
-    },
-    imageStore: {
-      images: [
-        { uploadTime: Date.now().toString(), exif: {} },
-        { uploadTime: Date.now().toString(), exif: {} }
-      ]
-    }
-  },
-  getters: {
-    ownerId: () => 'testOwnerId',
-    images: state => state.imageStore.images,
-    planDetails: state => state.planStore.planDetails,
-    storageValue: () => 20,
-    usageValue: () => ({ num: 50, unit: 'mb' }),
-    quota: () => 2000,
-    usageBarColor: () => 'green-400',
-    usageBarWidth: () => 'width: ' + 2 + '%'
-  },
-  actions: {
-    saveIdCookies() {},
-    getOwnerData() {},
-    getPlanDetails() {},
-    getUsageData() {},
-    removeFromImages({ commit, state }, imgToRemove) {
-      const indexToRemove = state.imageStore.images.findIndex(
-        x => x.fileId === imgToRemove.fileId
-      );
-      state.imageStore.images.splice(indexToRemove, 1);
-    }
-  }
-});
-
-jest.mock('reconnecting-websocket');
-
-const mountOptions = {
-  global: {
-    plugins: [router, store],
-    provide: {
-      toast: () => null,
-      nuke: () => null,
-      sortImages: () => null
-    },
-    stubs: {}
-  },
-  data() {
-    return {
-      toast: jest.fn(() => {
-        open: () => {};
-      })
-    };
-  }
-};
-
-const setCookies = () => {
-  Object.defineProperty(window.document, 'cookie', {
-    writable: true,
-    value: 'ownerId=mockOwnerId'
-  });
-};
+import {
+  setMountOptions,
+  store,
+  resetStore,
+  router,
+  mockAxios,
+  setCookies
+} from '../setup/jest.setup.js';
 
 describe('images update in display', () => {
   let wrapper;
@@ -119,24 +24,31 @@ describe('images update in display', () => {
     setCookies();
     router.push('/');
     await router.isReady();
-    wrapper = mount(App, mountOptions);
+    wrapper = mount(App, setMountOptions());
+    await store.dispatch('getOwnerData', {
+      ownerId: 'mockOwnerId',
+      userType: 'owner'
+    });
+    await nextTick();
   });
 
   afterEach(async () => {
+    resetStore();
     // await router.replace('/');
     // await router.isReady();
     wrapper.unmount();
     jest.resetModules();
     jest.clearAllMocks();
-    mockAxios.reset();
-    store.state.imageStore.images = [
-      { fileId: '1', uploadTime: Date.now().toString() },
-      { fileId: '2', uploadTime: Date.now().toString() }
-    ];
+    // mockAxios.reset();
+    // store.state.imageStore.images = [
+    //   { fileId: '1', uploadTime: Date.now().toString() },
+    //   { fileId: '2', uploadTime: Date.now().toString() }
+    // ];
   });
 
-  test('gallery displays if images exist', async () => {
-    expect(wrapper.find('[data-test="gallery"]').exists()).to.be.true;
+  test('"All" gallery displays if images exist', async () => {
+    // console.log('wrapper.html():', wrapper.html());
+    expect(wrapper.find('[data-test="albumGallery_All"]').exists()).to.be.true;
   });
 
   test('displays new image after adding to state', async () => {
@@ -166,7 +78,7 @@ describe('images update in display', () => {
   });
 
   test('removes image from display after removing from state', async () => {
-    store.state.imageStore.images.push({
+    store.dispatch('addToImages', {
       uploadTime: Date.now().toString(),
       src: 'newImg',
       thumbnail: 'newImg'
@@ -184,7 +96,6 @@ describe('images update in display', () => {
   });
 
   test('removes image from display after deletion', async () => {
-    mockAxios.onPost().reply(200);
     store.state.imageStore.images.push({
       fileId: '3',
       uploadTime: Date.now().toString(),
@@ -209,24 +120,24 @@ describe('images update in display', () => {
 
 describe('group images by date', () => {
   let wrapper;
-  const uploadTime = Date.now().toString;
 
   beforeEach(async () => {
+    store.dispatch('nukeImages');
     setCookies();
     router.push('/');
     await router.isReady();
-    store.state.imageStore.images = [];
-    wrapper = mount(App, mountOptions);
+    // store.state.imageStore.images = [];
+    wrapper = mount(App, setMountOptions());
   });
 
   afterEach(async () => {
+    resetStore();
     // await router.replace('/');
     // await router.isReady();
     wrapper.unmount();
     jest.resetModules();
     jest.clearAllMocks();
-    mockAxios.reset();
-    store.state.imageStore.images = [];
+    // mockAxios.reset();
   });
 
   test.each([
@@ -245,101 +156,206 @@ describe('group images by date', () => {
     [[new Date('1/21/2000'), new Date('1/21/2000'), null]],
     [[null, new Date('1/21/2000'), new Date('1/21/2050')]]
   ])('images should be grouped by date', async dates => {
-    // store.state.imageStore.images = [];
-
     dates.forEach(date => {
-      store.state.imageStore.images.push({
-        exif: date
-          ? { exif: { DateTimeOriginal: date.toLocaleString() } }
-          : null,
+      store.dispatch('addToImages', {
+        exif: date ? { exif: { DateTimeOriginal: date.toLocaleString() } } : {},
         uploadTime: Date.now().toString(),
-        src: 'mockUrl'
+        src: 'mockUrl',
+        fileId: dates.indexOf(date) // just so each img has a unique fileId
       });
     });
-
     await nextTick();
 
-    const gallery = wrapper.find('[data-test="gallery"]');
     dates.forEach(date => {
-      expect(gallery.text()).to.include(
-        format(date ? date : new Date(Date.now()), 'E, LLL d')
+      expect(wrapper.text()).to.include(
+        format(date || new Date(Date.now()), 'E, LLL d')
       );
     });
   });
+
+  test.each([
+    [[new Date(Date.now()), new Date(Date.now())]],
+    [[new Date(Date.now()), new Date('1/21/2000')]],
+    [
+      [
+        new Date('1/21/2000'),
+        new Date('1/21/2000'),
+        new Date('5/13/2005'),
+        new Date('5/13/2005'),
+        new Date('9/26/1986')
+      ]
+    ],
+    [[null, null]],
+    [[new Date('1/21/2000'), new Date('1/21/2000'), null]],
+    [[null, new Date('1/21/2000'), new Date('1/21/2050')]]
+  ])('show correct number of img groups', async dates => {
+    dates.forEach(date => {
+      store.dispatch('addToImages', {
+        exif: date ? { exif: { DateTimeOriginal: date.toLocaleString() } } : {},
+        uploadTime: Date.now().toString(),
+        src: 'mockUrl',
+        fileId: dates.indexOf(date) // just so each img has a unique fileId
+      });
+      dates[dates.indexOf(date)] = date ? date.toString() : date;
+    });
+    const uniqueGroups = dates.filter(
+      (date, index, arr) => arr.indexOf(date) === index
+    );
+
+    await nextTick();
+    const imgGroups = wrapper.findAll('[data-test="imgGroup"]');
+
+    expect(imgGroups.length).to.equal(uniqueGroups.length);
+  });
 });
 
-describe('download images', () => {
+describe('albums', () => {
   let wrapper;
-  let mockImage;
-  async function toDataURL(src, callback) {
-    var image = new Image();
-    image.crossOrigin = 'Anonymous';
 
-    image.onload = function() {
-      var canvas = document.createElement('canvas');
-      var context = canvas.getContext('2d');
-      canvas.height = this.naturalHeight;
-      canvas.width = this.naturalWidth;
-      context.drawImage(this, 0, 0);
-      var dataURL = canvas.toDataURL('image/jpeg');
-      callback(dataURL);
-    };
-
-    image.src = src;
-  }
-
-  // const mockImage = new Blob(
-  //   // Math.pow(123456789123456789, 10000)
-  //   //   .toString()
-  //   //   .split(''),
-  //   ['1', '2', '3'],
-  //   {
-  //     type: 'image/jpeg'
-  //   }
-  // );
-
-  // mockImage['name'] = 'mockImage.jpg';
-
-  mockAxios.onGet().reply(200, mockImage);
-  mockAxios.onPost().reply(200, {
-    owner: { ownerId: 'testOwnerId' },
-    images: [
-      { uploadTime: Date.now().toString() },
-      { uploadTime: Date.now().toString() }
-    ]
-  });
+  const images = [
+    {
+      fileId: 0,
+      src: 'mockUrl',
+      albumId: 1,
+      uploadTime: Date.now().toString(),
+      exif: {}
+    },
+    {
+      fileId: 1,
+      src: 'mockUrl',
+      albumId: 2,
+      uploadTime: Date.now().toString(),
+      exif: {}
+    },
+    {
+      fileId: 2,
+      src: 'mockUrl',
+      albumId: 1,
+      uploadTime: Date.now().toString(),
+      exif: {}
+    },
+    {
+      fileId: 3,
+      src: 'mockUrl',
+      albumId: 2,
+      uploadTime: Date.now().toString(),
+      exif: {}
+    },
+    {
+      fileId: 4,
+      src: 'mockUrl',
+      albumId: 3,
+      uploadTime: Date.now().toString(),
+      exif: {}
+    }
+  ];
 
   beforeEach(async () => {
     setCookies();
     router.push('/');
     await router.isReady();
-    wrapper = mount(App, mountOptions);
+    wrapper = mount(
+      App,
+      setMountOptions({ stubs: { HomeMenuOwner: true, HomeUploader: true } })
+    );
+    await store.dispatch('getOwnerData', {
+      ownerIs: 'mockOwnerId',
+      userType: 'owner'
+    });
+    await nextTick();
   });
 
   afterEach(async () => {
+    resetStore();
     wrapper.unmount();
     jest.resetModules();
     jest.clearAllMocks();
-    mockAxios.reset();
+    // mockAxios.reset();
+  });
+
+  test('album tabs display on homepage', async () => {
+    await nextTick();
+    expect(wrapper.text()).to.include('mockAlbum1');
+    expect(wrapper.text()).to.include('mockAlbum2');
+  });
+
+  test.each([
+    { albumId: 1, albumName: 'mockAlbum1' },
+    { albumId: 2, albumName: 'mockAlbum2' }
+  ])('images display in correct albums', async album => {
+    const uniqueImages = images.filter(
+      (x, index, arr) => x.albumId === album.albumId
+    );
+    const visibleImages = [];
+
+    await wrapper
+      .find('[data-test="albumTab_' + album.albumName + '"]')
+      .trigger('click');
+    await nextTick();
+    wrapper.findAll('[src="mockUrl"]').forEach(img => {
+      if (img.isVisible()) {
+        visibleImages.push(img);
+      }
+    });
+
+    expect(visibleImages.length).to.equal(uniqueImages.length);
+  });
+});
+
+describe('download images', () => {
+  let wrapper;
+  // let mockImage;
+
+  const mockImage = new Blob(
+    // Math.pow(123456789123456789, 10000)
+    //   .toString()
+    //   .split(''),
+    ['1', '2', '3'],
+    {
+      type: 'image/jpeg'
+    }
+  );
+
+  // mockImage['name'] = 'mockImage.jpg';
+
+  beforeEach(async () => {
+    setCookies();
+    router.push('/');
+    await router.isReady();
+    wrapper = mount(App, setMountOptions());
+  });
+
+  afterEach(async () => {
+    resetStore();
+    wrapper.unmount();
+    jest.resetModules();
+    jest.clearAllMocks();
+    // mockAxios.reset();
     store.state.imageStore.images = [
-      { fileId: '1', uploadTime: Date.now().toString() },
-      { fileId: '2', uploadTime: Date.now().toString() }
+      { fileId: '1', uploadTime: Date.now().toString(), exif: {} },
+      { fileId: '2', uploadTime: Date.now().toString(), exif: {} }
     ];
   });
 
   test.skip('downloads zip file', async () => {
     // TODO - Fix this test
-    await toDataURL('../assets/mockImage.jpg', function(dataURL) {
-      // do something with dataURL
-      mockImage = dataURL;
-    });
-    console.log('mockImage:', mockImage);
+    // await toDataURL('../assets/mockImage.jpg', function(dataURL) {
+    //   // do something with dataURL
+    //   mockImage = dataURL;
+    // });
+    // console.log('mockImage:', mockImage);
     jest.mock('notyf');
     const toast = new Notyf();
 
-    const progress = await downloadZip([{ fileName: 'mockImage.jpg' }], toast);
-    console.log('progress:', progress);
-
-    expect(progress).to.equal(mockImage);
+    jest.mock('file-saver', () => ({ saveAs: jest.fn() }));
+    // jest.mock(saveAs);
+    // const mockSaveAs = jest.spyOn(FileSaver, 'saveAs');
+    // FileSaver.saveAs(mockImage, 'mockImage.jpg');
+    // jestExpect(saveAs).toHaveBeenCalled();
+    await downloadZip([{ fileName: 'mockImage.jpg' }], toast);
+    // setTimeout(() => {
+    jestExpect(FileSaver.saveAs).toHaveReturnedWith('horse');
+    // jestExpect(FileSaver.saveAs).toHaveBeenCalledWith('horse');
+    // }, 100);
   });
 });

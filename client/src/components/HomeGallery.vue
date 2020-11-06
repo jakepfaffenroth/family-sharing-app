@@ -198,7 +198,8 @@ export default {
     BaseDropMenu
   },
   props: {
-    userType: { type: String, default: '' },
+    userType: { type: String, default: '', required: true },
+    items: { type: Array, default: () => [] },
     options: {
       default: () => ({}),
       type: Object
@@ -219,9 +220,9 @@ export default {
     owner() {
       return this.$store.state.ownerStore.owner;
     },
-    items() {
-      return this.$store.getters.images;
-    },
+    // items() {
+    //   return this.$store.getters.images;
+    // },
     imgGroups() {
       const currentYear = new Date().getFullYear().toString();
       let group = this.items.reduce((r, a) => {
