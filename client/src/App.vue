@@ -46,6 +46,7 @@ export default {
     }
     // Prevent users from viewing app without login or guestId
     if (!guestId && !ownerId) {
+      console.error('No cookies found - redirect');
       window.location.assign(server);
     }
 
