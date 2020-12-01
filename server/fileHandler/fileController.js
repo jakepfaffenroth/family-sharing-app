@@ -334,7 +334,6 @@ module.exports.fetchImages = async (req, res) => {
 
 // Logic for handling incoming file and compressing
 module.exports.imgCompressor = async (req, res, next) => {
-  console.log('req.headers:', req.headers);
   const { plan } = await db.one(
     'SELECT plan FROM owners WHERE owner_id = ${id}',
     req.headers
