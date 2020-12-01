@@ -3,7 +3,6 @@ should();
 import {
   setMountOptions,
   store,
-  resetStore,
   router,
   mockAxios,
   setCookies
@@ -11,7 +10,7 @@ import {
 
 describe('getters', () => {
   afterEach(() => {
-    resetStore();
+    store.dispatch('RESET_STATE');
   });
 
   test.each([
@@ -102,7 +101,7 @@ describe('getters', () => {
 
 describe('actions', () => {
   afterEach(() => {
-    resetStore();
+    store.dispatch('RESET_STATE');
   });
 
   test.each(['mockOwnerId', null])('getPlanActions', async ownerId => {

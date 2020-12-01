@@ -1,107 +1,88 @@
 <template>
-  <!-- <p class="text-xs">
-    {{ albums }}
-  </p>
-  <p class="text-xs">
-    {{ 'images.length: ' + images.length }}
-  </p>
-  <p class="text-xs">
-    {{ 'allImages.length: ' + allImages.length }}
-  </p>
-  <p class="text-xs">
-    {{ 'activeGallery: ' + activeGallery }}
-  </p> -->
-  <!-- Header and Menu -->
-  <component
-    :is="user.menuType"
-    :data-test="user.type === 'owner' ? 'ownerMenu' : 'guestMenu'"
-    :owner="owner"
-    @open-modal="visibleModal = $event"
-    @sort-images="sortImages"
-    @download-zip="downloadZip"
-  ></component>
+  <div>
+    <!-- Header and Menu -->
+    <header class="fixed w-full z-40 bg-white pt-2 sm:pt-4 xl:pt-6">
+      <component
+        :is="userType === 'owner' ? 'HomeMenuOwner' : 'HomeMenuGuest'"
+        :data-test="userType === 'owner' ? 'ownerMenu' : 'guestMenu'"
+        :owner="owner"
+        :is-select-mode="isSelectMode"
+        class="pb-4 px-2 sm:px-6 xl:px-12"
+        @open-modal="visibleModal = $event"
+        @sort-images="sortImages"
+        @download-zip="downloadZip"
+      ></component>
 
-  <!-- Album tab bar -->
-  <div
-    v-if="albums"
-    data-test="albumTabBar"
-    class="flex space-x-2 p-2 pb-0 border-b-2 border-purple-200 text-sm font-medium"
-  >
-    <!-- <button
-      class="mb-1 px-8 border-2 border-white rounded transition-all duration-150 ease-in-out"
-      :class="{
-        'bg-teal-200 text-teal-900': activeGallery === 'All',
-        'hover:bg-teal-100 hover:border-2 hover:border-teal-200':
-          activeGallery !== 'All'
-      }"
-      @click="activeGallery = 'All'"
+      <!-- Action bar -->
+      <actions-bar
+        :actions-bar="actionsBar"
+        :is-select-mode="isSelectMode"
+        :view="view"
+        :active-gallery="activeGallery"
+        :filtered-images="filteredImages"
+        :user-type="userType"
+        @set-active-gallery="activeGallery = $event"
+      ></actions-bar>
+    </header>
+
+    <section
+      class="flex flex-grow mt-32 px-2 pb-2 sm:px-6 sm:pb-4 xl:px-12 xl:pb-6"
     >
-      All
-    </button> -->
-    <button
-      v-for="album in albums"
-      :key="album"
-      :data-test="'albumTab_' + album.albumName"
-      class="mb-1 px-6 border-2 border-white rounded transition-all duration-150 ease-in-out"
-      :class="{
-        'bg-teal-200 text-teal-900 rounded': activeGallery === album.albumName,
-        'hover:bg-teal-100 hover:border-2 hover:border-teal-200':
-          activeGallery !== album.albumName
-      }"
-      @click="activeGallery = album.albumName"
-    >
-      {{ album.albumName }}
-    </button>
-  </div>
-  <p>{{ 'owner.ownerId:' + owner.ownerId }}</p>
-  <p>{{ 'images:' + images }}</p>
-  <div
-    v-if="owner.ownerId && images"
-    class="relative flex flex-grow overflow-hidden"
-  >
-    <!-- Image gallery -->
-    <transition-group appear name="album" mode="out-in">
-      <!-- <div v-show="activeGallery === 'All'" class="absolute">
-        <home-gallery
-          :user-type="user.type"
-          :items="allImages"
-          @open-modal="visibleModal = $event"
-          @img-delete-info="imgInfo = $event"
-        ></home-gallery>
-      </div> -->
+      <!-- Skeleton gallery while loading -->
       <div
-        v-for="(album, index) in albums"
-        v-show="activeGallery === album.albumName"
-        :key="index"
-        class="absolute"
+        v-if="view.imgsLoadingX"
+        data-test="gallerySkeleton"
+        class="relative flex flex-wrap justify-items-stretch w-full pt-2 sm:pt-4 overflow-hidden"
       >
-        <home-gallery
-          :data-test="'albumGallery_' + album.albumName"
-          :user-type="userType"
-          :items="
-            album.albumId === 0
-              ? allImages
-              : images.filter(x => x.albumId === album.albumId)
-          "
-          @open-modal="visibleModal = $event"
-          @img-delete-info="imgInfo = $event"
-        ></home-gallery>
+        <div
+          v-for="n in 20"
+          :key="n"
+          class="p-1 w-1/2 sm:w-1/3 lg:w-1/4 xl:w-1/5 2xl:w-1/6 h-48"
+        >
+          <base-skeleton-image class="w-full h-full"></base-skeleton-image>
+        </div>
       </div>
-    </transition-group>
 
-    <!-- Empty gallery  -->
-    <home-gallery-empty
-      v-if="images.length === 0 && user.type === 'owner' && owner"
-      id="empty-gallery"
-      class="uppy-select-files"
-    ></home-gallery-empty>
+      <!-- Image gallery -->
+      <!-- :class="{ 'opacity-0': view.imgsLoading }" -->
+      <div class="relative flex flex-grow w-full pt-2 sm:pt-4">
+        <transition appear name="album" mode="out-in">
+          <home-gallery
+            v-if="view.ownerLoading || filteredImages.length"
+            :key="activeGallery"
+            :data-test="'albumGallery-' + activeGallery"
+            :user-type="userType"
+            :items="filteredImages"
+            :is-select-mode="isSelectMode"
+            :view="view"
+            @imgs-loaded="view.imgsLoading = false"
+          ></home-gallery>
+
+          <home-gallery-empty
+            v-else
+            :key="activeGallery"
+            data-test="empty-album"
+            :active-gallery="activeGallery"
+            @reload-uppy="forceUppyReloadKey++"
+          >
+            <template #emptyGalleryText>
+              {{
+                activeGallery === 'All' ? 'Upload some images!' : 'Empty Album'
+              }}
+            </template>
+          </home-gallery-empty>
+        </transition>
+      </div>
+    </section>
 
     <!-- Uppy file uploader -->
     <!-- Don't load until owner Info is fetched -->
     <home-uploader
-      v-if="user.type === 'owner' && owner"
-      :key="forceReloadKey"
+      v-if="userType === 'owner' && owner"
+      :key="forceUppyReloadKey"
+      :active-gallery="activeGallery"
     ></home-uploader>
+    <div id="uploader"></div>
 
     <!-- Modals -->
     <component
@@ -109,16 +90,11 @@
       v-if="visibleModal"
       data-test="homeModal"
       :img-info="imgInfo"
+      :albums="albums"
+      :all-images="allImages"
       @close-modal="visibleModal = null"
     ></component>
   </div>
-
-  <!-- Skeleton while content loads -->
-  <div v-else class="flex flex-wrap">
-    <base-skeleton-image v-for="n in 10" :key="n"></base-skeleton-image>
-  </div>
-
-  <div id="uploader"></div>
 </template>
 
 <script>
@@ -130,7 +106,9 @@ import {
   inject,
   defineAsyncComponent,
   markRaw,
-  onMounted
+  onBeforeMount,
+  onMounted,
+  forceUpdate
 } from 'vue';
 import { useRoute } from 'vue-router';
 import { useStore } from 'vuex';
@@ -139,8 +117,14 @@ import axios from 'axios';
 import HomeAlbum from '../components/HomeAlbum';
 import HomeGallery from '../components/HomeGallery';
 import HomeGalleryEmpty from '../components/HomeGalleryEmpty';
+import BaseDropMenu from '../components/BaseDropMenu';
 import BaseSkeletonImage from '../components/BaseSkeletonImage';
 import HomeMenuOwner from '../components/HomeMenuOwner';
+import HomeMenuImageSorter from '../components/HomeMenuImageSorter';
+import ActionsBar from '../components/HomeActionsBar';
+import HomeActionsBarAlbumTabs from '../components/HomeActionsBarAlbumTabs';
+import HomeActionsBarSelectionTools from '../components/HomeActionsBarSelectionTools';
+
 import HomeModalGuestSubscribe from '../components/HomeModalGuestSubscribe';
 import HomeModalDeleteImage from '../components/HomeModalDeleteImage';
 // import HomeUploader from '../components/HomeUploader';
@@ -151,31 +135,35 @@ const HomeMenuGuest = defineAsyncComponent(() =>
   import('../components/HomeMenuGuest')
 );
 import HomeModalShare from '../components/HomeModalShare';
-// const HomeModalShare = defineAsyncComponent(() =>
-//   import('../components/HomeModalShare')
-// );
-// const HomeModalDeleteImage = defineAsyncComponent(() =>
-//   import('../components/HomeModalDeleteImage')
-// );
+import HomeModalAlbumPicker from '../components/HomeModalAlbumPicker';
+import HomeModalNewAlbum from '../components/HomeModalNewAlbum';
+import HomeModalDeleteAlbum from '../components/HomeModalDeleteAlbum';
 
 import downloader from '../utils/downloadZip';
 
 export default {
   name: 'Home',
   components: {
+    BaseDropMenu,
     BaseSkeletonImage,
     HomeMenuOwner,
     HomeMenuGuest,
+    HomeMenuImageSorter,
     HomeUploader,
     HomeAlbum,
     HomeGallery,
     HomeGalleryEmpty,
+    ActionsBar,
+    HomeActionsBarAlbumTabs,
+    HomeActionsBarSelectionTools,
     HomeModalShare,
+    HomeModalAlbumPicker,
+    HomeModalNewAlbum,
+    HomeModalDeleteAlbum,
     HomeModalGuestSubscribe,
     HomeModalDeleteImage
   },
   props: {
-    // owner: { type: Object, default: null },
     userType: { type: String, default: '' }
   },
   setup(props) {
@@ -188,31 +176,81 @@ export default {
     const allImages = computed(() => store.getters.allImages);
     const albums = computed(() => [
       { albumId: 0, albumName: 'All' },
-      ...store.state.imageStore.albums
+      ...store.state.imageStore.albums.filter(album => {
+        if (props.userType === 'owner') {
+          return true;
+        } else if (
+          props.userType === 'guest' &&
+          images.value.filter(img => img.albumId === album.albumId).length
+        ) {
+          return true;
+        } else {
+          return false;
+        }
+      })
     ]);
 
-    const user = reactive({ type: null, menuType: null });
-
-    const activeGallery = ref('All');
-    const visibleModal = ref(null);
-
-    // App functionality and menu determined by user type
+    // const imgsLoading = computed(() => {
+    //   let loadCount = 0;
+    //   images.value.forEach(image => {
+    //     const cacheImg = new Image();
+    //     cacheImg.addEventListener('load', function() {
+    //       loadCount++;
+    //     });
+    //     cacheImg.src = image.thumbnail;
+    //     console.log(
+    //       'loadCount, images.value.length:',
+    //       loadCount,
+    //       images.value.length
+    //     );
+    //   });
+    //   return loadCount < images.value.length;
+    // });
+    // ---------- SETUP ---------- //
+    // App functionality determined by user type
     const { userType } = reactive(props);
-    let isShareModalVisible = ref(false);
-    onMounted(() => renderUserType(userType));
-
-    function renderUserType(userType) {
-      user.type = userType;
-      user.menuType =
-        userType === 'owner' ? markRaw(HomeMenuOwner) : markRaw(HomeMenuGuest);
-      sortImages('captureTime');
-    }
+    sortImages('captureTime');
 
     // Prevent right clicking images
     document.addEventListener('contextmenu', event => {
       if (event.target.nodeName === 'IMG') {
         event.preventDefault();
       }
+    });
+
+    // Header shadow effect on scroll
+    onBeforeMount(() => window.addEventListener('scroll', handlePageScroll));
+    function handlePageScroll() {
+      // when the user scrolls, check the pageYOffset
+      if (window.pageYOffset > 0) {
+        // user is scrolled
+        if (view.atTopOfPage) view.atTopOfPage = false;
+      } else {
+        // user is at top of page
+        if (!view.atTopOfPage) view.atTopOfPage = true;
+      }
+    }
+
+    // ---------- VIEW ---------- //
+    // Preload images as soon as possible
+    // let imgLoadCount = 0;
+    // images.value.forEach(item => {
+    //   // console.log('item:', item);
+    //   const cacheImg = new Image();
+    //   cacheImg.src = item.thumbnail;
+    //   // cacheImg.fileName = item.fileName;
+    //   // cacheImg.onload = () => (item.loaded = true);
+    //   cacheImg.onload = () => imgLoadCount++;
+    //   // console.log('cacheImg:', cacheImg);
+    // });
+
+    const ownerLoading = computed(() => !owner.value.ownerId);
+    // const imgsLoading = computed(() => imgLoadCount === images.value.length);
+    // const imgsLoading = computed(() => images.value == false);
+    const view = reactive({
+      atTopOfPage: true,
+      ownerLoading,
+      imgsLoading: true
     });
 
     // Update gallery after new images uplaoded
@@ -233,7 +271,45 @@ export default {
     // }
     // provide('updateImages', updateImages);
 
-    // Sorting logic
+    // ---------- ACTIONS ---------- //
+    const actionsBar = computed(() => {
+      if (isSelectMode.value) {
+        return 'SelectionTools';
+      } else {
+        return 'AlbumTools';
+      }
+    });
+
+    const imgInfo = ref(null);
+    provide('passImgInfo', info => {
+      imgInfo.value = info;
+    });
+
+    // ---------- SELECTION ---------- //
+    let isSelectMode = ref(false);
+
+    function toggleSelectMode() {
+      if (isSelectMode.value === true) {
+        clearSelection();
+      }
+      isSelectMode.value = !isSelectMode.value;
+    }
+    provide('toggleSelectMode', toggleSelectMode);
+
+    function selectAll() {
+      const filtered = filteredImages(
+        albums.value.find(x => x.albumName === activeGallery.value)
+      );
+      store.dispatch('replaceSelectedImages', filtered);
+    }
+
+    function clearSelection() {
+      images.value.forEach(img => {
+        img.isSelected = false;
+      });
+    }
+
+    // ---------- SORTING ---------- //
     function sortImages(sortParameter) {
       if (sortParameter === 'reverse') {
         images.value.reverse();
@@ -275,108 +351,16 @@ export default {
     }
     provide('sortImages', sortImages);
 
-    // Download Zip file
-    const toast = inject('toast');
-    function downloadZip() {
-      downloader(images.value, toast);
-    }
-
-    // const isDeleteModalVisible = ref(false);
-    const imgInfo = ref(null);
-
-    // function openDeleteModal(imgInfo) {
-    //   visibleModal.value = 'deleteImage';
-    //   imgDeleteInfo.value = { ...imgInfo };
-    // }
-
-    // // Delete individual images
-    // async function deleteImage(imgInfo) {
-    //   visibleModal.value = null;
-    //   const { date, fileId, thumbFileId, fileName, ownerId, index } = imgInfo;
-
-    //   store.dispatch('removeFromImages', imgInfo);
-    //   // force Uppy to reload if there are zero images
-    //   if (images.value.length === 0) {
-    //     forceReloadKey.value++;
-    //   }
-    //   const response = await axios.post(`${server}/files/delete-image`, {
-    //     singleImage: true,
-    //     fileId,
-    //     thumbFileId,
-    //     fileName,
-    //     ownerId
-    //   });
-    //   if (response.status != 200) {
-    //     console.log(
-    //       `Deletion error: ${response.status} - ${response.statusText}`
-    //     );
-    //     store.dispatch('addToImages', imgInfo);
-    //   }
-    //   store.dispatch('getUsageData', { ownerId: owner.value.ownerId });
-    // }
-
-    //Delete multiple images at once (user-selected, NOT nuking)
-    let forceReloadKey = ref(0); // Force reload after deleting multiple images or nuking
-    const deleteMultiple = async () => {
-      const imagesArr = store.state.imageStore.images;
-      store.dispatch('removeMultipleImages');
-
-      forceReloadKey.value++; //force Uppy to reload
-
-      const response = await axios.post(`${server}/files/delete-image`, {
-        multipleImages: true,
-        images: imagesArr.map(x => {
-          const { fileId, thumbFileId, fileName, ownerId } = x;
-          return { fileId, thumbFileId, fileName, ownerId };
-        }),
-        ownerId: owner.value.ownerId
-      });
-      if (response.status != 200) {
-        console.error(
-          `Deletion error: ${response.status} - ${response.statusText}`
-        );
-      }
-      store.dispatch('getUsageData', { ownerId: owner.value.ownerId });
+    // ---------- GALLERIES ---------- //
+    const activeGallery = ref('All');
+    const setActiveGallery = galleryName => {
+      activeGallery.value = galleryName;
     };
+    provide('setActiveGallery', galleryName => {
+      activeGallery.value = galleryName;
+    });
 
-    // Nuke images for dev purposes
-    const nuke = async () => {
-      store.dispatch('nukeImages');
-
-      forceReloadKey.value++; //force Uppy to reload
-
-      const response = await axios.post(`${server}/files/delete-image`, {
-        nuke: true,
-        ownerId: owner.value.ownerId
-      });
-      console.log('response:', response);
-      if (response.status != 200) {
-        console.error(
-          `Nuking error: ${response.status} - ${response.statusText}`
-        );
-      }
-      store.dispatch('getUsageData', { ownerId: owner.value.ownerId });
-    };
-    provide('nuke', nuke);
-
-    return {
-      server,
-      owner,
-      images,
-      allImages,
-      albums,
-      user,
-      sortImages,
-      activeGallery,
-      visibleModal,
-      imgInfo,
-      nuke,
-      forceReloadKey,
-      downloadZip
-    };
-  },
-  computed: {
-    imgGroups() {
+    const imgGroups = computed(() => {
       if (!this.items) {
         return;
       }
@@ -401,27 +385,116 @@ export default {
       }, {});
 
       return group;
+    });
+
+    const filteredImages = computed(() => {
+      if (activeGallery.value === 'All') {
+        return allImages.value;
+      } else {
+        const albumId = albums.value.find(
+          x => x.albumName === activeGallery.value
+        ).albumId;
+
+        return images.value.filter(x => x.albumId === albumId);
+      }
+    });
+
+    // ---------- MODALS ---------- //
+    const visibleModal = ref(null);
+
+    provide('openModal', modalName => {
+      visibleModal.value = modalName;
+    });
+    provide('closeModal', () => (visibleModal.value = null));
+    provide('openUploader', () => true);
+
+    // ---------- DOWNLOADING ---------- //
+    const toast = inject('toast');
+    function downloadZip() {
+      downloader(images.value, toast);
     }
-  },
-  methods: {
-    openSubscribeForm() {
-      this.isFormVisible = true;
-    }
+
+    // ---------- DELETION ---------- //
+    // Delete multiple images at once (user-selected, NOT nuking)
+    let forceUppyReloadKey = ref(0); // Force reload after deleting multiple images or nuking
+    const deleteMultiple = async () => {
+      const imagesArr = store.state.imageStore.images;
+      store.dispatch('removeMultipleImages');
+
+      forceUppyReloadKey.value++; //force Uppy to reload
+
+      const response = await axios.post(`${server}/files/delete-image`, {
+        multipleImages: true,
+        images: imagesArr.map(x => {
+          const { fileId, thumbFileId, fileName, ownerId } = x;
+          return { fileId, thumbFileId, fileName, ownerId };
+        }),
+        ownerId: owner.value.ownerId
+      });
+      if (response.status != 200) {
+        console.error(
+          `Deletion error: ${response.status} - ${response.statusText}`
+        );
+      }
+      store.dispatch('getUsageData', { ownerId: owner.value.ownerId });
+    };
+
+    // Nuke images for dev purposes OR ACCOUNT DELETION
+    const nuke = async () => {
+      store.dispatch('nukeImages');
+
+      forceUppyReloadKey.value++; //force Uppy to reload
+
+      const response = await axios.post(`${server}/files/delete-image`, {
+        nuke: true,
+        ownerId: owner.value.ownerId
+      });
+      console.log('response:', response);
+      if (response.status != 200) {
+        console.error(
+          `Nuking error: ${response.status} - ${response.statusText}`
+        );
+      }
+      store.dispatch('getUsageData', { ownerId: owner.value.ownerId });
+    };
+    provide('nuke', nuke);
+
+    return {
+      server,
+      owner,
+      images,
+      allImages,
+      filteredImages,
+      albums,
+      sortImages,
+      isSelectMode,
+      selectAll,
+      activeGallery,
+      actionsBar,
+      visibleModal,
+      imgInfo,
+      forceUppyReloadKey,
+      downloadZip,
+      view
+    };
   }
 };
 </script>
 
 <style scoped>
 .album-enter-active {
-  @apply transition-all duration-200 ease-out;
+  @apply transition-all duration-75 ease-out;
 }
 
 .album-leave-active {
-  @apply transition-all duration-150 ease-in;
+  @apply transition-all duration-75 ease-in;
 }
 
-.album-enter-from,
-.album-leave-to {
+.album-enter-from {
   @apply transform -translate-y-10 opacity-0;
+}
+,
+.album-leave-to {
+  @apply transform translate-y-10 opacity-0;
 }
 </style>

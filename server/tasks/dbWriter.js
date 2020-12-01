@@ -71,7 +71,7 @@ const writeToDb = async (data) => {
       imageInfo.fileName = imageInfo.fileName.replace('/thumb/', '/full/');
       // Find the full size uploaded image. Gets most recent upload in case multiple with same filename exist.
       const updatedRecord = await db.oneOrNone(
-        'UPDATE images SET thumb_file_id = ${fileId} WHERE image_id = (SELECT image_id FROM images WHERE file_name = ${fileName} AND owner_id = ${ownerId} ORDER BY image_id DESC LIMIT 1) RETURNING *',
+        'UPDATE images SET thumb_file_id = ${fileId} WHERE file_id = (SELECT file_id FROM images WHERE file_name = ${fileName} AND owner_id = ${ownerId} ORDER BY file_id DESC LIMIT 1) RETURNING *',
         imageInfo
       );
       // console.log(

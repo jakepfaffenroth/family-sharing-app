@@ -50,7 +50,7 @@ function stripeElements() {
 
     const classes = {
       base:
-        'rounded-md relative px-3 py-2 border border-gray-400 placeholder-gray-500 text-gray-900  focus:outline-none focus:shadow-outline-blue focus:border-blue-300 focus:z-10 sm:text-sm sm:leading-5',
+        'rounded-md relative px-3 py-2 border border-gray-400 placeholder-gray-500 text-gray-900  focus:outline-none focus:ring-blue focus:border-blue-300 focus:z-10 sm:text-sm sm:leading-5',
     };
 
     card = elements.create('card', { style, classes });
@@ -366,7 +366,7 @@ function confirmPriceChange() {
 async function createCustomer() {
   let billingEmail = document.querySelector('#email').value;
   let name = document.getElementById('name').value;
-  
+
   return await fetch('/create-customer', {
     method: 'post',
     headers: {

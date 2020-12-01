@@ -7,7 +7,6 @@ import { nextTick, h } from 'vue';
 import {
   setMountOptions,
   store,
-  resetStore,
   router,
   mockAxios,
   setCookies
@@ -95,7 +94,7 @@ describe('modals', () => {
   });
 
   afterEach(async () => {
-    resetStore();
+    store.dispatch('RESET_STATE');
     await router.replace('/');
     await router.isReady();
     wrapper.unmount();

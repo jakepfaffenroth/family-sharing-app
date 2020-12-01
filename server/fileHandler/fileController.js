@@ -2,6 +2,7 @@ const axios = require('axios');
 const path = require('path');
 const fs = require('fs');
 const { Readable, pipeline } = require('stream');
+const pgpHelpers = require('../db').pgpHelpers;
 const db = require('../db').pgPromise;
 
 const appKeyId = process.env.KEY_ID;
@@ -65,94 +66,131 @@ module.exports.listFiles = async (req, res) => {
 };
 
 module.exports.deleteImage = async (req, res, next) => {
-  const { singleImage, multipleImages, nuke } = req.body;
+  // const { singleImage, multipleImages, nuke } = req.body;
+  const images =
+    req.body.images ||
+    (await module.exports.listFiles(req, res)).map((x) => ({
+      ...x,
+      ownerId: req.body.ownerId,
+    }));
+
   const credentials = res.locals.credentials;
 
-  // Deletes single image
-  if (singleImage) {
-    deletionStatus = deleteImage(req.body);
-  }
+  try {
+    const dbDeleteResult = deleteFromDb(images);
+    const fullResDeleteResult = deleteFullResFromB2(images);
+    const thumbResDeleteResult = deleteThumbnailfromB2(images);
 
-  // Deletes multiple images (user-selected - NOT nuking)
-  if (multipleImages) {
-    req.body.images.forEach((image) => {
-      deleteImage(image);
-    });
+    const results = await Promise.all([
+      dbDeleteResult,
+      fullResDeleteResult,
+      thumbResDeleteResult,
+    ]);
+
+    if (!results[0]) {
+      throw new Error('Could not find full res file in DB.');
+    } else {
+      const updatedImages = await db.any(
+        'SELECT images.*, album_images.album_id FROM images LEFT JOIN album_images ON images.file_id=album_images.file_id WHERE images.owner_id=${ownerId}',
+        req.body
+      );
+
+      if (req.body.images) {
+        success('File was deleted from B2');
+        success('File was removed from db');
+      } else {
+        success('File was NUKED from B2 and db');
+      }
+
+      res.status(200).json(updatedImages);
+    }
+  } catch (err) {
+    console.error('err:', err);
+    res.status(500).json(err);
   }
 
   // NUKE images totally from B2 and DB
-  if (nuke) {
-    const files = await module.exports.listFiles(req, res);
-    try {
-      files.forEach(async (image) => {
-        const dbDeleteResult = await db.oneOrNone(
-          'DELETE FROM images WHERE owner_id = ${ownerId} AND file_id = ${fileId} RETURNING *',
-          { ...image, ownerId: image.fileName.split('/')[0] }
-        );
+  // if (nuke) {
+  //   const files = (await module.exports.listFiles(req, res)).map((x) => ({
+  //     ...x,
+  //     ownerId: x.fileName.split('/')[0],
+  //   }));
 
-        // Delete full res image file from B2
-        const fileDeleteResult = await axios.post(
+  //   try {
+  //     deleteFromDb(files);
+  //     files.forEach(async (image) => {
+  //       const dbDeleteResult = await db.oneOrNone(
+  //         'DELETE FROM images WHERE owner_id = ${ownerId} AND file_id = ${fileId} RETURNING *',
+  //         { ...image, ownerId: image.fileName.split('/')[0] }
+  //       );
+
+  //       // Delete full res image file from B2
+  //       const fileDeleteResult = await axios.post(
+  //         credentials.apiUrl + '/b2api/v1/b2_delete_file_version',
+  //         {
+  //           fileName: unescape(image.fileName),
+  //           fileId: image.fileId,
+  //         },
+  //         { headers: { Authorization: credentials.authorizationToken } }
+  //       );
+  //       if (dbDeleteResult && fileDeleteResult) {
+  //         success('File was NUKED from B2 and db');
+  //       }
+  //     });
+  //     res.status(200).send('ok');
+  //   } catch (err) {
+  //     error('Nuke error:\n%0', err);
+  //     res.status(500).json(deletionStatus.err);
+  //   }
+  // }
+
+  async function deleteFromDb(images) {
+    const deletionQuery = pgpHelpers.concat(
+      images.map((image) => ({
+        query:
+          'DELETE FROM images WHERE owner_id = ${ownerId} AND file_id = ${fileId} RETURNING *',
+        values: image,
+      }))
+    );
+    try {
+      return db.any(deletionQuery);
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  async function deleteThumbnailfromB2(images) {
+    const deletionResult = [];
+    images.forEach((image) => {
+      deletionResult.push(
+        axios.post(
+          credentials.apiUrl + '/b2api/v1/b2_delete_file_version',
+          {
+            fileName: unescape(image.fileName).replace('/full/', '/thumb/'),
+            fileId: image.thumbFileId,
+          },
+          { headers: { Authorization: credentials.authorizationToken } }
+        )
+      );
+    });
+    return deletionResult;
+  }
+
+  async function deleteFullResFromB2(images) {
+    const deletionResult = [];
+    images.forEach((image) => {
+      deletionResult.push(
+        axios.post(
           credentials.apiUrl + '/b2api/v1/b2_delete_file_version',
           {
             fileName: unescape(image.fileName),
             fileId: image.fileId,
           },
           { headers: { Authorization: credentials.authorizationToken } }
-        );
-        if (dbDeleteResult && fileDeleteResult) {
-          success('File was NUKED from B2 and db');
-        }
-      });
-      res.status(200).send('ok');
-    } catch (err) {
-      error('Nuke error:\n%0', err);
-      res.status(500).json(deletionStatus.err);
-    }
-  }
-
-  async function deleteImage(image) {
-    try {
-      const dbDeleteResult = db.oneOrNone(
-        'DELETE FROM images WHERE owner_id = ${ownerId} AND file_id = ${fileId} RETURNING *',
-        { ...image, ownerId: image.fileName.split('/')[0] }
+        )
       );
-
-      // Delete full res image file from B2
-      const fullResDeleteResult = axios.post(
-        credentials.apiUrl + '/b2api/v1/b2_delete_file_version',
-        {
-          fileName: unescape(image.fileName),
-          fileId: image.fileId,
-        },
-        { headers: { Authorization: credentials.authorizationToken } }
-      );
-
-      // Delete thumb res image file from B2
-      const thumbResDeleteResult = axios.post(
-        credentials.apiUrl + '/b2api/v1/b2_delete_file_version',
-        {
-          fileName: unescape(image.fileName).replace('/full/', '/thumb/'),
-          fileId: image.thumbFileId,
-        },
-        { headers: { Authorization: credentials.authorizationToken } }
-      );
-
-      const results = await Promise.all([
-        dbDeleteResult,
-        fullResDeleteResult,
-        thumbResDeleteResult,
-      ]);
-
-      if (results[0] === null && image.fileName.includes('full')) {
-        throw new Error('Could not find full res file in DB.');
-      }
-
-      success('File was deleted from B2');
-      success('File was removed from db');
-      res.status(200).send('ok');
-    } catch (err) {
-      res.status(500).json(deletionStatus.err);
-    }
+      return deletionResult;
+    });
   }
 };
 
@@ -210,8 +248,93 @@ module.exports.getUsage = async (req, res) => {
   });
 };
 
+module.exports.addToAlbums = async (req, res) => {
+  const newPairs = req.body.imgAlbumPairs;
+  console.log('newPairs:', newPairs);
+  const fileIds = [...new Set(newPairs.map((x) => x.fileId))];
+
+  const columnSet = new pgpHelpers.ColumnSet(
+    ['album_id', 'file_id', 'owner_id'],
+    { table: 'album_images' }
+  );
+
+  try {
+    const updatedImages = await db.task(async (t) => {
+      const getExistingPairsQuery = pgpHelpers.concat(
+        fileIds.map((fileId) => ({
+          query:
+            'SELECT * FROM album_images WHERE owner_id = ${ownerId} AND file_id = ${fileId}',
+          values: { ownerId: req.body.ownerId, fileId },
+        }))
+      );
+
+      const [existingPairs] = getExistingPairsQuery.length
+        ? await db.multi(getExistingPairsQuery)
+        : null;
+
+      const pairsToRemove = existingPairs.filter(
+        (x) =>
+          newPairs.findIndex(
+            (k) => k.albumId === x.albumId && k.fileId === x.fileId
+          ) === -1
+      );
+      console.log('pairsToRemove:', pairsToRemove);
+      const pairsToAdd = newPairs
+        .filter((x) => {
+          x.albumId &&
+            existingPairs.findIndex((k) => {
+              return k.albumId === x.albumId && k.fileId === x.fileId;
+            }) === -1;
+        })
+        .map((x) => ({
+          album_id: x.albumId,
+          file_id: x.fileId,
+          owner_id: req.body.ownerId,
+        }));
+      console.log('pairsToAdd:', pairsToAdd);
+      const removePairsQuery =
+        pgpHelpers.concat(
+          pairsToRemove.map((pair) => ({
+            query:
+              'DELETE FROM album_images WHERE file_id = ${fileId} AND album_id = ${albumId}',
+            values: pair,
+          }))
+        ) || '';
+
+      const insertPairsQuery =
+        pairsToAdd.length === 0 ? '' : pgpHelpers.insert(pairsToAdd, columnSet);
+
+      // console.log('insertPairsQuery:', insertPairsQuery);
+
+      const addAndRemoveQuery = pgpHelpers.concat([
+        removePairsQuery,
+        insertPairsQuery,
+      ]);
+      // console.log('addAndRemoveQuery:', addAndRemoveQuery);
+      await t.none(addAndRemoveQuery);
+
+      return await t.any(
+        'SELECT images.*, album_images.album_id FROM images LEFT JOIN album_images ON images.file_id = album_images.file_id WHERE images.owner_id = ${ownerId}',
+        req.body
+      );
+    });
+    res.json(updatedImages);
+  } catch (err) {
+    console.error(err);
+  }
+};
+
+module.exports.fetchImages = async (req, res) => {
+  const images = await db.any(
+    'SELECT images.*, album_images.album_id FROM images LEFT JOIN album_images ON images.file_id=album_images.file_id WHERE images.owner_id=${ownerId} OR images.owner_id=(SELECT owner_id FROM owners WHERE guest_id = ${guestId})',
+    req.body
+  );
+  res.json(images);
+};
+
 // Logic for handling incoming file and compressing
 module.exports.imgCompressor = async (req, res, next) => {
+  console.log('req.headers:', req.headers);
   const { plan } = await db.one(
     'SELECT plan FROM owners WHERE owner_id = ${id}',
     req.headers

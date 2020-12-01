@@ -25,14 +25,8 @@ const router = createRouter({
 // Vuex
 import store from '@/store';
 
-
-const initialState = JSON.parse(JSON.stringify(store.state));
-function resetStore() {
-  store.replaceState(initialState);
-}
-
 // Default mount options
-import setMountOptions from './mountOptions.setup'
+import setMountOptions from './mountOptions.setup';
 
 // Axios mocks
 import mockAxios from './mockAxios.setup';
@@ -68,5 +62,4 @@ Object.defineProperty(window, 'scrollTo', {
   writable: true
 });
 
-
-export { setMountOptions, router, store, resetStore, mockAxios, setCookies };
+export { setMountOptions, router, store, mockAxios, setCookies };

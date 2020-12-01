@@ -1,5 +1,7 @@
 <template>
-  <account-menu></account-menu>
+  <header class="bg-white px-2 pt-2 sm:px-6 sm:pt-4 xl:px-12 xl:pt-6">
+    <account-menu></account-menu>
+  </header>
 
   <transition appear name="slide" mode="out-in">
     <component

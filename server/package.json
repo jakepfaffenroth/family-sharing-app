@@ -6,7 +6,8 @@
     "start": "NODE_ENV=production node -r ../config/config.js ./bin/www",
     "debug": "DEBUG='.' npm run dev",
     "tailwind": "postcss ./**/*/index.css -o ./public/stylesheets/style.css -w",
-    "dev": "NODE_ENV=development nodemon --config ./config/nodemon.json -r ./config/config.js ./bin/www"
+    "dev": "NODE_ENV=development nodemon --config ./config/nodemon.json -r ./config/config.js ./bin/www",
+    "test": "jest --config ./jest.config.js"
   },
   "dependencies": {
     "autoprefixer": "^9.8.6",
@@ -15,6 +16,7 @@
     "bcryptjs": "^2.4.3",
     "bull": "^3.18.0",
     "bull-board": "^0.9.0",
+    "chai": "^4.2.0",
     "compression": "^1.7.4",
     "connect-flash": "^0.1.1",
     "connect-pg-simple": "^6.2.1",
@@ -52,12 +54,13 @@
     "pino-http": "^5.3.0",
     "pino-pretty": "^4.2.1",
     "pino-std-serializers": "^2.5.0",
+    "postcss": "^7.0.35",
     "postcss-cli": "^7.1.2",
     "reconnecting-websocket": "^4.4.0",
     "sharp": "^0.25.4",
     "stripe": "^8.107.0",
     "supports-color": "^7.1.0",
-    "tailwindcss": "^1.8.6",
+    "tailwindcss": "^2.0.1-compat",
     "tus-node-server": "^0.3.2",
     "uppy": "^1.20.2",
     "uuid": "^8.3.0",
@@ -68,8 +71,13 @@
     "zxcvbn": "^4.4.2"
   },
   "devDependencies": {
+    "@babel/cli": "^7.12.1",
+    "@babel/core": "^7.12.3",
+    "@babel/preset-env": "^7.12.1",
     "@tailwindcss/custom-forms": "^0.2.1",
-    "babel-eslint": "^10.1.0"
+    "axios-mock-adapter": "^1.19.0",
+    "babel-eslint": "^10.1.0",
+    "babel-jest": "^26.6.3"
   },
   "eslintConfig": {
     "root": true,

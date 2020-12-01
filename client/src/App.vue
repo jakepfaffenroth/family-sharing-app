@@ -1,7 +1,5 @@
 <template>
-  <div
-    class="flex flex-col min-h-screen w-full px-2 py-2 sm:px-6 sm:py-4 xl:px-12 xl:py-6"
-  >
+  <div class="flex flex-col min-h-screen w-full ">
     <router-view :user-type="userType"></router-view>
   </div>
 </template>
@@ -25,10 +23,18 @@ export default {
     const route = useRoute();
     const server = process.env.VUE_APP_SERVER;
 
-    const ownerId = getCookie('ownerId');
-    const guestId = getCookie('guestId');
+    const ownerId = getCookie('ownerId') || null;
+    const guestId = getCookie('guestId') || null;
     let userType = ref('');
     store.dispatch('saveIdCookies', { ownerId, guestId });
+    if (ownerId || guestId) {
+      store.dispatch('fetchImages', { ownerId: ownerId, guestId: guestId });
+      // store.state.imageStore.images.forEach(image => {
+      //   const cacheImg = new Image();
+      //   cacheImg.src = image.thumbnail;
+      //   cacheImg.onload = ()=> console.log('loaded')
+      // });
+    }
 
     if (ownerId) {
       userType.value = 'owner';
@@ -50,7 +56,6 @@ export default {
     const params = new URLSearchParams(window.location.search);
     const uId = params.get('owner');
     const gId = params.get('guest');
-    
     if (uId) {
       document.cookie = `ownerId=${uId}`;
       window.history.replaceState(null, '', '/');
@@ -160,5 +165,19 @@ export default {
 .slide-fade-enter-from,
 .slide-fade-leave-to {
   @apply transform -translate-y-2 opacity-0;
+}
+
+/* Fade in transitions */
+.fade-enter-active {
+  @apply transition-all duration-200 ease-out;
+}
+
+.fade-leave-active {
+  @apply transition-all duration-150 ease-in;
+}
+
+.fade-enter-from,
+.slide-fade-leave-to {
+  @apply opacity-0;
 }
 </style>

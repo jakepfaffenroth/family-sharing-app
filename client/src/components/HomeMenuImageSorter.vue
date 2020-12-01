@@ -1,17 +1,17 @@
 <template>
   <div
-    class="flex justify-end content-center mt-2 divide-x divide-gray-600 text-gray-700 transition duration-150 ease-in-out"
+    class="flex divide-x divide-gray-600 text-gray-700 transition duration-150 ease-in-out"
   >
     <base-drop-menu>
       <template #button>
         <p
-          class="w-10 rounded hover:text-teal-500 focus:outline-none cursor-pointer"
+          class="p-2 pb-1 hover:text-teal-500 focus:outline-none cursor-pointer"
         >
           Sort
         </p>
       </template>
       <template #listItems>
-        <div class="w-32">
+        <div class="w-32 p-2 pb-1">
           <a class="menu-item" @click="sortImages('captureTime'), closeMenu()">
             Capture time
           </a>
@@ -23,7 +23,7 @@
     </base-drop-menu>
 
     <button
-      class="px-2 mt-0.5 hover:text-teal-500 focus:outline-none transition duration-150 ease-in-out"
+      class="mt-0.5 pl-2 hover:text-teal-500 focus:outline-none transition duration-150 ease-in-out"
       @click="sortImages('reverse'), (sortAsc = !sortAsc)"
     >
       <svg class="m-auto h-4 w-4" viewBox="0 0 20 20" fill="currentColor">

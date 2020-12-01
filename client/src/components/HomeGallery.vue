@@ -1,179 +1,181 @@
 <template>
-  <div
-    id="my-gallery"
-    data-test="gallery"
-    v-bind="$attrs"
-    class="my-gallery flex flex-wrap justify-start py-2 sm:py-4"
-    itemscope
-    itemtype="http://schema.org/ImageGallery"
-  >
+  <div>
+    <!-- :class="{ 'opacity-0': imgLoadCount !== items.length }" -->
     <div
-      v-for="(group, date) in imgGroups"
-      :key="date"
-      data-test="imgGroup"
-      class="group-container"
+      id="my-gallery"
+      data-test="gallery"
+      v-bind="$attrs"
+      class="my-gallery flex flex-wrap justify-start"
+      itemscope
+      itemtype="http://schema.org/ImageGallery"
     >
-      <div class="flex justify-between">
-        <p class="mb-1 text-sm sm:text-base">
-          {{ date }}
-        </p>
-      </div>
-      <div class="group-wrapper flex flex-wrap">
-        <figure
-          v-for="(item, index) in group"
-          :id="'image-' + index"
-          :key="index"
-          itemprop="associatedMedia"
-          itemscope
-          itemtype="http://schema.org/ImageObject"
-          :src="item.src"
-          class="image-container h-24 xs:h-28 sm:h-36 md:h-64 z-0"
-          @mouseenter="item.isMenuVisible = true"
-          @mouseleave="item.isMenuVisible = false"
-        >
-          <div class="absolute top-1 right-4 z-30">
-            <transition name="fade">
-              <div
-                v-if="userType === 'owner'"
-                v-show="item.isMenuVisible"
-                :id="'menu-' + index"
-                @click.stop
-              >
-                <base-drop-menu>
-                  <template #button>
-                    <div class="h-6 mb-1">
-                      <button
-                        class="w-5 h-4 hover:text-teal-500 focus:shadow-outline"
-                      >
-                        <svg
-                          class="w-8 h-8 p-1 bg-gradient-to-r from-teal-400 to-purple-500 border border-white rounded-full shadow text-white"
-                          xmlns="http://www.w3.org/2000/svg"
-                          viewBox="0 0 20 20"
-                          fill="currentColor"
-                        >
-                          <path
-                            d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM16 12a2 2 0 100-4 2 2 0 000 4z"
-                          />
-                        </svg>
-                      </button>
-                    </div>
-                  </template>
-                  <template #listItems>
-                    <div class="w-24 -m-1">
-                      <!-- <a
-                      v-if="
-                        items.length >= 0 &&
-                          userType === 'owner' &&
-                          owner.ownerId
-                      "
-                      class="img-menu-link"
-                      @click.stop="shareImage(item)"
-                    >
-                      Share
-                    </a> -->
-                      <a
-                        v-if="
-                          items.length >= 0 &&
-                            userType === 'owner' &&
-                            owner.ownerId
-                        "
-                        data-test="imgDeleteBtn"
-                        class="block px-2 py-1 text-sm rounded cursor-pointer text-gray-800 hover:bg-teal-400 hover:text-white"
-                        @click.stop="openDeleteModal(date, item, index)"
-                      >
-                        Delete
-                      </a>
-                    </div>
-                  </template>
-                </base-drop-menu>
-              </div>
-            </transition>
-          </div>
-          <a
-            v-lazyload
-            :href="item.src"
-            itemprop="contentUrl"
-            :data-size="'' + item.w + 'x' + item.h"
-            :title="item.title"
+      <!-- Groups -->
+      <div
+        v-for="(group, date) in imgGroups"
+        :key="date"
+        data-test="imgGroup"
+        class="group-container"
+      >
+        <!-- Group date label -->
+        <div class="flex justify-between">
+          <p class="mb-1 text-sm sm:text-base">
+            {{ date }}
+          </p>
+        </div>
+        <div class="group-wrapper flex flex-wrap">
+          <!-- Skeleton while loading -->
+          <!-- <skeleton-image
+            v-for="(item, index) in group"
+            v-show="imgLoadCount < items.length"
+            :key="index"
+            class="image-container h-24 xs:h-28 sm:h-36 md:h-64 z-0"
+            :style="skeletonWidth(item)"
+          ></skeleton-image> -->
+          <!-- Images within groups -->
+          <figure
+            v-for="(item, index) in group"
+            :id="'image-' + index"
+            :key="index"
+            itemprop="associatedMedia"
+            itemscope
+            itemtype="http://schema.org/ImageObject"
+            :src="item.src"
+            class="image-container h-24 xs:h-28 sm:h-36 md:h-64 z-0"
+            @mouseenter="item.hover = true"
+            @mouseleave="item.hover = false"
           >
+            <!-- Image Action Button - owner only -->
+            <div
+              v-if="items.length >= 0 && userType === 'owner' && owner.ownerId"
+              class="absolute top-1 right-1 z-30"
+            >
+              <transition appear name="slide-fade">
+                <component
+                  :is="imgActionBtn"
+                  v-show="
+                    (imgActionBtn === 'HomeGalleryButtonMenu' && item.hover) ||
+                      isSelectMode
+                  "
+                  :item="item"
+                  :date="date"
+                  :index="index"
+                  :group="group"
+                  :is-album="isAlbum"
+                  @click.stop
+                  @handle-img-selection="handleImgSelection"
+                ></component>
+              </transition>
+            </div>
+            <!-- <p>{{ imgLoadCount }}</p>
+            -----
+            <p>{{ imgsLoaded.indexOf(index) }}</p> -->
+            <!-- v-show="item.loaded == false" -->
+            <!-- <skeleton-image
+              v-if="imgLoadCount < items.length"
+              :key="index"
+              class="image-container h-24 xs:h-28 sm:h-36 md:h-64 z-0"
+              :style="skeletonWidth(item)"
+            ></skeleton-image> -->
             <!-- image thumbnails -->
-            <img
-              :data-url="item.thumbnail"
-              :alt="item.alt"
-              itemprop="thumbnail"
-              class="image h-24 xs:h-28 sm:h-36 md:h-64"
-            />
-          </a>
-        </figure>
+            <a
+              v-lazyload
+              :href="item.src"
+              itemprop="contentUrl"
+              :data-size="'' + item.w + 'x' + item.h"
+              :title="item.title"
+            >
+              <img
+                :id="item.fileId"
+                :data-url="item.thumbnail"
+                :alt="item.alt"
+                itemprop="thumbnail"
+                class="image h-24 xs:h-28 sm:h-36 md:h-64 rounded-sm border-none"
+                :class="{
+                  'bg-gray-300 animate-pulse':
+                    imgsLoaded.indexOf(item.fileId) === -1
+                }"
+                :style="
+                  imgsLoaded.indexOf(item.fileId) === -1
+                    ? skeletonWidth(item)
+                    : null
+                "
+                @load="imgsLoaded.push(item.fileId)"
+              />
+            </a>
+          </figure>
+        </div>
       </div>
     </div>
-  </div>
 
-  <!-- Image lightbox -->
-  <div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
-    <div class="pswp__bg" />
-    <div class="pswp__scroll-wrap">
-      <div class="pswp__container">
-        <div class="pswp__item" />
-        <div class="pswp__item" />
-        <div class="pswp__item" />
-      </div>
-      <div class="pswp__ui pswp__ui--hidden">
-        <div class="pswp__top-bar">
-          <div class="pswp__counter" />
-          <button
-            class="pswp__button pswp__button--close"
-            title="Close (Esc)"
-          />
+    <!-- Image lightbox -->
+    <div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+      <div class="pswp__bg" />
+      <div class="pswp__scroll-wrap">
+        <div class="pswp__container">
+          <div class="pswp__item" />
+          <div class="pswp__item" />
+          <div class="pswp__item" />
+        </div>
+        <div class="pswp__ui pswp__ui--hidden">
+          <div class="pswp__top-bar">
+            <div class="pswp__counter" />
+            <button
+              class="pswp__button pswp__button--close"
+              title="Close (Esc)"
+            />
 
-          <span class="rotation-wrapper">
-            <i
-              v-if="options.rotationOn"
-              class="material-icons"
-              @click="rotate(-90)"
-            >
-              rotate_left
-            </i>
-            <i
-              v-if="options.rotationOn"
-              class="material-icons"
-              @click="rotate(90)"
-            >
-              rotate_right
-            </i>
-          </span>
+            <span class="rotation-wrapper">
+              <i
+                v-if="options.rotationOn"
+                class="material-icons"
+                @click="rotate(-90)"
+              >
+                rotate_left
+              </i>
+              <i
+                v-if="options.rotationOn"
+                class="material-icons"
+                @click="rotate(90)"
+              >
+                rotate_right
+              </i>
+            </span>
 
-          <button class="pswp__button pswp__button--share" title="Share" />
-          <button
-            class="pswp__button pswp__button--fs"
-            title="Toggle fullscreen"
-          />
-          <button class="pswp__button pswp__button--zoom" title="Zoom in/out" />
-          <div class="pswp__preloader">
-            <div class="pswp__preloader__icn">
-              <div class="pswp__preloader__cut">
-                <div class="pswp__preloader__donut" />
+            <button class="pswp__button pswp__button--share" title="Share" />
+            <button
+              class="pswp__button pswp__button--fs"
+              title="Toggle fullscreen"
+            />
+            <button
+              class="pswp__button pswp__button--zoom"
+              title="Zoom in/out"
+            />
+            <div class="pswp__preloader">
+              <div class="pswp__preloader__icn">
+                <div class="pswp__preloader__cut">
+                  <div class="pswp__preloader__donut" />
+                </div>
               </div>
             </div>
           </div>
-        </div>
-        <div
-          class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap"
-        >
-          <div class="pswp__share-tooltip" />
-        </div>
-        <button
-          class="pswp__button pswp__button--arrow--left"
-          title="Previous (arrow left)"
-          @click="resetAngle"
-        />
-        <button
-          class="pswp__button pswp__button--arrow--right"
-          title="Next (arrow right)"
-          @click="resetAngle"
-        />
-        <div class="pswp__caption">
-          <div class="pswp__caption__center" />
+          <div
+            class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap"
+          >
+            <div class="pswp__share-tooltip" />
+          </div>
+          <button
+            class="pswp__button pswp__button--arrow--left"
+            title="Previous (arrow left)"
+            @click="resetAngle"
+          />
+          <button
+            class="pswp__button pswp__button--arrow--right"
+            title="Next (arrow right)"
+            @click="resetAngle"
+          />
+          <div class="pswp__caption">
+            <div class="pswp__caption__center" />
+          </div>
         </div>
       </div>
     </div>
@@ -187,7 +189,11 @@ import 'photoswipe/dist/photoswipe.css';
 import 'photoswipe/dist/default-skin/default-skin.css';
 import format from 'date-fns/format';
 import BaseDropMenu from './BaseDropMenu';
+import SkeletonImage from './BaseSkeletonImage';
+import HomeGalleryButtonSelect from './HomeGalleryButtonSelect';
+import HomeGalleryButtonMenu from './HomeGalleryButtonMenu';
 import LazyLoadDirective from '../utils/LazyLoadDirective';
+// import isItDark from '../utils/imageLightDarkChecker';
 
 export default {
   name: 'HomeGallery',
@@ -195,17 +201,26 @@ export default {
     lazyload: LazyLoadDirective
   },
   components: {
-    BaseDropMenu
+    BaseDropMenu,
+    SkeletonImage,
+    HomeGalleryButtonSelect,
+    HomeGalleryButtonMenu
   },
   props: {
     userType: { type: String, default: '', required: true },
     items: { type: Array, default: () => [] },
+    isSelectMode: { type: Boolean, default: false },
+    view: {
+      type: Object,
+      default: () => ({ ownerLoading: true, imgsLoading: true })
+    },
     options: {
       default: () => ({}),
       type: Object
     }
   },
-  emits: ['open-modal', 'img-delete-info'],
+  emits: ['imgs-loaded'],
+  injects: ['openModal', 'passImgInfo'],
   data() {
     return {
       pswp: null,
@@ -213,16 +228,16 @@ export default {
       format,
       imageSize: '250px',
       showSingleShareModal: false,
-      itemToShare: {}
+      itemToShare: {},
+      imgLoadCount: 0,
+      imgsLoaded: [],
+      windowWidth: 0
     };
   },
   computed: {
     owner() {
       return this.$store.state.ownerStore.owner;
     },
-    // items() {
-    //   return this.$store.getters.images;
-    // },
     imgGroups() {
       const currentYear = new Date().getFullYear().toString();
       let group = this.items.reduce((r, a) => {
@@ -253,7 +268,41 @@ export default {
       }, {});
 
       return group;
+    },
+    imgActionBtn() {
+      if (this.isSelectMode) {
+        return 'HomeGalleryButtonSelect';
+      } else {
+        return 'HomeGalleryButtonMenu';
+      }
+    },
+    allImages() {
+      return this.$store.getters.allImages;
+    },
+    isAlbum() {
+      return this.items.length < this.allImages.length;
     }
+  },
+  created() {
+    this.windowWidth = window.innerWidth;
+    window.addEventListener('resize', this.getWindowSize);
+
+    // this.items.forEach(item => {
+    //   // console.log('item:', item);
+    //   const cacheImg = new Image();
+    //   cacheImg.src = item.thumbnail;
+    //   // cacheImg.fileName = item.fileName;
+    //   // cacheImg.onload = () => (item.loaded = true);
+    //   this.imgLoadCount++;
+    //   cacheImg.addEventListener('load', function() {});
+    //   // console.log('cacheImg:', cacheImg);
+    //   console.log(
+    //     'imgLoadCount, items.length, imgLoadCount < items.length:',
+    //     this.imgLoadCount,
+    //     this.items.length,
+    //     this.imgLoadCount < this.items.length
+    //   );
+    // });
   },
   mounted() {
     const that = this;
@@ -495,9 +544,61 @@ export default {
     initPhotoSwipeFromDOM('.my-gallery');
   },
   methods: {
+    getWindowSize() {
+      this.windowWidth = window.innerWidth;
+    },
+    skeletonWidth(item) {
+      let height = '';
+      if (this.windowWidth >= 768) {
+        height = 16;
+      } else if (this.windowWidth >= 640) {
+        height = 9;
+      } else {
+        height = 6;
+      }
+      return 'width:' + ((height * item.w) / item.h).toFixed(3) + 'rem';
+    },
+    imgLoaded() {
+      this.imgLoadCount++;
+      console.log('this.imgLoadCount:', this.imgLoadCount);
+      if (this.imgLoadCount === this.items.length) {
+        this.$emit('imgs-loaded');
+      }
+    },
+    openAlbumPicker(date, item, index) {
+      this.openModal('HomeModalAlbumPicker');
+      this.passImgInfo({
+        date,
+        fileId: item.fileId,
+        thumbFileId: item.thumbFileId,
+        fileName: item.fileName,
+        ownerId: this.$store.getters.ownerId,
+        thumb: item.thumbnail,
+        index
+      });
+    },
+    // handleImgSelection(img) {
+    //   console.log('?');
+    //   this.toggleImgSelection(img);
+    // },
+    handleImgSelection({ group, item }) {
+      if (!item.isSelected) {
+        this.$store.dispatch('addToSelectedImages', item);
+        // this.toggleImgSelection(item);
+        // const foundGroup = Object.values(this.imgGroups).find(x => x === group);
+        // const foundImg = foundGroup.find(x => x.fileId === item.fileId);
+        // foundImg.isSelected = true;
+      } else if (item.isSelected) {
+        this.$store.dispatch('removeFromSelectedImages', item);
+        // this.toggleImgSelection(item);
+        // const foundGroup = Object.values(this.imgGroups).find(x => x === group);
+        // const foundImg = foundGroup.find(x => x.fileId === item.fileId);
+        // foundImg.isSelected = false;
+      }
+    },
     openDeleteModal(date, item, index) {
-      this.$emit('open-modal', 'HomeModalDeleteImage');
-      this.$emit('img-delete-info', {
+      this.openModal('HomeModalDeleteImage');
+      this.passImgInfo({
         date,
         fileId: item.fileId,
         thumbFileId: item.thumbFileId,
@@ -570,7 +671,7 @@ figure {
   flex: auto;
   min-width: 100px;
   object-fit: contain;
-  transition: all 0.2s ease-in-out;
+  /* transition: all 0.2s ease-in-out; */
 }
 
 .image-container:hover .image {
@@ -581,4 +682,10 @@ figure {
 .image-container:hover .img-menu-btn {
   color: black;
 }
+
+/* @media (max-width: 640px) {
+  .skeleton-width {
+    width: 16px;
+  }
+} */
 </style>

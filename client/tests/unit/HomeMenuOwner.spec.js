@@ -6,7 +6,6 @@ import App from '@/App';
 import {
   setMountOptions,
   store,
-  resetStore,
   router,
   mockAxios,
   setCookies
@@ -67,7 +66,7 @@ describe('Menu buttons', () => {
   });
 
   afterEach(async () => {
-    resetStore();
+    store.dispatch('RESET_STATE');
     await flushPromises();
     wrapper.unmount();
     // mockAxios.reset();

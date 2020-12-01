@@ -25,14 +25,13 @@ router.post(
   fileController.imgCompressor
 );
 
-router.post(
-  '/delete-image',
-  fileController.b2Auth,
-  fileController.deleteImage
-);
+router.post('/delete-image', fileController.b2Auth, fileController.deleteImage);
 
 router.post('/list-files', fileController.b2Auth, fileController.listFiles);
 router.post('/get-usage', fileController.b2Auth, fileController.getUsage);
+
+router.post('/add-to-albums', fileController.addToAlbums);
+router.post('/fetch-images', fileController.fetchImages);
 
 router.get('/download', fileController.b2Auth, fileController.download);
 

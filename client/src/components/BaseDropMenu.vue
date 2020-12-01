@@ -8,12 +8,16 @@
       <div
         v-show="isMenuVisible"
         id="invisible-wrapper"
-        class="absolute -right-4 z-40"
+        class="absolute top-0 z-40"
+        :class="{
+          '-right-4': position === 'right',
+          '-left-4': position === 'left'
+        }"
       >
         <div
           id="menu-list"
           data-test="baseDropMenuList"
-          class="grid my-2 mx-4 p-2 bg-white rounded border border-teal-600 shadow-xl transition-all duration-150 ease-in-out"
+          class=" mt-10 mb-2 mx-4 p-2 bg-white rounded border border-teal-600 shadow-xl transition-all"
           @click="closeMenu($event)"
         >
           <slot name="listItems"></slot>
@@ -26,6 +30,7 @@
 <script>
 export default {
   name: 'BaseDropMenu',
+  props: { position: { type: String, default: 'right' } },
   data() {
     return {
       isMenuVisible: false,

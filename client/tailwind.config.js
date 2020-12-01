@@ -1,20 +1,17 @@
+const colors = require('tailwindcss/colors');
+
 module.exports = {
-  purge: ['./public/**/*.html', './src/**/*.vue'],
+  purge: [],
+  darkMode: 'media', // or 'media' or 'class'
   theme: {
     extend: {
-      spacing: {
-        '0.5': '0.125rem',
-        '46': '11rem'
+      spacing: { '46': '11rem', '90vw': '90vw', '70vw': '70vw' },
+      colors: {
+        teal: colors.teal,
+        orange: colors.orange
       }
     }
   },
-  variants: {
-    borderWidth: ['responsive', 'hover', 'focus']
-  },
-  plugins: [require('@tailwindcss/custom-forms')],
-  experimental: 'all',
-  future: {
-    purgeLayersByDefault: true,
-    removeDeprecatedGapUtilities: true
-  }
+  variants: {},
+  plugins: []
 };

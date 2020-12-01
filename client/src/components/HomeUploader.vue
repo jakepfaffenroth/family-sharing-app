@@ -7,13 +7,13 @@
 </template>
 
 <script>
-import { computed, inject, onMounted } from 'vue';
+import { computed, inject, onMounted, onUpdated } from 'vue';
 import { useStore } from 'vuex';
 import Uppy from '@uppy/core';
 import Dashboard from '@uppy/dashboard';
 import EmptyDashboard from '@uppy/dashboard';
 // import ImageEditor from '@uppy/image-editor';
-import xhr from '@uppy/xhr-upload';
+import XHRUpload from '@uppy/xhr-upload';
 import ReconnectingWebSocket from 'reconnecting-websocket';
 import axios from 'axios';
 
@@ -22,15 +22,20 @@ import '@uppy/dashboard/dist/style.css';
 
 export default {
   name: 'Uploader',
+  props: {
+    activeGallery: { type: String, default: 'All' }
+  },
   setup(props, context) {
     const store = useStore();
     const toast = inject('toast');
     const owner = computed(() => store.state.ownerStore.owner);
+    const ownerId = computed(() => store.getters.ownerId);
+    const guestId = computed(() => store.getters.guestId);
 
     const uppy = new Uppy({
       meta: {
-        ownerId: owner.value.ownerId,
-        guestId: owner.value.guestId
+        ownerId: ownerId.value,
+        guestId: guestId.value
       },
       // logger: Uppy.debugLogger,
       autoProceed: false,
@@ -40,6 +45,12 @@ export default {
         maxFileSize: owner.value.premiumUser ? 1048576 * 100 : 1048576 * 10
       },
       onBeforeUpload: () => {
+        uppy.setOptions({
+          meta: {
+            ownerId: ownerId.value,
+            guestId: guestId.value
+          }
+        });
         uppy.getPlugin('Dashboard:StatusBar').setOptions({
           hideAfterFinish: true,
           locale: {
@@ -48,8 +59,14 @@ export default {
             }
           }
         });
+        uppy.getPlugin('XHRUpload').setOptions({
+          headers: {
+            id: ownerId.value
+          }
+        });
       }
     });
+
     onMounted(() => {
       const basicRestrictions = 'Images only, up to 10 MB each';
       const premiumRestrictions = 'Images only, up to 100 MB each';
@@ -74,7 +91,7 @@ export default {
           }
         });
       } catch (err) {
-        // console.error(err);
+        console.error(err);
       }
       //  TODO - Replace empty gallery with this uppy uploader
       // uppy.use(EmptyDashboard, {
@@ -107,12 +124,12 @@ export default {
       // });
     });
 
-    uppy.use(xhr, {
+    uppy.use(XHRUpload, {
       endpoint: `${process.env.VUE_APP_SERVER}/files/upload`,
       method: 'post',
       fieldName: 'file',
       headers: {
-        id: owner.value.ownerId
+        id: ownerId.value
       },
       bundle: false,
       timeout: 0,
@@ -140,8 +157,8 @@ export default {
       const files = await uppy.getFiles();
       axios.post(`${process.env.VUE_APP_SERVER}/files/initialize-upload`, {
         initializeUpload: true,
-        ownerId: owner.value.ownerId,
-        guestId: owner.value.guestId,
+        ownerId: ownerId.value,
+        guestId: guestId.value,
         sessionUploadCount: files.length,
         sampleImg: files[0].data.name
       });
@@ -163,7 +180,7 @@ export default {
 
     rws.onmessage = async msg => {
       if (msg.data === 'uploadsComplete') {
-        store.dispatch('getUsageData', { ownerId: owner.value.ownerId });
+        store.dispatch('getUsageData', { ownerId: ownerId.value });
         return;
       }
 
@@ -261,4 +278,6 @@ export default {
     };
   }
 };
+
+export const uppy = uppy;
 </script>

@@ -10,7 +10,6 @@ import { nextTick } from 'vue';
 import {
   setMountOptions,
   store,
-  resetStore,
   router,
   mockAxios,
   setCookies
@@ -162,7 +161,7 @@ describe('Initialization', () => {
   });
 
   afterEach(async () => {
-    resetStore();
+    store.dispatch('RESET_STATE');
     await router.replace('/');
     await router.isReady();
     wrapper.unmount();

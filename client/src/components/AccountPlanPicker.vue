@@ -3,7 +3,7 @@
     <div
       v-if="planDetails"
       id="price-form"
-      class="flex justify-center w-full h-auto mx-auto my-6 overflow-hidden bg-white rounded-t-lg shadow-lg dark:bg-gray-800 sm:rounded-lg sm:w-4/5 text-white font-base font-thin overflow-y-auto"
+      class="flex justify-center w-full h-auto mx-auto my-6 overflow-hidden rounded-t-lg shadow-lg bg-gray-800 sm:rounded-lg sm:w-4/5 text-white font-base font-thin overflow-y-auto"
       @close-modal="closeModal"
     >
       <div class="flex flex-col w-full mx-8 py-6">

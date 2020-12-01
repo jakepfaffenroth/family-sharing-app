@@ -2,13 +2,15 @@
 
 export default {
   mounted: el => {
+    // const cacheImg = new Image()
+    // cacheImg.src = el.dataset.url;
     function loadImage() {
       const imageElement = Array.from(el.children).find(
         el => el.nodeName === 'IMG'
       );
-      if (imageElement) {
+      if (el) {
         imageElement.addEventListener('load', () => {
-          setTimeout(() => el.classList.add('loaded'), 100);
+          setTimeout(() => imageElement.classList.add('loaded'), 100);
         });
         imageElement.addEventListener('error', () => console.log(new Error()));
         imageElement.src = imageElement.dataset.url;
@@ -27,7 +29,8 @@ export default {
     function createObserver() {
       const options = {
         root: null,
-        threshold: '0'
+        rootMargin: '200px',
+        threshold: 0
       };
       const observer = new IntersectionObserver(handleIntersect, options);
       observer.observe(el);

@@ -71,6 +71,19 @@
         "cwd": "${workspaceFolder}/client"
       }
     }
+    {
+      "label": "Test:Unit - Server",
+      "type": "shell",
+      "command": "npm run test ${input:watch}",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      },
+      "options": {
+        "cwd": "${workspaceFolder}/server"
+      }
+    }
   ],
   "inputs": [
     {

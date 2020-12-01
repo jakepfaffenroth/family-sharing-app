@@ -47,7 +47,6 @@ export default {
   emits: ['close-modal'],
   methods: {
     async deleteAndCloseModal() {
-      // this.$emit('delete-image', this.imgInfo);
       this.$emit('close-modal');
       const server = process.env.VUE_APP_SERVER;
       // Delete individual images
@@ -65,22 +64,20 @@ export default {
       // }
       const response = await axios.post(`${server}/files/delete-image`, {
         singleImage: true,
-        fileId,
-        thumbFileId,
-        fileName,
+        images: [{ fileId, thumbFileId, fileName, ownerId }],
         ownerId
       });
       if (response.status == 200) {
+        this.$store.dispatch('updateImages', response.data);
+        this.$store.dispatch('getUsageData', {
+          ownerId: this.$store.getters.ownerId
+        });
+
         this.toast.open({
           type: 'success',
           duration: 3000,
           // dismissible: true,
           message: 'Image deleted'
-        });
-        
-        this.$store.dispatch('removeFromImages', this.imgInfo);
-        this.$store.dispatch('getUsageData', {
-          ownerId: this.$store.getters.ownerId
         });
       } else {
         this.toast.open({

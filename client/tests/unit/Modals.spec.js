@@ -8,61 +8,19 @@ import { nextTick, h } from 'vue';
 import {
   setMountOptions,
   store,
-  resetStore,
   router,
   mockAxios,
   setCookies
 } from '../setup/jest.setup.js';
 
 describe('basic modal functionality', () => {
-  // store.actions.saveIdCookies = jest.fn();
-  // store.actions.getOwnerData = jest.fn();
-
-  // const mountOptions = {
-  //   global: {
-  //     plugins: [router, store],
-  //     provide: {
-  //       toast: () => jest.fn(),
-  //       nuke: () => jest.fn(),
-  //       sortImages: () => jest.fn()
-  //     },
-  //     stubs: {
-  //       HomeGallery: true,
-  //       HomeUploader: true
-  //     }
-  //   },
-  //   props: { userType: 'owner' },
-  //   data() {
-  //     return {
-  //       visibleModal: null,
-  //       imgInfo: null
-  //     };
-  //   }
-  // };
-
   let wrapper;
-
-  // mockAxios.onPost().reply(200, {
-  //   owner: { ownerId: 'testOwnerId' },
-  //   images: [{ uploadTime: Date.now() }, { uploadTime: Date.now() }]
-  // });
 
   beforeEach(async () => {
     await store.dispatch('getOwnerData', {
       id: 'mockOwnerId',
       userType: 'owner'
     });
-    // store.state.ownerStore.owner = {
-    //   ownerId: 'mockOwnerId',
-    //   username: 'alice',
-    //   firstName: 'Alice',
-    //   lastName: 'Doe',
-    //   guestId: 'mockGuestId'
-    // };
-    // store.state.imageStore.images = [
-    //   { uploadTime: Date.now().toString(), exif: {} },
-    //   { uploadTime: Date.now().toString(), exif: {} }
-    // ];
     setCookies();
     router.push('/');
     await router.isReady();
@@ -82,7 +40,7 @@ describe('basic modal functionality', () => {
   });
 
   afterEach(async () => {
-    resetStore();
+    store.dispatch('RESET_STATE');
     await router.replace('/');
     await router.isReady();
     wrapper.unmount();
@@ -121,6 +79,10 @@ describe('share modal', () => {
     setCookies();
     router.push('/');
     await router.isReady();
+    await store.dispatch('getOwnerData', {
+      id: 'mockOwnerId',
+      userType: 'owner'
+    });
     wrapper = mount(
       Home,
       setMountOptions({
@@ -137,7 +99,7 @@ describe('share modal', () => {
   });
 
   afterEach(async () => {
-    resetStore();
+    store.dispatch('RESET_STATE');
     wrapper.unmount();
     // mockAxios.reset();
     jest.resetModules();
@@ -146,7 +108,10 @@ describe('share modal', () => {
 
   test('correct share url is in share modal', async () => {
     await wrapper.find('[data-test="menuBtn"]').trigger('click');
+    await nextTick();
     await wrapper.find('[data-test="openShareModalBtn"]').trigger('click');
+    await nextTick();
+    
     expect(wrapper.find('[data-test="homeModal"]').exists()).to.be.true;
 
     expect(wrapper.find('[data-test="shareUrl"]').text()).to.include(

@@ -40,7 +40,7 @@ export default {
 
       try {
         // Fetch usage data
-        if (userType == 'owner') {
+        if (userType === 'owner') {
           await dispatch('getUsageData', id);
         }
         // Fetch owner data

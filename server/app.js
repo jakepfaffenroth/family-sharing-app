@@ -17,6 +17,7 @@ const indexRouter = require('./indexRouter');
 const userRouter = require('./users/userRouter');
 const authRouter = require('./userAuth/authRouter');
 const fileRouter = require('./fileHandler/fileRouter');
+const albumRouter = require('./fileHandler/albumRouter');
 const paymentRouter = require('./payments/paymentRouter');
 
 // const pino = require('express-pino-logger')({
@@ -186,6 +187,7 @@ app.use(
 app.use('/user', userRouter);
 app.use('/auth', authRouter);
 app.use('/files', fileRouter);
+app.use('/albums', albumRouter);
 app.use('/payment', paymentRouter);
 
 const { UI } = require('bull-board');

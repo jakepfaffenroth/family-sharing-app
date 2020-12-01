@@ -1,5 +1,5 @@
 <template>
-  <div class="mt-3 mb-1 text-center text-sm text-teal-500">
+  <div class="mt-3 mb-1 text-center text-sm text-teal-600">
     <p>
       You've used
     </p>

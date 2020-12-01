@@ -6,7 +6,7 @@
     <template #buttons>
       <router-link
         to="/"
-        class="flex items-center space-x-2 border border-transparent transition-colors duration-150 focus:outline-none self-center px-5 py-1 font-medium leading-5 text-white bg-purple-500 rounded-lg shadow active:bg-purple-600 hover:bg-purple-600 focus:shadow-outline-purple cursor-pointer"
+        class="flex items-center space-x-2 border border-transparent transition-colors duration-150 focus:outline-none self-center px-5 py-1 font-medium leading-5 text-white bg-purple-500 rounded-lg shadow active:bg-purple-600 hover:bg-purple-600 focus:ring-purple cursor-pointer"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
