@@ -23,14 +23,6 @@ export default {
     const route = useRoute();
     const server = process.env.VUE_APP_SERVER;
 
-    const ownerId = getCookie('ownerId') || null;
-    const guestId = getCookie('guestId') || null;
-    let userType = ref('');
-    store.dispatch('saveIdCookies', { ownerId, guestId });
-    if (ownerId || guestId) {
-      store.dispatch('fetchImages', { ownerId: ownerId, guestId: guestId });
-    }
-
     // owner or guest id is passed as query param from server after login
     // set cookie with id and clear query from url & history
     // if there's no query param (user went to site directly) then
@@ -46,6 +38,14 @@ export default {
     if (gId) {
       document.cookie = `guestId=${gId}`;
       window.history.replaceState(null, '', '/');
+    }
+    
+    const ownerId = getCookie('ownerId') || null;
+    const guestId = getCookie('guestId') || null;
+    let userType = ref('');
+    store.dispatch('saveIdCookies', { ownerId, guestId });
+    if (ownerId || guestId) {
+      store.dispatch('fetchImages', { ownerId: ownerId, guestId: guestId });
     }
 
     if (ownerId) {
