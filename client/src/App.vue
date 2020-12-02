@@ -29,25 +29,6 @@ export default {
     store.dispatch('saveIdCookies', { ownerId, guestId });
     if (ownerId || guestId) {
       store.dispatch('fetchImages', { ownerId: ownerId, guestId: guestId });
-      // store.state.imageStore.images.forEach(image => {
-      //   const cacheImg = new Image();
-      //   cacheImg.src = image.thumbnail;
-      //   cacheImg.onload = ()=> console.log('loaded')
-      // });
-    }
-
-    if (ownerId) {
-      userType.value = 'owner';
-      getOwnerData(ownerId, 'owner');
-    }
-    if (guestId && !ownerId) {
-      userType.value = 'guest';
-      getOwnerData(guestId, 'guest');
-    }
-    // Prevent users from viewing app without login or guestId
-    if (!guestId && !ownerId) {
-      console.error('No cookies found - redirect');
-      window.location.assign(server);
     }
 
     // owner or guest id is passed as query param from server after login
@@ -65,6 +46,20 @@ export default {
     if (gId) {
       document.cookie = `guestId=${gId}`;
       window.history.replaceState(null, '', '/');
+    }
+
+    if (ownerId) {
+      userType.value = 'owner';
+      getOwnerData(ownerId, 'owner');
+    }
+    if (guestId && !ownerId) {
+      userType.value = 'guest';
+      getOwnerData(guestId, 'guest');
+    }
+    // Prevent users from viewing app without login or guestId
+    if (!guestId && !ownerId) {
+      console.error('No cookies found - redirect');
+      window.location.assign(server);
     }
 
     function getCookie(userType) {
