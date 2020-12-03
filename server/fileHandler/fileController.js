@@ -66,7 +66,6 @@ module.exports.listFiles = async (req, res) => {
 };
 
 module.exports.deleteImage = async (req, res, next) => {
-  // const { singleImage, multipleImages, nuke } = req.body;
   const images =
     req.body.images ||
     (await module.exports.listFiles(req, res)).map((x) => ({
@@ -91,7 +90,7 @@ module.exports.deleteImage = async (req, res, next) => {
       throw new Error('Could not find full res file in DB.');
     } else {
       const updatedImages = await db.any(
-        'SELECT images.*, album_images.album_id FROM images LEFT JOIN album_images ON images.file_id=album_images.file_id WHERE images.owner_id=${ownerId}',
+        'SELECT images.*, album_images.album_id FROM images LEFT JOIN album_images ON images.file_id=album_images.file_id WHERE images.owner_id=${ownerId} ORDER BY upload_time ASC',
         req.body
       );
 
@@ -110,7 +109,7 @@ module.exports.deleteImage = async (req, res, next) => {
   }
 
   // NUKE images totally from B2 and DB
-  // if (nuke) {
+  // if (NUKE) {
   //   const files = (await module.exports.listFiles(req, res)).map((x) => ({
   //     ...x,
   //     ownerId: x.fileName.split('/')[0],
@@ -191,42 +190,6 @@ module.exports.deleteImage = async (req, res, next) => {
       );
       return deletionResult;
     });
-  }
-};
-
-// TODO - Downloads corrupt file - encoding problem?
-module.exports.download = async (req, res) => {
-  const credentials = res.locals.credentials;
-  const bucketName = process.env.BUCKET_NAME;
-  let fileName = path.basename(files);
-  let saveToPath = '/Users/Jake/downloads/' + fileName;
-
-  try {
-    // GET image file from B2
-    const downloadResponse = await axios.get(
-      credentials.downloadUrl + '/file/' + bucketName + '/' + fileName,
-      {
-        headers: { Authorization: credentials.authorizationToken },
-        responseType: 'stream',
-      }
-    );
-    // Write image file
-    (function () {
-      const source = new Readable();
-      source._read = function noop() {};
-      source.push(downloadResponse.data);
-      source.push(null);
-
-      const destination = fs.createWriteStream(saveToPath);
-
-      source.on('end', function () {
-        success('File downloaded');
-        res.send(`Success - ${fileName} downloaded`); // successful response
-      });
-      source.pipe(destination);
-    })();
-  } catch (err) {
-    error(err); // an error occurred
   }
 };
 
@@ -326,7 +289,7 @@ module.exports.addToAlbums = async (req, res) => {
 
 module.exports.fetchImages = async (req, res) => {
   const images = await db.any(
-    'SELECT images.*, album_images.album_id FROM images LEFT JOIN album_images ON images.file_id=album_images.file_id WHERE images.owner_id=${ownerId} OR images.owner_id=(SELECT owner_id FROM owners WHERE guest_id = ${guestId})',
+    'SELECT images.*, album_images.album_id FROM images LEFT JOIN album_images ON images.file_id=album_images.file_id WHERE images.owner_id=${ownerId} OR images.owner_id=(SELECT owner_id FROM owners WHERE guest_id = ${guestId}) ORDER BY upload_time ASC',
     req.body
   );
   res.json(images);

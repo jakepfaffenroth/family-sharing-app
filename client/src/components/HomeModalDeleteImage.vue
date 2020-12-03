@@ -9,7 +9,7 @@
       <p class="mb-6">
         It can't be undone!
       </p>
-      <img class="mb-10 h-56 rounded shadow" :src="imgInfo.thumb" />
+      <img class="mb-10 h-56 rounded shadow" :src="imgInfo.thumbnail" />
     </template>
     <template #footer>
       <base-button-cancel @click.prevent="$emit('close-modal')">
@@ -58,10 +58,7 @@ export default {
         ownerId,
         index
       } = this.imgInfo;
-      // force Uppy to reload if there are zero images
-      // if (images.value.length === 0) {
-      //   forceReloadKey.value++;
-      // }
+
       const response = await axios.post(`${server}/files/delete-image`, {
         singleImage: true,
         images: [{ fileId, thumbFileId, fileName, ownerId }],
@@ -76,14 +73,12 @@ export default {
         this.toast.open({
           type: 'success',
           duration: 3000,
-          // dismissible: true,
           message: 'Image deleted'
         });
       } else {
         this.toast.open({
           type: 'error',
           duration: 3000,
-          // dismissible: true,
           message: 'Error deleting image'
         });
         console.log(

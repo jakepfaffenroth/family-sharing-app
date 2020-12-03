@@ -158,7 +158,7 @@ describe('group images by date', () => {
     [[new Date('1/21/2000'), new Date('1/21/2000'), null]],
     [[null, new Date('1/21/2000'), new Date('1/21/2050')]]
   ])('images should be grouped by date', async dates => {
-    store.dispatch('nukeImages');
+    store.dispatch('NUKE');
     const uploadTime = Date.now();
     dates.forEach(date => {
       store.dispatch('addToImages', {
@@ -193,7 +193,7 @@ describe('group images by date', () => {
     [[new Date('1/21/2000'), new Date('1/21/2000'), null]],
     [[null, new Date('1/21/2000'), new Date('1/21/2050')]]
   ])('show correct number of img groups', async dates => {
-    store.dispatch('nukeImages');
+    store.dispatch('NUKE');
     dates.forEach(date => {
       store.dispatch('addToImages', {
         exif: date ? { exif: { DateTimeOriginal: date.toLocaleString() } } : {},

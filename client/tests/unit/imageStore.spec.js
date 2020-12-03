@@ -8,7 +8,7 @@ const mockAxios = new MockAdapter(axios);
 process.env.VUE_APP_SERVER = 'http://localhost:3400';
 
 describe('actions', () => {
-  test('nuke images', () => {
+  test('NUKE images', () => {
     store.state.imageStore.images = [
       { fileId: 1 },
       { fileId: 2 },
@@ -16,7 +16,7 @@ describe('actions', () => {
     ];
     expect(store.state.imageStore.images.length).to.equal(3);
 
-    store.dispatch('nukeImages');
+    store.dispatch('NUKE');
 
     expect(store.state.imageStore.images.length).to.equal(0);
   });

@@ -41,8 +41,6 @@ export default {
   name: 'ShareModal',
   components: { BaseModal, BaseButtonPurple, BaseButtonCancel },
   props: {
-    // owner: {type:Object, default:null},
-    // shareUrl: { type: String, default: null },
     imgInfo: { type: Object, default: null }
   },
   emits: ['close-modal'],

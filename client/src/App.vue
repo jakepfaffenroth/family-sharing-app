@@ -1,6 +1,10 @@
 <template>
   <div class="flex flex-col min-h-screen w-full ">
-    <router-view :user-type="userType"></router-view>
+    <router-view v-slot="{ Component }">
+      <transition name="slide">
+        <component :is="Component" :user-type="userType" />
+      </transition>
+    </router-view>
   </div>
 </template>
 
@@ -39,14 +43,11 @@ export default {
       document.cookie = `guestId=${gId}`;
       window.history.replaceState(null, '', '/');
     }
-    
+
     const ownerId = getCookie('ownerId') || null;
     const guestId = getCookie('guestId') || null;
     let userType = ref('');
     store.dispatch('saveIdCookies', { ownerId, guestId });
-    if (ownerId || guestId) {
-      store.dispatch('fetchImages', { ownerId: ownerId, guestId: guestId });
-    }
 
     if (ownerId) {
       userType.value = 'owner';
@@ -81,29 +82,11 @@ export default {
       await store.dispatch('getOwnerData', { id, userType });
     }
 
-    // Define default toast configuration and provide
-    // const toast = new Notyf({
-    //   position: { x: 'right', y: 'bottom' },
-    //   duration: 2000,
-    //   types: [
-    //     {
-    //       type: 'info',
-    //       background: '#2563eb'
-    //     }
-    //   ]
-    // });
-
     return {
       route,
       userType
-      // owner: computed(() => store.state.ownerStore.owner),
-      // images: computed(() => store.state.imageStore.images)
     };
   }
-  // computed: mapState({
-  //   owner: (state) => state.ownerStore.owner,
-  //   images: (state) => state.imageStore.images,
-  // }),
 };
 </script>
 
@@ -149,6 +132,23 @@ export default {
   overflow: hidden;
 }
 
+/* Album and Account section transitions */
+.album-enter-active {
+  @apply transition-all duration-75 ease-out;
+}
+
+.album-leave-active {
+  @apply transition-all duration-75 ease-in;
+}
+
+.album-enter-from {
+  @apply transform -translate-y-10 opacity-0;
+}
+,
+.album-leave-to {
+  @apply transform translate-y-10 opacity-0;
+}
+
 /* Modal and drop menu transitions */
 .slide-fade-enter-active {
   @apply transition-all duration-200 ease-out;
@@ -163,7 +163,7 @@ export default {
   @apply transform -translate-y-2 opacity-0;
 }
 
-/* Fade in transitions */
+/* General fade in transitions */
 .fade-enter-active {
   @apply transition-all duration-200 ease-out;
 }

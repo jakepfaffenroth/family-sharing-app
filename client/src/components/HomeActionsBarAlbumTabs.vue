@@ -61,7 +61,7 @@
     </toolbar-button>
     <toolbar-button
       v-show="activeGallery !== 'All'"
-      @click="openModal('HomeModalDeleteAlbum'), passImgInfo(activeGallery)"
+      @click="openModal('HomeModalDeleteAlbum', activeGallery)"
     >
       <svg
         class="menu-icon"
@@ -84,10 +84,12 @@
 </template>
 
 <script>
+// TODO - Add more album tools? - finish album drop menu
+
 import ToolbarButton from './BaseButtonImageToolbar';
 import BaseDropMenu from './BaseDropMenu';
 import { useStore } from 'vuex';
-import { ref, reactive, computed, onMounted, nextTick } from 'vue';
+import { ref, reactive, toRefs, computed, onMounted, nextTick } from 'vue';
 
 export default {
   name: 'HomeActionsBarAlbumTabs',
@@ -95,7 +97,7 @@ export default {
     ToolbarButton
     // BaseDropMenu
   },
-  inject: ['setActiveGallery', 'openModal', 'passImgInfo'],
+  inject: ['setActiveGallery', 'openModal'],
   props: {
     albums: {
       type: Array,
@@ -106,17 +108,14 @@ export default {
   },
   setup(props) {
     const store = useStore();
-    // window.addEventListener('resize', resizeHandler);
 
     const albumTabs = ref(null); // DOM el reference
     const overflowMenu = ref(null); // DOM el reference
-    const { albums } = reactive(props);
+    const { albums } = toRefs(props);
     const displayedTabs = ref(null);
-    displayedTabs.value = albums;
+    displayedTabs.value = albums.value;
     const collapsedTabs = ref([]);
     const isOverflowing = ref(null);
-
-    // onMounted(() => collapseTabs());
 
     let previousAlbumTabsWidth = null;
 

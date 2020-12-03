@@ -5,19 +5,18 @@
         v-for="(album, index) in albums"
         :key="index"
         class="flex w-1/2 mb-2 p-1 rounded transition cursor-pointer hover:bg-gray-700 hover:shadow"
-        @click="save(album)"
+        @click="setActiveGallery(album.albumName)"
       >
         <img
           class="w-24 h-24 object-cover bg-gray-300 rounded"
-          :src="album.images[0] ? album.images[0].thumbnail : ''"
+          :src="
+            album.images && album.images[0] ? album.images[0].thumbnail : ''
+          "
         />
         <div class="ml-4">
           <h4 class="font-thin">
             {{ album.albumName }}
           </h4>
-          <!-- <p>
-                dates
-              </p> -->
         </div>
       </div>
     </div>
@@ -54,10 +53,11 @@ export default {
       return albumList.value.offsetHeight < albumList.value.scrollHeight;
     });
 
-    const menuHeightNum = computed(()=>{})
+    const menuHeightNum = computed(() => {});
 
     return {
       albums,
+      setActiveGallery: inject('setActiveGallery'),
       isOverflowing,
       menuHeight: 'w-64' + menuHeightNum.value
     };

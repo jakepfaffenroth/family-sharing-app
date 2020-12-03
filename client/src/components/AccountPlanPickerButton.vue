@@ -11,7 +11,7 @@
 
 <script>
 import BaseButtonTeal from './BaseButtonTeal';
-import { reactive, computed, watch } from 'vue';
+import { ref, reactive, computed, watch } from 'vue';
 
 export default {
   name: 'PlanPickerBtn',
@@ -23,51 +23,32 @@ export default {
   },
   emits: ['reset-other-btns', 'show-confirmation'],
   setup(props, { emit }) {
-    const { btnValue, currentPlan } = reactive(props);
+    const selected = computed(() => props.resetBtnsExcept === props.btnValue);
 
-    const selectedStyle = 'selected';
-    const currentPlanStyle = 'current';
+    const btn = computed(() => {
+      // Default settings for unselected, not current
+      let isCurrent = false;
+      let style = null;
+      let text = 'Select';
 
-    const btn = reactive({
-      style: null,
-      selected: false,
-      current: false,
-      text: '',
-      set isCurrent(currentPlan) {
-        if (currentPlan) {
-          this.current = true;
-          this.style = currentPlanStyle;
-          this.text = 'Current Plan';
-        } else {
-          this.text = this.selected ? 'Selected' : 'Select';
-        }
+      if (props.currentPlan === props.btnValue) {
+        // current plan
+        isCurrent = true;
+        style = 'current';
+        text = 'Current Plan';
+      } else if (selected.value) {
+        // Selected (and by definition not current plan)
+        style = 'selected';
+        text = 'Selected';
       }
+
+      return { style, isCurrent, text };
     });
 
-    btn.isCurrent = computed(() =>
-      btnValue == currentPlan ? true : false
-    ).value;
-
-    watch(
-      () => props.resetBtnsExcept,
-      (resetBtnsExcept, prev) => {
-        if (resetBtnsExcept !== props.btnValue) toggleSelected();
-      }
-    );
-
     function select() {
-      btn.style = selectedStyle;
-      btn.selected = true;
-      btn.isCurrent = false;
+      selected.value = true;
       emit('reset-other-btns', props.btnValue);
       emit('show-confirmation', props.btnValue);
-    }
-
-    function toggleSelected() {
-      if (!btn.current) {
-        btn.style = null;
-        btn.selected = !btn.selected;
-      }
     }
 
     return {

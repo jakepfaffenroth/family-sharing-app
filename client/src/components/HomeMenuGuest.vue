@@ -24,8 +24,6 @@
         </svg>
         Subscribe to updates
       </base-button-purple>
-
-      <!-- <home-menu-image-sorter /> -->
     </template>
   </base-menu>
 </template>
@@ -36,14 +34,12 @@ import BaseMenu from './BaseMenu';
 import BaseButtonPurple from './BaseButtonPurple';
 import BaseModal from './BaseModal';
 import BaseColorfulLogo from './BaseColorfulLogo';
-// import HomeMenuImageSorter from './HomeMenuImageSorter';
 
 export default {
   name: 'GuestMenu',
   components: {
     BaseMenu,
     BaseButtonPurple,
-    // HomeMenuImageSorter
   },
   emits: ['open-modal'],
   computed: {

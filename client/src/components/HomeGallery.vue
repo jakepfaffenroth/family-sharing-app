@@ -1,6 +1,5 @@
 <template>
   <div>
-    <!-- :class="{ 'opacity-0': imgLoadCount !== items.length }" -->
     <div
       id="my-gallery"
       data-test="gallery"
@@ -11,31 +10,23 @@
     >
       <!-- Groups -->
       <div
-        v-for="(group, date) in imgGroups"
-        :key="date"
+        v-for="(group, index) in imgGroups"
+        :key="index"
         data-test="imgGroup"
         class="group-container"
       >
         <!-- Group date label -->
         <div class="flex justify-between">
           <p class="mb-1 text-sm sm:text-base">
-            {{ date }}
+            {{ group.date }}
           </p>
         </div>
         <div class="group-wrapper flex flex-wrap">
-          <!-- Skeleton while loading -->
-          <!-- <skeleton-image
-            v-for="(item, index) in group"
-            v-show="imgLoadCount < items.length"
-            :key="index"
-            class="image-container h-24 xs:h-28 sm:h-36 md:h-64 z-0"
-            :style="skeletonWidth(item)"
-          ></skeleton-image> -->
           <!-- Images within groups -->
           <figure
-            v-for="(item, index) in group"
-            :id="'image-' + index"
-            :key="index"
+            v-for="(item, itemIndex) in group.images"
+            :id="'image-' + itemIndex"
+            :key="itemIndex"
             itemprop="associatedMedia"
             itemscope
             itemtype="http://schema.org/ImageObject"
@@ -57,7 +48,7 @@
                       isSelectMode
                   "
                   :item="item"
-                  :date="date"
+                  :date="group.date"
                   :index="index"
                   :group="group"
                   :is-album="isAlbum"
@@ -66,19 +57,12 @@
                 ></component>
               </transition>
             </div>
-            <!-- <p>{{ imgLoadCount }}</p>
-            -----
-            <p>{{ imgsLoaded.indexOf(index) }}</p> -->
-            <!-- v-show="item.loaded == false" -->
-            <!-- <skeleton-image
-              v-if="imgLoadCount < items.length"
-              :key="index"
-              class="image-container h-24 xs:h-28 sm:h-36 md:h-64 z-0"
-              :style="skeletonWidth(item)"
-            ></skeleton-image> -->
             <!-- image thumbnails -->
             <a
-              v-lazyload
+              v-lazyload="{
+                thumbnail: item.thumbnail,
+                loaded: !!imgsLoaded.find(x => x === item.fileId)
+              }"
               :href="item.src"
               itemprop="contentUrl"
               :data-size="'' + item.w + 'x' + item.h"
@@ -187,13 +171,12 @@ import PhotoSwipe from 'photoswipe/dist/photoswipe';
 import PhotoSwipeUI_Default from 'photoswipe/dist/photoswipe-ui-default';
 import 'photoswipe/dist/photoswipe.css';
 import 'photoswipe/dist/default-skin/default-skin.css';
-import format from 'date-fns/format';
+import { format, compareDesc } from 'date-fns';
 import BaseDropMenu from './BaseDropMenu';
 import SkeletonImage from './BaseSkeletonImage';
 import HomeGalleryButtonSelect from './HomeGalleryButtonSelect';
 import HomeGalleryButtonMenu from './HomeGalleryButtonMenu';
 import LazyLoadDirective from '../utils/LazyLoadDirective';
-// import isItDark from '../utils/imageLightDarkChecker';
 
 export default {
   name: 'HomeGallery',
@@ -220,7 +203,7 @@ export default {
     }
   },
   emits: ['imgs-loaded'],
-  injects: ['openModal', 'passImgInfo'],
+  injects: ['openModal', , 'sortImages'],
   data() {
     return {
       pswp: null,
@@ -240,34 +223,37 @@ export default {
     },
     imgGroups() {
       const currentYear = new Date().getFullYear().toString();
-      let group = this.items.reduce((r, a) => {
-        let captureDate =
-          a.exif && a.exif.exif && a.exif.exif.DateTimeOriginal
+      let groups = this.items.reduce((acc, cur) => {
+        let captureTime =
+          cur.exif && cur.exif.exif && cur
             ? format(
-                new Date(a.exif.exif.DateTimeOriginal.split('T').shift()),
+                new Date(cur.exif.exif.DateTimeOriginal.split('T').shift()),
                 'E, LLL d yyyy'
               )
             : null;
 
         let uploadDate = format(
-          new Date(parseInt(a.uploadTime)),
+          new Date(parseInt(cur.uploadTime)),
           'E, LLL d yyyy'
         );
 
-        if (captureDate && captureDate.substr(-4, 4) === currentYear) {
-          captureDate = captureDate.slice(0, -5);
+        if (captureTime && captureTime.substr(-4, 4) === currentYear) {
+          captureTime = captureTime.slice(0, -5);
         }
         if (uploadDate && uploadDate.substr(-4, 4) === currentYear) {
           uploadDate = uploadDate.slice(0, -5);
         }
-        r[captureDate || uploadDate] = [
-          ...(r[captureDate || uploadDate] || []),
-          a
-        ];
-        return r;
-      }, {});
-
-      return group;
+        const group = acc.find(x => {
+          if (captureTime) {
+            return x.date === captureTime;
+          } else return x.date === uploadDate;
+        });
+        group
+          ? group.images.push(cur)
+          : acc.push({ date: captureTime || uploadDate, images: [cur] });
+        return acc;
+      }, []);
+      return groups.sort(this.compare);
     },
     imgActionBtn() {
       if (this.isSelectMode) {
@@ -283,26 +269,14 @@ export default {
       return this.items.length < this.allImages.length;
     }
   },
+  watch: {
+    items(newItems, oldItems) {
+      if (newItems) this.imgsLoaded = [];
+    }
+  },
   created() {
     this.windowWidth = window.innerWidth;
     window.addEventListener('resize', this.getWindowSize);
-
-    // this.items.forEach(item => {
-    //   // console.log('item:', item);
-    //   const cacheImg = new Image();
-    //   cacheImg.src = item.thumbnail;
-    //   // cacheImg.fileName = item.fileName;
-    //   // cacheImg.onload = () => (item.loaded = true);
-    //   this.imgLoadCount++;
-    //   cacheImg.addEventListener('load', function() {});
-    //   // console.log('cacheImg:', cacheImg);
-    //   console.log(
-    //     'imgLoadCount, items.length, imgLoadCount < items.length:',
-    //     this.imgLoadCount,
-    //     this.items.length,
-    //     this.imgLoadCount < this.items.length
-    //   );
-    // });
   },
   mounted() {
     const that = this;
@@ -558,6 +532,23 @@ export default {
       }
       return 'width:' + ((height * item.w) / item.h).toFixed(3) + 'rem';
     },
+    compare(a, b) {
+      // let sortParameter = 'captureTime'; // In future may be changable
+
+      function checkForYear(dateStr) {
+        if (dateStr.split(' ').pop().length < 4) {
+          return (dateStr += ' ' + new Date().getFullYear().toString());
+        } else return dateStr;
+      }
+
+      let aDate = a.date;
+      let bDate = b.date;
+      aDate = checkForYear(aDate);
+      bDate = checkForYear(bDate);
+
+      const comparison = compareDesc(new Date(aDate), new Date(bDate));
+      return comparison;
+    },
     imgLoaded() {
       this.imgLoadCount++;
       console.log('this.imgLoadCount:', this.imgLoadCount);
@@ -566,45 +557,25 @@ export default {
       }
     },
     openAlbumPicker(date, item, index) {
-      this.openModal('HomeModalAlbumPicker');
-      this.passImgInfo({
+      this.openModal('HomeModalAlbumPicker', {
+        ...item,
         date,
-        fileId: item.fileId,
-        thumbFileId: item.thumbFileId,
-        fileName: item.fileName,
         ownerId: this.$store.getters.ownerId,
-        thumb: item.thumbnail,
         index
       });
     },
-    // handleImgSelection(img) {
-    //   console.log('?');
-    //   this.toggleImgSelection(img);
-    // },
     handleImgSelection({ group, item }) {
       if (!item.isSelected) {
         this.$store.dispatch('addToSelectedImages', item);
-        // this.toggleImgSelection(item);
-        // const foundGroup = Object.values(this.imgGroups).find(x => x === group);
-        // const foundImg = foundGroup.find(x => x.fileId === item.fileId);
-        // foundImg.isSelected = true;
       } else if (item.isSelected) {
         this.$store.dispatch('removeFromSelectedImages', item);
-        // this.toggleImgSelection(item);
-        // const foundGroup = Object.values(this.imgGroups).find(x => x === group);
-        // const foundImg = foundGroup.find(x => x.fileId === item.fileId);
-        // foundImg.isSelected = false;
       }
     },
     openDeleteModal(date, item, index) {
-      this.openModal('HomeModalDeleteImage');
-      this.passImgInfo({
+      this.openModal('HomeModalDeleteImage', {
+        ...item,
         date,
-        fileId: item.fileId,
-        thumbFileId: item.thumbFileId,
-        fileName: item.fileName,
         ownerId: this.$store.getters.ownerId,
-        thumb: item.thumbnail,
         index
       });
     },

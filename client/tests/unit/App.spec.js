@@ -84,7 +84,7 @@ import {
 //     plugins: [router, store],
 //     provide: {
 //       toast: () => null,
-//       nuke: () => null,
+//       NUKE: () => null,
 //       sortImages: () => null
 //     },
 //     stubs: {

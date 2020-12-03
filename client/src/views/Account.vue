@@ -2,19 +2,17 @@
   <header class="bg-white px-2 pt-2 sm:px-6 sm:pt-4 xl:px-12 xl:pt-6">
     <account-menu></account-menu>
   </header>
-
-  <transition appear name="slide" mode="out-in">
+  <transition v-if="planDetails" appear name="album" mode="out-in">
     <component
       :is="accountView"
-      v-if="planDetails"
       @open-plan-change="openPlanChange"
       @close-plan-change="closePlanChange"
       @confirm-plan-change="confirmPlanChange"
     ></component>
-    <div v-else class="mx-auto mt-6 text-xl text-gray-900">
-      Loading...
-    </div>
   </transition>
+  <div v-else class="mx-auto mt-6 text-xl text-gray-900">
+    Loading...
+  </div>
 </template>
 
 <script>
@@ -48,7 +46,6 @@ export default {
     const owner = computed(() => store.state.ownerStore.owner);
     const usage = computed(() => store.state.planStore.usage);
     const { goToChangePlan } = route.params;
-    // const elementClasses = reactive({});
 
     const planDetails = computed(() => store.getters.planDetails);
 
@@ -57,9 +54,6 @@ export default {
         await store.dispatch('getPlanDetails');
       })();
     }
-
-    // elementClasses.planModal = 'invisible opacity-0';
-    // elementClasses.pricesForm = 'hidden opacity-0';
 
     // Open straight into plan picker if goToChangePlan is true
     onBeforeMount(async () => {
@@ -95,8 +89,6 @@ export default {
           message:
             'Your subscription was not found. Please contact support or try again.'
         });
-        // document.getElementById('toast-message').innerText =
-        //   'Your subscription was not found. Please contact support or try again.';
       } else if (!data.subUpdated) {
         toast.open({
           type: 'error',
@@ -105,12 +97,9 @@ export default {
           message:
             'Your subscription could not be changed right now.\nPlease contact support or try again.'
         });
-        // document.getElementById('msg-text').innerText =
-        //   'Your subscription could not be changed right now.\nPlease contact support or try again.';
       }
       if (data.subUpdated) {
         store.dispatch('getPlanDetails');
-        // getCurrentPlan(owner.value.ownerId);
         closePlanChange();
 
         toast.open({
@@ -119,9 +108,6 @@ export default {
           // dismissible: true,
           message: 'Subscription updated to ' + newPriceId
         });
-
-        // document.getElementById('msg-text').innerText =
-        //   'Subscription updated to ' + newPriceId;
       }
       return response.data;
     }

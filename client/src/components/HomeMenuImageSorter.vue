@@ -23,6 +23,7 @@
     </base-drop-menu>
 
     <button
+      v-if="ENABLE_REVERSE"
       class="mt-0.5 pl-2 hover:text-teal-500 focus:outline-none transition duration-150 ease-in-out"
       @click="sortImages('reverse'), (sortAsc = !sortAsc)"
     >
@@ -53,7 +54,8 @@ export default {
   data() {
     return {
       isMenuVisible: false,
-      sortAsc: true
+      sortAsc: true,
+      ENABLE_REVERSE: false
     };
   },
   methods: {

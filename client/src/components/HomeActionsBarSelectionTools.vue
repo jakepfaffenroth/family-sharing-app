@@ -231,13 +231,6 @@
     >
       {{ selectedImages.length > 0 ? 'Clear selection' : 'Select all' }}
     </toolbar-button>
-    <!-- <toolbar-button
-      data-test="selectToolsCancel"
-      class="pr-0 text-teal-500"
-      @click="toggleSelectMode"
-    >
-      Cancel
-    </toolbar-button> -->
   </div>
 </template>
 
@@ -248,7 +241,7 @@ import DropMenu from './BaseDropMenu';
 export default {
   name: 'SelectionToolbar',
   components: { ToolbarButton, DropMenu },
-  inject: ['toast', 'toggleSelectMode', 'openModal', 'passImgInfo'],
+  inject: ['toast', 'toggleSelectMode', 'openModal'],
   props: { filteredImages: { type: Array, default: () => [] } },
   data() {
     return {
@@ -288,8 +281,7 @@ export default {
     },
     openAlbumPicker(item) {
       if (this.selectedImages.length > 0) {
-        this.openModal('HomeModalAlbumPicker');
-        this.passImgInfo(this.selectedImages);
+        this.openModal('HomeModalAlbumPicker', this.selectedImages);
       }
     },
     openShareModal(item) {

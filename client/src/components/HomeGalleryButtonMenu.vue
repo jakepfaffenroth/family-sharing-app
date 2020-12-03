@@ -110,7 +110,7 @@
 
 <script>
 import axios from 'axios';
-import { reactive, computed, inject } from 'vue';
+import { toRefs, computed, inject } from 'vue';
 import { useStore } from 'vuex';
 
 import BaseDropMenu from './BaseDropMenu';
@@ -129,18 +129,13 @@ export default {
     const server = process.env.VUE_APP_SERVER;
     const toast = inject('toast');
     const openModal = inject('openModal');
-    const passImgInfo = inject('passImgInfo');
-    const setActiveGallery = inject('setActiveGallery')
 
     const ownerId = computed(() => store.getters.ownerId);
-    const { item, date, index } = reactive(props);
+    const { item, date, index } = toRefs(props);
     const imgInfo = {
+      ...item.value,
       date,
-      fileId: item.fileId,
-      thumbFileId: item.thumbFileId,
-      fileName: item.fileName,
       ownerId: ownerId.value,
-      thumb: item.thumbnail,
       index
     };
     const images = computed(() => store.getters.images);
@@ -151,19 +146,15 @@ export default {
           ownerId: ownerId.value,
           imgsToRemove: [
             {
-              fileId: item.fileId,
-              albumId: item.albumId,
+              fileId: item.value.fileId,
+              albumId: item.value.albumId,
               ownerId: ownerId.value
             }
           ]
         });
         if (response.status === 200) {
           toast.success('Image removed from album');
-          store.dispatch(
-            'updateImages',
-            response.data
-          );
-          // setActiveGallery('All')
+          store.dispatch('updateImages', response.data);
         } else toast.error('An error occurred');
       } catch (err) {
         console.error(err);
@@ -172,18 +163,15 @@ export default {
     }
 
     function openAlbumPicker() {
-      openModal('HomeModalAlbumPicker');
-      passImgInfo([imgInfo]);
+      openModal('HomeModalAlbumPicker', [imgInfo]);
     }
 
     function openDeleteModal() {
-      openModal('HomeModalDeleteImage');
-      passImgInfo(imgInfo);
+      openModal('HomeModalDeleteImage', imgInfo);
     }
 
     function shareImage() {
-      openModal('HomeModalShare');
-      passImgInfo(imgInfo);
+      openModal('HomeModalImageShare', imgInfo);
     }
 
     return {

@@ -42,9 +42,7 @@
           <base-skeleton-image class="w-full h-full"></base-skeleton-image>
         </div>
       </div>
-
       <!-- Image gallery -->
-      <!-- :class="{ 'opacity-0': view.imgsLoading }" -->
       <div class="relative flex flex-grow w-full pt-2 sm:pt-4">
         <transition appear name="album" mode="out-in">
           <home-gallery
@@ -105,10 +103,7 @@ import {
   provide,
   inject,
   defineAsyncComponent,
-  markRaw,
-  onBeforeMount,
-  onMounted,
-  forceUpdate
+  onBeforeMount
 } from 'vue';
 import { useRoute } from 'vue-router';
 import { useStore } from 'vuex';
@@ -127,7 +122,6 @@ import HomeActionsBarSelectionTools from '../components/HomeActionsBarSelectionT
 
 import HomeModalGuestSubscribe from '../components/HomeModalGuestSubscribe';
 import HomeModalDeleteImage from '../components/HomeModalDeleteImage';
-// import HomeUploader from '../components/HomeUploader';
 const HomeUploader = defineAsyncComponent(() =>
   import('../components/HomeUploader')
 );
@@ -175,8 +169,8 @@ export default {
     const images = computed(() => store.state.imageStore.images);
     const allImages = computed(() => store.getters.allImages);
     const albums = computed(() => [
-      { albumId: 0, albumName: 'All' },
-      ...store.state.imageStore.albums.filter(album => {
+      // Hide empty albums from guests
+      ...store.getters.albums.filter(album => {
         if (props.userType === 'owner') {
           return true;
         } else if (
@@ -190,27 +184,7 @@ export default {
       })
     ]);
 
-    // const imgsLoading = computed(() => {
-    //   let loadCount = 0;
-    //   images.value.forEach(image => {
-    //     const cacheImg = new Image();
-    //     cacheImg.addEventListener('load', function() {
-    //       loadCount++;
-    //     });
-    //     cacheImg.src = image.thumbnail;
-    //     console.log(
-    //       'loadCount, images.value.length:',
-    //       loadCount,
-    //       images.value.length
-    //     );
-    //   });
-    //   return loadCount < images.value.length;
-    // });
     // ---------- SETUP ---------- //
-    // App functionality determined by user type
-    const { userType } = reactive(props);
-    sortImages('captureTime');
-
     // Prevent right clicking images
     document.addEventListener('contextmenu', event => {
       if (event.target.nodeName === 'IMG') {
@@ -232,44 +206,30 @@ export default {
     }
 
     // ---------- VIEW ---------- //
-    // Preload images as soon as possible
-    // let imgLoadCount = 0;
-    // images.value.forEach(item => {
-    //   // console.log('item:', item);
-    //   const cacheImg = new Image();
-    //   cacheImg.src = item.thumbnail;
-    //   // cacheImg.fileName = item.fileName;
-    //   // cacheImg.onload = () => (item.loaded = true);
-    //   cacheImg.onload = () => imgLoadCount++;
-    //   // console.log('cacheImg:', cacheImg);
-    // });
-
     const ownerLoading = computed(() => !owner.value.ownerId);
-    // const imgsLoading = computed(() => imgLoadCount === images.value.length);
-    // const imgsLoading = computed(() => images.value == false);
     const view = reactive({
       atTopOfPage: true,
       ownerLoading,
       imgsLoading: true
     });
 
-    // Update gallery after new images uplaoded
-    // function updateImages(fileInfo) {
-    //   const { fileId, filename, src, thumbnail, uploadTime } = fileInfo;
-    //   const newImg = {
-    //     fileId,
-    //     fileName: filename,
-    //     src,
-    //     thumbnail,
-    //     uploadTime,
-    //     w: fileInfo.metadata.w,
-    //     h: fileInfo.metadata.h,
-    //     ownerId: owner.value.ownerId,
-    //     exif: fileInfo.metadata.exif
-    //   };
-    //   images.value.unshift(newImg);
-    // }
-    // provide('updateImages', updateImages);
+    // ---------- GALLERIES ---------- //
+    const activeGallery = ref('All');
+    provide('setActiveGallery', galleryName => {
+      activeGallery.value = galleryName;
+    });
+
+    const filteredImages = computed(() => {
+      if (activeGallery.value === 'All') {
+        return allImages.value;
+      } else {
+        const albumId = albums.value.find(
+          x => x.albumName === activeGallery.value
+        ).albumId;
+
+        return images.value.filter(x => x.albumId === albumId);
+      }
+    });
 
     // ---------- ACTIONS ---------- //
     const actionsBar = computed(() => {
@@ -280,21 +240,16 @@ export default {
       }
     });
 
-    const imgInfo = ref(null);
-    provide('passImgInfo', info => {
-      imgInfo.value = info;
-    });
+    const imgInfo = ref({});
 
     // ---------- SELECTION ---------- //
     let isSelectMode = ref(false);
-
-    function toggleSelectMode() {
+    provide('toggleSelectMode', () => {
       if (isSelectMode.value === true) {
         clearSelection();
       }
       isSelectMode.value = !isSelectMode.value;
-    }
-    provide('toggleSelectMode', toggleSelectMode);
+    });
 
     function selectAll() {
       const filtered = filteredImages(
@@ -312,7 +267,7 @@ export default {
     // ---------- SORTING ---------- //
     function sortImages(sortParameter) {
       if (sortParameter === 'reverse') {
-        images.value.reverse();
+        filteredImages.value.reverse();
         return;
       }
 
@@ -327,14 +282,13 @@ export default {
         b.exif.exif = b.exif.exif || '';
 
         if (sortParameter === 'captureTime') {
-          fileA = a.exif.exif.DateTimeOriginal || null;
-          fileB = b.exif.exif.DateTimeOriginal || null;
+          fileA = a.captureTime || a.uploadTime;
+          fileB = b.captureTime || b.uploadTime;
         }
         if (sortParameter === 'uploadTime') {
           fileA = a.uploadTime;
           fileB = b.uploadTime;
         }
-
         let comparison = 0;
         if (fileA > fileB) {
           comparison = -1;
@@ -344,65 +298,18 @@ export default {
         return comparison;
       };
       try {
-        images.value.sort(compare);
+        filteredImages.value.sort(compare);
       } catch (err) {
         console.error('err: ', err);
       }
     }
     provide('sortImages', sortImages);
 
-    // ---------- GALLERIES ---------- //
-    const activeGallery = ref('All');
-    const setActiveGallery = galleryName => {
-      activeGallery.value = galleryName;
-    };
-    provide('setActiveGallery', galleryName => {
-      activeGallery.value = galleryName;
-    });
-
-    const imgGroups = computed(() => {
-      if (!this.items) {
-        return;
-      }
-      let group = this.items.reduce((r, a) => {
-        const captureDate = a.exif.exif.DateTimeOriginal
-          ? format(
-              new Date(a.exif.exif.DateTimeOriginal.split('T').shift()),
-              'E, LLL dd'
-            )
-          : null;
-
-        const uploadDate = format(
-          new Date(parseInt(a.uploadTime)),
-          'E, LLL dd'
-        );
-
-        r[captureDate || uploadDate] = [
-          ...(r[captureDate || uploadDate] || []),
-          a
-        ];
-        return r;
-      }, {});
-
-      return group;
-    });
-
-    const filteredImages = computed(() => {
-      if (activeGallery.value === 'All') {
-        return allImages.value;
-      } else {
-        const albumId = albums.value.find(
-          x => x.albumName === activeGallery.value
-        ).albumId;
-
-        return images.value.filter(x => x.albumId === albumId);
-      }
-    });
-
     // ---------- MODALS ---------- //
     const visibleModal = ref(null);
 
-    provide('openModal', modalName => {
+    provide('openModal', (modalName, info) => {
+      imgInfo.value = info;
       visibleModal.value = modalName;
     });
     provide('closeModal', () => (visibleModal.value = null));
@@ -440,16 +347,16 @@ export default {
     };
 
     // Nuke images for dev purposes OR ACCOUNT DELETION
-    const nuke = async () => {
-      store.dispatch('nukeImages');
+    const NUKE = async () => {
+      store.dispatch('NUKE'); // Remove all images & albums from store
 
       forceUppyReloadKey.value++; //force Uppy to reload
 
       const response = await axios.post(`${server}/files/delete-image`, {
-        nuke: true,
+        NUKE: true,
         ownerId: owner.value.ownerId
       });
-      console.log('response:', response);
+
       if (response.status != 200) {
         console.error(
           `Nuking error: ${response.status} - ${response.statusText}`
@@ -457,18 +364,15 @@ export default {
       }
       store.dispatch('getUsageData', { ownerId: owner.value.ownerId });
     };
-    provide('nuke', nuke);
+    provide('NUKE', NUKE);
 
     return {
-      server,
       owner,
-      images,
       allImages,
       filteredImages,
       albums,
       sortImages,
       isSelectMode,
-      selectAll,
       activeGallery,
       actionsBar,
       visibleModal,
@@ -481,20 +385,4 @@ export default {
 };
 </script>
 
-<style scoped>
-.album-enter-active {
-  @apply transition-all duration-75 ease-out;
-}
-
-.album-leave-active {
-  @apply transition-all duration-75 ease-in;
-}
-
-.album-enter-from {
-  @apply transform -translate-y-10 opacity-0;
-}
-,
-.album-leave-to {
-  @apply transform translate-y-10 opacity-0;
-}
-</style>
+<style></style>

@@ -43,63 +43,6 @@
           </template>
           <template #listItems>
             <actions-bar-album-picker></actions-bar-album-picker>
-            <!-- <div ref="albumList" class="h-72 flex flex-col flex-wrap ">
-              <div
-                v-for="(album, index) in albums"
-                :key="index"
-                class="flex w-56 mt-2 mr-1 p-1 rounded transition cursor-pointer hover:bg-gray-700 hover:text-gray-100 hover:shadow"
-                @click="setActiveGallery(album.albumName)"
-              >
-                <img
-                  class="flex-shrink-0 w-24 h-24 object-cover bg-gray-300 rounded"
-                  :src="album.images ? album.images[0].thumbnail : ''"
-                />
-                <div class="ml-4">
-                  <h4 class="font-thin whitespace-normal">
-                    {{ album.albumName }}
-                  </h4>
-                </div>
-              </div>
-            </div>
-            <svg
-              v-if="isOverflowing"
-              class="w-6 mx-auto animate-pulse"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="1"
-                d="M19 9l-7 7-7-7"
-              />
-            </svg> -->
-            <!-- <div class="flex">
-              <div v-for="(col, index) in albumsMenuColumns" :key="index" class="w-36">
-                <div>
-                  <button
-                    v-for="album in col"
-                    :key="album.albumName"
-                    class="menu-item"
-                    @click="setActiveGallery(album.albumName)"
-                  >
-                    {{ album.albumName }}
-                  </button>
-                </div>
-              </div>
-            </div> -->
-            <!-- <div class="h-36">
-              <button
-                v-for="album in albums"
-                :key="album.albumName"
-                class="menu-item"
-                @click="setActiveGallery(album.albumName)"
-              >
-                {{ album.albumName }}
-              </button>
-            </div> -->
           </template>
         </drop-menu>
         <h4>
@@ -112,15 +55,6 @@
             :name="isSelectMode ? 'full-slide' : 'full-slide-reverse'"
             mode="out-in"
           >
-            <!-- <album-tools v-if="actionsBar === 'AlbumTools'"></album-tools>
-          <selection-tools
-            v-else
-            class="flex px-2 mb-1 text-center text-sm font-medium"
-            :albums="albums"
-            :active-gallery="activeGallery"
-            :filtered-images="filteredImages"
-            :user-type="userType"
-          ></selection-tools> -->
             <component
               :is="actionsBar"
               class="flex px-2 mb-1  text-sm font-medium"
@@ -136,7 +70,7 @@
         <toolbar-button
           v-if="userType === 'owner'"
           data-test="selectModeBtn"
-          class="mx-2 mb-1 text-center focus:outline-none transition font-medium"
+          class="ml-2 pr-1 mb-1 text-center focus:outline-none transition font-medium"
           :class="{
             'text-teal-600': isSelectMode
           }"
@@ -145,6 +79,7 @@
           {{ isSelectMode ? 'Cancel' : 'Select' }}
         </toolbar-button>
         <div
+          v-if="ENABLE_SORTER"
           class="flex mx-1 divide-x divide-gray-600 text-gray-700 transition duration-150 ease-in-out"
         >
           <drop-menu>
@@ -186,7 +121,6 @@
           </button>
         </div>
       </div>
-      <!-- </div> -->
     </div>
   </div>
 </template>
@@ -220,7 +154,8 @@ export default {
   emits: ['toggle-select-mode', 'set-active-gallery'],
   data() {
     return {
-      sortAsc: true
+      sortAsc: true,
+      ENABLE_SORTER: false
     };
   },
   computed: {
@@ -229,7 +164,7 @@ export default {
         {
           albumName: 'All',
           albumId: 0,
-          images: [this.$store.getters.allImages[0]]
+          images: [this.$store.getters.allImages]
         },
         ...this.$store.getters.albums
       ];
@@ -239,32 +174,8 @@ export default {
       return (
         this.$refs.albumList.offsetHeight < this.$refs.albumList.scrollHeight
       );
-    },
-    albumsMenuColumns() {
-      const columns = [];
-
-      for (
-        let i = 0;
-        i < this.albums.length / 4 + (this.albums.length % 4);
-        i++
-      ) {
-        const filter = this.albums.filter(
-          (x, index, arr) => index >= i * 4 && index < i * 4 + 4
-        );
-        columns.push(filter);
-      }
-      console.log('columns:', columns);
-
-      return columns;
     }
-  },
-  // updated() {
-  //   console.log(this.albums);
-  //   console.log(
-  //     'this.$store.getters.allImages:',
-  //     this.$store.getters.allImages
-  //   );
-  // }
+  }
 };
 </script>
 

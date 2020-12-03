@@ -9,7 +9,7 @@ const mountOptions = {
     plugins: [router, store],
     provide: {
       toast,
-      nuke: () => null,
+      NUKE: () => null,
       sortImages: () => null
     },
     stubs: {

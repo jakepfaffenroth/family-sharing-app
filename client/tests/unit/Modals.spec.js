@@ -111,7 +111,7 @@ describe('share modal', () => {
     await nextTick();
     await wrapper.find('[data-test="openShareModalBtn"]').trigger('click');
     await nextTick();
-    
+
     expect(wrapper.find('[data-test="homeModal"]').exists()).to.be.true;
 
     expect(wrapper.find('[data-test="shareUrl"]').text()).to.include(
@@ -140,7 +140,7 @@ describe('share modal', () => {
         plugins: [router, store],
         provide: {
           toast: () => jest.fn(),
-          nuke: () => jest.fn(),
+          NUKE: () => jest.fn(),
           sortImages: () => jest.fn()
         },
         stubs: {

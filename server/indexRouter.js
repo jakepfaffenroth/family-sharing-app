@@ -31,12 +31,15 @@ router.get('/pricing', (req, res) => {
   res.render('pricing');
 });
 
-
 router.get('/login', (req, res) => {
   req.query.q ? (isErrVisible = true) : (isErrVisible = false);
   res.render('login', {
     // layout: 'login',
     loginUrl: process.env.SERVER + '/auth/login',
+    placeholderUsername: process.env.SERVER.includes('localhost')
+      ? 'dev'
+      : 'demo',
+    placeholderPassword: process.env.NODE_ENV === 'Development' ? '123456' : '',
     errMsg: isErrVisible,
   });
 });

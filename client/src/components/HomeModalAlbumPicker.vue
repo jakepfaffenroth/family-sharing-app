@@ -21,9 +21,6 @@
         </label>
       </div>
       <div v-if="albums.length">
-        <!-- <h3>
-          Choose albums:
-        </h3> -->
         <div ref="albumList" class="h-56 mt-4 flex flex-wrap overflow-y-auto">
           <div
             v-for="(album, index) in albums"
@@ -39,9 +36,6 @@
               <h4 class="font-thin">
                 {{ album.albumName }}
               </h4>
-              <!-- <p>
-                dates
-              </p> -->
             </div>
           </div>
         </div>
@@ -66,9 +60,6 @@
       <base-button-cancel @click="closeModal">
         Cancel
       </base-button-cancel>
-      <!-- <base-button-purple data-test="albumSaveBtn" @click.stop="save">
-        Save
-      </base-button-purple> -->
     </template>
   </base-modal>
 </template>
@@ -76,7 +67,6 @@
 <script>
 import axios from 'axios';
 import BaseModal from './BaseModal';
-// import BaseButtonPurple from './BaseButtonPurple';
 import BaseButtonCancel from './BaseButtonCancel';
 import { ref, reactive, computed, inject, onMounted } from 'vue';
 import { useStore } from 'vuex';
@@ -85,11 +75,9 @@ export default {
   name: 'AlbumPickerModal',
   components: {
     BaseModal,
-    // BaseButtonPurple,
     BaseButtonCancel
   },
   props: {
-    // albums: { type: Object, default: null } ,
     imgInfo: { type: Object || Array, default: () => {} }
   },
   emits: ['close-modal'],
@@ -97,16 +85,17 @@ export default {
     const store = useStore();
     const toast = inject('toast');
     const server = process.env.VUE_APP_SERVER;
-    const { imgInfo } = reactive(props);
     const images = computed(() => store.getters.images);
-    const albums = computed(() => store.getters.albums);
+    const albums = computed(() =>
+      store.getters.albums.filter(x => x.albumName !== 'All')
+    );
     const ownerId = computed(() => store.getters.ownerId);
 
     const filteredImages = images.value.filter(x => {
-      if (imgInfo.length > 2) {
+      if (props.imgInfo.length > 2) {
         return false;
       }
-      return x.albumId ? x.fileId === imgInfo[0].fileId : null;
+      return x.albumId ? x.fileId === props.imgInfo[0].fileId : null;
     });
 
     let albumIds;
@@ -122,7 +111,6 @@ export default {
       return albumList.value.offsetHeight < albumList.value.scrollHeight;
     });
 
-    const checkedAlbums = ref([...albumIds]);
     const newAlbumName = ref('');
 
     async function createNewAlbum() {
@@ -138,7 +126,6 @@ export default {
 
         if (response.status === 200) {
           store.dispatch('addNewAlbum', response.data);
-          checkedAlbums.value.push(response.data.albumId);
           toast.success('Album created');
           newAlbumName.value = '';
         } else {
@@ -150,9 +137,9 @@ export default {
     }
 
     async function save(album) {
-      if (imgInfo.length > 0 || imgInfo) {
+      if (props.imgInfo.length > 0 || props.imgInfo) {
         let imgAlbumPairs = [];
-        imgInfo.forEach(img => {
+        props.imgInfo.forEach(img => {
           imgAlbumPairs.push({
             file_id: img.fileId,
             album_id: album.albumId,
@@ -168,7 +155,7 @@ export default {
               imgAlbumPairs
             }
           );
-          
+
           if (response.status === 200 && response.data.length === 0) {
             toast.open({
               type: 'info',
@@ -177,13 +164,13 @@ export default {
               message: 'Image is already in that album'
             });
           } else if (response.status === 200) {
-            store.dispatch('updateImages', [...images.value, ...response.data]);
+            store.dispatch('updateImages', response.data);
             toast.success(
-              `Image${imgInfo.length ? 's' : ''} added to album${
+              `Image${props.imgInfo.length ? 's' : ''} added to album${
                 imgAlbumPairs.length > 1 ? 's' : ''
               }`
             );
-          }
+          } else throw Error('An error occured');
         } catch (err) {
           console.error(err);
         }
@@ -193,28 +180,6 @@ export default {
       closeModal();
     }
 
-    function pushImgAlbumPairs(imgInfo, imgAlbumPairs) {
-      const pairs = [];
-      if (checkedAlbums.value.length === 0) {
-        // No albums checked - removing from all albums
-        pairs.push({
-          file_id: imgInfo.fileId,
-          owner_id: ownerId.value,
-          album_id: 'REMOVE'
-        });
-      } else {
-        checkedAlbums.value.forEach(albumId => {
-          if (albumId)
-            pairs.push({
-              file_id: imgInfo.fileId,
-              album_id: albumId,
-              owner_id: ownerId.value
-            });
-        });
-      }
-      return pairs;
-    }
-
     function closeModal() {
       emit('close-modal');
     }
@@ -222,7 +187,6 @@ export default {
     return {
       albums,
       newAlbumName,
-      checkedAlbums,
       createNewAlbum,
       closeModal,
       save,

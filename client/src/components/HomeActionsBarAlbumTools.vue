@@ -20,7 +20,7 @@
     </toolbar-button>
     <toolbar-button
       v-show="activeGallery !== 'All'"
-      @click="openModal('HomeModalDeleteAlbum'), passImgInfo(activeGallery)"
+      @click="openModal('HomeModalDeleteAlbum', activeGallery)"
     >
       <svg
         class="menu-icon"
@@ -50,9 +50,8 @@ export default {
   name: 'HomeActionsBarAlbumTools',
   components: {
     ToolbarButton
-    // BaseDropMenu
   },
-  inject: ['setActiveGallery', 'openModal', 'passImgInfo'],
+  inject: ['setActiveGallery', 'openModal'],
   props: {
     activeGallery: { type: String, default: 'All' },
     userType: { type: String, default: '' }

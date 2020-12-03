@@ -131,7 +131,7 @@
               <a
                 v-if="ownerId === 'devOwnerId'"
                 class="main-menu-link"
-                @click="nuke"
+                @click="NUKE"
               >
                 Nuke
               </a>
@@ -149,20 +149,6 @@
           </template>
         </base-drop-menu>
       </div>
-      <!-- <div class="flex w-full mt-2 px-2 justify-between">
-        <button
-          data-test="selectModeBtn"
-          class="focus:outline-none transition duration-150 ease-in-out"
-          :class="{
-            'text-gray-700 hover:text-teal-500': !isSelectMode,
-            'text-gray-400 cursor-default': isSelectMode
-          }"
-          @click="toggleSelectMode"
-        >
-          Select
-        </button>
-        <home-menu-image-sorter />
-      </div> -->
     </template>
   </base-menu>
 </template>
@@ -173,7 +159,6 @@ import BaseMenu from './BaseMenu';
 import BaseDropMenu from './BaseDropMenu';
 import BaseButtonPurple from './BaseButtonPurple';
 import HomeMenuOwnerUsage from './HomeMenuOwnerUsage';
-// import HomeMenuImageSorter from './HomeMenuImageSorter';
 
 import logout from '../utils/logout';
 
@@ -184,10 +169,8 @@ export default {
     BaseDropMenu,
     BaseButtonPurple,
     HomeMenuOwnerUsage
-    // HomeMenuImageSorter
   },
-  inject: ['nuke', 'toast', 'toggleSelectMode'],
-  // props: { owner: { type: Object, default: null } },
+  inject: ['NUKE', 'toast', 'toggleSelectMode'],
   props: { isSelectMode: { type: Boolean, default: false } },
   emits: ['open-modal', 'download-zip'],
   data() {
@@ -195,18 +178,12 @@ export default {
       logout
     };
   },
-  // TODO - Move this usage stuff to a new component
+  // TODO - Move this usage stuff to a new component?
   // This component should only be the menu and list items
   computed: {
     ownerId() {
       return this.$store.getters.ownerId;
     }
-    // ...mapGetters('planStore', [
-    //   'storagePercentage',
-    //   'usageValue',
-    //   'usageBarWidth',
-    //   'usageBarColor',
-    // ]),
   },
   methods: {
     showToast() {

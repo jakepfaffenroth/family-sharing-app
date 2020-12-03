@@ -1,9 +1,5 @@
 <template>
-  <div></div>
-  <!-- <div v-if="owner.ownerId" id="drop-area" />
-  <div v-else>
-    Loading...
-  </div> -->
+  <div />
 </template>
 
 <script>
@@ -12,7 +8,6 @@ import { useStore } from 'vuex';
 import Uppy from '@uppy/core';
 import Dashboard from '@uppy/dashboard';
 import EmptyDashboard from '@uppy/dashboard';
-// import ImageEditor from '@uppy/image-editor';
 import XHRUpload from '@uppy/xhr-upload';
 import ReconnectingWebSocket from 'reconnecting-websocket';
 import axios from 'axios';
@@ -111,17 +106,6 @@ export default {
       //     }
       //   }
       // });
-      // uppy.use(ImageEditor, {
-      //   id: 'ImageEditor',
-      //   target: Dashboard,
-      //   quality: 1,
-      //   cropperOptions: {
-      //     viewMode: 1,
-      //     background: false,
-      //     autoCropArea: 1,
-      //     responsive: true
-      //   }
-      // });
     });
 
     uppy.use(XHRUpload, {
@@ -137,11 +121,9 @@ export default {
     });
 
     uppy.on('restriction-failed', (file, error) => {
-      // do some customized logic like showing system notice to users
       const restrictToast = toast.open({
         type: 'error',
         duration: 6000,
-        // dismissible: true,
         message: `<div id="toast-message"><p id="msg-text">${error.message.replace(
           'This file',
           file.data.name
@@ -246,7 +228,6 @@ export default {
       const upToast = toast.open({
         type: 'success',
         duration: 3000,
-        // dismissible: true,
         message: `<div id="toast-message"><p id="msg-text">Upload complete.<br>${
           result.successful.length
         } files uploaded.${

@@ -5,18 +5,20 @@ export default {
   state: { images: [], albums: [], selectedImages: [] },
   getters: {
     images: state => state.images,
-    albums: state =>
-      state.albums.map(album => ({
+    albums: (state, getters) => [
+      {
+        albumId: 0,
+        albumName: 'All',
+        images: getters.allImages
+      },
+      ...state.albums.map(album => ({
         ...album,
-        images: state.images.filter(x => x.albumId === album.albumId),
-      })),
+        images: state.images.filter(x => x.albumId === album.albumId)
+      }))
+    ],
     selectedImages: state => state.selectedImages,
     imageCount: (state, getters) => getters.allImages.length,
     allImages: state => {
-      // console.log('state.images:', state.images);
-      // const uniqueImgs = [...new Set(state.images.map(img => img.fileId))];
-      // console.log('uniqueImgs:', uniqueImgs);
-      // return state.images.filter(x => uniqueImgs.indexOf(x.fileId));
       return state.images.filter(
         (current, index) =>
           state.images.findIndex(x => {
@@ -32,10 +34,6 @@ export default {
     addToImages(state, imgToAdd) {
       state.images.push(imgToAdd);
     },
-    // removeFromImages(state, indexToRemove) {
-    //   const removedImage = state.images.splice(indexToRemove, 1);
-    //   console.log('removedImage:', removedImage);
-    // },
     updateAlbums(state, albumArr) {
       state.albums = albumArr;
     },
@@ -66,8 +64,9 @@ export default {
       const response = await axios.post(server + '/files/fetch-images', ids);
       commit('updateImages', response.data);
     },
-    nukeImages({ commit }) {
+    NUKE({ commit }) {
       commit('updateImages', []);
+      commit('updateAlbums', [])
     },
     updateImages({ commit }, imagesArr) {
       commit('updateImages', imagesArr);
@@ -76,27 +75,6 @@ export default {
       imgToAdd = { ...imgToAdd, ownerId: rootGetters.ownerId };
       commit('addToImages', imgToAdd);
     },
-    // // ! FIX removeFromImages
-    // removeFromImages({ commit, state }, imgToRemove) {
-    //   const allVersionsToRemove = state.images.filter(
-    //     x => x.fileId == imgToRemove.fileId
-    //   );
-
-    //   allVersionsToRemove.forEach(version => {
-    //     console.log('version:', version);
-    //     console.log(
-    //       'found:',
-    //       state.images.find(x => x.fileId == version.fileId)
-    //     );
-    //     const index = state.images.findIndex(x => x.fileId == version.fileId);
-    //     console.log('index 1:', index);
-    //     console.log('index !== -1:', index !== -1);
-    //     if (index !== undefined && index !== -1) {
-    //       console.log('index 2:', index);
-    //       commit('removeFromImages', index);
-    //     }
-    //   });
-    // },
     updateAlbums({ commit, state }, albumArr) {
       commit('updateAlbums', albumArr);
     },
