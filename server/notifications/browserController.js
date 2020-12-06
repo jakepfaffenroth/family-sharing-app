@@ -2,7 +2,7 @@ const webPush = require('web-push');
 const db = require('../db').pgPromise;
 
 module.exports.sendBrowserNotifications = async (data) => {
-  const { ownerId, guestId, thumbPath, fileCount } = data;
+  const { ownerId, guestId, thumbPath, sessionUploadCount } = data;
 
   try {
     const result = await db.task(async (t) => {
@@ -11,7 +11,7 @@ module.exports.sendBrowserNotifications = async (data) => {
         [ownerId]
       );
       const subscriptions = await db.any(
-        'SELECT * FROM subscribers WHERE owner_id = ${guestId} AND browser IS NOT NULL',
+        'SELECT * FROM subscribers WHERE guest_id = ${guestId} AND browser IS NOT NULL',
         owner
       );
       return { owner, subscriptions };
@@ -22,9 +22,9 @@ module.exports.sendBrowserNotifications = async (data) => {
 
     const payload = JSON.stringify({
       title: `${result.owner.firstName} just shared ${
-        fileCount === 1 ? 'a' : fileCount
-      } new photo${fileCount > 1 ? 's' : ''}!`,
-      body: `Click to see ${fileCount === 1 ? 'it' : 'them'}!`,
+        sessionUploadCount === 1 ? 'a' : sessionUploadCount
+      } new photo${sessionUploadCount > 1 ? 's' : ''}!`,
+      body: `Click to see ${sessionUploadCount === 1 ? 'it' : 'them'}!`,
       icon: thumbPath,
       guestId,
     });
@@ -51,7 +51,7 @@ module.exports.sendBrowserNotifications = async (data) => {
                 [ownerId]
               );
               const subscriptions = db.any(
-                'SELECT * FROM subscribers WHERE owner_id = ${guestId} AND browser IS NOT NULL',
+                'SELECT * FROM subscribers WHERE guest_id = ${guestId} AND browser IS NOT NULL',
                 owner
               );
               const deletedSub = db.one(

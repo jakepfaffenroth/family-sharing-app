@@ -25,7 +25,7 @@ module.exports.addImage = async (req, res) => {
     ['album_id', 'file_id', 'owner_id'],
     { table: 'album_images' }
   );
-  const newPairs = req.body.imgAlbumPairs;
+  const newPairs = req.body.imgsToAdd;
 
   try {
     const onConflict =
@@ -37,9 +37,9 @@ module.exports.addImage = async (req, res) => {
         : pgpHelpers.insert(newPairs, columnSet) + onConflict;
 
     const selectQuery = `SELECT images.*, album_images.album_id FROM images LEFT JOIN album_images ON images.file_id = album_images.file_id WHERE images.owner_id = '${req.body.ownerId}'`;
-    
+
     const query = pgpHelpers.concat([insertQuery, selectQuery]);
-    
+
     const addedImages = await db.any(query);
 
     res.json(addedImages);
@@ -55,7 +55,7 @@ module.exports.removeImage = async (req, res) => {
     pgpHelpers.concat(
       imgsToRemove.map((pair) => ({
         query:
-          'DELETE FROM album_images WHERE file_id = ${fileId} AND album_id = ${albumId} AND owner_id = ${ownerId}',
+          'DELETE FROM album_images WHERE file_id = ${file_id} AND album_id = ${album_id} AND owner_id = ${owner_id}',
         values: pair,
       }))
     ) || '';

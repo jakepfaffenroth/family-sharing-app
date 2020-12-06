@@ -97,7 +97,7 @@ module.exports.sendEmailNotifications = async (data) => {
 
     // Get email subscribers and send email to each
     await db.each(
-      'SELECT email FROM subscribers WHERE owner_id = ${guestId} AND email IS NOT NULL',
+      'SELECT email FROM subscribers WHERE guest_id = ${guestId} AND email IS NOT NULL',
       data,
       (row) => {
         params.Destination.ToAddresses[0] = row.email.emailAddress;

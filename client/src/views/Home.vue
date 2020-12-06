@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="flex flex-col flex-grow">
     <!-- Header and Menu -->
     <header class="fixed w-full z-40 bg-white pt-2 sm:pt-4 xl:pt-6">
       <component
@@ -25,52 +25,40 @@
       ></actions-bar>
     </header>
 
-    <section
-      class="flex flex-grow mt-32 px-2 pb-2 sm:px-6 sm:pb-4 xl:px-12 xl:pb-6"
-    >
-      <!-- Skeleton gallery while loading -->
-      <div
-        v-if="view.imgsLoadingX"
-        data-test="gallerySkeleton"
-        class="relative flex flex-wrap justify-items-stretch w-full pt-2 sm:pt-4 overflow-hidden"
+    <section class="flex flex-grow mt-32 p-2 sm:px-6 sm:py-4 xl:px-12 xl:pb-6">
+      <p
+        v-if="view.ownerLoading"
+        class="w-full my-auto text-center text-3xl text-gray-400"
       >
-        <div
-          v-for="n in 20"
-          :key="n"
-          class="p-1 w-1/2 sm:w-1/3 lg:w-1/4 xl:w-1/5 2xl:w-1/6 h-48"
-        >
-          <base-skeleton-image class="w-full h-full"></base-skeleton-image>
-        </div>
-      </div>
+        Loading...
+      </p>
       <!-- Image gallery -->
-      <div class="relative flex flex-grow w-full pt-2 sm:pt-4">
-        <transition appear name="album" mode="out-in">
-          <home-gallery
-            v-if="view.ownerLoading || filteredImages.length"
-            :key="activeGallery"
-            :data-test="'albumGallery-' + activeGallery"
-            :user-type="userType"
-            :items="filteredImages"
-            :is-select-mode="isSelectMode"
-            :view="view"
-            @imgs-loaded="view.imgsLoading = false"
-          ></home-gallery>
+      <transition appear name="album" mode="out-in">
+        <home-gallery
+          v-if="view.ownerLoading || filteredImages.length"
+          :key="activeGallery"
+          :data-test="'albumGallery-' + activeGallery"
+          :user-type="userType"
+          :items="filteredImages"
+          :is-select-mode="isSelectMode"
+          :view="view"
+          @imgs-loaded="view.imgsLoading = false"
+        ></home-gallery>
 
-          <home-gallery-empty
-            v-else
-            :key="activeGallery"
-            data-test="empty-album"
-            :active-gallery="activeGallery"
-            @reload-uppy="forceUppyReloadKey++"
-          >
-            <template #emptyGalleryText>
-              {{
-                activeGallery === 'All' ? 'Upload some images!' : 'Empty Album'
-              }}
-            </template>
-          </home-gallery-empty>
-        </transition>
-      </div>
+        <home-gallery-empty
+          v-else
+          :key="activeGallery"
+          data-test="empty-album"
+          :active-gallery="activeGallery"
+          @reload-uppy="forceUppyReloadKey++"
+        >
+          <template #emptyGalleryText>
+            {{
+              activeGallery === 'All' ? 'Upload some images!' : 'Empty Album'
+            }}
+          </template>
+        </home-gallery-empty>
+      </transition>
     </section>
 
     <!-- Uppy file uploader -->
@@ -87,9 +75,11 @@
       :is="visibleModal"
       v-if="visibleModal"
       data-test="homeModal"
+      :active-gallery="activeGallery"
       :img-info="imgInfo"
       :albums="albums"
       :all-images="allImages"
+      :modal-switch="modalSwitch"
       @close-modal="visibleModal = null"
     ></component>
   </div>
@@ -129,6 +119,7 @@ const HomeMenuGuest = defineAsyncComponent(() =>
   import('../components/HomeMenuGuest')
 );
 import HomeModalShare from '../components/HomeModalShare';
+// import HomeModalImageShare from '../components/HomeModalImageShare';
 import HomeModalAlbumPicker from '../components/HomeModalAlbumPicker';
 import HomeModalNewAlbum from '../components/HomeModalNewAlbum';
 import HomeModalDeleteAlbum from '../components/HomeModalDeleteAlbum';
@@ -151,6 +142,7 @@ export default {
     HomeActionsBarAlbumTabs,
     HomeActionsBarSelectionTools,
     HomeModalShare,
+    // HomeModalImageShare,
     HomeModalAlbumPicker,
     HomeModalNewAlbum,
     HomeModalDeleteAlbum,
@@ -217,6 +209,7 @@ export default {
     const activeGallery = ref('All');
     provide('setActiveGallery', galleryName => {
       activeGallery.value = galleryName;
+      store.dispatch('replaceSelectedImages', []);
     });
 
     const filteredImages = computed(() => {
@@ -259,9 +252,10 @@ export default {
     }
 
     function clearSelection() {
-      images.value.forEach(img => {
-        img.isSelected = false;
-      });
+      store.dispatch('replaceSelectedImages', []);
+      // images.value.forEach(img => {
+      //   img.isSelected = false;
+      // });
     }
 
     // ---------- SORTING ---------- //
@@ -307,9 +301,13 @@ export default {
 
     // ---------- MODALS ---------- //
     const visibleModal = ref(null);
+    const modalSwitch = ref(null);
 
-    provide('openModal', (modalName, info) => {
-      imgInfo.value = info;
+    provide('openModal', (modalName, payload) => {
+      payload = payload || {};
+
+      imgInfo.value = payload.imgInfo;
+      modalSwitch.value = payload.modalSwitch;
       visibleModal.value = modalName;
     });
     provide('closeModal', () => (visibleModal.value = null));
@@ -376,6 +374,7 @@ export default {
       activeGallery,
       actionsBar,
       visibleModal,
+      modalSwitch,
       imgInfo,
       forceUppyReloadKey,
       downloadZip,

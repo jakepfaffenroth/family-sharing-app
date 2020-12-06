@@ -1,5 +1,29 @@
 <template>
   <div>
+    <toolbar-button
+      v-show="activeGallery !== 'All'"
+      @click="
+        openModal('HomeModalPhotoPicker', { activeGallery }),
+          toast.success('open photo picker modal')
+      "
+    >
+      <svg
+        class="menu-icon"
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M17 14v6m-3-3h6M6 10h2a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v2a2 2 0 002 2zm10 0h2a2 2 0 002-2V6a2 2 0 00-2-2h-2a2 2 0 00-2 2v2a2 2 0 002 2zM6 20h2a2 2 0 002-2v-2a2 2 0 00-2-2H6a2 2 0 00-2 2v2a2 2 0 002 2z"
+        />
+      </svg>
+      Add
+      <span class="hidden md:inline-block">to Album</span>
+    </toolbar-button>
     <toolbar-button @click="openModal('HomeModalNewAlbum')">
       <svg
         class="menu-icon"
@@ -15,12 +39,12 @@
           d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"
         />
       </svg>
-      Add
-      <span class="hidden lg:inline-block">Album</span>
+      New
+      <span class="hidden md:inline-block">Album</span>
     </toolbar-button>
     <toolbar-button
       v-show="activeGallery !== 'All'"
-      @click="openModal('HomeModalDeleteAlbum', activeGallery)"
+      @click="openModal('HomeModalDeleteAlbum', { activeGallery })"
     >
       <svg
         class="menu-icon"
@@ -51,7 +75,7 @@ export default {
   components: {
     ToolbarButton
   },
-  inject: ['setActiveGallery', 'openModal'],
+  inject: ['setActiveGallery', 'openModal', 'toast'],
   props: {
     activeGallery: { type: String, default: 'All' },
     userType: { type: String, default: '' }

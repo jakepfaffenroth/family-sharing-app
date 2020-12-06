@@ -7,19 +7,23 @@
       'px-0 sm:px-6 xl:px-12 shadow-lg border-b-2 border-purple-200 ease-in': !view.atTopOfPage
     }"
   >
-    <div
-      v-if="view.ownerLoading"
-      class="flex items-end p-2 pt-3 text-center text-sm font-medium space-x-12"
-    >
-      <skeleton class="w-16 h-3 mb-1 -mr-6"></skeleton>
-      <skeleton class="w-8 h-3 mb-1"></skeleton>
-      <skeleton class="w-16 h-3 mb-1"></skeleton>
-      <skeleton class="w-12 h-3 mb-1"></skeleton>
+    <div v-if="view.ownerLoading" class="flex w-full mt-1">
+      <div class="flex">
+        <skeleton class="w-20 pr-5 h-3 mb-2"></skeleton>
+        <skeleton class="w-6 h-3 ml-2 mb-2"></skeleton>
+        <skeleton class="w-28 pl-1 pr-3 h-3 ml-16 mb-2"></skeleton>
+        <!-- <toolbar-button>test</toolbar-button> -->
+        <!-- <skeleton class="w-12 h-3 mb-1"></skeleton> -->
+      </div>
+      <skeleton class="ml-auto w-12 h-3 mb-2"></skeleton>
     </div>
 
     <div v-else class="flex w-full text-sm font-medium flex-grow">
       <div class="flex mr-12">
-        <drop-menu :position="'left'">
+        <drop-menu
+          :position="'left'"
+          :passed-classes="'w-screen max-w-90vw sm:max-w-50vw'"
+        >
           <template #button>
             <toolbar-button class="flex font-lg font-black my-auto pl-0">
               Albums
@@ -41,8 +45,10 @@
               </span>
             </toolbar-button>
           </template>
-          <template #listItems>
-            <actions-bar-album-picker></actions-bar-album-picker>
+          <template #listItems="{closeMenu}">
+            <actions-bar-album-picker
+              :close-menu="closeMenu"
+            ></actions-bar-album-picker>
           </template>
         </drop-menu>
         <h4>

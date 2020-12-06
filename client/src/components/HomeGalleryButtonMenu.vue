@@ -20,6 +20,7 @@
     <template #listItems>
       <div class="w-auto -m-1 whitespace-nowrap">
         <a
+          v-if="SINGLE_SHARE_ENABLED"
           data-test="shareSingleImgBtn"
           class="menu-item"
           @click.stop="shareImage()"
@@ -78,7 +79,7 @@
               stroke-linecap="round"
               stroke-linejoin="round"
               stroke-width="2"
-              d="M17 14v6m-3-3h6M6 10h2a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v2a2 2 0 002 2zm10 0h2a2 2 0 002-2V6a2 2 0 00-2-2h-2a2 2 0 00-2 2v2a2 2 0 002 2zM6 20h2a2 2 0 002-2v-2a2 2 0 00-2-2H6a2 2 0 00-2 2v2a2 2 0 002 2z"
+              d="M6 18L18 6M6 6l12 12"
             />
           </svg>
           Remove from album
@@ -141,44 +142,49 @@ export default {
     const images = computed(() => store.getters.images);
 
     async function removeFromAlbum() {
-      try {
-        const response = await axios.post(server + '/albums/remove-image', {
-          ownerId: ownerId.value,
-          imgsToRemove: [
-            {
-              fileId: item.value.fileId,
-              albumId: item.value.albumId,
-              ownerId: ownerId.value
-            }
-          ]
-        });
-        if (response.status === 200) {
-          toast.success('Image removed from album');
-          store.dispatch('updateImages', response.data);
-        } else toast.error('An error occurred');
-      } catch (err) {
-        console.error(err);
-        toast.error('An error occurred');
-      }
+      openModal('HomeModalAlbumPicker', {
+        imgInfo: [imgInfo],
+        modalSwitch: 'removeFromAlbum'
+      });
+      // try {
+      //   const response = await axios.post(server + '/albums/remove-image', {
+      //     ownerId: ownerId.value,
+      //     imgsToRemove: [
+      //       {
+      //         file_id: item.value.fileId,
+      //         album_id: item.value.albumId,
+      //         owner_id: ownerId.value
+      //       }
+      //     ]
+      //   });
+      //   if (response.status === 200) {
+      //     toast.success('Image removed from album');
+      //     store.dispatch('updateImages', response.data);
+      //   } else toast.error('An error occurred');
+      // } catch (err) {
+      //   console.error(err);
+      //   toast.error('An error occurred');
+      // }
     }
 
     function openAlbumPicker() {
-      openModal('HomeModalAlbumPicker', [imgInfo]);
+      openModal('HomeModalAlbumPicker', { imgInfo: [imgInfo] });
     }
 
     function openDeleteModal() {
-      openModal('HomeModalDeleteImage', imgInfo);
+      openModal('HomeModalDeleteImage', { imgInfo });
     }
 
     function shareImage() {
-      openModal('HomeModalImageShare', imgInfo);
+      openModal('HomeModalImageShare', { imgInfo });
     }
 
     return {
       removeFromAlbum,
       openAlbumPicker,
       openDeleteModal,
-      shareImage
+      shareImage,
+      SINGLE_SHARE_ENABLED: false
     };
   }
 };

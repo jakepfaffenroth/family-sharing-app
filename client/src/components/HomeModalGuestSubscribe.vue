@@ -90,7 +90,7 @@ import BaseButtonPurple from './BaseButtonPurple';
 import BaseButtonCancel from './BaseButtonCancel';
 
 import { useStore } from 'vuex';
-import { reactive, computed,  } from 'vue';
+import { reactive, computed, inject } from 'vue';
 
 export default {
   components: {
@@ -102,6 +102,7 @@ export default {
   setup(props, { emit }) {
     const store = useStore();
     const server = process.env.VUE_APP_SERVER;
+    const toast = inject('toast');
     const subOptions = reactive({ browser: null, email: null, sms: null });
 
     const owner = computed(() => store.state.ownerStore.owner);
@@ -117,6 +118,7 @@ export default {
       firstName: null,
       lastName: null,
       email: null,
+      browser: null,
       guestId: owner.value.guestId
     });
 
@@ -136,7 +138,8 @@ export default {
     }
 
     async function subscribeBrowser() {
-      if (!guest.firstName || !guest.lastName || !guest.email) return;
+      if (!guest.firstName || !guest.lastName) return;
+
       const publicVapidKey =
         'BIXOvprQOJRgsH4EHujdKRaOmrxCLTP5uKlrB_W-1pXEmCU9twuOgxIaFniDmLE8r4SAVmaTZOxOLsXdgAoWwpw';
 
@@ -148,29 +151,42 @@ export default {
           }
         );
 
-        const subscription = await register.pushManager.subscribe({
-          userVisibleOnly: true,
-          applicationServerKey: urlBase64ToUint8Array(publicVapidKey)
-        });
+        guest.browser = JSON.stringify(
+          await register.pushManager.subscribe({
+            userVisibleOnly: true,
+            applicationServerKey: urlBase64ToUint8Array(publicVapidKey)
+          })
+        );
 
-        await axios({
+        const response = await axios({
           url: `${server}/user/subscribe-browser`,
           method: 'POST',
-          data: {
-            subscription: JSON.stringify(subscription),
-            guestId: owner.value.guestId
-          },
+          data: guest,
           headers: {
             'Content-Type': 'application/json'
           }
         });
+        if (response.data.alreadySubscribed) {
+          toast.error("You've already subscribed with this browser");
+        } else if (response.status === 200) {
+          toast.success('Browser subscription saved');
+        }
       } else {
         alert('Sorry, notifications are not supported in this browser');
       }
     }
 
-    function subscribeEmail() {
-      axios.post(`${server}/user/subscribe-email`, guest);
+    async function subscribeEmail() {
+      if (!guest.firstName || !guest.lastName || !guest.email) return;
+      const response = await axios.post(
+        `${server}/user/subscribe-email`,
+        guest
+      );
+      if (response.data.alreadySubscribed) {
+        toast.error("You've already subscribed with that email");
+      } else if (response.status === 200) {
+        toast.success('Verification email sent (for email subscription)');
+      }
     }
 
     async function subscribe() {

@@ -5,7 +5,8 @@ export default {
   state: {
     ownerIdCookie: '',
     guestIdCookie: '',
-    owner: {}
+    owner: {},
+    subscribers: []
   },
   getters: {
     owner: state => state.owner,
@@ -19,6 +20,9 @@ export default {
     },
     updateOwner(state, ownerData) {
       state.owner = ownerData;
+    },
+    updateSubscribers(state, subscribers) {
+      state.subscribers = subscribers;
     }
   },
   actions: {
@@ -55,6 +59,14 @@ export default {
       } catch (err) {
         console.error(new Error(err));
       }
+    },
+    async getSubscribers({ commit, rootGetters }) {
+      const response = await axios.post(server + '/user/get-subscribers', {
+        ownerId: rootGetters.ownerId
+      });
+      console.log('subscribers:', response);
+
+      commit('updateSubscribers', response.data);
     }
   }
 };

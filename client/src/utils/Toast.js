@@ -3,7 +3,7 @@ import 'notyf/notyf.min.css';
 
 export default new Notyf({
   position: { x: 'right', y: 'bottom' },
-  duration: 2000,
+  duration: 3000,
   types: [
     {
       type: 'info',

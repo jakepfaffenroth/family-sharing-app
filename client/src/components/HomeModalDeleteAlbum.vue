@@ -30,7 +30,9 @@ import BaseButtonCancel from './BaseButtonCancel';
 export default {
   name: 'AddAlbumModal',
   components: { BaseModal, BaseButtonPurple, BaseButtonCancel },
-  props: { imgInfo: { type: String, default: '' } },
+  props: {
+    activeGallery: { type: String, default: '' }
+  },
   emits: ['close-modal'],
   setup(props, { emit }) {
     const store = useStore();
@@ -38,7 +40,7 @@ export default {
     const toast = inject('toast');
     const setActiveGallery = inject('setActiveGallery');
     const album = computed(() =>
-      albums.value.find(x => x.albumName === props.imgInfo)
+      albums.value.find(x => x.albumName === props.activeGallery)
     );
 
     const ownerId = computed(() => store.getters.ownerId);

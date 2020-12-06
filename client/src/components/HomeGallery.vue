@@ -53,7 +53,6 @@
                   :group="group"
                   :is-album="isAlbum"
                   @click.stop
-                  @handle-img-selection="handleImgSelection"
                 ></component>
               </transition>
             </div>
@@ -203,7 +202,7 @@ export default {
     }
   },
   emits: ['imgs-loaded'],
-  injects: ['openModal', , 'sortImages'],
+  injects: ['openModal', 'sortImages'],
   data() {
     return {
       pswp: null,
@@ -223,7 +222,7 @@ export default {
     },
     imgGroups() {
       const currentYear = new Date().getFullYear().toString();
-      let groups = this.items.reduce((acc, cur) => {
+      let groups = this.items.reduce((acc, cur, index, arr) => {
         let captureTime =
           cur.exif && cur.exif.exif && cur
             ? format(
@@ -248,11 +247,14 @@ export default {
             return x.date === captureTime;
           } else return x.date === uploadDate;
         });
-        group
-          ? group.images.push(cur)
-          : acc.push({ date: captureTime || uploadDate, images: [cur] });
+        if (group) {
+          group.images.push(cur);
+        } else {
+          acc.push({ date: captureTime || uploadDate, images: [cur] });
+        }
         return acc;
       }, []);
+      groups.forEach(group => group.images.sort(this.compare));
       return groups.sort(this.compare);
     },
     imgActionBtn() {
@@ -536,13 +538,15 @@ export default {
       // let sortParameter = 'captureTime'; // In future may be changable
 
       function checkForYear(dateStr) {
+        if (typeof dateStr == 'number') {
+          dateStr = new Date(dateStr).toDateString();
+        }
         if (dateStr.split(' ').pop().length < 4) {
           return (dateStr += ' ' + new Date().getFullYear().toString());
         } else return dateStr;
       }
-
-      let aDate = a.date;
-      let bDate = b.date;
+      let aDate = a.date || parseInt(a.captureTime) || parseInt(a.uploadTime);
+      let bDate = b.date || parseInt(b.captureTime) || parseInt(b.uploadTime);
       aDate = checkForYear(aDate);
       bDate = checkForYear(bDate);
 
@@ -558,25 +562,29 @@ export default {
     },
     openAlbumPicker(date, item, index) {
       this.openModal('HomeModalAlbumPicker', {
-        ...item,
-        date,
-        ownerId: this.$store.getters.ownerId,
-        index
+        imgInfo: {
+          ...item,
+          date,
+          ownerId: this.$store.getters.ownerId,
+          index
+        }
       });
     },
-    handleImgSelection({ group, item }) {
-      if (!item.isSelected) {
-        this.$store.dispatch('addToSelectedImages', item);
-      } else if (item.isSelected) {
-        this.$store.dispatch('removeFromSelectedImages', item);
-      }
-    },
+    // handleImgSelection({ group, item }) {
+    //   if (!item.isSelected) {
+    //     this.$store.dispatch('addToSelectedImages', item);
+    //   } else if (item.isSelected) {
+    //     this.$store.dispatch('removeFromSelectedImages', item);
+    //   }
+    // },
     openDeleteModal(date, item, index) {
       this.openModal('HomeModalDeleteImage', {
-        ...item,
-        date,
-        ownerId: this.$store.getters.ownerId,
-        index
+        imgInfo: {
+          ...item,
+          date,
+          ownerId: this.$store.getters.ownerId,
+          index
+        }
       });
     },
     shareImage(item) {

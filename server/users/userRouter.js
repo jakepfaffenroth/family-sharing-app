@@ -6,12 +6,13 @@ const guestController = require('./guestController');
 
 // Owner routers
 router.post('/create-owner', ownerController.create);
-router.post('/choose-plan', ownerController.choosePlan)
+router.post('/choose-plan', ownerController.choosePlan);
 router.post('/get-owner', ownerController.getOwner);
 
 // Guest routers
 router.post('/subscribe-email', guestController.subscribeEmail);
 router.post('/subscribe-browser', guestController.subscribeBrowser);
 router.get('/verify-email', guestController.verifyEmail);
+router.post('/get-subscribers', guestController.getSubscribers);
 
 module.exports = router;

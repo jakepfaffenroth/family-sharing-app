@@ -61,7 +61,7 @@
     </toolbar-button>
     <toolbar-button
       v-show="activeGallery !== 'All'"
-      @click="openModal('HomeModalDeleteAlbum', activeGallery)"
+      @click="openModal('HomeModalDeleteAlbum', { activeGallery })"
     >
       <svg
         class="menu-icon"

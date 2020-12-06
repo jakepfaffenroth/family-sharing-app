@@ -30,6 +30,30 @@
           <span class="hidden lg:inline-block">to album</span>
         </toolbar-button>
         <toolbar-button
+          v-if="activeGallery !== 'All'"
+          :class="{
+            'disabled-bar-item': selectedImages.length === 0
+          }"
+          @click.stop="removeFromAlbum()"
+        >
+          <svg
+            class="menu-icon"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M6 18L18 6M6 6l12 12"
+            />
+          </svg>
+          Remove from album
+        </toolbar-button>
+        <toolbar-button
+          v-if="IMAGE_SHARE_ENABLED"
           data-test="selectToolsShare"
           :class="{
             'disabled-bar-item': selectedImages.length === 0
@@ -53,6 +77,7 @@
           Share
         </toolbar-button>
         <toolbar-button
+          v-if="IMAGE_HIDE_ENABLED"
           :class="{
             'disabled-bar-item': selectedImages.length === 0
           }"
@@ -92,7 +117,7 @@
               d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
             />
           </svg>
-          Delete
+          Delete Photos
         </toolbar-button>
       </div>
     </div>
@@ -147,7 +172,7 @@
               />
             </svg>
             Add
-            <span class="hidden lg:inline-block">to album</span>
+            <span class="hidden md:inline-block">to album</span>
           </toolbar-button>
           <toolbar-button
             data-test="selectToolsShare"
@@ -217,7 +242,7 @@
                 d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
               />
             </svg>
-            Delete
+            Delete Photos
           </toolbar-button>
         </div>
       </template>
@@ -242,10 +267,15 @@ export default {
   name: 'SelectionToolbar',
   components: { ToolbarButton, DropMenu },
   inject: ['toast', 'toggleSelectMode', 'openModal'],
-  props: { filteredImages: { type: Array, default: () => [] } },
+  props: {
+    activeGallery: { type: Object || String, default: () => {} },
+    filteredImages: { type: Array, default: () => [] }
+  },
   data() {
     return {
-      allSelected: false
+      allSelected: false,
+      IMAGE_HIDE_ENABLED: false,
+      IMAGE_SHARE_ENABLED: false
     };
   },
   computed: {
@@ -281,8 +311,16 @@ export default {
     },
     openAlbumPicker(item) {
       if (this.selectedImages.length > 0) {
-        this.openModal('HomeModalAlbumPicker', this.selectedImages);
+        this.openModal('HomeModalAlbumPicker', {
+          imgInfo: this.selectedImages
+        });
       }
+    },
+    removeFromAlbum(item) {
+      this.openModal('HomeModalAlbumPicker', {
+        imgInfo: this.selectedImages,
+        modalSwitch: 'removeFromAlbum'
+      });
     },
     openShareModal(item) {
       if (this.selectedImages.length > 0) {

@@ -22,7 +22,6 @@ export default {
   name: 'App',
   provide: { toast },
   setup() {
-    var err = new Error();
     const store = useStore();
     const route = useRoute();
     const server = process.env.VUE_APP_SERVER;

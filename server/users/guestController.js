@@ -68,23 +68,22 @@ module.exports.subscribeEmail = async (req, res) => {
       guest
     );
     if (owner.length === 0) {
-      return console.log('Incorrect ownerId in email subscription.');
+      return console.log('Incorrect guestId in email subscription.');
     }
 
     // First need to see if guest has already subscribed
     const email = await db.oneOrNone(
-      "SELECT * FROM subscribers WHERE owner_id = ${guestId} AND email ->> 'emailAddress' = ${email}",
+      'SELECT * FROM subscribers WHERE guest_id = ${guestId} AND email = ${email}',
       guest
     );
     if (email) {
-      console.log('foundEmail', email.email.emailAddress);
-      res.status(200).send('Already subscribed email');
+      res.status(200).json({ alreadySubscribed: true });
     } else {
       verifyEmailSender.add({
-        // res,
         owner,
         guest,
       });
+      res.end();
     }
   } catch (err) {
     error(err);
@@ -167,37 +166,27 @@ module.exports.verifyEmail = async (req, res, next) => {
   if (!guest) {
     const gId = req.query.id;
     const subscribeLink = `${process.env.SERVER}/user/subscribe-email`;
-    return res
-      .status(418)
-      .render('verificationError', {
-        guestId: gId,
-        subscribeLink: subscribeLink,
-      });
+    return res.status(418).render('verificationError', {
+      guestId: gId,
+      subscribeLink: subscribeLink,
+    });
   }
 
   const subscriber = await db.oneOrNone(
-    "SELECT * FROM subscribers WHERE email ->> 'email_address' = ${email}",
+    'SELECT * FROM subscribers WHERE email = ${email}',
     guest
   );
 
   if (subscriber) {
-    console.log('foundEmail', subscriber.email);
     res.status(200).send('Already verified email');
   }
 
   const newEmailSubscriber = await db.one(
-    'INSERT INTO subscribers (owner_id, email) VALUES ($1, $2)RETURNING *',
-    [
-      guest.guestId,
-      {
-        firstName: guest.firstName,
-        lastName: guest.lastName,
-        emailAddress: guest.email,
-      },
-    ]
+    'INSERT INTO subscribers (guest_id, email, first_name, last_name) VALUES (${guestId}, ${email}, ${firstName}, ${lastName}) RETURNING *',
+    guest
   );
 
-  success(newEmailSubscriber.email.emailAddress + ' saved.');
+  success(newEmailSubscriber.email + ' saved.');
 
   const guestLink = `${process.env.SERVER}/${guest.guestId}/guest`;
 
@@ -205,6 +194,7 @@ module.exports.verifyEmail = async (req, res, next) => {
 };
 
 module.exports.subscribeBrowser = async (req, res) => {
+  const guest = req.body;
   const publicVapidKey = process.env.PUBLIC_VAPID_KEY;
   const privateVapidKey = process.env.PRIVATE_VAPID_KEY;
 
@@ -214,23 +204,19 @@ module.exports.subscribeBrowser = async (req, res) => {
     privateVapidKey
   );
 
-  const newSubscription = JSON.parse(req.body.subscription);
-  const guestId = req.body.guestId;
+  guest.browser = JSON.parse(guest.browser);
 
   try {
     const subscription = await db.oneOrNone(
-      "SELECT * FROM subscribers WHERE owner_id = $1 AND browser -> 'keys' ->> 'auth' = $2",
-      [guestId, newSubscription.keys.auth]
+      "SELECT * FROM subscribers WHERE guest_id = ${guestId} AND browser -> 'keys' ->> 'auth' = ${browser.keys.auth}",
+      guest
     );
-    if (subscription)
-      return res
-        .status(200)
-        .send('Already subscribed to browser notifications');
+    if (subscription) return res.status(200).json({ alreadySubscribed: true });
     else {
       (async function () {
         const newSub = await db.one(
-          'INSERT INTO subscribers (owner_id, browser) VALUES ($1, $2) RETURNING browser',
-          [guestId, newSubscription]
+          'INSERT INTO subscribers (guest_id, browser, first_name, last_name) VALUES (${guestId}, ${browser}, ${firstName}, ${lastName}) RETURNING browser',
+          guest
         );
         success('New browser sub saved.');
         return res.status(200).send(newSub);
@@ -238,5 +224,17 @@ module.exports.subscribeBrowser = async (req, res) => {
     }
   } catch (err) {
     return error(err);
+  }
+};
+
+module.exports.getSubscribers = async (req, res) => {
+  try {
+    const subscribers = await db.any(
+      'SELECT * FROM subscribers WHERE guest_id = (SELECT guest_id FROM owners WHERE owner_id = ${ownerId})',
+      req.body
+    );
+    res.json(subscribers);
+  } catch (err) {
+    error(err);
   }
 };
