@@ -1,0 +1,101 @@
+<div
+  class="flex flex-col items-center xl:mx-24 h-full pt-12 px-4 sm:px-6 lg:px-8 space-y-4 bg-gray-50"
+>
+  {{> colorfulLogo}}
+  <h2 class="text-2xl font-bold">Welcome{{#if name}}, {{name}}{{/if}}!</h2>
+  <h2 class="text-xl font-semibold">Complete your account</h2>
+  {{> pricingComponent btnText="Select"}}
+</div>
+
+<div id="prices-and-payment" class="flex flex-wrap justify-center">
+  <div id="prices-form" class="md:w-1/2 w-full mr-4 md:mb-8">
+    <div id="payment-form" class="flex justify-center hidden">
+      <div class="w-full inline-block border p-4 rounded-md">
+        <div class="font-bold text-xl mb-2">
+          Enter your card details.
+          <br />
+          Your subscription will start now.
+        </div>
+        <p class="text-gray-700 text-base">
+          → Total due now
+          <span id="total-due-now">$0.00</span>
+          <span class="italic">
+            billed
+            <span id="subscription-term"></span>
+          </span>
+        </p>
+        <p id="price-selected" class="text-gray-700 text-base mb-4"></p>
+
+        <div class="w-full">
+          <div class="flex flex-wrap -mx-3 mb-2">
+            <div class="w-full px-3 md:mb-0">
+              <label
+                class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+              >
+                Full name
+              </label>
+              <input
+                class="appearance-none block w-full bg-gray-200 border rounded-md py-3 px-2 mb-3 leading-tight focus:outline-none focus:bg-white"
+                id="name"
+                type="text"
+                placeholder="First and last name"
+                required
+              />
+            </div>
+          </div>
+          <form id="payment-formX">
+            <div class="flex flex-wrap -mx-3 mb-3">
+              <div class="w-full px-3 mb-0">
+                <label
+                  class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+                >
+                  Card
+                </label>
+                <div
+                  class="appearance-none block w-full bg-gray-200 text-gray-700 border rounded-md py-3 px-2 leading-tight focus:outline-none focus:bg-white"
+                  id="card-element"
+                ></div>
+                <div
+                  id="card-element-errors"
+                  class="text-gray-700 text-base mt-2"
+                  role="alert"
+                ></div>
+              </div>
+            </div>
+            <button
+              id="submit-premium"
+              class="w-full bg-red-400 hover:bg-white hover:ring hover:text-pasha hover:border hover:border-black focus:ring text-white focus:bg-white focus:text-pasha font-light py-2 px-4 rounded-md"
+              type="submit"
+            >
+              <span>
+                <span id="loading" class="hidden">Subscribing...</span>
+                <span id="button-text" class="">Subscribe</span>
+              </span>
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div
+  id="success-modal"
+  class="invisible opacity-0 transition-all duration-200 ease-in z-50"
+>
+  {{> modal header="Payment successful" text="Thank you for subscribing!
+  Continue to log in." btnText="Log in"}}
+</div>
+
+<div
+  id="id"
+  data-customer-id="{{customerId}}"
+  data-owner-id="{{#if ownerId}}{{ownerId}}{{else}}5eebb6c17f71e3812d1e91ab{{/if}}"
+  class="hidden"
+></div>
+
+<script src="https://js.stripe.com/v3/"></script>
+<script src="/javascripts/card.js" defer></script>
+<script>
+  const modalWrapper = document.getElementById('modal-wrapper');
+</script>

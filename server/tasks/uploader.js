@@ -24,17 +24,25 @@ const getB2UploadAuth = async (credentials) => {
 };
 
 const addToDbWriterQueue = (data, metadata, resolution, ownerId) => {
-  dbWriter.add({
-    fileId: data.fileId,
-    fileName: data.fileName,
-    metadata,
-    resolution: resolution,
-    ownerId: ownerId,
-  });
+  dbWriter.add(
+    {
+      fileId: data.fileId,
+      fileName: data.fileName,
+      metadata,
+      resolution: resolution,
+      ownerId: ownerId,
+    },
+    {
+      delay: resolution === 'thumbRes' ? 5000 : null,
+      priority: resolution === 'fullRes' ? 1 : null,
+      attempts: 10,
+      timeout: 10000,
+    }
+  );
 };
 
 const upload = async (auth, data) => {
-  const { userId, image, resolution } = data;
+  const { ownerId, image, resolution } = data;
   const metadata = {
     w: image.w,
     h: image.h,
@@ -45,8 +53,10 @@ const upload = async (auth, data) => {
     // Uploads images to B2 storage
     let source = Buffer.from(image.buffer);
     let fileSize = image.size;
-    let filename = `${userId}/${resolution.replace('Res', '')}/${path.basename(image.name)}`;
-    filename = encodeURI(filename);
+    let filename = `${ownerId}/${resolution.replace('Res', '')}/${path.basename(
+      image.name
+    )}`;
+    filename = escape(filename);
     let sha1 = crypto.createHash('sha1').update(source).digest('hex');
 
     const uploadResponse = await axios.post(auth.uploadUrl, source, {
@@ -68,10 +78,11 @@ const upload = async (auth, data) => {
     }
 
     const src = process.env.CDN_PATH + filename;
-    const thumbnail = process.env.CDN_PATH + filename.replace('/full/', '/thumb/');
+    const thumbnail =
+      process.env.CDN_PATH + filename.replace('/full/', '/thumb/');
 
     // File upload to B2 complete; Send to dbWriter queue.
-    addToDbWriterQueue(uploadResponse.data, metadata, resolution, userId);
+    addToDbWriterQueue(uploadResponse.data, metadata, resolution, ownerId);
 
     const truncate = (str, truncLen, separator) => {
       if (str.length <= truncLen) return str;
@@ -83,7 +94,11 @@ const upload = async (auth, data) => {
         frontChars = Math.ceil(charsToShow / 2),
         backChars = Math.floor(charsToShow / 2);
 
-      return str.substr(0, frontChars) + separator + str.substr(str.length - backChars);
+      return (
+        str.substr(0, frontChars) +
+        separator +
+        str.substr(str.length - backChars)
+      );
     };
 
     const loggingFileName = (str, truncLen) => {
@@ -111,6 +126,7 @@ const upload = async (auth, data) => {
 module.exports = async (job) => {
   try {
     let uploadUrl = await getB2UploadAuth(job.data.credentials);
+
     if (!uploadUrl || uploadUrl.status === '401') {
       const getNew = true;
       const newCreds = await require('../tasks/getB2Auth')(getNew);
@@ -121,19 +137,7 @@ module.exports = async (job) => {
       uploadAuthorizationToken: uploadUrl.data.authorizationToken,
       uploadUrl: uploadUrl.data.uploadUrl,
     };
-    const result = await upload(uploadAuth, job.data);
-    const ws = require('../app').locals.ws;
-    if (result.resolution === 'thumbRes') {
-      ws.send(
-        Buffer.from(
-          JSON.stringify({
-            type: 'fileUploaded',
-            fileInfo: { ...result, src: result.src.replace('/thumb/', '/full/') },
-          })
-        )
-      );
-    }
-    return result;
+    return await upload(uploadAuth, job.data);
   } catch (err) {
     error(err);
   }

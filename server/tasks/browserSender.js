@@ -1,5 +1,7 @@
 const { browserSender } = require('./index');
-const { sendBrowserNotifications } = require('../notifications/browserController');
+const {
+  sendBrowserNotifications,
+} = require('../notifications/browserController');
 
 module.exports = async (job) => {
   try {
@@ -8,6 +10,6 @@ module.exports = async (job) => {
     return sendBrowserNotifications(job.data);
     // });
   } catch (err) {
-    error('Browser notifications error:', err);
+    console.log('Browser notifications error:', err);
   }
 };

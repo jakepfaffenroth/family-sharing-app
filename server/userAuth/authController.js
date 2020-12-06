@@ -9,20 +9,23 @@ const db = require('../db').pgPromise;
 // Passport config
 passport.use(
   new LocalStrategy(async (username, password, done) => {
-    const user = await db.oneOrNone('SELECT * FROM users WHERE username = $1', [username]);
+    const owner = await db.oneOrNone(
+      'SELECT * FROM owners WHERE username = $1',
+      [username]
+    );
 
-    if (!user) {
-      return done(null, user, {
+    if (!owner) {
+      return done(null, owner, {
         msg: 'Incorrect username',
       });
     }
-    bcrypt.compare(password, user.password, (err, res) => {
+    bcrypt.compare(password, owner.password, (err, res) => {
       if (res) {
         // passwords match! log user in
-        console.log('password correct!');
-        return done(null, user);
+        verbose('password correct!');
+        return done(null, owner);
       } else {
-        console.log('password incorrect...');
+        verbose('password incorrect...');
         // passwords do not match!
         return done(null, false, {
           msg: 'Incorrect password',
@@ -33,29 +36,40 @@ passport.use(
 );
 
 module.exports.login = (req, res, next) => {
-  console.log('attempting login...');
-  passport.authenticate('local', function (err, user, info) {
+  passport.authenticate('local', function (err, owner, info) {
     if (err) {
       return next(err);
     }
-    if (!user || user.length === 0) {
+    const username = req.body.username;
+    const password = req.body.password;
+
+    if (!owner || owner.length === 0) {
       res.locals.incorrectCred = true;
-      return res.redirect('../login?q=true');
+      return res.render('login', {
+        title: 'Carousel',
+        loginUrl: process.env.SERVER + '/auth/login',
+        loginErrMsg: 'Incorrect username or password.',
+        username: username,
+        password: password,
+      });
     }
     // Success; log in
-    req.logIn(user, function (err) {
+    req.logIn(owner, function (err) {
       if (err) {
         return next(err);
       }
-      const response = { user: user, b2Credentials: res.locals.credentials };
+      const response = { owner: owner, b2Credentials: res.locals.credentials };
 
-      // Send user info back to client as JSON
+      // Send owner info back to client as JSON
       // res.status(200).json(response);
       // return res.redirect(client + '/private-space');
-      const userId = JSON.stringify(req.session.passport.user.userId).replace(/"/g, '');
-      // Set cookie on client with user.userId
-      res.cookie('ownerId', userId, { maxAge: 1000 * 60 * 60 * 24 * 7 });
-      res.redirect(process.env.CLIENT + '?user=' + userId);
+      const ownerId = JSON.stringify(req.session.passport.user.ownerId).replace(
+        /"/g,
+        ''
+      );
+      // Set cookie on client with owner.ownerId
+      res.cookie('ownerId', ownerId, { maxAge: 1000 * 60 * 60 * 24 * 7 });
+      res.redirect(process.env.CLIENT + '?owner=' + ownerId);
     });
   })(req, res, next);
 };
@@ -63,57 +77,31 @@ module.exports.login = (req, res, next) => {
 module.exports.logout = (req, res) => {
   req.logout();
   res.cookie('ownerId', '', { expires: new Date(0) });
-  info('Logged out');
+  verbose('Logged out');
   req.session.destroy((err) => {
     error('Session destroy error:', err);
   });
-  return res.redirect(process.env.SERVER + 'login');
+  return res.redirect(process.env.SERVER);
 };
 
 module.exports.checkSession = async (req, res, next) => {
-  // console.log('Checking for user session -- userId:', req.body.userId);
-
   try {
-    let [user, images] = await db.multi(
-      'SELECT username, first_name, user_id, guest_id FROM users WHERE user_id = ${userId};SELECT * FROM images WHERE owner_id = ${userId}',
+    let [owner, images, albums] = await db.multi(
+      'SELECT username, first_name, last_name, owner_id, guest_id, plan, quota FROM owners WHERE owner_id = ${ownerId};SELECT images.*, album_images.album_id FROM images LEFT JOIN album_images ON images.file_id=album_images.file_id WHERE images.owner_id=${ownerId} ORDER BY upload_time ASC; SELECT album_id, album_name FROM albums WHERE owner_id = ${ownerId}',
       req.body
     );
 
-    user = user[0]; //Extract user from array; if row not found, user === undefined
-
-    if (!user) {
+    owner = owner[0]; //Extract owner from array; if row not found, owner === undefined
+    if (!owner) {
       info('Could not find user logged in');
       return res.json({ isLoggedIn: false });
     }
 
-    // console.log('User ' + user.username + ' is logged in');
-
     return res.json({
       isLoggedIn: true,
-      user: user,
-      images: images,
-    });
-
-    db.task(async (t) => {
-      const user = await db.oneOrNone(
-        'SELECT username, first_name, user_id, guest_id FROM users WHERE user_id = ${userId}',
-        req.body
-      );
-
-      if (!user) {
-        console.log('Could not find user logged in');
-        return res.json({ isLoggedIn: false });
-      }
-
-      const images = await db.any('SELECT * FROM images WHERE owner_id = ${userId}', req.body);
-
-      console.log('User ' + user.username + ' is logged in');
-
-      return res.json({
-        isLoggedIn: true,
-        user: user,
-        images: images,
-      });
+      owner,
+      images,
+      albums,
     });
   } catch (err) {
     error(err);

@@ -2,26 +2,29 @@ const webPush = require('web-push');
 const db = require('../db').pgPromise;
 
 module.exports.sendBrowserNotifications = async (data) => {
-  const { userId, guestId, thumbPath, fileCount } = data;
+  const { ownerId, guestId, thumbPath, sessionUploadCount } = data;
 
   try {
     const result = await db.task(async (t) => {
-      const user = await db.one('SELECT first_name, guest_id FROM users WHERE user_id = $1', [userId]);
-      const subscriptions = await db.any(
-        'SELECT * FROM subscribers WHERE owner_id = ${guestId} AND browser IS NOT NULL',
-        user
+      const owner = await db.one(
+        'SELECT first_name, guest_id FROM owners WHERE owner_id = $1',
+        [ownerId]
       );
-      return { user, subscriptions };
+      const subscriptions = await db.any(
+        'SELECT * FROM subscribers WHERE guest_id = ${guestId} AND browser IS NOT NULL',
+        owner
+      );
+      return { owner, subscriptions };
     });
     if (result.subscriptions.length === 0) {
       return info('No browser subscriptions found.');
     }
 
     const payload = JSON.stringify({
-      title: `${result.user.firstName} just shared ${fileCount === 1 ? 'a' : fileCount} new photo${
-        fileCount > 1 ? 's' : ''
-      }!`,
-      body: `Click to see ${fileCount === 1 ? 'it' : 'them'}!`,
+      title: `${result.owner.firstName} just shared ${
+        sessionUploadCount === 1 ? 'a' : sessionUploadCount
+      } new photo${sessionUploadCount > 1 ? 's' : ''}!`,
+      body: `Click to see ${sessionUploadCount === 1 ? 'it' : 'them'}!`,
       icon: thumbPath,
       guestId,
     });
@@ -30,7 +33,11 @@ module.exports.sendBrowserNotifications = async (data) => {
       const publicVapidKey = process.env.PUBLIC_VAPID_KEY;
       const privateVapidKey = process.env.PRIVATE_VAPID_KEY;
 
-      webPush.setVapidDetails('mailto:notification@carousel.jakepfaf.dev', publicVapidKey, privateVapidKey);
+      webPush.setVapidDetails(
+        'mailto:notification@carousel.jakepfaf.dev',
+        publicVapidKey,
+        privateVapidKey
+      );
 
       webPush.sendNotification(sub.browser, payload).catch(async (error) => {
         console.error(error);
@@ -39,17 +46,21 @@ module.exports.sendBrowserNotifications = async (data) => {
           console.log('Removing bad sub');
           try {
             const result = await db.task(async (t) => {
-              const user = await db.one('SELECT username, guestId FROM users WHERE user_id = $1', [userId]);
+              const owner = await db.one(
+                'SELECT username, guest_id FROM owners WHERE owner_id = $1',
+                [ownerId]
+              );
               const subscriptions = db.any(
-                'SELECT * FROM subscribers WHERE owner_id = ${guestId} AND browser IS NOT NULL',
-                user
+                'SELECT * FROM subscribers WHERE guest_id = ${guestId} AND browser IS NOT NULL',
+                owner
               );
               const deletedSub = db.one(
-                "DELETE FROM subscribers WHERE browser -> 'keys'->>'auth' = ${keys.auth} RETURNING *",
+                "DELETE FROM subscribers WHERE browser -> 'keys'->>'auth' = ${browser.keys.auth} RETURNING *",
                 sub
               );
-              if (deletedSub) info('Removed' + deletedSub + ' from ' + user.username);
-              return { user, subscriptions, deletedSub };
+              if (deletedSub)
+                info('Removed bad browser sub from ' + owner.username);
+              return { owner, subscriptions, deletedSub };
             });
           } catch (err) {
             error('Error removing bad browser subscription:', err);
@@ -59,7 +70,7 @@ module.exports.sendBrowserNotifications = async (data) => {
 
       return;
     });
-    success('Browser notifications sent!');
+    success('Browser notifications sent');
   } catch (err) {
     return error(err);
   }

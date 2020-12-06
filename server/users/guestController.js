@@ -2,7 +2,6 @@ const crypto = require('crypto');
 const key = crypto.randomBytes(32);
 const iv = crypto.randomBytes(16);
 const webPush = require('web-push');
-// require('dotenv').config({ path: './bin/.env' });
 const db = require('../db').pgPromise;
 
 const AWS = require('aws-sdk');
@@ -41,61 +40,76 @@ module.exports.mark = async (req, res) => {
   // extracts guestId from path
   const guestId = req.path.split('/')[1];
 
-  const user = await db.oneOrNone('SELECT guest_id FROM users WHERE guest_id = $1', [guestId]);
+  const owner = await db.oneOrNone(
+    'SELECT guest_id FROM owners WHERE guest_id = $1',
+    [guestId]
+  );
   // Set guestId cookie on client
-  if (user) {
-    res.cookie('guestId', user.guestId, { maxAge: 1000 * 60 * 60 * 24 * 7 });
-    res.redirect(process.env.CLIENT + '?guest=' + user.guestId);
+  if (owner) {
+    res.cookie('guestId', owner.guestId, { maxAge: 1000 * 60 * 60 * 24 * 7 });
+    res.redirect(process.env.CLIENT + '?guest=' + owner.guestId);
   } else {
-    res.status(404).end('<div style="text-align: center;"><h1>404 - Not Found</h1> \n <h2>Invalid link</h2></div>');
+    res
+      .status(404)
+      .end(
+        '<div style="text-align: center;"><h1>404 - Not Found</h1> \n <h2>Invalid link</h2></div>'
+      );
   }
 };
 
-// ---------------------------------------------------
-// ------- Guest Subscription and Verification -------
-
 // Sends guests subscription verification emails
 module.exports.subscribeEmail = async (req, res) => {
-  const { emailSender } = require('../tasks');
+  const { verifyEmailSender } = require('../tasks');
+  const guest = req.body;
 
-  emailSender.add('sendSubscribeEmail', {
-    guest: req.body.guest,
-  });
-
-  emailSender.process('sendSubscribeEmail', async (job) => {
-    await sendSubscribeEmail(job.data.guest);
-  });
-
-  const sendSubscribeEmail = async (guest) => {
-    // Handle form data if coming from invalid link re-subscribe page
-    if (req.body && !req.body.guest) {
-      guest = req.body;
-    }
-
-    const owner = await db.one('SELECT * FROM users WHERE guest_id = ${guestId}', guest);
+  try {
+    const owner = await db.one(
+      'SELECT * FROM owners WHERE guest_id = ${guestId}',
+      guest
+    );
     if (owner.length === 0) {
-      return console.log('Incorrect ownerId in email subscription.');
+      return console.log('Incorrect guestId in email subscription.');
     }
 
     // First need to see if guest has already subscribed
     const email = await db.oneOrNone(
-      "SELECT * FROM subscribers WHERE owner_id = ${guestId} AND email ->> 'emailAddress' = ${email}",
+      'SELECT * FROM subscribers WHERE guest_id = ${guestId} AND email = ${email}',
       guest
     );
     if (email) {
-      console.log('foundEmail', email.emailAddress);
-      res.status(200).send('Already subscribed email');
+      res.status(200).json({ alreadySubscribed: true });
     } else {
-      // Email not found in DB (guest hasn't subscribed yet)
-      const sender = `Carousel Email Verification <notification@carousel.jakepfaf.dev>`;
-      const recipient = guest.email;
-      const subject = `Verify your subscription to ${owner.firstName}'s photos`;
-      const queryParam = encodeURI(JSON.stringify(encrypt(guest)));
-      const verifyLink = `${process.env.SERVER}/guest/verify-email/?guest=${queryParam}&id=${guest.guestId}`;
-      const body_text = 'Verify using this link: \n' + verifyLink;
+      verifyEmailSender.add({
+        owner,
+        guest,
+      });
+      res.end();
+    }
+  } catch (err) {
+    error(err);
+  }
+};
 
-      // The HTML body of the email.
-      const body_html = `<html>
+module.exports.sendVerifyEmail = async (data) => {
+  let { guest, owner } = data;
+  // Handle form data if coming from invalid link re-subscribe page
+  // if (req.body && !req.body.guest) {
+  //   guest = req.body;
+  // }
+  if (guest.guest) {
+    guest = guest.guest;
+  }
+
+  // Email not found in DB (guest hasn't subscribed yet)
+  const sender = `Carousel Email Verification <notification@carousel.jakepfaf.dev>`;
+  const recipient = guest.email;
+  const subject = `Verify your subscription to ${owner.firstName}'s photos`;
+  const queryParam = encodeURI(JSON.stringify(encrypt(guest)));
+  const verifyLink = `${process.env.SERVER}/user/verify-email/?guest=${queryParam}&id=${guest.guestId}`;
+  const body_text = 'Verify using this link: \n' + verifyLink;
+
+  // The HTML body of the email.
+  const body_html = `<html>
     <head></head>
     <body>
       <h1>Verify your subscription to ${owner.firstName}'s photos</h1>
@@ -104,46 +118,42 @@ module.exports.subscribeEmail = async (req, res) => {
     </body>
     </html>`;
 
-      // The character encoding for the email.
-      const charset = 'UTF-8';
+  const charset = 'UTF-8';
 
-      // Specify the parameters to pass to the API.
-      let params = {
-        Source: sender,
-        Destination: {
-          ToAddresses: [recipient],
+  let params = {
+    Source: sender,
+    Destination: {
+      ToAddresses: [recipient],
+    },
+    Message: {
+      Subject: {
+        Data: subject,
+        Charset: charset,
+      },
+      Body: {
+        Text: {
+          Data: body_text,
+          Charset: charset,
         },
-        Message: {
-          Subject: {
-            Data: subject,
-            Charset: charset,
-          },
-          Body: {
-            Text: {
-              Data: body_text,
-              Charset: charset,
-            },
-            Html: {
-              Data: body_html,
-              Charset: charset,
-            },
-          },
+        Html: {
+          Data: body_html,
+          Charset: charset,
         },
-      };
-
-      //Try to send the email.
-      ses.sendEmail(params, function (err, data) {
-        // If something goes wrong, print an error message.
-        if (err) {
-          error(err.message);
-        } else {
-          success('Verification email sent! Message ID: ', data.MessageId);
-        }
-      });
-
-      res.status(200).render('verificationEmailSent');
-    }
+      },
+    },
   };
+
+  //Try to send the email.
+  ses.sendEmail(params, function (err, data) {
+    // If something goes wrong, print an error message.
+    if (err) {
+      error(err.message);
+    } else {
+      success('Verification email sent: Message ID: ', data.MessageId);
+    }
+  });
+
+  // res.render('verificationEmailSent');
 };
 
 // Guests routed here after clicking verification link
@@ -152,26 +162,31 @@ module.exports.subscribeEmail = async (req, res) => {
 module.exports.verifyEmail = async (req, res, next) => {
   let guest = JSON.parse(req.query.guest);
   guest = decrypt(guest);
-  // If decrypt fails (node probably restarted) try subscribing again.
+  // If decrypt fails (node probably restarted, or other link error) try subscribing again.
   if (!guest) {
     const gId = req.query.id;
-    const subscribeLink = `${process.env.SERVER}/guest/subscribe-email`;
-    return res.status(418).render('verificationError', { guestId: gId, subscribeLink: subscribeLink });
+    const subscribeLink = `${process.env.SERVER}/user/subscribe-email`;
+    return res.status(418).render('verificationError', {
+      guestId: gId,
+      subscribeLink: subscribeLink,
+    });
   }
 
-  const subscriber = await db.oneOrNone("SELECT * FROM subscribers WHERE email ->> 'email_address' = ${email}", guest);
+  const subscriber = await db.oneOrNone(
+    'SELECT * FROM subscribers WHERE email = ${email}',
+    guest
+  );
 
   if (subscriber) {
-    console.log('foundEmail', subscriber.email);
     res.status(200).send('Already verified email');
   }
 
-  const newEmailSubscriber = await db.one('INSERT INTO subscribers (owner_id, email) VALUES ($1, $2)RETURNING *', [
-    guest.guestId,
-    { firstName: guest.firstName, lastName: guest.lastName, emailAddress: guest.email },
-  ]);
+  const newEmailSubscriber = await db.one(
+    'INSERT INTO subscribers (guest_id, email, first_name, last_name) VALUES (${guestId}, ${email}, ${firstName}, ${lastName}) RETURNING *',
+    guest
+  );
 
-  success(newEmailSubscriber.email.emailAddress + ' saved.');
+  success(newEmailSubscriber.email + ' saved.');
 
   const guestLink = `${process.env.SERVER}/${guest.guestId}/guest`;
 
@@ -179,31 +194,47 @@ module.exports.verifyEmail = async (req, res, next) => {
 };
 
 module.exports.subscribeBrowser = async (req, res) => {
+  const guest = req.body;
   const publicVapidKey = process.env.PUBLIC_VAPID_KEY;
   const privateVapidKey = process.env.PRIVATE_VAPID_KEY;
 
-  webPush.setVapidDetails('mailto:hello@jakepfaf.dev', publicVapidKey, privateVapidKey);
+  webPush.setVapidDetails(
+    'mailto:hello@jakepfaf.dev',
+    publicVapidKey,
+    privateVapidKey
+  );
 
-  const newSubscription = JSON.parse(req.body.subscription);
-  const guestId = req.body.guestId;
+  guest.browser = JSON.parse(guest.browser);
 
   try {
     const subscription = await db.oneOrNone(
-      "SELECT * FROM subscribers WHERE owner_id = $1 AND browser -> 'keys' ->> 'auth' = $2",
-      [guestId, newSubscription.keys.auth]
+      "SELECT * FROM subscribers WHERE guest_id = ${guestId} AND browser -> 'keys' ->> 'auth' = ${browser.keys.auth}",
+      guest
     );
-    if (subscription) return res.status(200).send('Already subscribed to browser notifications');
+    if (subscription) return res.status(200).json({ alreadySubscribed: true });
     else {
       (async function () {
-        const newSub = await db.one('INSERT INTO subscribers (owner_id, browser) VALUES ($1, $2) RETURNING browser', [
-          guestId,
-          newSubscription,
-        ]);
+        const newSub = await db.one(
+          'INSERT INTO subscribers (guest_id, browser, first_name, last_name) VALUES (${guestId}, ${browser}, ${firstName}, ${lastName}) RETURNING browser',
+          guest
+        );
         success('New browser sub saved.');
         return res.status(200).send(newSub);
       })();
     }
   } catch (err) {
     return error(err);
+  }
+};
+
+module.exports.getSubscribers = async (req, res) => {
+  try {
+    const subscribers = await db.any(
+      'SELECT * FROM subscribers WHERE guest_id = (SELECT guest_id FROM owners WHERE owner_id = ${ownerId})',
+      req.body
+    );
+    res.json(subscribers);
+  } catch (err) {
+    error(err);
   }
 };

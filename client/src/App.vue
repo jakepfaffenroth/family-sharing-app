@@ -1,459 +1,178 @@
 <template>
-  <div>
-    <div v-if="isReadyToRender">
-      <!-- Owner header and navigation -->
-      <div v-if="userType == 'owner'">
-        <h1>Welcome Back, {{ user.firstName }}</h1>
-        <nav id="owner-menu">
-          <button @click="logout" class="link">Log out</button>
-          <button @click="ownerShare" class="link">Share</button>
-          <button @click="nuke" class="link">Nuke</button>
-          <download-zip :images="images" />
-          <uppy :user="user" @update-images="updateImages"></uppy>
-        </nav>
-
-        <div v-if="shareUrl" class="share-modal">
-          <h3>Your personal link to share:</h3>
-          <div>
-            <p id="share-url">{{ shareUrl }}</p>
-            <!-- <button @click="copyLink">{{ copyLinkText }}</button> -->
-          </div>
-          <button @click="shareUrl = ''">Close</button>
-        </div>
-      </div>
-
-      <!-- Guest header and navigation -->
-      <div v-if="userType == 'guest'">
-        <h1>You are a guest of {{ user.firstName }} {{ user.lastName }}</h1>
-
-        <button @click="openSubscribeForm" class="link">Subscribe</button>
-
-        <div v-if="guest.guestId" class="share-modal">
-          <h3>Subscription methods</h3>
-          <div>
-            <p id="share-url">Choose at least one:</p>
-            <form @submit.prevent>
-              <div>
-                <input type="checkbox" name="browserSubscribe" v-model="subOptions.browser" />
-                <label for="browserSubscribe">Browser notifications</label>
-                <input type="checkbox" name="emailSubscribe" v-model="subOptions.email" />
-                <label for="emailSubscribe">Email notifications</label>
-              </div>
-              <div>
-                <input
-                  type="text"
-                  name="firstName"
-                  required="true"
-                  placeholder="First name"
-                  v-model="guest.firstName"
-                />
-                <input type="text" name="lastName" placeholder="Last name" v-model="guest.lastName" />
-                <input type="text" name="email" placeholder="email" v-model="guest.email" />
-                <input type="hidden" name="guestId" :value="guest.guestId" />
-              </div>
-            </form>
-          </div>
-          <button @click="subscribe">Subscribe</button>
-          <button @click="guest.guestId = ''">Cancel</button>
-        </div>
-      </div>
-
-      <p>Image count: {{ images.length }}</p>
-      <div id="progress" v-if="progress !== '0%'">
-        <div id="progress-bar" :style="{ width: progress }">
-          <span id="progress-label">{{ progress }}</span>
-        </div>
-      </div>
-
-      <image-sorter v-on:sort-images="sortImages" />
-
-      <vue-picture-swipe
-        :items="images"
-        :user="user"
-        :userType="userType"
-        v-on:delete-image="deleteImage"
-      ></vue-picture-swipe>
-
-      <div v-if="images.length === 0 && userType === 'owner' && user.userId">
-        <p>Upload your first images!</p>
-      </div>
-    </div>
-    <div></div>
+  <div class="flex flex-col min-h-screen w-full ">
+    <router-view v-slot="{ Component }">
+      <transition name="slide">
+        <component :is="Component" :user-type="userType" />
+      </transition>
+    </router-view>
   </div>
 </template>
 
-<script scoped>
-import axios from 'axios';
-import Uppy from './components/Uppy';
-import VuePictureSwipe from './components/VuePictureSwipe';
-import ImageSorter from './components/ImageSorter';
-import DownloadZip from './components/DownloadZip';
+<script>
+// import axios from 'axios';
+import toast from './utils/Toast';
+import { ref, reactive, computed, provide, onErrorCaptured } from 'vue';
+import { useRoute } from 'vue-router';
+import { useStore, mapState, mapGetters } from 'vuex';
+
+import Home from './views/Home';
+import Account from './views/Account';
 
 export default {
-  props: {},
-  components: {
-    Uppy,
-    VuePictureSwipe,
-    ImageSorter,
-    DownloadZip,
-  },
-  provide() {
-    return {
-      userType: 'guest',
-      user: {},
-      images: this.images,
-    };
-  },
-  data() {
-    return {
-      server: process.env.VUE_APP_SERVER,
-      isReadyToRender: false,
-      userType: 'guest',
-      user: {},
-      images: [],
-      shareUrl: '',
-      guest: {
-        firstName: null,
-        lastName: null,
-        email: null,
-        guestId: null,
-      },
-      subOptions: {
-        browser: null,
-        email: null,
-      },
-    };
-  },
-  computed: {
-    progressLabel: function() {
-      return this.progress;
-    },
-  },
-  methods: {
-    nuke() {
-      let images = this.images;
-      this.images = [];
+  name: 'App',
+  provide: { toast },
+  setup() {
+    const store = useStore();
+    const route = useRoute();
+    const server = process.env.VUE_APP_SERVER;
 
-      axios.post(this.server + '/files/delete-image', {
-        images: images.map((x) => {
-          const { fileId, fileName } = x;
-          return { fileId, fileName };
-        }),
-        userId: this.user.userId,
-      });
-    },
-
-    openSubscribeForm() {
-      this.guest.guestId = this.user.guestId;
-    },
-
-    urlBase64ToUint8Array(base64String) {
-      const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
-      const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
-
-      const rawData = window.atob(base64);
-      const outputArray = new Uint8Array(rawData.length);
-
-      for (let i = 0; i < rawData.length; ++i) {
-        outputArray[i] = rawData.charCodeAt(i);
-      }
-      return outputArray;
-    },
-
-    async subscribeBrowser() {
-      if (!this.guest.firstName || !this.guest.lastName || !this.guest.email) return;
-      const publicVapidKey = 'BIXOvprQOJRgsH4EHujdKRaOmrxCLTP5uKlrB_W-1pXEmCU9twuOgxIaFniDmLE8r4SAVmaTZOxOLsXdgAoWwpw';
-
-      if ('serviceWorker' in navigator) {
-        let register;
-        // If statement to conditionally register production vs dev service workers
-        if (process.env.VUE_APP_SERVER == 'http://localhost:3400') {
-          register = await navigator.serviceWorker.register('/devSw.js', {
-            scope: '/',
-          });
-        }
-        if (process.env.VUE_APP_SERVER == 'https://carousel.jakepfaf.dev') {
-          register = await navigator.serviceWorker.register('/sw.js', {
-            scope: '/',
-          });
-        }
-
-        const subscription = await register.pushManager.subscribe({
-          userVisibleOnly: true,
-          applicationServerKey: this.urlBase64ToUint8Array(publicVapidKey),
-        });
-        // console.log({message: JSON.stringify(subscription)});
-
-        await axios({
-          url: this.server + '/guest/subscribe-browser',
-          method: 'POST',
-          data: { subscription: JSON.stringify(subscription), guestId: this.user.guestId },
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        });
-      } else {
-        alert('Sorry, notifications are not supported in this browser');
-      }
-    },
-
-    subscribeEmail() {
-      axios.post(this.server + '/guest/subscribe-email', this.guest);
-    },
-
-    async subscribe() {
-      const browser = this.subOptions.browser;
-      const email = this.subOptions.email;
-
-      const checkBrowser = () => {
-        browser ? this.subscribeBrowser() : null;
-      };
-      const checkEmail = () => {
-        email ? this.subscribeEmail() : null;
-      };
-
-      // Send subscription requests if checkboxes are checked
-      Promise.all([checkBrowser(), checkEmail()])
-        .then(() => {
-          email || browser ? (this.guest.guestId = '') : null;
-        })
-        .catch((error) => console.log(`Error in promises ${error}`));
-    },
-
-    updateImages(fileInfo) {
-      const { fileId, filename, src, thumbnail, uploadTime } = fileInfo;
-      const newImg = {
-        fileId,
-        fileName: filename,
-        src,
-        thumbnail,
-        uploadTime,
-        w: fileInfo.metadata.w,
-        h: fileInfo.metadata.h,
-        ownerId: this.user.userId,
-      };
-      this.images.unshift(newImg);
-    },
-
-    sortImages(sortParameter) {
-      if (sortParameter === 'reverse') {
-        this.images.reverse();
-        return;
-      }
-
-      const compare = (a, b) => {
-        let fileA, fileB;
-
-        if (sortParameter === 'captureTime') {
-          fileA = a.exif.exif.DateTimeOriginal || null;
-          fileB = b.exif.exif.DateTimeOriginal || null;
-        }
-        if (sortParameter === 'uploadTime') {
-          fileA = a.uploadTime;
-          fileB = b.uploadTime;
-        }
-
-        let comparison = 0;
-        if (fileA > fileB) {
-          comparison = -1;
-        } else if (fileA < fileB) {
-          comparison = 1;
-        }
-        return comparison;
-      };
-      try {
-        this.images.sort(compare);
-      } catch (err) {
-        console.log('err: ', err);
-      }
-    },
-
-    // uploadError(file, message, xhr) {
-    //   console.log('Upload Error: ', message, xhr);
-    // },
-
-    ownerShare() {
-      this.shareUrl = `${this.server}/${this.user.guestId}/guest`;
-    },
-
-    async deleteImage(fileId, smallFileId, fileName, userId, index) {
-      this.images.splice(index, 1);
-      axios.post(this.server + '/files/delete-image', { fileId: fileId, fileName: fileName, userId: userId });
-    },
-
-    logout() {
-      axios.get(this.server + '/logout');
-      document.cookie = 'ownerId=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;Secure';
-      document.cookie = 'connect.sid=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;Secure';
-      window.location.replace(this.server + '/login');
-    },
-  },
-
-  beforeCreate() {
-    // user id is passed as query param from server after login
+    // owner or guest id is passed as query param from server after login
     // set cookie with id and clear query from url & history
     // if there's no query param (user went to site directly) then
     // don't change the cookie
     const params = new URLSearchParams(window.location.search);
-    const uId = params.get('user');
+    const uId = params.get('owner');
     const gId = params.get('guest');
     if (uId) {
-      document.cookie = 'ownerId=' + uId;
+      document.cookie = `ownerId=${uId}`;
       window.history.replaceState(null, '', '/');
     }
-    // Same for guestId
+
     if (gId) {
-      document.cookie = 'guestId=' + gId;
+      document.cookie = `guestId=${gId}`;
       window.history.replaceState(null, '', '/');
     }
-  },
 
-  async created() {
-    // Prevent right clicking images
-    document.addEventListener('contextmenu', (event) => {
-      if (event.target.nodeName === 'IMG') {
-        event.preventDefault();
-      }
-    });
+    const ownerId = getCookie('ownerId') || null;
+    const guestId = getCookie('guestId') || null;
+    let userType = ref('');
+    store.dispatch('saveIdCookies', { ownerId, guestId });
 
-    const getCookie = (userType) => {
+    if (ownerId) {
+      userType.value = 'owner';
+      getOwnerData(ownerId, 'owner');
+    }
+    if (guestId && !ownerId) {
+      userType.value = 'guest';
+      getOwnerData(guestId, 'guest');
+    }
+    // Prevent users from viewing app without login or guestId
+    if (!guestId && !ownerId) {
+      console.error('No cookies found - redirect');
+      window.location.assign(server);
+    }
+
+    function getCookie(userType) {
       const cookieArr = document.cookie.split(';');
 
       // Loop through the array elements
       for (let i = 0; i < cookieArr.length; i++) {
         const cookiePair = cookieArr[i].split('=');
 
-        /* Removing whitespace at the beginning of the cookie name
-        and compare it with the given string */
+        // Removing whitespace at the beginning of the cookie name and compare it with the given string
         if (userType == cookiePair[0].trim()) {
           // Decode the cookie value and return
           return decodeURIComponent(cookiePair[1]);
         }
       }
+    }
+
+    async function getOwnerData(id, userType) {
+      await store.dispatch('getOwnerData', { id, userType });
+    }
+
+    return {
+      route,
+      userType
     };
-
-    const ownerId = getCookie('ownerId');
-    const guestId = getCookie('guestId');
-
-    // if logged in as an owner, directs to owner home
-    if (ownerId) {
-      const response = await axios({
-        url: this.server + '/auth/check-session',
-        method: 'post',
-        data: { userId: ownerId },
-      });
-      if (!response.data.isLoggedIn) {
-        window.location = this.server + '/login';
-      }
-      this.userType = 'owner';
-      this.user = response.data.user;
-      this.sortImages('uploadTime');
-      this.images = response.data.images.reverse();
-      this.isReadyToRender = true;
-    }
-
-    // If NOT logged in as owner, but has a guestId (from owner's share URL)
-    // then direct to owner's guest page
-    if (guestId && !ownerId) {
-      const response = await axios({
-        url: this.server + '/user/get-user',
-        method: 'post',
-        data: { guestId },
-      });
-
-      this.user = response.data.user;
-      this.images = response.data.images.reverse();
-      this.isReadyToRender = true;
-      this.sortImages('uploadTime');
-    }
-
-    // Prevent users from viewing app without login or guestId
-    if (!guestId && !ownerId) {
-      window.location = this.server;
-    }
-  },
+  }
 };
 </script>
 
-<style scoped>
-#owner-menu {
-  display: flex;
+<style>
+.notyf__toast {
+  @apply flex justify-between content-center w-64 h-auto p-0 rounded text-sm font-light;
 }
 
-/* #dropzone {
-  width: 60vw;
-  margin: auto;
-} */
-
-/* #progress {
-  width: 100%;
-  background-color: grey;
-  border: 1px solid black;
+.notyf__wrapper {
+  @apply m-3 p-0 w-full;
 }
 
-#progress-bar {
-  height: 30px;
-  background-color: green;
-} */
-
-.link {
-  border: none;
-  background: none;
-  cursor: pointer;
-}
-.link:hover {
-  color: blue;
+.notyf__message {
+  @apply w-full;
 }
 
-.image-grid {
-  margin-top: 1rem;
+.notyf__dismiss-btn {
+  @apply absolute -top-4 right-1 h-8 bg-transparent hover:bg-transparent;
 }
 
-.image-container {
-  position: relative;
-  margin: 0.25rem;
-  overflow: hidden;
-  height: 250px;
-}
-
-.image {
-  flex: auto;
-  height: 250px;
-  min-width: 100px;
-  object-fit: contain;
-  transition: 0.2s ease-in-out;
-}
-
-.image-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+/* Page transitions */
+.slide-enter {
+  transform: translate(2em, 0);
   opacity: 0;
 }
 
-.image-container:hover .image {
-  scale: 1.1;
-  object-fit: cover;
-}
-
-.image-container:hover .image-overlay {
+.slide-enter-to,
+.slide-leave {
   opacity: 1;
-  transition: all 0.2s ease-in-out;
-}
-.delete-btn {
-  position: absolute;
-  top: 10px;
-  right: 10px;
+  transform: translate(0, 0);
 }
 
-.share-modal {
-  position: absolute;
-  z-index: 1000;
-  padding: 200px;
-  margin: auto;
-  background-color: white;
-  border: 1px solid black;
+.slide-leave-to {
+  transform: translate(-2em, 0);
+  opacity: 0;
+}
+
+.slide-enter-active,
+.slide-leave-active {
+  transition-duration: 0.1s;
+  transition-property: height, opacity, transform;
+  transition-timing-function: cubic-bezier(0.55, 0, 0.1, 1);
+  overflow: hidden;
+}
+
+/* Album and Account section transitions */
+.album-enter-active {
+  @apply transition-all duration-75 ease-out;
+}
+
+.album-leave-active {
+  @apply transition-all duration-75 ease-in;
+}
+
+.album-enter-from {
+  @apply transform -translate-y-10 opacity-0;
+}
+,
+.album-leave-to {
+  @apply transform translate-y-10 opacity-0;
+}
+
+/* Modal and drop menu transitions */
+.slide-fade-enter-active {
+  @apply transition-all duration-200 ease-out;
+}
+
+.slide-fade-leave-active {
+  @apply transition-all duration-150 ease-in;
+}
+
+.slide-fade-enter-from,
+.slide-fade-leave-to {
+  @apply transform -translate-y-2 opacity-0;
+}
+
+/* General fade in transitions */
+.fade-enter-active {
+  @apply transition-all duration-200 ease-out;
+}
+
+.fade-leave-active {
+  @apply transition-all duration-150 ease-in;
+}
+
+.fade-enter-from,
+.slide-fade-leave-to {
+  @apply opacity-0;
 }
 </style>

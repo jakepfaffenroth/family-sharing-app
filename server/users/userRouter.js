@@ -1,12 +1,18 @@
 const express = require('express');
 const router = express.Router();
 
-const userController = require('./userController');
+const ownerController = require('./ownerController');
+const guestController = require('./guestController');
 
-router.post('/create-user', userController.create);
+// Owner routers
+router.post('/create-owner', ownerController.create);
+router.post('/choose-plan', ownerController.choosePlan);
+router.post('/get-owner', ownerController.getOwner);
 
-// GET list of all users
-router.post('/get-user', userController.getUser);
-
+// Guest routers
+router.post('/subscribe-email', guestController.subscribeEmail);
+router.post('/subscribe-browser', guestController.subscribeBrowser);
+router.get('/verify-email', guestController.verifyEmail);
+router.post('/get-subscribers', guestController.getSubscribers);
 
 module.exports = router;

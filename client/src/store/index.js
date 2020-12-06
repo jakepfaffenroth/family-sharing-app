@@ -1,22 +1,34 @@
-import Vuex from 'vuex';
+import { createStore } from 'vuex';
+import ownerStore from './ownerStore';
+import imageStore from './imageStore';
+import planStore from './planStore';
 
-export default Vuex.createStore({
-  state: {
-    b2Credentials: {},
-    user: {},
-  },
+const initialState = JSON.stringify({
+  ownerStore: ownerStore.state,
+  imageStore: imageStore.state,
+  planStore: planStore.state
+});
+
+export default createStore({
+  state: {},
+  getters: {},
   mutations: {
-    setCredentials(state, cred) {
-      state.b2Credentials = cred;
-    },
-    setUser(state, user) {
-      state.user = user;
-    },
+    RESET_STATE(state) {
+      //Convert string in object
+      let copyState = JSON.parse(initialState);
+      Object.keys(state).forEach(key => {
+        Object.assign(state[key], copyState[key]);
+      });
+    }
   },
-  actions: {},
-  getters: {
-    b2Credentials: (state) => state.b2Credentials,
-    user: (state) => state.user,
+  actions: {
+    RESET_STATE({ commit }) {
+      commit('RESET_STATE');
+    }
   },
-  modules: {},
+  modules: {
+    ownerStore,
+    imageStore,
+    planStore
+  }
 });

@@ -1,0 +1,37 @@
+<template>
+  <div class="mt-3 mb-1 text-center text-sm text-teal-600">
+    <p>
+      You've used
+    </p>
+    <p>{{ usageValue.num }} {{ usageValue.unit }} of {{ quota / 1000 }} GB</p>
+    <div
+      class="relative flex h-2 w-5/6 my-2 mx-auto rounded-sm overflow-hidden"
+    >
+      <div
+        class="left-0 h-full border rounded-l-sm"
+        :class="'bg-' + usageBarColor + ' border-' + usageBarColor"
+        :style="usageBarWidth"
+      ></div>
+      <div
+        class="flex-grow border-t border-b border-r border-gray-400 rounded-r-sm"
+      ></div>
+    </div>
+  </div>
+  <router-link
+    :to="{ name: 'account', params: { goToChangePlan: true } }"
+    class="main-menu-link text-purple-500 font-semibold text-center"
+    data-test="getMoreStorageBtn"
+  >
+    Get more storage
+  </router-link>
+</template>
+
+<script>
+import { mapGetters } from 'vuex';
+
+export default {
+  computed: {
+    ...mapGetters(['quota', 'usageValue', 'usageBarColor', 'usageBarWidth'])
+  }
+};
+</script>
