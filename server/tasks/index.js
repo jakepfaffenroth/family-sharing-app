@@ -34,8 +34,9 @@ const queues = {
   getB2Auth: new queue('getB2Auth', bullConfig),
   uploader: new queue('imgUploader', bullConfig),
   dbWriter: new queue('dbWriter', bullConfig),
-  verifyEmailSender: new queue('verifyEmailSender', bullConfig),
-  emailSender: new queue('emailSender', bullConfig),
+  verifyGuestEmailSender: new queue('verifyGuestEmailSender', bullConfig),
+  confirmOwnerEmailSender: new queue('confirmOwnerEmailSender', bullConfig),
+  notificationEmailSender: new queue('notificationEmailSender', bullConfig),
   browserSender: new queue('browserSender', bullConfig),
 };
 module.exports = queues;
@@ -44,21 +45,23 @@ const {
   getB2Auth,
   uploader,
   dbWriter,
-  verifyEmailSender,
-  emailSender,
+  verifyGuestEmailSender,
+  confirmOwnerEmailSender,
+  notificationEmailSender,
   browserSender,
 } = queues;
 
 getB2Auth.pause();
 // Pause notification processing until after first thumbnail uploaded
-emailSender.pause();
+notificationEmailSender.pause();
 browserSender.pause();
 
 getB2Auth.process(require('./getB2Auth.js'));
 dbWriter.process(require('./dbWriter.js'));
 uploader.process(require('./uploader.js'));
-emailSender.process(require('./emailSender'));
-verifyEmailSender.process(require('./verifyEmailSender'));
+notificationEmailSender.process(require('./emailSender').emailNotification);
+verifyGuestEmailSender.process(require('./emailSender').guestVerification);
+confirmOwnerEmailSender.process(require('./emailSender').ownerConfirmation);
 browserSender.process(require('./browserSender'));
 
 uploader.on('completed', async (job, fileInfo) => {
@@ -70,7 +73,7 @@ uploader.on('completed', async (job, fileInfo) => {
     const ws = app.locals.ws;
     ws.send('uploadsComplete');
   }
-  emailSender.resume();
+  notificationEmailSender.resume();
   browserSender.resume();
 });
 

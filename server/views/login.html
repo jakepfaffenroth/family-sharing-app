@@ -6,9 +6,9 @@
     <h2
       class="mt-6 text-center text-2xl leading-9 font-extrabold text-gray-900"
     >
-      Sign in to your account
+      {{#if heading}} {{{heading}}} {{else}} Sign in to your account {{/if}}
     </h2>
-    <form class="mt-8" action="{{loginUrl}}" method="POST">
+    <form id="loginForm" class="mt-8" action="{{loginUrl}}" method="POST">
       <input type="hidden" name="remember" value="true" />
       <div class="rounded-md shadow-sm">
         <div>
@@ -34,9 +34,9 @@
           />
         </div>
       </div>
-
-      <div class="mt-6 flex items-center justify-between">
-        <!--        
+    </form>
+    <div class="mt-6 flex items-center justify-between">
+      <!--        
         <div class="flex items-center">
           <input
             id="remember_me"
@@ -52,37 +52,116 @@
         </div>
          -->
 
-        <div class="text-sm leading-5">
-          <a
-            href="#"
-            class="font-medium text-teal-600 hover:text-teal-500 focus:outline-none focus:underline transition ease-in-out duration-150"
-          >
-            Forgot your password?
-          </a>
-        </div>
-      </div>
-
-      <div class="mt-6">
+      <div class="text-sm leading-5">
         <button
-          type="submit"
-          class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm leading-5 font-medium rounded-md text-white bg-teal-600 hover:bg-teal-500 focus:outline-none focus:border-teal-700 focus:ring-teal active:bg-teal-700 transition duration-150 ease-in-out"
+          id="forgotBtn"
+          class="font-medium text-teal-600 hover:text-teal-500 focus:outline-none focus:underline transition ease-in-out duration-150"
         >
-          <span class="absolute left-0 inset-y-0 flex items-center pl-3">
-            <svg
-              class="h-5 w-5 text-teal-500 group-hover:text-teal-400 transition ease-in-out duration-150"
-              fill="currentColor"
-              viewBox="0 0 20 20"
-            >
-              <path
-                fill-rule="evenodd"
-                d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"
-                clip-rule="evenodd"
-              />
-            </svg>
-          </span>
-          Sign in
+          Forgot your password?
         </button>
       </div>
-    </form>
+    </div>
+    <div class="mt-6">
+      <button
+        onClick="document.getElementById('loginForm').submit()"
+        class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm leading-5 font-medium rounded-md text-white bg-teal-600 hover:bg-teal-500 focus:outline-none focus:border-teal-700 focus:ring-teal active:bg-teal-700 transition duration-150 ease-in-out"
+      >
+        <span class="absolute left-0 inset-y-0 flex items-center pl-3">
+          <svg
+            class="h-5 w-5 text-teal-500 group-hover:text-teal-400 transition ease-in-out duration-150"
+            fill="currentColor"
+            viewBox="0 0 20 20"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"
+              clip-rule="evenodd"
+            />
+          </svg>
+        </span>
+        Sign in
+      </button>
+    </div>
   </div>
 </div>
+
+<div
+  id="modalBackdrop"
+  data-test="modalBackdrop"
+  class="invisible opacity-0 fixed inset-0 flex items-end sm:items-center sm:justify-center bg-black bg-opacity-50 z-50 transition-all duration-150 ease-in-out"
+>
+  <div
+    id="modal"
+    data-test="modal"
+    class="w-full px-6 py-4 overflow-hidden rounded-t-lg shadow-lg bg-gray-800 sm:rounded-lg sm:m-4 sm:max-w-xl z-50"
+  >
+    <div class="mb-4 text-white text-xl font-bold">
+      <h1>Request a password reset link</h1>
+    </div>
+    <div id="modalContent" class="mb-4 text-white">
+      <form
+        id="pwResetForm"
+        class="mt-8"
+        action="/auth/reset-password"
+        method="POST"
+      >
+        <div class="rounded-md shadow-sm">
+          <div>
+            <input
+              aria-label="Email"
+              name="email"
+              type="email"
+              required
+              class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue focus:border-blue-300 focus:z-10 sm:text-sm sm:leading-5"
+              placeholder="Email"
+              value=""
+            />
+          </div>
+        </div>
+      </form>
+    </div>
+    <div
+      class="flex flex-col items-center justify-end px-6 py-3 -mx-6 -mb-4 space-y-4 sm:space-y-0 sm:space-x-6 sm:flex-row"
+    >
+      <div id="cancelBtn">{{> buttonCancel}}</div>
+      <div id="submitRequestBtn">{{> buttonPurple label="Request link"}}</div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const modalBackdrop = document.getElementById('modalBackdrop');
+
+  modalBackdrop.addEventListener('click', (event) => {
+    if (event.target.id === 'modalBackdrop') closeModal();
+  });
+
+  document.addEventListener('keydown', (event) => {
+    if (
+      !modalBackdrop.className.includes('invisible') &&
+      event.key === 'Escape'
+    ) {
+      closeModal();
+    }
+  });
+
+  const forgotBtn = document.getElementById('forgotBtn');
+  const cancelBtn = document.getElementById('cancelBtn');
+  const submitRequestBtn = document.getElementById('submitRequestBtn');
+
+  forgotBtn.addEventListener('click', () => {
+    modalBackdrop.classList.remove('invisible', 'opacity-0');
+  });
+
+  cancelBtn.addEventListener('click', () => {
+    modalBackdrop.classList.add('invisible', 'opacity-0');
+  });
+
+  submitRequestBtn.addEventListener('click', () => {
+    document.getElementById('pwResetForm').submit();
+  });
+
+  function closeModal() {
+    modalBackdrop.classList.add('invisible', 'opacity-0');
+  }
+</script>

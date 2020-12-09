@@ -3,6 +3,7 @@ const bcrypt = require('bcryptjs');
 const { body, validationResult } = require('express-validator');
 const { sanitizeBody } = require('express-validator');
 const db = require('../db').pgPromise;
+const { confirmOwnerEmailSender } = require('../tasks');
 const { v4: uuidv4 } = require('uuid');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const { error } = require('winston');
@@ -70,7 +71,7 @@ module.exports.create = [
       const firstName = req.body.firstName;
       const lastName = req.body.lastName;
       const email = req.body.email;
-      console.log('errors.array():', errors.array());
+
       res.render('signup', {
         title: 'Carousel',
         loginUrl: process.env.SERVER + '/auth/login',
@@ -97,19 +98,18 @@ module.exports.create = [
         });
 
         const owner = await db.one(
-          'INSERT INTO owners (owner_id, username, first_name, last_name, email, password, guest_id, customer_id) VALUES (${id}, ${username}, ${firstName}, ${lastName}, ${email}, ${password}, ${guestId}, ${customerId}) RETURNING username, first_name',
+          'INSERT INTO owners (owner_id, username, first_name, last_name, password, guest_id, customer_id) VALUES (${ownerId}, ${username}, ${firstName}, ${lastName}, ${password}, ${guestId}, ${customerId}) RETURNING owner_id, username, first_name, last_name',
           {
-            id: uuidv4(),
+            ownerId: uuidv4(),
             username: req.body.username,
             firstName: req.body.firstName,
             lastName: req.body.lastName,
-            email: req.body.email,
             password: hashedPassword,
             guestId: uuidv4(),
             customerId: customer.id,
           }
         );
-
+        confirmOwnerEmailSender.add({ ...owner, email: req.body.email });
         success('User ' + owner.username + ' created');
 
         //Account created; redirect to account completion screen (choose plan)

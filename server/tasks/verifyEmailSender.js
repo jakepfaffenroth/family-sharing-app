@@ -1,5 +1,5 @@
-const { sendVerifyEmail } = require('../users/guestController');
+const { sendGuestVerificationEmail } = require('../users/guestController');
 
 module.exports = async (job) => {
-  return await sendVerifyEmail(job.data);
+  return await sendGuestVerificationEmail(job.data);
 };

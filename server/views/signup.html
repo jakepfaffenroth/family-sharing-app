@@ -52,7 +52,7 @@
             type="text"
             value="{{lastName}}"
             required
-            class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-r-md focus:outline-none focus:ring-blue focus:border-blue-300 focus:z-10 sm:text-sm sm:leading-5"
+            class="appearance-none rounded-none relative block w-full -ml-px px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-r-md focus:outline-none focus:ring-blue focus:border-blue-300 focus:z-10 sm:text-sm sm:leading-5"
             placeholder="Last Name"
           />
         </div>
@@ -63,8 +63,17 @@
             type="text"
             value="{{username}}"
             required
-            class="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-blue focus:border-blue-300 focus:z-10 sm:text-sm sm:leading-5"
+            class="appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-none rounded-t-md focus:outline-none focus:ring-blue focus:border-blue-300 focus:z-10 sm:text-sm sm:leading-5"
             placeholder="Username"
+          />
+          <input
+            aria-label="Email"
+            name="email"
+            type="email"
+            value="{{email}}"
+            required
+            class="appearance-none relative block w-full -mt-px px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-none rounded-b-md focus:outline-none focus:ring-blue focus:border-blue-300 focus:z-10 sm:text-sm sm:leading-5"
+            placeholder="Email"
           />
         </div>
         <div class="-mt-px">
@@ -167,74 +176,8 @@
   src="/javascripts/zxcvbn.js"
   async="defer"
 ></script>
-<script>
-  const bars = document.getElementById('strength-bar').children;
-  const pwInput = document.getElementById('pw-input');
-
-  const pwTips = document.getElementById('pw-tips');
-  pwInput.addEventListener('input', (e) => checkPw(e.target.value));
-
-  const submitBtn = document.getElementById('submit-btn');
-  submitBtn.addEventListener('click', (e) => saveFormData(e));
-
-  function checkPw(input) {
-    if (!input) {
-      pwTips.innerText = '';
-      Object.keys(bars).forEach((key, index) => {
-        changeBarStyle(parseInt(key), 'bg-transparent');
-      });
-      return;
-    }
-    let result = zxcvbn(input);
-
-    let suggs = '';
-    if (result.feedback.suggestions) {
-      result.feedback.suggestions.forEach((sugg) => {
-        suggs = suggs.concat(sugg + ' ');
-      });
-
-      pwTips.innerText = `${suggs}${'\n' + result.feedback.warning || ''}`;
-    } else pwTips.innerText = '';
-
-    switch (result.score) {
-      case 0:
-        changeBarStyle(0, 'red-500');
-        // changeBarStyle(0, 'bg-red-500 w-1/12');
-        break;
-      case 1:
-        changeBarStyle(1, 'red-500');
-        // changeBarStyle(1, 'bg-red-500 w-1/5');
-        break;
-      case 2:
-        changeBarStyle(2, 'orange-400');
-        // changeBarStyle(2, 'bg-orange-400 w-2/5');
-        break;
-      case 3:
-        changeBarStyle(3, 'yellow-300');
-        // changeBarStyle(3, 'bg-yellow-300 w-3/4');
-        break;
-      case 4:
-        changeBarStyle(4, 'green-400');
-        // changeBarStyle(4, 'bg-green-400 w-full');
-        break;
-      default:
-        break;
-    }
-  }
-
-  function changeBarStyle(barIndex, color) {
-    const baseStyle =
-      'w-1/5 border rounded-sm left-0 h-2 transition-all duration-300 ease-out';
-    if (barIndex < bars.length - 1) {
-      bars[barIndex + 1].setAttribute('class', ` ${baseStyle} bg-transparent `);
-    }
-    bars[barIndex].setAttribute(
-      'class',
-      ` ${baseStyle} bg-${color} border-${color}`
-    );
-  }
-
-  function saveFormData(e) {
-    // console.log('e.target:', e.target);
-  }
-</script>
+<script
+  type="text/javascript"
+  src="/javascripts/pwStrength.js"
+  async="defer"
+></script>
