@@ -17,7 +17,7 @@
       >
         <!-- Group date label -->
         <div class="flex justify-between">
-          <p class="mb-1 text-sm sm:text-base">
+          <p class="mb-1 pl-1 sm:pl-0 text-sm sm:text-base">
             {{ group.date }}
           </p>
         </div>
@@ -31,7 +31,7 @@
             itemscope
             itemtype="http://schema.org/ImageObject"
             :src="item.src"
-            class="image-container h-24 xs:h-28 sm:h-36 md:h-64 z-0"
+            class="image-container h-24 sm:h-36 md:h-64 z-0"
             @mouseenter="item.hover = true"
             @mouseleave="item.hover = false"
           >
@@ -72,7 +72,7 @@
                 :data-url="item.thumbnail"
                 :alt="item.alt"
                 itemprop="thumbnail"
-                class="image h-24 xs:h-28 sm:h-36 md:h-64 rounded-sm border-none"
+                class="image h-24 sm:h-36 md:h-64 rounded-sm border-none"
                 :class="{
                   'bg-gray-300 animate-pulse':
                     imgsLoaded.indexOf(item.fileId) === -1
@@ -643,7 +643,8 @@ figure {
   @apply relative mr-2 mb-6 overflow-hidden;
 }
 .image-container {
-  @apply relative mr-1 mb-1 overflow-hidden;
+  @apply relative mr-1 mb-1 
+  ;
 }
 
 .image {
@@ -653,14 +654,7 @@ figure {
   /* transition: all 0.2s ease-in-out; */
 }
 
-.image-container:hover .image {
-  scale: 1;
-  object-fit: cover;
-}
-
-.image-container:hover .img-menu-btn {
-  color: black;
-}
+/* .image˝ */
 
 /* @media (max-width: 640px) {
   .skeleton-width {

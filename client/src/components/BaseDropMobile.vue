@@ -1,18 +1,14 @@
 <template>
-  <div data-test="baseDropMenu" class="relative" @mouseleave="closeMenu">
-    <div
-      data-test="openBaseDropMenu"
-      @click="openMenu"
-      @touchstart.self="closeMenu"
-    >
-      <slot name="button" :is-menu-visible="isMenuVisible"></slot>
+  <div data-test="baseDropMobile" class="relative">
+    <div data-test="openBaseDropMobile" @click.capture="toggleMenu($event)">
+      <slot name="button" :isMenuVisible="isMenuVisible"></slot>
     </div>
     <!-- Menu list -->
     <transition name="slide-fade" mode="out-in">
       <div
         v-show="isMenuVisible"
         id="invisible-wrapper"
-        class="absolute top-0 z-40"
+        class="absolute top-10 z-40"
         :class="{
           '-right-4': position === 'right',
           '-left-4': position === 'left'
@@ -20,12 +16,12 @@
       >
         <div
           id="menu-list"
-          data-test="baseDropMenuList"
-          class=" mt-10 mb-2 mx-4 p-2 bg-white rounded border border-teal-600 shadow-xl transition-all"
+          data-test="baseDropMobileList"
+          class="mb-2 mx-4 p-2 bg-white rounded border border-teal-600 shadow-xl transition-all"
           :class="passedClasses"
-          @click="closeMenu($event)"
+          @click.capture="toggleMenu($event, 'list')"
         >
-          <slot name="listItems" :close-menu="closeMenu"></slot>
+          <slot name="listItems"></slot>
         </div>
       </div>
     </transition>
@@ -34,7 +30,7 @@
 
 <script>
 export default {
-  name: 'BaseDropMenu',
+  name: 'BaseDropMobile',
   props: {
     position: { type: String, default: 'right' },
     passedClasses: { type: String, default: '' }
@@ -45,7 +41,32 @@ export default {
       preventClose: false
     };
   },
+  // mounted() {
+  //   document.addEventListener('click', event => {
+  //     console.log(event.target);
+  //   });
+  // },
   methods: {
+    toggleMenu(event, target) {
+      // Don't close menu by clicking non-link parts of drop down
+      if (target === 'list' && event.target.tagName === 'DIV') {
+        return;
+      }
+      // Help prevent accidentally closing menu immediately after opening
+      switch (event.type) {
+        case 'mouseleave':
+          if (this.preventClose) {
+            return;
+          } else this.isMenuVisible = !this.isMenuVisible; // close menu;
+          break;
+        case 'click':
+          this.isMenuVisible = !this.isMenuVisible; // close menu
+          break;
+        default:
+          return;
+          break;
+      }
+    },
     openMenu() {
       this.preventClose = true;
       setTimeout(() => {
@@ -74,3 +95,5 @@ export default {
   }
 };
 </script>
+
+<style scoped></style>

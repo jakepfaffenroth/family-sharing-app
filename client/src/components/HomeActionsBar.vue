@@ -1,6 +1,6 @@
 <template>
   <div
-    class="relative flex pt-2 whitespace-nowrap transition-all duration-100"
+    class="relative flex pt-2 px-3 sm:px-1 whitespace-nowrap transition-all duration-100"
     :class="{
       'border-b-2 border-purple-200 mx-0 sm:mx-6 xl:mx-12 ease-out':
         view.atTopOfPage,

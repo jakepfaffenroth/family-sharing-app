@@ -3,8 +3,7 @@
     <toolbar-button
       v-show="activeGallery !== 'All'"
       @click="
-        openModal('HomeModalPhotoPicker', { activeGallery }),
-          toast.success('open photo picker modal')
+        openModal('HomeModalPhotoPicker', { activeGallery }), toast.success('open photo picker modal')
       "
     >
       <svg
