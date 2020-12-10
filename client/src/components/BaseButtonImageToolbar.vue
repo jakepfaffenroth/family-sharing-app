@@ -1,5 +1,5 @@
 <template>
-  <button class="px-4 font-medium transition-all hover:text-purple-600">
+  <button class="px-2 sm:px-4 font-medium transition-all hover:text-purple-600">
     <slot></slot>
   </button>
 </template>

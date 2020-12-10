@@ -31,7 +31,7 @@
             itemscope
             itemtype="http://schema.org/ImageObject"
             :src="item.src"
-            class="image-container h-24 sm:h-36 md:h-64 z-0"
+            class="image-container h-24 w-24 p-0.5 sm:w-auto sm:h-56 md:h-64 lg:h-72 z-0"
             @mouseenter="item.hover = true"
             @mouseleave="item.hover = false"
           >
@@ -67,12 +67,13 @@
               :data-size="'' + item.w + 'x' + item.h"
               :title="item.title"
             >
+              <p>{{ $refs[item.fileId] }}</p>
               <img
                 :id="item.fileId"
                 :data-url="item.thumbnail"
                 :alt="item.alt"
                 itemprop="thumbnail"
-                class="image h-24 sm:h-36 md:h-64 rounded-sm border-none"
+                class="image w-24 h-24 sm:w-auto sm:h-full rounded-sm border-none"
                 :class="{
                   'bg-gray-300 animate-pulse':
                     imgsLoaded.indexOf(item.fileId) === -1
@@ -80,7 +81,7 @@
                 :style="
                   imgsLoaded.indexOf(item.fileId) === -1
                     ? skeletonWidth(item)
-                    : null
+                    : ''
                 "
                 @load="imgsLoaded.push(item.fileId)"
               />
@@ -269,6 +270,11 @@ export default {
     },
     isAlbum() {
       return this.items.length < this.allImages.length;
+    },
+    imgDimension() {
+      let thirds = this.windowWidth / 16 / 3 - 0.42;
+      return (thirds < 12.9 ? thirds : 0) + 'rem';
+      // 202px matches the breakpoint
     }
   },
   watch: {
@@ -616,7 +622,7 @@ export default {
 };
 </script>
 
-<style scoped>
+<style scoped vars="{imgDimension}">
 @import 'https://fonts.googleapis.com/icon?family=Material+Icons';
 
 .img-menu-btn:hover .img-menu-list {
@@ -640,17 +646,18 @@ figure {
 }
 
 .group-container {
-  @apply relative mr-2 mb-6 overflow-hidden;
+  @apply relative mr-0 mb-6;
 }
 .image-container {
-  @apply relative mr-1 mb-1 
-  ;
+  @apply relative mr-1 mb-1;
+  min-height: var(--imgDimension);
+  min-width: var(--imgDimension);
 }
 
 .image {
-  flex: auto;
-  min-width: 100px;
-  object-fit: contain;
+  @apply flex-auto object-cover;
+  min-height: var(--imgDimension);
+  min-width: var(--imgDimension);
   /* transition: all 0.2s ease-in-out; */
 }
 

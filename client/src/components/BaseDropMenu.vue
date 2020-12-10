@@ -14,8 +14,9 @@
         id="invisible-wrapper"
         class="absolute top-0 z-40"
         :class="{
-          '-right-4': position === 'right',
-          '-left-4': position === 'left'
+          '-right-4': position.includes('right'),
+          '-left-4': position.includes('left'),
+          '-mt-2': position.includes('up')
         }"
       >
         <div

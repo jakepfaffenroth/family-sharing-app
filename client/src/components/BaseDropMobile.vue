@@ -1,5 +1,5 @@
 <template>
-  <div data-test="baseDropMobile" class="relative">
+  <div data-test="baseDropMobile" class="">
     <div data-test="openBaseDropMobile" @click.capture="toggleMenu($event)">
       <slot name="button" :isMenuVisible="isMenuVisible"></slot>
     </div>
@@ -10,8 +10,10 @@
         id="invisible-wrapper"
         class="absolute top-10 z-40"
         :class="{
-          '-right-4': position === 'right',
-          '-left-4': position === 'left'
+          '-right-4': position.includes('right'),
+          '-left-4': position.includes('left'),
+          'w-full px-16 sm:px-0 mx-auto sm:w-auto left-0 sm:-left-4': position.includes('center'),
+          ' -mt-2': position.includes('up')
         }"
       >
         <div
