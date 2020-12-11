@@ -197,7 +197,7 @@ export default {
         type: 'info',
         duration: 3000,
         dismissible: true,
-        message: 'Go update your billing info!'
+        message: 'Coming soon!'
       });
     }
 
@@ -207,7 +207,7 @@ export default {
         type: 'info',
         duration: 3000,
         dismissible: true,
-        message: 'Your account will be deleted!'
+        message: 'Coming soon!'
       });
     }
 

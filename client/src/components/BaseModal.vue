@@ -18,7 +18,7 @@
           <slot name="content"></slot>
         </div>
         <div
-          class="flex items-center justify-center sm:justify-end px-6 py-3 -mx-6 -mb-4 space-x-6 flex-row"
+          class="flex items-center justify-center sm:justify-end px-6 py-3 -mx-6 -mb-4 space-x-6"
         >
           <slot name="footer"></slot>
         </div>

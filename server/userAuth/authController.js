@@ -47,7 +47,7 @@ module.exports.login = (req, res, next) => {
       res.locals.incorrectCred = true;
       return res.render('login', {
         title: 'Carousel',
-        loginUrl: process.env.SERVER + '/auth/login',
+        loginUrl: '/auth/login',
         loginErrMsg: 'Incorrect username or password.',
         username: username,
         password: password,

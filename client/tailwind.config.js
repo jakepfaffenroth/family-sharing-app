@@ -10,7 +10,10 @@ module.exports = {
       maxWidth: { '50vw': '50vw', '90vw': '90vw' },
       colors: {
         teal: colors.teal,
-        orange: colors.orange
+        orange: colors.orange,
+        gray: {
+          450: '#84849a'
+        }
       }
     }
   },

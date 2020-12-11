@@ -1,6 +1,6 @@
 <template>
   <base-button-teal
-    class="mt-4"
+    class="h-8 md:mt-4"
     :class="btn.style"
     :disabled="btn.isCurrent"
     @click="select"
