@@ -110,9 +110,14 @@ module.exports.checkSession = async (req, res, next) => {
 };
 
 module.exports.requestPasswordReset = async (req, res) => {
-  res.render('login', {
-    heading: 'A password reset link has been emailed to you',
-  });
+  if (req.protocol + '://' + req.get('host') === process.env.SERVER) {
+    res.render('login', {
+      heading: 'A password reset link has been emailed to you',
+    });
+  } else if (req.protocol + '://' + req.get('host') === process.env.CLIENT) {
+    res.status(200).end();
+  } else res.status(200).end();
+
   const email = req.body.email;
   if (!email) return;
   emailController.sendPasswordResetEmail(email);

@@ -3,11 +3,11 @@
     <template #buttons>
       <div
         data-test="ownerMenu"
-        class="hidden sm:flex rounded-lg shadow divide-x divide-gray-400 h-8 border border-transparent transition-colors"
+        class="hidden sm:flex rounded-lg h-8 shadow transition-colors"
       >
         <base-button-purple
           data-test="uploadBtn"
-          class="uppy-select-files w-40 h-8 mt-0 px-5 rounded-l-lg rounded-r-none"
+          class="uppy-select-files w-40 h-8 mt-0 pr-0.5 border-r border-gray-400 mx-auto rounded-l-lg rounded-r-none"
         >
           <svg
             class="menu-icon"
@@ -151,32 +151,19 @@
       </div>
       <div
         data-test="ownerMenu"
-        class="relative sm:hidden rounded-full shadow h-8 border border-transparent transition-colors"
+        class="relative sm:hidden h-8 w-8 rounded-full shadow transition-colors"
       >
-        <base-drop-mobile>
+        <base-drop-mobile :btn-position-tweak="'-mt-2 pt-0.5'">
           <template #button="{isMenuVisible}">
             <button
-              class="w-8 h-8 bg-purple-600 rounded-full text-white hover:bg-purple-500 shadow-lg transition"
+              class="w-8 h-8 bg-purple-600 rounded-full text-white hover:bg-purple-500 shadow transition"
               data-test="menuBtn"
             >
-              <!-- <svg
-                v-if="!isMenuVisible"
-                class="w-4 h-4 m-auto"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M4 6h16M4 12h16M4 18h16"
-                />
-              </svg> -->
               <div
                 class="relative flex flex-col w-4 h-4 mx-auto py-0.5"
-                :class="{ 'justify-between': !isMenuVisible }"
+                :class="{
+                  'justify-between': !isMenuVisible
+                }"
               >
                 <div
                   class="bg-white w-full h-0.5 rounded transition"
@@ -214,7 +201,7 @@
                     stroke-linecap="round"
                     stroke-linejoin="round"
                     stroke-width="2"
-                    d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"
+                    d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
                   />
                 </svg>
                 Upload

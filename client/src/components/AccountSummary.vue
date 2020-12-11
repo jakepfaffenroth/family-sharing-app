@@ -1,10 +1,10 @@
 <template>
   <div
-    class="flex flex-col w-full px-2 py-2 text-gray-900 sm:px-6 sm:py-4 xl:px-12 xl:py-6"
+    class="flex flex-col w-full px-2 py-2 text-gray-900 sm:px-4 sm:py-4 xl:px-12 xl:py-6"
   >
     <div id="subscription-settings">
       <div class="flex flex-wrap justify-center mt-4">
-        <div class="inline-block w-full p-4 rounded md:w-2/5">
+        <div class="inline-block w-full p-4 rounded sm:w-4/5 md:w-3/5 lg:w-2/5">
           <h1
             id="subscription-status-text"
             class="text-center font-bold text-2xl"
@@ -13,17 +13,62 @@
           </h1>
           <div class="mt-4 border rounded p-4 space-y-4">
             <div class="space-y-1">
+              <h2 class="font-bold text-xl">Personal Info</h2>
+              <div class="flex justify-between">
+                <h3 class="text-lg text-gray-700">
+                  Username
+                </h3>
+                <span
+                  id="subscribed-price"
+                  class="text-lg font-semibold"
+                  :class="ENABLED ? 'setting' : ''"
+                  @click="changeUsername"
+                >
+                  {{ owner.username }}
+                  <span v-if="ENABLED">→</span>
+                </span>
+              </div>
+              <div class="flex justify-between">
+                <h3 class="text-lg text-gray-700">
+                  Name
+                </h3>
+                <span
+                  id="subscribed-price"
+                  class="text-lg font-semibold"
+                  :class="ENABLED ? 'setting' : ''"
+                  @click="changeName"
+                >
+                  {{ owner.firstName }} {{ owner.lastName }}
+                  <span v-if="ENABLED">→</span>
+                </span>
+              </div>
+              <div class="flex justify-between">
+                <h3 class="text-lg text-gray-700">
+                  Password
+                </h3>
+                <span
+                  id="subscribed-price"
+                  class="setting text-xl font-semibold"
+                >
+                  <button class="text-lg" @click="resetPassword">
+                    •••••••
+                    <span>→</span>
+                  </button>
+                </span>
+              </div>
+            </div>
+            <div class="space-y-1">
               <h2 class="font-bold text-xl">
                 Plan
               </h2>
               <div class="flex justify-between">
-                <h3 class="text-xl text-gray-700">
+                <h3 class="text-lg text-gray-700">
                   Current plan
                 </h3>
                 <span
                   id="subscribed-price"
                   data-test="currentPlanInSummary"
-                  class="font-semibold text-xl"
+                  class="font-semibold text-lg"
                   :class="{
                     'font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-teal-400 to-orange-400 via-purple-400': planDetails.plan
                       .toLowerCase()
@@ -35,10 +80,10 @@
               </div>
 
               <div class="flex justify-between">
-                <h3 class="text-xl text-gray-700">
+                <h3 class="text-lg text-gray-700">
                   Payment method
                 </h3>
-                <span id="credit-card-last-four" class="font-semibold text-xl">
+                <span id="credit-card-last-four" class="text-lg font-semibold">
                   {{ planDetails.paymentMethod }}
                 </span>
               </div>
@@ -69,18 +114,9 @@
             </div>
 
             <div class="space-y-1">
-              <div class="space-y-1">
+              <div class="space-y-1 text-gray-900 font-semibold text-xl">
                 <div
-                  class="flex justify-between text-gray-900 font-bold text-xl cursor-pointer"
-                  @click="updateBilling"
-                >
-                  <span>
-                    Update billing info
-                    <span>→</span>
-                  </span>
-                </div>
-                <div
-                  class="flex justify-between mt-2 mb-2 text-gray-900 font-bold text-xl cursor-pointer"
+                  class="setting flex justify-between mt-2 mb-2 cursor-pointer"
                   data-test="changePlanBtn"
                   @click="$emit('open-plan-change')"
                 >
@@ -90,7 +126,16 @@
                   </span>
                 </div>
                 <div
-                  class="flex justify-between mt-2 mb-2 text-gray-900 font-bold text-xl cursor-pointer"
+                  class="setting flex justify-between cursor-pointer"
+                  @click="updateBilling"
+                >
+                  <span>
+                    Update billing info
+                    <span>→</span>
+                  </span>
+                </div>
+                <div
+                  class="setting flex justify-between mt-2 mb-2 cursor-pointer"
                   @click="deleteAccount"
                 >
                   <span>
@@ -131,6 +176,20 @@ export default {
 
     const owner = computed(() => store.state.ownerStore.owner);
     const storagePercentage = computed(() => store.getters.storagePercentage);
+
+    async function resetPassword() {
+      const response = await axios.post(
+        process.env.VUE_APP_SERVER + '/auth/reset-password',
+        {
+          email: owner.value.email
+        }
+      );
+      if (response.status === 200) {
+        toast.success('A reset link has been emailed to you');
+      } else {
+        toast.error('An error occurred');
+      }
+    }
 
     // TODO - Add update billing functionality
     async function updateBilling() {
@@ -202,12 +261,14 @@ export default {
     // }
 
     return {
+      owner,
       imageCount: computed(() => store.getters.imageCount),
       planDetails: computed(() => store.getters.planDetails),
       quota: computed(() => store.getters.quota),
       usageValue: computed(() => store.getters.usageValue),
       usageBarWidth: computed(() => store.getters.usageBarWidth),
       usageBarColor: computed(() => store.getters.usageBarColor),
+      resetPassword,
       updateBilling,
       deleteAccount
       // cancelSubscription
@@ -215,3 +276,9 @@ export default {
   }
 };
 </script>
+
+<style scoped>
+.setting {
+  @apply cursor-pointer transition hover:text-purple-600;
+}
+</style>

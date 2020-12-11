@@ -109,7 +109,7 @@
         <toolbar-button
           v-if="userType === 'owner'"
           data-test="selectModeBtn"
-          class="ml-2 pr-1 mb-1 text-center focus:outline-none transition font-medium"
+          class="relative right-0 ml-0 pr-0 mb-1 text-center focus:outline-none transition font-medium"
           :class="{
             'text-teal-600': isSelectMode
           }"

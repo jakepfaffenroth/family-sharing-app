@@ -130,7 +130,7 @@
     >
       <template #button>
         <toolbar-button class="flex font-lg font-black my-auto pl-0">
-          Actions
+          Selection Actions
           <span>
             <svg
               class="w-4 mt-0.5 ml-1"
@@ -259,7 +259,7 @@
     >
       <template #button>
         <toolbar-button class="flex font-lg font-black my-auto pl-0">
-          Actions
+          Selection Actions
           <span>
             <svg
               class="w-4 mt-0.5 ml-1"
