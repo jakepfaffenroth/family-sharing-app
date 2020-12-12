@@ -1,0 +1,23 @@
+@tailwind base;
+/* @tailwind components; */
+@tailwind utilities;
+
+.toggle-checkbox:checked {
+  @apply: right-0 border-green-400;
+}
+.toggle-checkbox:checked + .toggle-label {
+  @apply: bg-green-400;
+}
+
+html {
+  visibility: visible;
+  opacity: 1;
+}
+
+.main-menu-link {
+  @apply ;
+}
+
+.menu-icon {
+  @apply inline-block -mt-0.5 mr-1 w-4 h-4;
+}
