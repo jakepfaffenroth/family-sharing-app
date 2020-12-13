@@ -1,13 +1,13 @@
 <template>
   <div class="flex flex-col flex-grow">
     <!-- Header and Menu -->
-    <header class="fixed w-full z-40 bg-white pt-2 sm:pt-4 xl:pt-6">
+    <header class="fixed w-full z-40 bg-white pt-2 xl:pt-4">
       <component
         :is="userType === 'owner' ? 'HomeMenuOwner' : 'HomeMenuGuest'"
         :data-test="userType === 'owner' ? 'ownerMenu' : 'guestMenu'"
         :owner="owner"
         :is-select-mode="isSelectMode"
-        class="pb-4 px-2 sm:px-6 xl:px-12"
+        class="pb-4 px-2 sm:px-3 md:px-6 xl:px-8"
         @open-modal="visibleModal = $event"
         @sort-images="sortImages"
         @download-zip="downloadZip"
@@ -25,7 +25,7 @@
       ></actions-bar>
     </header>
 
-    <section class="flex flex-grow mt-32 p-2 sm:px-6 sm:py-4 xl:px-12 xl:pb-6">
+    <section class="flex flex-grow mt-28 md:pt-6 py-2 px-1 sm:px-3 sm:py-4 md:px-4 lg:px-6 xl:pt-8 xl:px-8 xl:pb-6">
       <p
         v-if="view.ownerLoading"
         class="w-full my-auto text-center text-3xl text-gray-400"

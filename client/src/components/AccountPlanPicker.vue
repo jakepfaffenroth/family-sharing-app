@@ -1,47 +1,103 @@
 <template>
-  <div class="h-screen p-6">
+  <div class="px-3 sm:px-8 md:px-10 md:mt-8">
     <div
       v-if="planDetails"
       id="price-form"
-      class="flex justify-center w-full h-auto mx-auto my-6 overflow-hidden rounded-t-lg shadow-lg bg-gray-800 sm:rounded-lg sm:w-4/5 text-white font-base font-thin overflow-y-auto"
+      class="flex justify-center w-full h-auto mx-auto my-6 overflow-hidden rounded-lg shadow-lg bg-gray-800 lg:w-4/5 xl:w-3/5 text-white font-base font-thin overflow-y-auto"
       @close-modal="closeModal"
     >
-      <div class="flex flex-col w-full mx-8 py-6">
-        <h2 class="mb-6 text-center text-2xl font-semibold">
+      <div class="flex flex-col w-full px-6 sm:px-8 md:px-8 py-6">
+        <h2 class="mb-6 text-center text-lg sm:text-2xl font-semibold">
           Change your plan
         </h2>
-        <div id="plan-columns" class="flex w-full text-center leading-relaxed">
+        <transition appear name="slide" mode="out-in">
+          <div
+            id="change-confirmation"
+            ref="confirmationBox"
+            data-test="planChangeConfirmation"
+            class="flex flex-col justify-between -mx-2 sm:mx-0 mb-8 bg-white rounded-lg shadow text-gray-900 font-medium transition-all duration-150 ease-in"
+            :class="showChangeConfirmation"
+          >
+            <div class="p-4">
+              <h3 class="pb-2 font-bold text-lg">
+                Are you sure you want to change plans?
+              </h3>
+              <p>
+                You will switch to the
+                <span
+                  :class="
+                    newPlan.toLowerCase().includes('premium')
+                      ? 'font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-teal-400 to-orange-400 via-purple-400'
+                      : 'font-semibold text-teal-400'
+                  "
+                >
+                  {{ newPlan || 'new' }}
+                </span>
+                plan immediately.
+              </p>
+              <p>
+                Your bill will be prorated accordingly.
+              </p>
+            </div>
+            <div class="flex items-center justify-center sm:justify-end px-6 py-3 sm:-mr-3 space-x-6">
+              <base-button-cancel
+                class=" md:hidden self-end"
+                :shade="'lighter'"
+                @click="$emit('close-plan-change')"
+              >
+                Cancel
+              </base-button-cancel>
+              <base-button-purple
+                data-test="confirmPlanChangeBtn"
+                @click="$emit('confirm-plan-change', newPlan)"
+              >
+                Confirm change
+              </base-button-purple>
+            </div>
+          </div>
+        </transition>
+        <div
+          id="plan-columns"
+          class="flex flex-col md:flex-row w-full text-center text-sm sm:text-base leading-relaxed"
+        >
           <div
             v-for="plan in plans"
             :id="plan.id"
             :key="plan.id"
-            class="price-column"
+            class="flex md:flex-col mb-8 md:mb-0 md:w-1/3 md:mx-3 justify-between items-start md:items-center"
           >
-            <ul>
-              <p class="mb-1 text-xl font-semibold">
-                {{ plan.heading }}
-              </p>
-              <p class="text-teal-400 text-lg">
-                {{ plan.price }}
-              </p>
-              <div
-                v-if="plan.paymentSchedule"
-                class="flex-wrap mb-4 leading-none text-gray-400 text-xs font-thin"
-              >
-                <div>
+            <div class="flex flex-col w-2/3 md:w-full">
+              <div class="flex md:flex-col">
+                <p class="mr-6 md:mr-0 mb-1 text-lg sm:text-xl font-semibold">
+                  {{ plan.heading }}
+                </p>
+                <p class="mr-2 md:mr-0 text-teal-400 text-lg">
+                  {{ plan.price }}
+                </p>
+                <p
+                  v-if="plan.paymentSchedule"
+                  class="my-auto md:mb-4 leading-none text-gray-400 text-xs font-thin text-left sm:text-center"
+                >
                   {{ plan.paymentSchedule[0] }}
-                </div>
-                <div class="mt-1">
+                  <!-- <div></div> -->
+                  <!-- <div class="mt-1">
                   {{ plan.paymentSchedule[1] }}
+                </div> -->
+                </p>
+                <div v-else class="hidden md:block mb-4">
+                  <br />
                 </div>
               </div>
-              <div v-else class="mb-4">
-                <br />
+              <div
+                class="flex md:flex-col flex-wrap w-full justify-between text-left md:text-center"
+              >
+                <ul>
+                  <ol v-for="(item, index) in plan.features" :key="index">
+                    <li>{{ item }}</li>
+                  </ol>
+                </ul>
               </div>
-              <ol v-for="(item, index) in plan.features" :key="index">
-                <li>{{ item }}</li>
-              </ol>
-            </ul>
+            </div>
             <account-plan-picker-button
               :btn-value="plan.heading"
               :reset-btns-except="resetBtnsExcept"
@@ -52,40 +108,8 @@
             ></account-plan-picker-button>
           </div>
         </div>
-        <transition appear name="slide" mode="out-in">
-          <div
-            id="change-confirmation"
-            data-test="planChangeConfirmation"
-            class="flex justify-between mt-8  bg-white rounded-lg text-gray-900 font-medium transition-all duration-150 ease-in"
-            :class="showChangeConfirmation"
-          >
-            <div class="m-4">
-              <h3 class="pb-2 font-bold text-lg">
-                Are you sure you want to change plans?
-              </h3>
-              <p>
-                Your subscription will change to the
-                <span class="font-semibold text-teal-400">
-                  {{ newPlan || 'new' }}
-                </span>
-                plan immediately.
-              </p>
-              <p>
-                Your bill will be prorated accordingly.
-              </p>
-            </div>
-            <div class="flex self-end m-3">
-              <base-button-purple
-                class="mt-4"
-                data-test="confirmPlanChangeBtn"
-                @click="$emit('confirm-plan-change', newPlan)"
-              >
-                Confirm change
-              </base-button-purple>
-            </div>
-          </div>
-        </transition>
-        <div class="flex flex-grow self-end mt-10">
+
+        <div class="flex flex-grow self-end md:mt-10">
           <base-button-cancel
             class="self-end"
             @click="$emit('close-plan-change')"
@@ -104,7 +128,7 @@ import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
 import BaseButtonPurple from '../components/BaseButtonPurple';
 import BaseButtonCancel from '../components/BaseButtonCancel';
-import AccountPlanPickerButton from '../components/AccountPlanPickerButton'
+import AccountPlanPickerButton from '../components/AccountPlanPickerButton';
 
 export default {
   components: {
@@ -157,7 +181,7 @@ export default {
         ]
       }
     };
-
+    const confirmationBox = ref('');
     const newPlan = ref('');
 
     const planDetails = computed(() => store.getters.planDetails);
@@ -168,13 +192,20 @@ export default {
     }
 
     const showChangeConfirmation = ref(
-      'transform -translate-y-2 invisible opacity-0'
+      'transform -translate-y-2 invisible opacity-0 h-0'
     );
 
     function showConfirmation(newPriceId) {
+      // showChangeConfirmation.value += 'block';
       newPlan.value = newPriceId;
       showChangeConfirmation.value =
         'transform -translate-y-0 visible opacity-1';
+      if (window.innerWidth < 640) {
+        confirmationBox.value.scrollIntoView({
+          behavior: 'smooth',
+          block: 'center'
+        });
+      }
     }
 
     function hideConfirmation() {
@@ -192,15 +223,10 @@ export default {
       closeModal,
       showConfirmation,
       showChangeConfirmation,
+      confirmationBox,
       resetOtherBtns,
       resetBtnsExcept
     };
   }
 };
 </script>
-
-<style scoped>
-.price-column {
-  @apply flex flex-col w-1/3 mx-3 justify-between items-center;
-}
-</style>

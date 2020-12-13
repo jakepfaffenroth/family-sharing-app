@@ -11,7 +11,7 @@ const notificationsController = require('./notifications/notificationsController
 router.get('/', (req, res, next) => {
   res.render('index', {
     title: 'Carousel',
-    loginUrl: process.env.SERVER + '/auth/login',
+    loginUrl: '/auth/login',
   });
 });
 
@@ -38,7 +38,7 @@ router.get('/login', (req, res) => {
   req.query.q ? (isErrVisible = true) : (isErrVisible = false);
 
   res.render('login', {
-    loginUrl: process.env.SERVER + '/auth/login',
+    loginUrl: '/auth/login',
     placeholderUsername: process.env.SERVER.includes('localhost')
       ? 'dev'
       : 'demo',

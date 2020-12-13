@@ -1,10 +1,10 @@
 <template>
   <div
-    class="relative flex pt-2 whitespace-nowrap transition-all duration-100"
+    class="sm:relative flex pt-2 px-2 sm:px-1 whitespace-nowrap transition-all duration-100"
     :class="{
-      'border-b-2 border-purple-200 mx-0 sm:mx-6 xl:mx-12 ease-out':
+      'border-b-2 border-purple-200 mx-0 sm:mx-3 md:mx-4 lg:mx-6 xl:mx-8 ease-out':
         view.atTopOfPage,
-      'px-0 sm:px-6 xl:px-12 shadow-lg border-b-2 border-purple-200 ease-in': !view.atTopOfPage
+      'px-0 sm:px-4 md:px-5 lg:px-7 xl:px-9 shadow-lg border-b-2 border-purple-200 ease-in': !view.atTopOfPage
     }"
   >
     <div v-if="view.ownerLoading" class="flex w-full mt-1">
@@ -18,11 +18,44 @@
       <skeleton class="ml-auto w-12 h-3 mb-2"></skeleton>
     </div>
 
-    <div v-else class="flex w-full text-sm font-medium flex-grow">
-      <div class="flex mr-12">
+    <div v-else class="relative flex w-full text-sm font-medium flex-grow">
+      <div class="flex mr-6 sm:mr-12">
         <drop-menu
           :position="'left'"
           :passed-classes="'w-screen max-w-90vw sm:max-w-50vw'"
+          class="hidden sm:block"
+        >
+          <template #button>
+            <toolbar-button class="flex font-lg font-black my-auto sm:pl-0">
+              Albums
+              <span>
+                <svg
+                  class="w-4 mt-0.5 ml-1"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg>
+              </span>
+            </toolbar-button>
+          </template>
+          <template #listItems="{closeMenu}">
+            <actions-bar-album-picker
+              :close-menu="closeMenu"
+            ></actions-bar-album-picker>
+          </template>
+        </drop-menu>
+        <mobile-drop-menu
+          :position="'left up'"
+          :passed-classes="'w-screen max-w-90vw sm:max-w-50vw'"
+          class="sm:hidden"
         >
           <template #button>
             <toolbar-button class="flex font-lg font-black my-auto pl-0">
@@ -50,12 +83,12 @@
               :close-menu="closeMenu"
             ></actions-bar-album-picker>
           </template>
-        </drop-menu>
+        </mobile-drop-menu>
         <h4>
           {{ activeGallery }}
         </h4>
       </div>
-      <div v-if="userType === 'owner'" class="relative flex flex-grow">
+      <div v-if="userType === 'owner'" class="sm:relative flex flex-grow">
         <div class="overflow-x-hidden">
           <transition
             :name="isSelectMode ? 'full-slide' : 'full-slide-reverse'"
@@ -76,7 +109,7 @@
         <toolbar-button
           v-if="userType === 'owner'"
           data-test="selectModeBtn"
-          class="ml-2 pr-1 mb-1 text-center focus:outline-none transition font-medium"
+          class="relative right-0 ml-0 pr-0 mb-1 text-center focus:outline-none transition font-medium"
           :class="{
             'text-teal-600': isSelectMode
           }"
@@ -136,6 +169,7 @@ import AlbumTools from '../components/HomeActionsBarAlbumTools';
 import SelectionTools from '../components/HomeActionsBarSelectionTools';
 import Skeleton from '../components/BaseSkeletonImage';
 import DropMenu from '../components/BaseDropMenu';
+import MobileDropMenu from '../components/BaseDropMobile';
 import ToolbarButton from './BaseButtonImageToolbar';
 import ActionsBarAlbumPicker from './HomeActionsBarAlbumPicker';
 
@@ -145,6 +179,7 @@ export default {
     SelectionTools,
     Skeleton,
     DropMenu,
+    MobileDropMenu,
     ToolbarButton,
     ActionsBarAlbumPicker
   },

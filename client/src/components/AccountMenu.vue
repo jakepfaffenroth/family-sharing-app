@@ -1,8 +1,5 @@
 <template>
   <base-menu>
-    <template #subheading>
-      Account: {{ owner.firstName }} {{ owner.lastName }}
-    </template>
     <template #buttons>
       <router-link
         to="/"

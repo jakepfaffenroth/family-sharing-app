@@ -1,0 +1,22 @@
+<button
+  id="mobileMenuBtn"
+  class="md:hidden w-8 h-8 my-auto bg-purple-600 rounded-full text-white hover:bg-purple-500 shadow transition z-50"
+>
+  <div
+    id="hamburger"
+    class="relative flex flex-col justify-between w-4 h-4 mx-auto py-0.5"
+  >
+    <div
+      class="bg-white w-full h-0.5 rounded transition"
+      data-class="absolute top-1/2 transform origin-center rotate-45isMenuVisible"
+    ></div>
+    <div
+      class="bg-white w-full h-0.5 rounded transition"
+      data-class="isMenuVisible ? invisible : visible"
+    ></div>
+    <div
+      class="bg-white w-full h-0.5 rounded transition"
+      data-class="absolute top-1/2 transform origin-center -rotate-45 isMenuVisible"
+    ></div>
+  </div>
+</button>

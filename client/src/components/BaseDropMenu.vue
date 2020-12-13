@@ -1,7 +1,11 @@
 <template>
   <div data-test="baseDropMenu" class="relative" @mouseleave="closeMenu">
-    <div data-test="openBaseDropMenu" @click="openMenu">
-      <slot name="button"></slot>
+    <div
+      data-test="openBaseDropMenu"
+      @click="openMenu"
+      @touchstart.self="closeMenu"
+    >
+      <slot name="button" :is-menu-visible="isMenuVisible"></slot>
     </div>
     <!-- Menu list -->
     <transition name="slide-fade" mode="out-in">
@@ -10,8 +14,9 @@
         id="invisible-wrapper"
         class="absolute top-0 z-40"
         :class="{
-          '-right-4': position === 'right',
-          '-left-4': position === 'left'
+          '-right-4': position.includes('right'),
+          '-left-4': position.includes('left'),
+          '-mt-2': position.includes('up')
         }"
       >
         <div
@@ -66,28 +71,6 @@ export default {
           return;
           break;
       }
-      // if (this.preventClose && eventType === 'mouseleave') {
-      //   return;
-      // } else if (
-      //   event.type === 'click' &&
-      //   (event.target.tagName === 'A' || event.target.tagName === 'IMG')
-      // ) {
-      //   this.isMenuVisible = false; // close menu
-      // } else if (true) {
-      // }
-
-      // if (
-      //   event.type === 'click' &&
-      //   (event.target.tagName === 'A' || event.target.tagName === 'IMG')
-      // ) {
-      //   // if (event.type === 'mouseleave' && this.preventClose) {
-      //   //   return;
-      //   // }
-      //   //Only close the menu on mouseleave or if a link is clicked
-      //   this.isMenuVisible = false; // close menu
-      // } else {
-      //   return; // don't close menu
-      // }
     }
   }
 };
