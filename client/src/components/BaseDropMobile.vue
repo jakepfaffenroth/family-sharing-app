@@ -10,19 +10,21 @@
         id="invisible-wrapper"
         class="absolute top-10 z-40"
         :class="{
-          '-right-4': position.includes('right'),
-          '-left-4': position.includes('left'),
+          'right-0': position.includes('right'),
+          'left-0': position.includes('left'),
           'w-full px-16 sm:px-0 mx-auto sm:w-auto left-0 sm:-left-4': position.includes(
             'center'
           ),
-          ' -mt-2': position.includes('up')
+          ' -mt-2': position.includes('up'),
+          ' -mt-4': position.includes('upup'),
+          'mx-auto w-full': position.includes('full')
         }"
       >
         <div
-          id="menu-list"
+          id="menu-list-box"
           data-test="baseDropMobileList"
-          class="mb-2 mx-4 p-2 bg-white rounded border border-teal-600 shadow-xl transition-all"
-          :class="passedClasses"
+          class="mb-2 p-2 bg-white rounded border border-teal-600 shadow-xl transition-all"
+          :class="passedClasses + position.includes('full') ? '' : ' mx-4'"
           @click.capture="toggleMenu($event, 'list')"
         >
           <slot name="listItems"></slot>
@@ -36,9 +38,9 @@
 export default {
   name: 'BaseDropMobile',
   props: {
-    position: { type: String, default: 'right' },
-    btnPositionTweak: { type: String, default: '' },
-    passedClasses: { type: String, default: '' }
+    position: { type: String, default: 'right' }, // right or left, up or down, or combo
+    btnPositionTweak: { type: String, default: '' }, // classes
+    passedClasses: { type: String, default: '' } // classes
   },
   data() {
     return {

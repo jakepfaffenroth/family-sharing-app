@@ -90,6 +90,10 @@ export default {
 </script>
 
 <style>
+.Q {
+  @apply border-2 border-red-500;
+}
+
 .notyf__toast {
   @apply flex justify-between content-center w-64 h-auto p-0 rounded text-sm font-light;
 }

@@ -7,20 +7,20 @@
     </template>
     <template #content>
       <div v-if="modalSwitch === 'addToAlbum'">
-        <div>
-          <label class="inline-flex items-center">
-            <span class="mr-2">Add to a new album:</span>
-            <input
-              v-model="newAlbumName"
-              class="px-1 py-0.5 rounded-md text-gray-800 placeholder-gray-500"
-              type="text"
-              name="newAlbumName"
-              required
-              placeholder="New album"
-            />
-            <button class="ml-4" @click="createNewAlbum">Create</button>
-          </label>
-        </div>
+        <label class="flex flex-wrap items-center mb-6">
+          <h4 class="w-full sm:w-auto mb-1 sm:mb-0 sm:mr-2">
+            Add to a new album:
+          </h4>
+          <input
+            v-model="newAlbumName"
+            class="px-1 py-0.5 rounded-md text-gray-800 placeholder-gray-500"
+            type="text"
+            name="newAlbumName"
+            required
+            placeholder="New album"
+          />
+          <button class="ml-4" @click="createNewAlbum">Create</button>
+        </label>
         <div v-if="albums.length">
           <div
             ref="albumList"
@@ -30,7 +30,7 @@
               v-for="(album, index) in albums"
               :id="album.albumName"
               :key="index"
-              class="w-1/4 ml-0 mb-3"
+              class="w-1/3 md:w-1/4 ml-0 mb-4"
             >
               <photo-stack
                 :images-arr="album.images"
@@ -72,7 +72,8 @@
         <div class="relative flex h-56 p-4">
           <photo-stack
             :images-arr="imgInfo"
-            :stack-parent="'removeFromAlbum'"
+            :size="'removeFromAlbum'"
+            :click-enabled="false"
             class="h-48 w-64 -mb-6 mt-6"
           ></photo-stack>
         </div>

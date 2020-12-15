@@ -47,13 +47,13 @@
   ];
 
   function toggleHamburger() {
+    hamburger[0].classList.toggle('rotate-45');
+    hamburger[2].classList.toggle('-rotate-45');
+    hamburger[1].classList.toggle('invisible');
     hamburgerTransition.forEach((str) => {
       hamburger[0].classList.toggle(str);
       hamburger[2].classList.toggle(str);
     });
-    hamburger[0].classList.toggle('rotate-45');
-    hamburger[1].classList.toggle('invisible');
-    hamburger[2].classList.toggle('-rotate-45');
   }
 
   function openMenu() {
