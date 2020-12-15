@@ -39,7 +39,9 @@
                 Your bill will be prorated accordingly.
               </p>
             </div>
-            <div class="flex items-center justify-center sm:justify-end px-6 py-3 sm:-mr-3 space-x-6">
+            <div
+              class="flex items-center justify-center sm:justify-end px-6 py-3 sm:-mr-3 space-x-6"
+            >
               <base-button-cancel
                 class=" md:hidden self-end"
                 :shade="'lighter'"
@@ -199,7 +201,7 @@ export default {
       // showChangeConfirmation.value += 'block';
       newPlan.value = newPriceId;
       showChangeConfirmation.value =
-        'transform -translate-y-0 visible opacity-1';
+        'transform -translate-y-0 visible opacity-100';
       if (window.innerWidth < 640) {
         confirmationBox.value.scrollIntoView({
           behavior: 'smooth',

@@ -9,12 +9,12 @@
       <div
         id="modal"
         data-test="modal"
-        class="w-full px-6 py-4 overflow-hidden rounded-lg shadow-lg bg-gray-800 m-4 sm:max-w-xl z-50"
+        class="flex flex-col w-screen sm:h-screen md:h-auto md:w-full px-6 py-4 rounded-lg shadow-lg bg-gray-800 m-4 md:max-w-xl  z-50"
       >
         <div class="mb-4 text-white text-xl font-bold">
           <slot name="header"></slot>
         </div>
-        <div class="mb-4 text-white">
+        <div class="flex-shrink mb-4 text-white">
           <slot name="content"></slot>
         </div>
         <div

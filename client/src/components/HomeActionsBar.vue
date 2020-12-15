@@ -1,12 +1,13 @@
 <template>
   <div
-    class="sm:relative flex pt-2 px-2 sm:px-1 whitespace-nowrap transition-all duration-100"
+    class="sm:relative flex sm:pt-2 px-2 sm:px-2 whitespace-nowrap transition-all duration-100"
     :class="{
       'border-b-2 border-purple-200 mx-0 sm:mx-3 md:mx-4 lg:mx-6 xl:mx-8 ease-out':
         view.atTopOfPage,
       'px-0 sm:px-4 md:px-5 lg:px-7 xl:px-9 shadow-lg border-b-2 border-purple-200 ease-in': !view.atTopOfPage
     }"
   >
+    <!-- Skeletons -->
     <div v-if="view.ownerLoading" class="flex w-full mt-1">
       <div class="flex">
         <skeleton class="w-20 pr-5 h-3 mb-2"></skeleton>
@@ -18,19 +19,25 @@
       <skeleton class="ml-auto w-12 h-3 mb-2"></skeleton>
     </div>
 
-    <div v-else class="relative flex w-full text-sm font-medium flex-grow">
-      <div class="flex mr-6 sm:mr-12">
+    <div
+      v-else
+      class="relative flex flex-wrap sm:flex-nowrap flex-grow w-full text-sm font-medium"
+    >
+      <!-- Album picker drop down -->
+      <div class="flex flex-grow h-7 sm:mr-12">
+        <!-- Non-mobile -->
         <drop-menu
           :position="'left'"
           :passed-classes="'w-screen max-w-90vw sm:max-w-50vw'"
           class="hidden sm:block"
         >
           <template #button>
-            <toolbar-button class="flex font-lg font-black my-auto sm:pl-0">
-              Albums
+            <toolbar-button
+              class="flex flex-grow font-lg font-black my-auto pl-0"
+            >
               <span>
                 <svg
-                  class="w-4 mt-0.5 ml-1"
+                  class="w-4 mt-0.5 mr-1 ml-0.5"
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
                   viewBox="0 0 24 24"
@@ -40,10 +47,12 @@
                     stroke-linecap="round"
                     stroke-linejoin="round"
                     stroke-width="2"
-                    d="M19 9l-7 7-7-7"
+                    d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"
                   />
                 </svg>
               </span>
+              {{ activeGallery }}
+              {{ activeGallery === 'All' ? 'Photos' : '' }}
             </toolbar-button>
           </template>
           <template #listItems="{closeMenu}">
@@ -52,17 +61,16 @@
             ></actions-bar-album-picker>
           </template>
         </drop-menu>
-        <mobile-drop-menu
-          :position="'left up'"
-          :passed-classes="'w-screen max-w-90vw sm:max-w-50vw'"
-          class="sm:hidden"
-        >
+
+        <!-- Mobile -->
+        <mobile-drop-menu :position="'upup full'" class="sm:hidden">
           <template #button>
-            <toolbar-button class="flex font-lg font-black my-auto pl-0">
-              Albums
+            <toolbar-button
+              class="flex flex-grow font-lg font-black my-auto pl-0"
+            >
               <span>
                 <svg
-                  class="w-4 mt-0.5 ml-1"
+                  class="w-4 mt-0.5 mr-1 ml-0.5"
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
                   viewBox="0 0 24 24"
@@ -72,10 +80,12 @@
                     stroke-linecap="round"
                     stroke-linejoin="round"
                     stroke-width="2"
-                    d="M19 9l-7 7-7-7"
+                    d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"
                   />
                 </svg>
               </span>
+              {{ activeGallery }}
+              {{ activeGallery === 'All' ? 'Photos' : '' }}
             </toolbar-button>
           </template>
           <template #listItems="{closeMenu}">
@@ -84,80 +94,39 @@
             ></actions-bar-album-picker>
           </template>
         </mobile-drop-menu>
-        <h4>
-          {{ activeGallery }}
-        </h4>
       </div>
-      <div v-if="userType === 'owner'" class="sm:relative flex flex-grow">
-        <div class="overflow-x-hidden">
+
+      <!-- Select Mode Btn -- sm:order-last -->
+      <toolbar-button
+        v-if="userType === 'owner'"
+        data-test="selectModeBtn"
+        class="relative sm:order-last right-0 ml-0 mr-1 mb-2 text-center focus:outline-none transition font-medium"
+        :class="{
+          'text-teal-600': isSelectMode
+        }"
+        @click="toggleSelectMode"
+      >
+        {{ isSelectMode ? 'Cancel' : 'Select' }}
+      </toolbar-button>
+
+      <!-- Album or Selection Tools -->
+      <div
+        v-if="userType === 'owner'"
+        class="sm:relative flex flex-grow w-full md:mr-6"
+      >
+        <div class="w-full overflow-x-hidden">
           <transition
             :name="isSelectMode ? 'full-slide' : 'full-slide-reverse'"
             mode="out-in"
           >
             <component
               :is="actionsBar"
-              class="flex px-2 mb-1  text-sm font-medium"
+              class="sm:px-2 mb-0 text-sm"
               :active-gallery="activeGallery"
               :filtered-images="filteredImages"
               :user-type="userType"
             ></component>
           </transition>
-        </div>
-      </div>
-
-      <div class="flex ml-auto">
-        <toolbar-button
-          v-if="userType === 'owner'"
-          data-test="selectModeBtn"
-          class="relative right-0 ml-0 pr-0 mb-1 text-center focus:outline-none transition font-medium"
-          :class="{
-            'text-teal-600': isSelectMode
-          }"
-          @click="toggleSelectMode"
-        >
-          {{ isSelectMode ? 'Cancel' : 'Select' }}
-        </toolbar-button>
-        <div
-          v-if="ENABLE_SORTER"
-          class="flex mx-1 divide-x divide-gray-600 text-gray-700 transition duration-150 ease-in-out"
-        >
-          <drop-menu>
-            <template #button>
-              <toolbar-button
-                class="mr-2 text-center font-medium hover:text-teal-600 focus:outline-none cursor-pointer"
-              >
-                Sort
-              </toolbar-button>
-            </template>
-            <template #listItems>
-              <div class="w-32 -m-1">
-                <a class="menu-item" @click="sortImages('captureTime')">
-                  Capture time
-                </a>
-                <a class="menu-item" @click="sortImages('uploadTime')">
-                  Date uploaded
-                </a>
-              </div>
-            </template>
-          </drop-menu>
-
-          <button
-            class="my-1 pl-2 hover:text-teal-600 focus:outline-none transition "
-            @click="sortImages('reverse'), (sortAsc = !sortAsc)"
-          >
-            <svg class="m-auto h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-              <!-- Version for sort:ascending -->
-              <path
-                v-if="sortAsc"
-                d="M3 3a1 1 0 000 2h11a1 1 0 100-2H3zM3 7a1 1 0 000 2h5a1 1 0 000-2H3zM3 11a1 1 0 100 2h4a1 1 0 100-2H3zM13 16a1 1 0 102 0v-5.586l1.293 1.293a1 1 0 001.414-1.414l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 101.414 1.414L13 10.414V16z"
-              />
-              <!-- Version for sort:descending -->
-              <path
-                v-else
-                d="M3 3a1 1 0 000 2h11a1 1 0 100-2H3zM3 7a1 1 0 000 2h7a1 1 0 100-2H3zM3 11a1 1 0 100 2h4a1 1 0 100-2H3zM15 8a1 1 0 10-2 0v5.586l-1.293-1.293a1 1 0 00-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L15 13.586V8z"
-              />
-            </svg>
-          </button>
         </div>
       </div>
     </div>

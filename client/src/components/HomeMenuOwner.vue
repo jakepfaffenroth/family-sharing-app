@@ -1,6 +1,7 @@
 <template>
   <base-menu>
     <template #buttons>
+      <!-- Non-mobile -->
       <div
         data-test="ownerMenu"
         class="hidden sm:flex rounded-lg h-8 shadow transition-colors"
@@ -149,37 +150,44 @@
           </template>
         </base-drop-menu>
       </div>
+
+      <!-- Mobile -->
       <div
         data-test="ownerMenu"
-        class="relative sm:hidden h-8 w-8 rounded-full shadow transition-colors"
+        class="relative sm:hidden h-8 w-8 rounded-full transition-colors"
       >
-        <base-drop-mobile :btn-position-tweak="'-mt-2 pt-0.5'">
+        <base-drop-mobile :btn-position-tweak="'-mt-3 pt-0.5'" :passed-classes="'mr-4'">
           <template #button="{isMenuVisible}">
             <button
-              class="w-8 h-8 bg-purple-600 rounded-full text-white hover:bg-purple-500 shadow transition"
+              class="w-8 h-8 rounded-full text-white transition"
+              :class="{ 'bg-purple-600 shadow-lg': isMenuVisible }"
               data-test="menuBtn"
             >
               <div
-                class="relative flex flex-col w-4 h-4 mx-auto py-0.5"
+                class="relative flex flex-col w-5 h-5 mx-auto py-1"
                 :class="{
                   'justify-between': !isMenuVisible
                 }"
               >
                 <div
-                  class="bg-white w-full h-0.5 rounded transition"
-                  :class="{
-                    'absolute top-1/2 transform origin-center rotate-45': isMenuVisible
-                  }"
+                  class="w-full h-0.5 rounded transition"
+                  :class="
+                    isMenuVisible
+                      ? 'absolute top-1/2 bg-white transform origin-center rotate-45'
+                      : 'bg-purple-600'
+                  "
                 ></div>
                 <div
-                  class="bg-white w-full h-0.5 rounded transition"
+                  class="bg-purple-600 w-full h-0.5 rounded transition"
                   :class="isMenuVisible ? 'invisible' : 'visible'"
                 ></div>
                 <div
-                  class="bg-white w-full h-0.5 rounded transition"
-                  :class="{
-                    'absolute top-1/2 transform origin-center -rotate-45': isMenuVisible
-                  }"
+                  class=" w-full h-0.5 rounded transition"
+                  :class="
+                    isMenuVisible
+                      ? 'absolute top-1/2 bg-white transform origin-center -rotate-45'
+                      : 'bg-purple-600'
+                  "
                 ></div>
               </div>
             </button>
@@ -358,7 +366,7 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 .main-menu-link {
   @apply block px-4 py-2 text-sm rounded cursor-pointer text-gray-800 hover:bg-purple-500 hover:text-white transition;
 }
