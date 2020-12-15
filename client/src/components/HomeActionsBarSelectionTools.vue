@@ -510,7 +510,7 @@
     <div class="sm:flex-grow"></div>
     <toolbar-button
       data-test="selectToolsSelectAll"
-      class="ml-auto"
+      class="ml-auto mr-1"
       :class="{ 'text-teal-600': selectedImages.length > 0 }"
       @click="toggleSelectAll"
     >

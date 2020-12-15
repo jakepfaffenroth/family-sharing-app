@@ -1,5 +1,5 @@
 <template>
-  <div class="flex ml-0.5 space-x-4 sm:space-x-8">
+  <div class="flex ml-0.5 space-x-2 sm:space-x-8 text-base sm:text-sm">
     <!-- Non-mobile Album Tools -->
     <!-- <div class="hiddenX md:block"> -->
     <toolbar-button
@@ -24,7 +24,7 @@
         />
       </svg>
       Add
-      <span class="smX:hidden md:inline-block">to Album</span>
+      <span class="smX:hidden md:inline-block">photos</span>
     </toolbar-button>
     <toolbar-button @click="openModal('HomeModalNewAlbum')">
       <svg
@@ -276,7 +276,7 @@ export default {
 
 <style scoped>
 .menu-icon {
-  @apply inline-block -mt-0.5 w-4;
+  @apply inline-block w-4 mb-0.5 mr-0 sm:ml-0.5;
 }
 
 .menu-item {

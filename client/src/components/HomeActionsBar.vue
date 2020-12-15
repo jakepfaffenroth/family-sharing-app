@@ -1,10 +1,10 @@
 <template>
   <div
-    class="sm:relative flex sm:pt-2 px-2 sm:px-2 whitespace-nowrap transition-all duration-100"
+    class="sm:relative flex px-2 pb-1 sm:p-0 sm:pt-2 whitespace-nowrap transition-all duration-100"
     :class="{
       'border-b-2 border-purple-200 mx-0 sm:mx-3 md:mx-4 lg:mx-6 xl:mx-8 ease-out':
         view.atTopOfPage,
-      'px-0 sm:px-4 md:px-5 lg:px-7 xl:px-9 shadow-lg border-b-2 border-purple-200 ease-in': !view.atTopOfPage
+      'px-0 sm:px-3 md:px-4 lg:px-6 xl:px-8 shadow-lg border-b-2 border-purple-200 ease-in': !view.atTopOfPage
     }"
   >
     <!-- Skeletons -->
@@ -21,7 +21,7 @@
 
     <div
       v-else
-      class="relative flex flex-wrap sm:flex-nowrap flex-grow w-full text-sm font-medium"
+      class="relative flex flex-wrap md:flex-nowrap flex-grow w-full text-sm font-medium"
     >
       <!-- Album picker drop down -->
       <div class="flex flex-grow h-7 sm:mr-12">
@@ -33,24 +33,24 @@
         >
           <template #button>
             <toolbar-button
-              class="flex flex-grow font-lg font-black my-auto pl-0"
+              class="flex flex-grow text-base sm:font-lg font-bold my-auto pl-0"
             >
-              <span>
-                <svg
-                  class="w-4 mt-0.5 mr-1 ml-0.5"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"
-                  />
-                </svg>
-              </span>
+              <!-- <span> -->
+              <svg
+                class="w-4 my-0.5 mr-1 ml-0.5"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"
+                />
+              </svg>
+              <!-- </span> -->
               {{ activeGallery }}
               {{ activeGallery === 'All' ? 'Photos' : '' }}
             </toolbar-button>
@@ -66,24 +66,24 @@
         <mobile-drop-menu :position="'upup full'" class="sm:hidden">
           <template #button>
             <toolbar-button
-              class="flex flex-grow font-lg font-black my-auto pl-0"
+              class="flex flex-grow text-lg sm:text-base font-bold my-auto pl-0"
             >
-              <span>
-                <svg
-                  class="w-4 mt-0.5 mr-1 ml-0.5"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"
-                  />
-                </svg>
-              </span>
+              <!-- <span> -->
+              <svg
+                class="w-5 my-0.5 mr-1 ml-0.5"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"
+                />
+              </svg>
+              <!-- </span> -->
               {{ activeGallery }}
               {{ activeGallery === 'All' ? 'Photos' : '' }}
             </toolbar-button>
@@ -100,7 +100,7 @@
       <toolbar-button
         v-if="userType === 'owner'"
         data-test="selectModeBtn"
-        class="relative sm:order-last right-0 ml-0 mr-1 mb-2 text-center focus:outline-none transition font-medium"
+        class="relative md:order-last right-0 ml-0 mr-1 mt-auto md:mt-0 text-center text-base sm:text-sm focus:outline-none transition font-medium"
         :class="{
           'text-teal-600': isSelectMode
         }"
@@ -112,7 +112,7 @@
       <!-- Album or Selection Tools -->
       <div
         v-if="userType === 'owner'"
-        class="sm:relative flex flex-grow w-full md:mr-6"
+        class="md:relative flex flex-grow w-full md:mr-6"
       >
         <div class="w-full overflow-x-hidden">
           <transition
@@ -121,7 +121,7 @@
           >
             <component
               :is="actionsBar"
-              class="sm:px-2 mb-0 text-sm"
+              class="md:px-2 mb-0 text-sm"
               :active-gallery="activeGallery"
               :filtered-images="filteredImages"
               :user-type="userType"

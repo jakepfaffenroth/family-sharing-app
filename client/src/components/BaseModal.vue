@@ -2,14 +2,14 @@
   <transition appear name="slide-fade" mode="out-in">
     <div
       data-test="modalBackdrop"
-      class="fixed inset-0 flex items-center sm:justify-center bg-black bg-opacity-50 z-50"
+      class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
       @click.self="$emit('close-modal')"
       @keydown.escape="$emit('close-modal')"
     >
       <div
         id="modal"
         data-test="modal"
-        class="flex flex-col w-screen sm:h-screen md:h-auto md:w-full px-6 py-4 rounded-lg shadow-lg bg-gray-800 m-4 md:max-w-xl  z-50"
+        class="flex flex-col w-full max-w-2xl m-1 sm:m-10 px-4 py-3 sm:px-6 sm:py-4 rounded-lg shadow-lg bg-gray-800 z-50"
       >
         <div class="mb-4 text-white text-xl font-bold">
           <slot name="header"></slot>
@@ -18,7 +18,7 @@
           <slot name="content"></slot>
         </div>
         <div
-          class="flex items-center justify-center sm:justify-end px-6 py-3 -mx-6 -mb-4 space-x-6"
+          class="flex px-0 flex-row-reverse justify-between sm:justify-start space-x-6"
         >
           <slot name="footer"></slot>
         </div>
