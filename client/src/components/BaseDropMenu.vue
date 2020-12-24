@@ -1,7 +1,12 @@
 <template>
-  <div data-test="baseDropMenu" class="relative" @mouseleave="closeMenu">
+  <div
+    data-test="baseDropMenu"
+    :class="{ relative: isMenuVisible }"
+    @mouseleave="closeMenu"
+  >
     <div
       data-test="openBaseDropMenu"
+      class="flex justify-end"
       @click="openMenu"
       @touchstart.self="closeMenu"
     >
@@ -11,18 +16,19 @@
     <transition name="slide-fade" mode="out-in">
       <div
         v-show="isMenuVisible"
-        id="invisible-wrapper"
-        class="absolute top-0 z-40"
+        v-keepInViewport
+        data-ok_to_close="true"
+        class="absolute top-0 right-0"
         :class="{
-          '-right-4': position.includes('right'),
-          '-left-4': position.includes('left'),
+          'left-0 right-auto': position.includes('left'),
           '-mt-2': position.includes('up')
         }"
+        @click.self="closeMenu($event)"
       >
         <div
-          id="menu-list"
+          id="menu-list-box"
           data-test="baseDropMenuList"
-          class=" mt-10 mb-2 mx-4 p-2 bg-white rounded border border-teal-600 shadow-xl transition-all"
+          class="relative mt-10 mb-2 p-2 bg-white rounded border border-teal-600 shadow-xl transition-all"
           :class="passedClasses"
           @click="closeMenu($event)"
         >
@@ -37,16 +43,29 @@
 export default {
   name: 'BaseDropMenu',
   props: {
-    position: { type: String, default: 'right' },
+    position: { type: String, default: '' },
     passedClasses: { type: String, default: '' }
   },
   data() {
     return {
       isMenuVisible: false,
-      preventClose: false
+      preventClose: false,
     };
   },
   methods: {
+    getBtn(target) {
+      try {
+        if (
+          !target.dataset.ok_to_close ||
+          !target.dataset.ok_to_close === 'true'
+        ) {
+          target = this.getBtn(target.parentElement);
+        }
+        return target;
+      } catch (err) {
+        return target;
+      }
+    },
     openMenu() {
       this.preventClose = true;
       setTimeout(() => {
@@ -63,7 +82,13 @@ export default {
           } else this.isMenuVisible = false; // close menu;
           break;
         case 'click':
-          if (event.target.tagName === 'A' || event.target.tagName === 'IMG') {
+          const btn = this.getBtn(event.target);
+          if (
+            btn &&
+            (btn.dataset.ok_to_close === 'true' ||
+              btn.tagName === 'A' ||
+              btn.tagName === 'IMG')
+          ) {
             this.isMenuVisible = false; // close menu
           }
           break;

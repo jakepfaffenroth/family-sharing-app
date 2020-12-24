@@ -81,11 +81,62 @@ export default {
       await store.dispatch('getOwnerData', { id, userType });
     }
 
+    // document.addEventListener('click', event => closeDropMenus(event));
+
+    // function getDropListEl(target) {
+    //   // console.log('target:', target ? target.classList.value : 'null');
+    //   try {
+    //     if (target === null) {
+    //       return null;
+    //     }
+    //     if (!target.classList.value.includes('dropMenu')) {
+    //       getDropListEl(target.parentElement);
+    //     }
+    //     return target;
+    //   } catch (err) {
+    //     // console.error(err);
+    //     return null;
+    //   }
+    // }
+
+    // // Close drop menus
+    // let menuToClose = null;
+    // function closeDropMenus(event, menuId) {
+    //   console.log('event:', event);
+
+    //   const dropList = getDropListEl(event.target);
+    //   console.log('dropList:', dropList);
+    //   // console.log('event.target:', event.target);
+    //   // // First find any open menus
+    //   if (menuToClose) {
+    //     console.log('now close');
+    //     menuToClose = parseInt(openMenu[0].dataset.menu_id);
+    //   } else {
+    //     console.log('no menu open');
+    //   }
+    //   const openMenu = document.getElementsByClassName('menuOpen');
+
+    //   // console.log(
+    //   //   'open menu:',
+    //   //   openMenu.length ? parseInt(openMenu[0].dataset.menu_id) : 'null'
+    //   // );
+    //   // console.log('clicked menu:', menuId);
+
+    //   // If open menu found, return it
+    //   // if (openMenu.length) {
+    //   //   return openMenu;
+    //   // } else {
+    //   //   return null;
+    //   // }
+    // }
+    // provide('closeDropMenus', closeDropMenus);
+    // provide('menuToClose', () => menuToClose);
+
     return {
       route,
-      userType
+      userType,
     };
-  }
+  },
 };
 </script>
 
@@ -95,7 +146,7 @@ export default {
 }
 
 .notyf__toast {
-  @apply flex justify-between content-center w-64 h-auto p-0 rounded text-sm font-light;
+  @apply relative bottom-4 right-2 md:bottom-0 md:right-0 flex justify-between content-center w-64 h-auto p-0 rounded text-sm font-light;
 }
 
 .notyf__wrapper {
@@ -176,7 +227,7 @@ export default {
 }
 
 .fade-enter-from,
-.slide-fade-leave-to {
+.fade-leave-to {
   @apply opacity-0;
 }
 </style>

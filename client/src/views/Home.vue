@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-col flex-grow">
     <!-- Header and Menu -->
-    <div class="h-auto">
+    <div class="h-auto relative">
       <header class="fixed w-full z-40 bg-white pt-2 xl:pt-4">
         <component
           :is="userType === 'owner' ? 'HomeMenuOwner' : 'HomeMenuGuest'"

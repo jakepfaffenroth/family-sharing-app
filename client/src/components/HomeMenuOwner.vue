@@ -4,7 +4,7 @@
       <!-- Non-mobile -->
       <div
         data-test="ownerMenu"
-        class="hidden sm:flex rounded-lg h-8 shadow transition-colors"
+        class="hidden relative sm:flex rounded-lg h-8 shadow transition-colors"
       >
         <base-button-purple
           data-test="uploadBtn"
@@ -156,7 +156,10 @@
         data-test="ownerMenu"
         class="relative sm:hidden h-8 w-8 rounded-full transition-colors"
       >
-        <base-drop-mobile :btn-position-tweak="'-mt-3 pt-0.5'" :passed-classes="'mr-4'">
+        <base-drop-mobile
+          :btn-position-tweak="'-mt-3 pt-0.5'"
+          :list-position-tweak="'top-2'"
+        >
           <template #button="{isMenuVisible}">
             <button
               class="w-8 h-8 rounded-full text-white transition"
@@ -193,7 +196,7 @@
             </button>
           </template>
           <template #listItems>
-            <div class="w-46">
+            <div class="mt-2 w-46">
               <a
                 class="main-menu-link uppy-select-files"
                 data-test="openShareModalBtn"

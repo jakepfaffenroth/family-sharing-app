@@ -13,7 +13,9 @@
           </h1>
           <div class="mt-4 border rounded p-4 space-y-4">
             <div class="space-y-1">
-              <h2 class="font-bold text-xl">Personal Info</h2>
+              <h2 class="font-bold text-xl">
+                Personal Info
+              </h2>
               <div class="flex justify-between">
                 <h3 class="text-lg text-gray-700">
                   Username

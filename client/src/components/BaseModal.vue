@@ -4,7 +4,6 @@
       data-test="modalBackdrop"
       class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
       @click.self="$emit('close-modal')"
-      @keydown.escape="$emit('close-modal')"
     >
       <div
         id="modal"
@@ -27,8 +26,15 @@
   </transition>
 </template>
 
-<script>
-export default {
-  emits: ['close-modal']
-};
+<script setup="props, { emit }">
+import { onMounted } from 'vue';
+window.addEventListener('keyup', function(event) {
+  // ESC key
+  if (event.key === 'Escape') {
+    emit('close-modal');
+  }
+});
+function test() {
+  console.log('test');
+}
 </script>
