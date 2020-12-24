@@ -1,9 +1,9 @@
 <template>
-  <base-drop-menu>
+  <base-drop-menu v-show="item.hover" :passed-classes="'mx-0'">
     <template #button>
       <button
         data-test="imgMenuBtn"
-        class="w-8 h-8 rounded-full hover:text-teal-500 hover:shadow-lg focus:ring"
+        class="absolute w-8 h-8 rounded-full hover:text-teal-500 hover:shadow-lg focus:ring"
       >
         <svg
           class="w-full h-full p-1 bg-gradient-to-r from-teal-400 to-purple-500 rounded-full shadow text-white"
@@ -191,9 +191,9 @@ export default {
 </script>
 
 <style scoped>
-.menu-icon {
+/* .menu-icon {
   @apply inline-block -mt-1 mr-1 w-4;
-}
+} */
 
 .menu-item {
   @apply block px-2 py-1 text-sm rounded cursor-pointer text-gray-800 hover:bg-teal-400 hover:text-white transition;

@@ -31,27 +31,28 @@
             itemscope
             itemtype="http://schema.org/ImageObject"
             :src="item.src"
-            class="image-container h-24 w-24 p-0.5 sm:w-auto sm:h-56 md:h-64 lg:h-72 z-0"
+            class="image-container h-24 w-24 m-0.5 sm:w-auto sm:h-56 md:h-64 lg:h-72"
             @mouseenter="item.hover = true"
             @mouseleave="item.hover = false"
           >
             <!-- Image Action Button - owner only -->
             <div
               v-if="items.length >= 0 && userType === 'owner' && owner.ownerId"
-              class="absolute top-1 right-1 z-30"
+              v-show="
+                (imgActionBtn === 'HomeGalleryButtonMenu' && item.hover) ||
+                  isSelectMode
+              "
+              class="absolute w-full h-full p-1 z-30"
             >
               <transition appear name="slide-fade">
                 <component
                   :is="imgActionBtn"
-                  v-show="
-                    (imgActionBtn === 'HomeGalleryButtonMenu' && item.hover) ||
-                      isSelectMode
-                  "
                   :item="item"
                   :date="group.date"
                   :index="index"
                   :group="group"
                   :is-album="isAlbum"
+                  :position="'right'"
                   @click.stop
                 ></component>
               </transition>
@@ -272,9 +273,8 @@ export default {
       return this.items.length < this.allImages.length;
     },
     imgDimension() {
-      let thirds = this.windowWidth / 16 / 3 - 0.42;
+      let thirds = this.windowWidth / 16 / 3 - 0.542;
       return (thirds < 12.9 ? thirds : 0) + 'rem';
-      // 202px matches the breakpoint
     }
   },
   watch: {

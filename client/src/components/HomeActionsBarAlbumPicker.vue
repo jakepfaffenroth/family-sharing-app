@@ -1,26 +1,32 @@
 <template>
   <div>
-    <svg
-      class="w-5 h-5 absolute top-2 right-2 hover:text-purple-600 transition cursor-pointer"
-      xmlns="http://www.w3.org/2000/svg"
-      fill="none"
-      viewBox="0 0 24 24"
-      stroke="currentColor"
+    <button
+      data-ok_to_close="true"
+      class="absolute top-1 right-2 hover:text-purple-600 transition cursor-pointer"
       @click.capture="closeMenu($event)"
     >
-      <path
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        stroke-width="2"
-        d="M6 18L18 6M6 6l12 12"
-      />
-    </svg>
+      <svg
+        class="w-5 h-5 "
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M6 18L18 6M6 6l12 12"
+        />
+      </svg>
+    </button>
     <div ref="albumList" class="h-64 mt-4 py-2 flex flex-wrap overflow-y-auto">
       <div
         v-for="(album, index) in albums"
         :id="album.albumName"
         :key="index"
-        class="w-1/3 sm:w-32 ml-0 mb-3"
+        data-ok_to_close="true"
+        class="w-1/3 sm:w-1/3 lg:w-1/4 xl:w-1/5 ml-0 mb-3"
       >
         <photo-stack
           :images-arr="album.images"

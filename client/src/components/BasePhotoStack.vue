@@ -18,7 +18,7 @@
     <img
       v-for="(image, imgIndex) in imagesArr
         .filter((x, index) => index < 5)
-        .sort((a, b) => (a.h / a.w > b.h / b.w ? 1 : -1))"
+        .sort((a, b) => (a.h / a.w > b.h / b.w ? -1 : 1))"
       :key="imgIndex"
       class="absolute top-0 max-h-9/10 border border-white shadow-sm transition"
       :class="{

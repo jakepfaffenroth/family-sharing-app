@@ -17,7 +17,8 @@
             clip-rule="evenodd"
           />
         </svg>
-        <span>Back to Gallery</span>
+        <span>Back</span>
+        <span class="hidden sm:block">to Gallery</span>
       </router-link>
     </template>
   </base-menu>

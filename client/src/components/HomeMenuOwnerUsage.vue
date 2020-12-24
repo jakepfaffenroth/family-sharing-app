@@ -1,5 +1,5 @@
 <template>
-  <div class="mt-3 mb-1 text-center text-sm text-teal-600">
+  <div class="w-full mt-3 mb-1 text-center text-sm text-teal-600">
     <p>
       You've used
     </p>
@@ -16,14 +16,14 @@
         class="flex-grow border-t border-b border-r border-gray-400 rounded-r-sm"
       ></div>
     </div>
+    <router-link
+      :to="{ name: 'account', params: { goToChangePlan: true } }"
+      class="main-menu-link text-purple-500 font-semibold"
+      data-test="getMoreStorageBtn"
+    >
+      Get more storage
+    </router-link>
   </div>
-  <router-link
-    :to="{ name: 'account', params: { goToChangePlan: true } }"
-    class="main-menu-link text-purple-500 font-semibold text-center"
-    data-test="getMoreStorageBtn"
-  >
-    Get more storage
-  </router-link>
 </template>
 
 <script>

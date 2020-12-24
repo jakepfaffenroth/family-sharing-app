@@ -6,7 +6,7 @@
       class="flex justify-center w-full h-auto mx-auto my-6 overflow-hidden rounded-lg shadow-lg bg-gray-800 lg:w-4/5 xl:w-3/5 text-white font-base font-thin overflow-y-auto"
       @close-modal="closeModal"
     >
-      <div class="flex flex-col w-full px-6 sm:px-8 md:px-8 py-6">
+      <div class="flex flex-col w-full px-4 pr-3 sm:px-8 md:px-8 py-6">
         <h2 class="mb-6 text-center text-lg sm:text-2xl font-semibold">
           Change your plan
         </h2>
@@ -40,7 +40,7 @@
               </p>
             </div>
             <div
-              class="flex items-center justify-center sm:justify-end px-6 py-3 sm:-mr-3 space-x-6"
+              class="flex flex-row-reverse sm:justify-start px-4 py-3 space-x-4"
             >
               <base-button-cancel
                 class=" md:hidden self-end"
@@ -53,7 +53,7 @@
                 data-test="confirmPlanChangeBtn"
                 @click="$emit('confirm-plan-change', newPlan)"
               >
-                Confirm change
+                Confirm
               </base-button-purple>
             </div>
           </div>
@@ -70,23 +70,20 @@
           >
             <div class="flex flex-col w-2/3 md:w-full">
               <div class="flex md:flex-col">
-                <p class="mr-6 md:mr-0 mb-1 text-lg sm:text-xl font-semibold">
+                <p class="mr-6 md:mr-0 mb-1 text-lg sm:text-xl font-semibold text-left md:text-center leading-tight">
                   {{ plan.heading }}
                 </p>
-                <p class="mr-2 md:mr-0 text-teal-400 text-lg">
-                  {{ plan.price }}
-                </p>
-                <p
-                  v-if="plan.paymentSchedule"
-                  class="my-auto md:mb-4 leading-none text-gray-400 text-xs font-thin text-left sm:text-center"
-                >
-                  {{ plan.paymentSchedule[0] }}
-                  <!-- <div></div> -->
-                  <!-- <div class="mt-1">
-                  {{ plan.paymentSchedule[1] }}
-                </div> -->
-                </p>
-                <div v-else class="hidden md:block mb-4">
+                <div class="flex flex-wrap md:block">
+                  <p class="mr-2 md:mr-0 text-teal-400 text-lg">
+                    {{ plan.price }}
+                  </p>
+                  <p
+                    v-if="plan.paymentSchedule"
+                    class="my-auto md:mb-4 leading-none text-gray-400 text-xs font-thin text-left sm:text-center"
+                  >
+                    {{ plan.paymentSchedule[0] }}
+                  </p>
+                  <div v-else class="hidden md:block mb-4"></div>
                   <br />
                 </div>
               </div>
@@ -151,7 +148,7 @@ export default {
         paymentSchedule: null,
         features: [
           '2 GB storage',
-          'Reduced resolution images',
+          'Reduced size images',
           'One album',
           'Private sharing link'
         ]
@@ -163,7 +160,7 @@ export default {
         paymentSchedule: ['Per month', 'Billed monthly'],
         features: [
           '10 GB storage',
-          'Full resolution images',
+          'Full size images',
           'Unlimited album',
           'Private sharing link',
           'Guest downloads'
@@ -176,7 +173,7 @@ export default {
         paymentSchedule: ['Per month', 'Billed monthly'],
         features: [
           '1 TB storage',
-          'Full resolution images',
+          'Full size images',
           'Unlimited album',
           'Private sharing link',
           'Guest downloads'

@@ -1,7 +1,7 @@
 <template>
   <button
     data-test="imgSelectBtn"
-    class="relative w-8 h-8 rounded-full shadow overflow-hidden"
+    class="absolute right-1 w-8 h-8 rounded-full shadow overflow-hidden"
     @click.stop="toggleImgSelection"
   >
     <!-- Circle and colored background (when selected) -->
