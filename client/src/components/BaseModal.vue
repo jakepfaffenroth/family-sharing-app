@@ -34,7 +34,4 @@ window.addEventListener('keyup', function(event) {
     emit('close-modal');
   }
 });
-function test() {
-  console.log('test');
-}
 </script>
