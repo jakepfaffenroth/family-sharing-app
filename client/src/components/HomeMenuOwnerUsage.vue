@@ -9,7 +9,11 @@
     >
       <div
         class="left-0 h-full border rounded-l-sm"
-        :class="'bg-' + usageBarColor + ' border-' + usageBarColor"
+        :class="{
+          'bg-green-400 border-green-400': usageBarColor === 'green',
+          'bg-orange-400 border-orange-400': usageBarColor === 'orange',
+          'bg-red-500 border-red-500': usageBarColor === 'red'
+        }"
         :style="usageBarWidth"
       ></div>
       <div

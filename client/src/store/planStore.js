@@ -28,11 +28,11 @@ export default {
     },
     usageBarColor: (state, getters) => {
       if (getters.storagePercentage < 40) {
-        return 'green-400';
+        return 'green';
       } else if (getters.storagePercentage < 90) {
-        return 'orange-400';
+        return 'orange';
       } else {
-        return 'red-500';
+        return 'red';
       }
     }
   },
