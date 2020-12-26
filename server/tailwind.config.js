@@ -1,7 +1,7 @@
 const colors = require('tailwindcss/colors');
 
 module.exports = {
-  purge: ['./public/**/*.html', './**/*.hbs'],
+  purge: {enabled:true, content:['./views/**/*.html', './views/**/*.js']},
   theme: {
     extend: {
       spacing: { 46: '11rem', '90vw': '90vw', '70vw': '70vw' },

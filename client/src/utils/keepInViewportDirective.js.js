@@ -28,7 +28,7 @@ const outsideEdges = el => {
 
 const adjustPosition = el => {
   const edges = outsideEdges(el);
-  console.log('edges:', edges);
+  // console.log('edges:', edges);
   const needsMoreAdjustment = el.classList.value.includes('posAdjust');
 
   el.classList.remove('left-0', 'right-0', 'bottom-0');
@@ -43,11 +43,11 @@ const adjustPosition = el => {
   for (const value of posAdjust) {
     el.classList.add(value);
   }
-  console.log('el.classList.value:', el.classList.value);
+  // console.log('el.classList.value:', el.classList.value);
 };
 
 export default el => {
-  console.log('isInViewport(el):', isInViewport(el));
+  // console.log('isInViewport(el):', isInViewport(el));
   if (isInViewport(el)) {
     return;
   } else {

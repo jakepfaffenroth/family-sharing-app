@@ -16,7 +16,7 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 require('dotenv').config({ path });
-global.verbose = logger.verbose
+global.verbose = logger.verbose;
 global.debug = logger.debug;
 global.info = logger.info;
 global.msg = logger.msg;

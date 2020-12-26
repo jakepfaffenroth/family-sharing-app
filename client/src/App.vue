@@ -51,7 +51,6 @@ export default {
 
     if (ownerId) {
       userType.value = 'owner';
-      console.log('HERE!');
       getOwnerData(ownerId, 'owner');
     }
     if (guestId && !ownerId) {

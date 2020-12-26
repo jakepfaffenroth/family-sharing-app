@@ -3,12 +3,10 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "prestart": "NODE_ENV=production",
-    "start": "node -r ../config/config.js build:css && ./bin/www",
+    "start": "NODE_ENV=production node -r ./config/config.js ./bin/www",
     "debug": "DEBUG='.' npm run dev",
-    "tailwind": "postcss public/stylesheets/tailwind.css -o public/stylesheets/style.css",
-    "predev": "NODE_ENV=development",
-    "dev": "nodemon --config ./config/nodemon.json -r ./config/config.js ./bin/www",
+    "build:css": "tailwindcss-cli build public/stylesheets/tailwind.css -o public/stylesheets/style.css",
+    "dev": "NODE_ENV=development nodemon --config ./config/nodemon.json -r ./config/config.js ./bin/www",
     "test": "jest --config ./jest.config.js"
   },
   "dependencies": {

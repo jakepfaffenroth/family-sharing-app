@@ -52,9 +52,9 @@
                   id="subscribed-price"
                   class="setting text-xl font-semibold"
                 >
-                  <button class="text-lg" @click="resetPassword">
-                    •••••••
-                    <span>→</span>
+                  <button class="text-base italic" @click="resetPassword">
+                    Reset
+                    <span class="not-italic">→</span>
                   </button>
                 </span>
               </div>
@@ -85,9 +85,17 @@
                 <h3 class="text-lg text-gray-700">
                   Payment method
                 </h3>
-                <span id="credit-card-last-four" class="text-lg font-semibold">
-                  {{ planDetails.paymentMethod }}
-                </span>
+                <div class="flex flex-wrap justify-end">
+                  <span id="credit-card-brand" class="text-lg font-semibold">
+                    {{ planDetails.cardBrand }}
+                  </span>
+                  <span
+                    id="credit-card-last-four"
+                    class="text-lg font-semibold"
+                  >
+                    •••••••• {{ planDetails.lastFour }}
+                  </span>
+                </div>
               </div>
             </div>
             <div class="space-y-1">

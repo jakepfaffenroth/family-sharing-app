@@ -31,9 +31,9 @@
 
 <script>
   const mobileMenuBtn = document.getElementById('mobileMenuBtn');
-  const hamburger = document.getElementById('hamburger').children;
+  const hamburger = document.getElementById('hamburger')
+  const hamburgerParts = hamburger.children;
   const mobileMenuList = document.getElementById('mobileMenuList');
-  console.log('hamburger:', hamburger);
 
   mobileMenuBtn.addEventListener('click', () =>
     mobileMenuList.className.includes('menu-open') ? closeMenu() : openMenu()
@@ -47,12 +47,12 @@
   ];
 
   function toggleHamburger() {
-    hamburger[0].classList.toggle('rotate-45');
-    hamburger[2].classList.toggle('-rotate-45');
-    hamburger[1].classList.toggle('invisible');
+    hamburgerParts[0].classList.toggle('rotate-45');
+    hamburgerParts[2].classList.toggle('-rotate-45');
+    hamburgerParts[1].classList.toggle('invisible');
     hamburgerTransition.forEach((str) => {
-      hamburger[0].classList.toggle(str);
-      hamburger[2].classList.toggle(str);
+      hamburgerParts[0].classList.toggle(str);
+      hamburgerParts[2].classList.toggle(str);
     });
   }
 

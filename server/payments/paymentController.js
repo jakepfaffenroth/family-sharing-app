@@ -253,9 +253,9 @@ module.exports = {
     });
     // console.log('response:', response);
     const planDetails = {
-      paymentMethod:
-        capitalizeFirstLetter(response.data[0].card.brand) +
-        ' •••• ' +
+      cardBrand:
+        capitalizeFirstLetter(response.data[0].card.brand),
+      lastFour:
         response.data[0].card.last4,
       plan:
         customer.plan.charAt(0).toUpperCase() +
