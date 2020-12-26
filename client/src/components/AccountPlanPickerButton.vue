@@ -46,7 +46,7 @@ export default {
     });
 
     function select() {
-      selected.value = true;
+      // selected.value = true;
       emit('reset-other-btns', props.btnValue);
       emit('show-confirmation', props.btnValue);
     }

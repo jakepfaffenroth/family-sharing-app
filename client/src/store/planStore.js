@@ -46,12 +46,13 @@ export default {
   },
   actions: {
     async getPlanDetails({ commit, dispatch, rootState, rootGetters }) {
-      if (!rootGetters.ownerId) {
-        await dispatch('getOwnerData', {
-          ownerId: rootState.ownerStore.ownerIdCookie,
-          userType: 'owner'
-        });
-      }
+      // if (!rootGetters.ownerId) {
+      //   const ownerId = getCookie('ownerId') || null;
+      //   await dispatch('getOwnerData', {
+      //     ownerId,
+      //     userType: 'owner'
+      //   });
+      // }
       const response = await axios.post(
         server + '/payment/retrieve-payment-method',
         {

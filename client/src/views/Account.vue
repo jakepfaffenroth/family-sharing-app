@@ -1,18 +1,20 @@
 <template>
-  <header class="bg-white px-2 pt-2 sm:px-6 sm:pt-4 xl:px-12 xl:pt-6">
-    <account-menu></account-menu>
-  </header>
-  <transition v-if="planDetails" appear name="album" mode="out-in">
-    <component
-      :is="accountView"
-      @open-plan-change="openPlanChange"
-      @close-plan-change="closePlanChange"
-      @confirm-plan-change="confirmPlanChange"
-    ></component>
-  </transition>
-  <div v-else class="mx-auto mt-6 text-xl text-gray-900">
-    Loading...
-  </div>
+  <section>
+    <header class="bg-white px-2 pt-2 sm:px-6 sm:pt-4 xl:px-12 xl:pt-6">
+      <account-menu></account-menu>
+    </header>
+    <transition v-if="planDetails" appear name="album" mode="out-in">
+      <component
+        :is="accountView"
+        @open-plan-change="openPlanChange"
+        @close-plan-change="closePlanChange"
+        @confirm-plan-change="confirmPlanChange"
+      ></component>
+    </transition>
+    <div v-else class="mx-auto mt-6 text-xl text-gray-900">
+      Loading...
+    </div>
+  </section>
 </template>
 
 <script>
@@ -70,14 +72,13 @@ export default {
     }
 
     async function confirmPlanChange(newPriceId) {
-      const response = await axios.post(
+      const {data} = await axios.post(
         server + '/payment/update-subscription',
         {
           ownerId: owner.value.ownerId,
           newPriceId: newPriceId
         }
       );
-      const data = response.data;
       if (
         !data.subUpdated &&
         data.msg.toLowerCase().includes('no such subscription')
@@ -98,8 +99,11 @@ export default {
             'Your subscription could not be changed right now.\nPlease contact support or try again.'
         });
       }
+      console.log('data:', data);
       if (data.subUpdated) {
         store.dispatch('getPlanDetails');
+        store.commit('updatePlanDetails')
+        // store.dispatch('updateQuota', data.quota)
         closePlanChange();
 
         toast.open({
@@ -109,7 +113,7 @@ export default {
           message: 'Subscription updated to ' + newPriceId
         });
       }
-      return response.data;
+      return data;
     }
 
     // async function cancelSubscription() {

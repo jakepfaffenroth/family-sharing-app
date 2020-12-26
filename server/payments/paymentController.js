@@ -225,16 +225,14 @@ module.exports = {
           ],
         }
       );
-
       if (updatedSubscription) {
         req.body.plan = lowercaseFirstLetter(
           req.body.newPriceId.replace(' ', '')
         );
         req.body.customerId = customer.customerId;
-        savePlanToDb(req, res);
+        const quota = savePlanToDb(req, res);
+        res.send({ subUpdated: true, msg: 'none'});
       }
-
-      res.send({ subUpdated: true, msg: 'none' });
     } catch (err) {
       console.log('err:', err);
       if (err.message.toLowerCase().includes('no such subscription')) {
@@ -248,7 +246,7 @@ module.exports = {
       'SELECT customer_id, plan FROM owners WHERE owner_id = ${ownerId}',
       { ownerId: req.body.ownerId }
     );
-console.log('customer:', customer);
+    console.log('customer:', customer);
     const response = await stripe.paymentMethods.list({
       customer: customer.customerId,
       type: 'card',

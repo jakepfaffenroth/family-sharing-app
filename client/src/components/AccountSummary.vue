@@ -277,7 +277,8 @@ export default {
       usageBarColor: computed(() => store.getters.usageBarColor),
       resetPassword,
       updateBilling,
-      deleteAccount
+      deleteAccount,
+      ENABLED: false
       // cancelSubscription
     };
   }
