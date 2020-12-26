@@ -7,6 +7,8 @@ import store from './store';
 import keepInViewPortDirective from './utils/keepInViewportDirective.js';
 
 const app = createApp(App).use(store);
+app.config.devtools = true;
+window.__VUE_DEVTOOLS_GLOBAL_HOOK__.Vue = app.constructor;
 
 app.directive('keepInViewport', keepInViewPortDirective);
 
