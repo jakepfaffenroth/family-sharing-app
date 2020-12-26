@@ -70,9 +70,9 @@
     <div id="uploader"></div>
 
     <!-- Modals -->
+      <!-- v-show="visibleModal" -->
     <component
       :is="visibleModal"
-      v-show="visibleModal"
       data-test="homeModal"
       :active-gallery="activeGallery"
       :img-info="imgInfo"
