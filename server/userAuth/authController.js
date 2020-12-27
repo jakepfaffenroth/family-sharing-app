@@ -3,7 +3,7 @@ const passport = require('passport');
 const LocalStrategy = require('passport-local');
 const bcrypt = require('bcryptjs');
 // require('dotenv').config({ path: './bin/.env' });
-
+const emailController = require('../users/emailController');
 const db = require('../db').pgPromise;
 
 // Passport config
@@ -47,7 +47,7 @@ module.exports.login = (req, res, next) => {
       res.locals.incorrectCred = true;
       return res.render('login', {
         title: 'Carousel',
-        loginUrl: process.env.SERVER + '/auth/login',
+        loginUrl: '/auth/login',
         loginErrMsg: 'Incorrect username or password.',
         username: username,
         password: password,
@@ -108,3 +108,26 @@ module.exports.checkSession = async (req, res, next) => {
     return res.json({ isLoggedIn: false });
   }
 };
+
+module.exports.requestPasswordReset = async (req, res) => {
+  if (req.protocol + '://' + req.get('host') === process.env.SERVER) {
+    res.render('login', {
+      heading: 'A password reset link has been emailed to you',
+    });
+  } else if (req.protocol + '://' + req.get('host') === process.env.CLIENT) {
+    res.status(200).end();
+  } else res.status(200).end();
+
+  const email = req.body.email;
+  if (!email) return;
+  emailController.sendPasswordResetEmail(email);
+};
+
+module.exports.passwordResetForm = (req, res) => {
+  const resetLink =
+    process.env.SERVER + '/auth/submit-password-reset/' + req.params.owner;
+  console.log('resetLink:', resetLink);
+  res.render('passwordReset', { resetLink });
+};
+
+module.exports.submitPasswordReset = emailController.submitPasswordReset;

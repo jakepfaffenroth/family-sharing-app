@@ -83,7 +83,7 @@ wsServer.on('error', (err) => {
   error('websocket error: ', err);
 });
 app.use('/ws', (req, res) => {
-  res.redirect('wss://localhost:3200');
+  res.redirect(process.env.WSS);
 });
 const server = app.listen(3200);
 server.on('upgrade', (request, socket, head) => {

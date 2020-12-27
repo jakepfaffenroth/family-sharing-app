@@ -2,3 +2,38 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer components {
+  @variants responsive, hover {
+    .menu-icon {
+      @apply inline-block w-5 -mt-1 md:w-4 md:mt-0;
+    }
+
+    .menu-item-sm {
+      @apply w-full px-2 py-1 rounded cursor-pointer text-left transition;
+    }
+
+    .menu-item-lg {
+      @apply w-full px-4 py-2 rounded cursor-pointer text-left transition;
+    }
+
+    .menu-item-teal {
+      @apply text-gray-800 hover:bg-teal-400 hover:text-white cursor-pointer;
+    }
+
+    .menu-item-purple {
+      @apply text-gray-800 hover:bg-purple-400 hover:text-white cursor-pointer;
+    }
+
+    .toolbar-btn {
+      @apply mt-auto md:mt-0 text-left text-base sm:text-sm focus:outline-none font-medium transition-all;
+    }
+
+    .btn-disabled {
+      @apply cursor-default text-gray-400 hover:text-gray-400;
+    }
+
+    .btn-enabled {
+      @apply cursor-pointer text-current hover:text-current;
+    }
+  }
+}

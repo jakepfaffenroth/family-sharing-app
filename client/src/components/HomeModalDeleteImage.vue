@@ -2,14 +2,24 @@
   <base-modal v-if="imgInfo" @close-modal="$emit('close-modal')">
     <template #header>
       <h3>
-        Are you sure you want to delete this image?
+        Are you sure you want to delete
+        {{ imgInfo.length > 1 ? imgInfo.length : 'this' }} image{{
+          imgInfo.length > 1 ? 's' : ''
+        }}?
       </h3>
     </template>
     <template #content>
       <p class="mb-6">
         It can't be undone!
       </p>
-      <img class="mb-10 h-56 rounded shadow" :src="imgInfo.thumbnail" />
+      <div class="relative flex h-56 p-4">
+        <photo-stack
+          :images-arr="imgInfo"
+          :size="'big'"
+          :click-enabled="false"
+          class="h-48 w-56 sm:w-64 -mb-6 mt-6"
+        ></photo-stack>
+      </div>
     </template>
     <template #footer>
       <base-button-cancel @click.prevent="$emit('close-modal')">
@@ -28,12 +38,14 @@
 <script>
 import axios from 'axios';
 import BaseModal from './BaseModal';
+import PhotoStack from './BasePhotoStack';
 import BaseButtonPurple from './BaseButtonPurple';
 import BaseButtonCancel from './BaseButtonCancel';
 
 export default {
   components: {
     BaseModal,
+    PhotoStack,
     BaseButtonPurple,
     BaseButtonCancel
   },

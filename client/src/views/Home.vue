@@ -1,13 +1,14 @@
 <template>
   <div class="flex flex-col flex-grow">
     <!-- Header and Menu -->
-    <header class="fixed w-full z-40 bg-white pt-2 sm:pt-4 xl:pt-6">
+    <!-- <div class="h-auto relative"> -->
+    <header class="fixed w-full z-40 bg-white pt-2 xl:pt-4">
       <component
         :is="userType === 'owner' ? 'HomeMenuOwner' : 'HomeMenuGuest'"
         :data-test="userType === 'owner' ? 'ownerMenu' : 'guestMenu'"
         :owner="owner"
         :is-select-mode="isSelectMode"
-        class="pb-4 px-2 sm:px-6 xl:px-12"
+        class="sm:pb-4 px-2 sm:px-3 md:px-6 xl:px-8"
         @open-modal="visibleModal = $event"
         @sort-images="sortImages"
         @download-zip="downloadZip"
@@ -24,14 +25,12 @@
         @set-active-gallery="activeGallery = $event"
       ></actions-bar>
     </header>
+    <!-- </div> -->
 
-    <section class="flex flex-grow mt-32 p-2 sm:px-6 sm:py-4 xl:px-12 xl:pb-6">
-      <p
-        v-if="view.ownerLoading"
-        class="w-full my-auto text-center text-3xl text-gray-400"
-      >
-        Loading...
-      </p>
+    <main
+      class="flex flex-grow mt-28 md:pt-6 py-2 px-1 sm:px-3 sm:py-4 md:px-4 lg:px-6 xl:pt-8 xl:px-8 xl:pb-6"
+    >
+      <loading-text v-if="view.ownerLoading" />
       <!-- Image gallery -->
       <transition appear name="album" mode="out-in">
         <home-gallery
@@ -59,7 +58,7 @@
           </template>
         </home-gallery-empty>
       </transition>
-    </section>
+    </main>
 
     <!-- Uppy file uploader -->
     <!-- Don't load until owner Info is fetched -->
@@ -71,9 +70,9 @@
     <div id="uploader"></div>
 
     <!-- Modals -->
+      <!-- v-show="visibleModal" -->
     <component
       :is="visibleModal"
-      v-if="visibleModal"
       data-test="homeModal"
       :active-gallery="activeGallery"
       :img-info="imgInfo"
@@ -102,6 +101,7 @@ import axios from 'axios';
 import HomeAlbum from '../components/HomeAlbum';
 import HomeGallery from '../components/HomeGallery';
 import HomeGalleryEmpty from '../components/HomeGalleryEmpty';
+import LoadingText from '../components/BaseLoadingText';
 import BaseDropMenu from '../components/BaseDropMenu';
 import BaseSkeletonImage from '../components/BaseSkeletonImage';
 import HomeMenuOwner from '../components/HomeMenuOwner';
@@ -129,6 +129,7 @@ import downloader from '../utils/downloadZip';
 export default {
   name: 'Home',
   components: {
+    LoadingText,
     BaseDropMenu,
     BaseSkeletonImage,
     HomeMenuOwner,
@@ -309,6 +310,7 @@ export default {
       imgInfo.value = payload.imgInfo;
       modalSwitch.value = payload.modalSwitch;
       visibleModal.value = modalName;
+      console.log('visibleModal.value:', visibleModal.value);
     });
     provide('closeModal', () => (visibleModal.value = null));
     provide('openUploader', () => true);

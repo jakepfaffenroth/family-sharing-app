@@ -1,7 +1,8 @@
 <template>
-  <div>
-    <toolbar-button
-      v-show="activeGallery !== 'All'"
+  <div class="flex flex-col text-base sm:text-sm">
+    <button
+      v-if="activeGallery !== 'All'"
+      class="menu-item-sm menu-item-purple"
       @click="
         openModal('HomeModalPhotoPicker', { activeGallery }),
           toast.success('open photo picker modal')
@@ -22,9 +23,12 @@
         />
       </svg>
       Add
-      <span class="hidden md:inline-block">to Album</span>
-    </toolbar-button>
-    <toolbar-button @click="openModal('HomeModalNewAlbum')">
+      <span class="smX:hidden md:inline-block">photos</span>
+    </button>
+    <button
+      class="menu-item-sm menu-item-purple"
+      @click="openModal('HomeModalNewAlbum')"
+    >
       <svg
         class="menu-icon"
         xmlns="http://www.w3.org/2000/svg"
@@ -40,10 +44,11 @@
         />
       </svg>
       New
-      <span class="hidden md:inline-block">Album</span>
-    </toolbar-button>
-    <toolbar-button
+      <span class="smX:hidden md:inline-block">Album</span>
+    </button>
+    <button
       v-show="activeGallery !== 'All'"
+      class="menu-item-sm menu-item-purple"
       @click="openModal('HomeModalDeleteAlbum', { activeGallery })"
     >
       <svg
@@ -60,25 +65,22 @@
         />
       </svg>
       Remove
-      <span class="hidden lg:inline-block">Album</span>
-    </toolbar-button>
+      <span class="smX:hidden lg:inline-block">Album</span>
+    </button>
   </div>
 </template>
 
 <script>
-import ToolbarButton from './BaseButtonImageToolbar';
 import { useStore } from 'vuex';
 import { ref, reactive, computed, onMounted, nextTick } from 'vue';
 
 export default {
   name: 'HomeActionsBarAlbumTools',
-  components: {
-    ToolbarButton
-  },
   inject: ['setActiveGallery', 'openModal', 'toast'],
   props: {
     activeGallery: { type: String, default: 'All' },
-    userType: { type: String, default: '' }
+    userType: { type: String, default: '' },
+    closeMenu: { type: Function, default: () => {} }
   },
   computed: {
     albums() {
@@ -89,9 +91,9 @@ export default {
 </script>
 
 <style scoped>
-.menu-icon {
-  @apply inline-block -mt-0.5 w-4;
-}
+/* .menu-icon {
+  @apply inline-block w-4 mb-0.5 mr-0 sm:ml-0.5;
+} */
 
 .menu-item {
   @apply block w-full px-2 py-1 text-sm rounded cursor-pointer text-gray-800 hover:bg-teal-400 hover:text-white transition;

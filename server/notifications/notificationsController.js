@@ -13,7 +13,7 @@ module.exports.addToNotifsQueue = async (req, res, next) => {
     const thumbPath = `${process.env.CDN_PATH}${ownerId}/thumb/${sampleImg}`;
     const queues = require('../tasks');
     // Add file upload info to email notification queue
-    await queues.emailSender.add({
+    await queues.notificationEmailSender.add({
       guestId,
       sessionUploadCount,
       thumbPath,

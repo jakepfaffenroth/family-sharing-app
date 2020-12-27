@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col pb-2 sm:flex-row sm:justify-between">
+  <div class="flex pb-2 justify-between">
     <div>
       <a href="/">
         <base-colorful-logo class="self-center sm:self-start" />

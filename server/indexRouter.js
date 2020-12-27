@@ -11,7 +11,7 @@ const notificationsController = require('./notifications/notificationsController
 router.get('/', (req, res, next) => {
   res.render('index', {
     title: 'Carousel',
-    loginUrl: process.env.SERVER + '/auth/login',
+    loginUrl: '/auth/login',
   });
 });
 
@@ -32,15 +32,19 @@ router.get('/pricing', (req, res) => {
 });
 
 router.get('/login', (req, res) => {
+  const heading = req.query.emailconfirmed
+    ? 'Email confirmed.<br>Sign in to your account.'
+    : null;
   req.query.q ? (isErrVisible = true) : (isErrVisible = false);
+
   res.render('login', {
-    // layout: 'login',
-    loginUrl: process.env.SERVER + '/auth/login',
+    loginUrl: '/auth/login',
     placeholderUsername: process.env.SERVER.includes('localhost')
       ? 'dev'
       : 'demo',
     placeholderPassword: process.env.NODE_ENV === 'Development' ? '123456' : '',
     errMsg: isErrVisible,
+    heading,
   });
 });
 

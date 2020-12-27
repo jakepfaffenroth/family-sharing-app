@@ -17,7 +17,7 @@
       >
         <!-- Group date label -->
         <div class="flex justify-between">
-          <p class="mb-1 text-sm sm:text-base">
+          <p class="mb-1 pl-1 sm:pl-0 text-sm sm:text-base">
             {{ group.date }}
           </p>
         </div>
@@ -31,27 +31,28 @@
             itemscope
             itemtype="http://schema.org/ImageObject"
             :src="item.src"
-            class="image-container h-24 xs:h-28 sm:h-36 md:h-64 z-0"
+            class="image-container h-24 w-24 m-0.5 sm:w-auto sm:h-56 md:h-64 lg:h-72"
             @mouseenter="item.hover = true"
             @mouseleave="item.hover = false"
           >
             <!-- Image Action Button - owner only -->
             <div
               v-if="items.length >= 0 && userType === 'owner' && owner.ownerId"
-              class="absolute top-1 right-1 z-30"
+              v-show="
+                (imgActionBtn === 'HomeGalleryButtonMenu' && item.hover) ||
+                  isSelectMode
+              "
+              class="absolute w-full h-full p-1 z-30"
             >
               <transition appear name="slide-fade">
                 <component
                   :is="imgActionBtn"
-                  v-show="
-                    (imgActionBtn === 'HomeGalleryButtonMenu' && item.hover) ||
-                      isSelectMode
-                  "
                   :item="item"
                   :date="group.date"
                   :index="index"
                   :group="group"
                   :is-album="isAlbum"
+                  :position="'right'"
                   @click.stop
                 ></component>
               </transition>
@@ -67,12 +68,13 @@
               :data-size="'' + item.w + 'x' + item.h"
               :title="item.title"
             >
+              <p>{{ $refs[item.fileId] }}</p>
               <img
                 :id="item.fileId"
                 :data-url="item.thumbnail"
                 :alt="item.alt"
                 itemprop="thumbnail"
-                class="image h-24 xs:h-28 sm:h-36 md:h-64 rounded-sm border-none"
+                class="image w-24 h-24 sm:w-auto sm:h-full rounded-sm border-none"
                 :class="{
                   'bg-gray-300 animate-pulse':
                     imgsLoaded.indexOf(item.fileId) === -1
@@ -80,7 +82,7 @@
                 :style="
                   imgsLoaded.indexOf(item.fileId) === -1
                     ? skeletonWidth(item)
-                    : null
+                    : ''
                 "
                 @load="imgsLoaded.push(item.fileId)"
               />
@@ -269,6 +271,10 @@ export default {
     },
     isAlbum() {
       return this.items.length < this.allImages.length;
+    },
+    imgDimension() {
+      let thirds = this.windowWidth / 16 / 3 - 0.542;
+      return (thirds < 12.9 ? thirds : 0) + 'rem';
     }
   },
   watch: {
@@ -616,7 +622,7 @@ export default {
 };
 </script>
 
-<style scoped>
+<style scoped vars="{imgDimension}">
 @import 'https://fonts.googleapis.com/icon?family=Material+Icons';
 
 .img-menu-btn:hover .img-menu-list {
@@ -640,27 +646,22 @@ figure {
 }
 
 .group-container {
-  @apply relative mr-2 mb-6 overflow-hidden;
+  @apply relative mr-0 mb-6;
 }
 .image-container {
-  @apply relative mr-1 mb-1 overflow-hidden;
+  @apply relative mr-1 mb-1;
+  min-height: var(--imgDimension);
+  min-width: var(--imgDimension);
 }
 
 .image {
-  flex: auto;
-  min-width: 100px;
-  object-fit: contain;
+  @apply flex-auto object-cover;
+  min-height: var(--imgDimension);
+  min-width: var(--imgDimension);
   /* transition: all 0.2s ease-in-out; */
 }
 
-.image-container:hover .image {
-  scale: 1;
-  object-fit: cover;
-}
-
-.image-container:hover .img-menu-btn {
-  color: black;
-}
+/* .image˝ */
 
 /* @media (max-width: 640px) {
   .skeleton-width {

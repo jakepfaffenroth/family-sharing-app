@@ -1,8 +1,9 @@
 .DS_Store
 node_modules
-/dist
+*/dist
 .idea
 .vscode
+
 # local env files
 .env*
 .env.*.local
@@ -16,7 +17,7 @@ yarn-error.log*
 pnpm-debug.log*
 populateGuestIds*
 ngrok
-server/logs/
+*/logs
 .*audit.json
 
 # Local config files

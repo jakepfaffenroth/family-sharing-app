@@ -1,18 +1,18 @@
 <template>
-  <header class="bg-white px-2 pt-2 sm:px-6 sm:pt-4 xl:px-12 xl:pt-6">
-    <account-menu></account-menu>
-  </header>
-  <transition v-if="planDetails" appear name="album" mode="out-in">
-    <component
-      :is="accountView"
-      @open-plan-change="openPlanChange"
-      @close-plan-change="closePlanChange"
-      @confirm-plan-change="confirmPlanChange"
-    ></component>
-  </transition>
-  <div v-else class="mx-auto mt-6 text-xl text-gray-900">
-    Loading...
-  </div>
+  <main>
+    <header class="bg-white px-2 pt-2 sm:px-6 sm:pt-4 xl:px-12 xl:pt-6">
+      <account-menu></account-menu>
+    </header>
+    <transition v-if="planDetails" appear name="album" mode="out-in">
+      <component
+        :is="accountView"
+        @open-plan-change="openPlanChange"
+        @close-plan-change="closePlanChange"
+        @confirm-plan-change="confirmPlanChange"
+      ></component>
+    </transition>
+    <loading-text v-else class="mt-20" />
+  </main>
 </template>
 
 <script>
@@ -20,6 +20,7 @@ import axios from 'axios';
 import AccountMenu from '../components/AccountMenu';
 import AccountSummary from '../components/AccountSummary';
 import AccountPlanPicker from '../components/AccountPlanPicker';
+import LoadingText from '../components/BaseLoadingText';
 
 import {
   ref,
@@ -34,7 +35,7 @@ import { useStore } from 'vuex';
 
 export default {
   name: 'Account',
-  components: { AccountMenu, AccountSummary, AccountPlanPicker },
+  components: { AccountMenu, AccountSummary, AccountPlanPicker, LoadingText },
   inheritAttrs: false,
   setup(props) {
     const store = useStore();
@@ -70,14 +71,13 @@ export default {
     }
 
     async function confirmPlanChange(newPriceId) {
-      const response = await axios.post(
+      const { data } = await axios.post(
         server + '/payment/update-subscription',
         {
           ownerId: owner.value.ownerId,
           newPriceId: newPriceId
         }
       );
-      const data = response.data;
       if (
         !data.subUpdated &&
         data.msg.toLowerCase().includes('no such subscription')
@@ -98,8 +98,11 @@ export default {
             'Your subscription could not be changed right now.\nPlease contact support or try again.'
         });
       }
+      console.log('data:', data);
       if (data.subUpdated) {
         store.dispatch('getPlanDetails');
+        store.commit('updatePlanDetails');
+        // store.dispatch('updateQuota', data.quota)
         closePlanChange();
 
         toast.open({
@@ -109,7 +112,7 @@ export default {
           message: 'Subscription updated to ' + newPriceId
         });
       }
-      return response.data;
+      return data;
     }
 
     // async function cancelSubscription() {
