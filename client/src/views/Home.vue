@@ -71,7 +71,7 @@
 
     <!-- Modals -->
     <!-- v-show="visibleModal" -->
-    <home-modal-share />
+    <share-modal />
     <component
       :is="visibleModal"
       data-test="homeModal"
@@ -119,7 +119,7 @@ const HomeUploader = defineAsyncComponent(() =>
 const HomeMenuGuest = defineAsyncComponent(() =>
   import('../components/HomeMenuGuest')
 );
-import HomeModalShare from '../components/HomeModalShare';
+import ShareModal from '../components/HomeModalShare';
 // import HomeModalImageShare from '../components/HomeModalImageShare';
 import HomeModalAlbumPicker from '../components/HomeModalAlbumPicker';
 import HomeModalNewAlbum from '../components/HomeModalNewAlbum';
@@ -143,7 +143,7 @@ export default {
     ActionsBar,
     HomeActionsBarAlbumTabs,
     HomeActionsBarSelectionTools,
-    HomeModalShare,
+    ShareModal,
     // HomeModalImageShare,
     HomeModalAlbumPicker,
     HomeModalNewAlbum,
