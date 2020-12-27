@@ -70,7 +70,8 @@
     <div id="uploader"></div>
 
     <!-- Modals -->
-      <!-- v-show="visibleModal" -->
+    <!-- v-show="visibleModal" -->
+    <home-modal-share />
     <component
       :is="visibleModal"
       data-test="homeModal"
@@ -385,5 +386,3 @@ export default {
   }
 };
 </script>
-
-<style></style>
