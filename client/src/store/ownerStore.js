@@ -63,6 +63,7 @@ export default {
         }
         commit('updateOwner', response.data.owner);
         commit('updateImages', response.data.images);
+        dispatch('updateAlbums', response.data.albums)
       } catch (err) {
         console.error(err, state);
       }
