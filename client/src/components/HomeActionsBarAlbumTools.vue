@@ -71,9 +71,6 @@
 </template>
 
 <script>
-import { useStore } from 'vuex';
-import { ref, reactive, computed, onMounted, nextTick } from 'vue';
-
 export default {
   name: 'HomeActionsBarAlbumTools',
   inject: ['setActiveGallery', 'openModal', 'toast'],
