@@ -26,12 +26,16 @@
   </transition>
 </template>
 
-<script setup="props, { emit }">
-import { onMounted } from 'vue';
-window.addEventListener('keyup', function(event) {
-  // ESC key
-  if (event.key === 'Escape') {
-    emit('close-modal');
+<script>
+export default {
+  emits: ['close-modal'],
+  setup(props, { emit }) {
+    window.addEventListener('keyup', function(event) {
+      // ESC key
+      if (event.key === 'Escape') {
+        emit('close-modal');
+      }
+    });
   }
-});
+};
 </script>

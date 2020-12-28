@@ -1,7 +1,6 @@
 <template>
   <div class="flex flex-col flex-grow">
     <!-- Header and Menu -->
-    <!-- <div class="h-auto relative"> -->
     <header class="fixed w-full z-40 bg-white pt-2 xl:pt-4">
       <component
         :is="userType === 'owner' ? 'HomeMenuOwner' : 'HomeMenuGuest'"
@@ -25,7 +24,6 @@
         @set-active-gallery="activeGallery = $event"
       ></actions-bar>
     </header>
-    <!-- </div> -->
 
     <main
       class="flex flex-grow mt-28 md:pt-6 py-2 px-1 sm:px-3 sm:py-4 md:px-4 lg:px-6 xl:pt-8 xl:px-8 xl:pb-6"
@@ -69,7 +67,6 @@
     <div id="uploader"></div>
 
     <!-- Modals -->
-      <!-- v-show="visibleModal" -->
     <component
       :is="visibleModal"
       data-test="homeModal"
@@ -309,7 +306,6 @@ export default {
       imgInfo.value = payload.imgInfo;
       modalSwitch.value = payload.modalSwitch;
       visibleModal.value = modalName;
-      console.log('visibleModal.value:', visibleModal.value);
     });
     provide('closeModal', () => (visibleModal.value = null));
     provide('openUploader', () => true);
@@ -384,5 +380,3 @@ export default {
   }
 };
 </script>
-
-<style></style>
