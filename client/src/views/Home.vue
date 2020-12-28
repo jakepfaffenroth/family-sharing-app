@@ -51,11 +51,10 @@
           :active-gallery="activeGallery"
           @reload-uppy="forceUppyReloadKey++"
         >
-          <template #emptyGalleryText>
-            {{
-              activeGallery === 'All' ? 'Upload some images!' : 'Empty Album'
-            }}
-          </template>
+          {{ activeGallery === 'All' ? 'Upload some images!' : 'Empty Album' }}
+          <h4 v-if="activeGallery !== 'All'" class="text-lg">
+            Add some images
+          </h4>
         </home-gallery-empty>
       </transition>
     </main>

@@ -75,13 +75,13 @@ export default {
         return;
       }
       try {
-        const response = await axios.post(server + '/albums/create-album', {
+        const {status, data} = await axios.post(server + '/albums/create-album', {
           name: newAlbumName.value,
           ownerId: ownerId.value
         });
 
-        if (response.status === 200) {
-          store.dispatch('addNewAlbum', response.data);
+        if (status >= 200 && status < 300) {
+          store.dispatch('addNewAlbum', data);
           setActiveGallery(newAlbumName.value);
           closeModal();
           toast.success('Album created');
