@@ -1,23 +1,23 @@
 <template>
   <div
-    class="flex flex-col w-full px-2 py-2 text-gray-900 sm:px-4 sm:py-4 xl:px-12 xl:py-6"
+    class="flex flex-col w-full p-2 text-gray-900 sm:px-4 sm:py-4 xl:px-12 xl:py-6"
   >
     <div id="subscription-settings">
       <div class="flex flex-wrap justify-center mt-4">
-        <div class="inline-block w-full p-4 rounded sm:w-4/5 md:w-3/5 lg:w-2/5">
+        <div class="inline-block w-full rounded sm:w-4/5 md:w-3/5 lg:w-2/5">
           <h1
             id="subscription-status-text"
             class="text-center font-bold text-2xl"
           >
             Account settings
           </h1>
-          <div class="mt-4 border rounded p-4 space-y-4">
-            <div class="space-y-1">
+          <div class="mt-4 Xborder roundedX Xp-2 space-y-4">
+            <div class="settings-block">
               <h2 class="font-bold text-xl">
                 Personal Info
               </h2>
               <div class="flex justify-between">
-                <h3 class="text-lg text-gray-700">
+                <h3 class="text-lg text-gray-800">
                   Username
                 </h3>
                 <span
@@ -31,7 +31,7 @@
                 </span>
               </div>
               <div class="flex justify-between">
-                <h3 class="text-lg text-gray-700">
+                <h3 class="text-lg text-gray-800">
                   Name
                 </h3>
                 <span
@@ -45,60 +45,83 @@
                 </span>
               </div>
               <div class="flex justify-between">
-                <h3 class="text-lg text-gray-700">
+                <h3 class="ineline-block align-baseline text-lg text-gray-800">
                   Password
                 </h3>
-                <span
-                  id="subscribed-price"
-                  class="setting text-xl font-semibold"
-                >
-                  <button class="text-base italic" @click="resetPassword">
-                    Reset
-                    <span class="not-italic">→</span>
-                  </button>
-                </span>
+                <button class="setting" @click="resetPassword">
+                  Reset
+                  <span class="pl-1 not-italic">→</span>
+                </button>
               </div>
             </div>
-            <div class="space-y-1">
+            <div class="settings-block">
               <h2 class="font-bold text-xl">
-                Plan
+                Billing
               </h2>
-              <div class="flex justify-between">
-                <h3 class="text-lg text-gray-700">
-                  Current plan
-                </h3>
-                <span
-                  id="subscribed-price"
-                  data-test="currentPlanInSummary"
-                  class="font-semibold text-lg"
-                  :class="{
-                    'font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-teal-400 to-orange-400 via-purple-400': planDetails.plan
-                      .toLowerCase()
-                      .includes('premium')
-                  }"
-                >
-                  {{ planDetails.plan }}
-                </span>
-              </div>
-
-              <div class="flex justify-between">
-                <h3 class="text-lg text-gray-700">
-                  Payment method
-                </h3>
-                <div class="flex flex-wrap justify-end">
-                  <span id="credit-card-brand" class="text-lg font-semibold">
-                    {{ planDetails.cardBrand }}
-                  </span>
-                  <span
-                    id="credit-card-last-four"
-                    class="text-lg font-semibold"
-                  >
-                    •••••••• {{ planDetails.lastFour }}
-                  </span>
+              <div class="space-y-4">
+                <div class="flex justify-between">
+                  <h3 class="text-lg text-gray-700">
+                    Plan
+                  </h3>
+                  <div>
+                    <p class="inline-block w-full text-right">
+                      You are currently on the
+                      <span
+                        id="subscribed-price"
+                        data-test="currentPlanInSummary"
+                        class="font-semibold text-lg"
+                        :class="{
+                          'font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-teal-400 to-orange-400 via-purple-400': planDetails.plan
+                            .toLowerCase()
+                            .includes('premium')
+                        }"
+                      >
+                        {{ planDetails.plan }}
+                      </span>
+                      plan
+                    </p>
+                    <button
+                      class="setting "
+                      data-test="changePlanBtn"
+                      @click="$emit('open-plan-change')"
+                    >
+                      Change plan
+                      <span class="pl-1 not-italic">→</span>
+                    </button>
+                  </div>
+                </div>
+                <div class="flex justify-between">
+                  <h3 class="text-lg text-gray-700 whitespace-nowrap">
+                    Payment method
+                  </h3>
+                  <div>
+                    <p class="Xflex Xflex-wrap text-right">
+                      <span
+                        id="credit-card-brand"
+                        class="inline-block pl-2 text-lg font-semibold text-right"
+                      >
+                        {{ planDetails.cardBrand }}
+                      </span>
+                      <span
+                        id="credit-card-last-four"
+                        class="inline-block pl-2 text-lg font-semibold text-right"
+                      >
+                        •••••••• {{ planDetails.lastFour }}
+                      </span>
+                    </p>
+                    <button
+                      class="setting"
+                      data-test="changePlanBtn"
+                      @click="updateBilling"
+                    >
+                      Update billing
+                      <span class="pl-1 not-italic">→</span>
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
-            <div class="space-y-1">
+            <div class="settings-block">
               <h3 class="font-bold text-xl">
                 Usage
               </h3>
@@ -128,7 +151,24 @@
               </div>
             </div>
 
-            <div class="space-y-1">
+            <div class="settings-block">
+              <h2 class="font-bold text-xl">
+                Delete Your Account
+              </h2>
+              <p>
+                This action will immediately and permanently delete your account
+                and all data, including images.
+              </p>
+              <p class="font-semibold">
+                They cannot be recovered after deletion.
+              </p>
+              <div class="flex justify-end">
+                <base-button-red class="mt-4" @click="deleteAccount">
+                  Delete Account
+                </base-button-red>
+              </div>
+            </div>
+            <!-- <div class="space-y-1">
               <div class="space-y-1 text-gray-900 font-semibold text-xl">
                 <div
                   class="setting flex justify-between mt-2 mb-2 cursor-pointer"
@@ -145,7 +185,7 @@
                   @click="updateBilling"
                 >
                   <span>
-                    Update billing info
+                    Update billing
                     <span>→</span>
                   </span>
                 </div>
@@ -159,7 +199,7 @@
                   </span>
                 </div>
               </div>
-            </div>
+            </div> -->
           </div>
           <!-- <div
               class="flex justify-between mt-2 mb-2 text-gray-900 font-bold text-xl cursor-pointer"
@@ -173,16 +213,26 @@
         </div>
       </div>
     </div>
+
+    <!-- Modals -->
+    <component
+      :is="visibleModal"
+      class="text-center"
+      @close-modal="visibleModal = null"
+    />
   </div>
 </template>
 
 <script>
 import axios from 'axios';
-import { inject, computed } from 'vue';
+import { ref, inject, computed } from 'vue';
 import { useStore } from 'vuex';
+import BaseButtonRed from './BaseButtonRed';
+import DeleteAccountModal from './AccountModalDeleteAccount';
 
 export default {
   name: 'AccountSummary',
+  components: { BaseButtonRed, DeleteAccountModal },
   emits: ['open-plan-change'],
   setup() {
     const store = useStore();
@@ -191,6 +241,8 @@ export default {
 
     const owner = computed(() => store.state.ownerStore.owner);
     const storagePercentage = computed(() => store.getters.storagePercentage);
+
+    const visibleModal = ref(null);
 
     async function resetPassword() {
       const response = await axios.post(
@@ -218,12 +270,7 @@ export default {
 
     // TODO - Add delete account functionality
     async function deleteAccount() {
-      toast.open({
-        type: 'info',
-        duration: 3000,
-        dismissible: true,
-        message: 'Coming soon!'
-      });
+      visibleModal.value = 'DeleteAccountModal';
     }
 
     // async function cancelSubscription() {
@@ -286,6 +333,7 @@ export default {
       resetPassword,
       updateBilling,
       deleteAccount,
+      visibleModal,
       ENABLED: false
       // cancelSubscription
     };
@@ -294,7 +342,11 @@ export default {
 </script>
 
 <style scoped>
+.settings-block {
+  @apply px-4 py-2 border border-gray-300 rounded space-y-1;
+}
+
 .setting {
-  @apply cursor-pointer transition hover:text-purple-600;
+  @apply inline-block w-full text-base text-right leading-7 italic cursor-pointer transition hover:text-purple-600;
 }
 </style>

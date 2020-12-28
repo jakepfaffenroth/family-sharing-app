@@ -87,7 +87,7 @@ module.exports.logout = (req, res) => {
 module.exports.checkSession = async (req, res, next) => {
   try {
     let [owner, images, albums] = await db.multi(
-      'SELECT username, first_name, last_name, owner_id, guest_id, plan, quota FROM owners WHERE owner_id = ${ownerId};SELECT images.*, album_images.album_id FROM images LEFT JOIN album_images ON images.file_id=album_images.file_id WHERE images.owner_id=${ownerId} ORDER BY upload_time ASC; SELECT album_id, album_name FROM albums WHERE owner_id = ${ownerId}',
+      'SELECT username, first_name, last_name, owner_id, guest_id, email, plan, quota FROM owners WHERE owner_id = ${ownerId};SELECT images.*, album_images.album_id FROM images LEFT JOIN album_images ON images.file_id=album_images.file_id WHERE images.owner_id=${ownerId} ORDER BY upload_time ASC; SELECT album_id, album_name FROM albums WHERE owner_id = ${ownerId}',
       req.body
     );
 

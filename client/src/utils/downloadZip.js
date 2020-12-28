@@ -21,7 +21,6 @@ export default async (images, toast) => {
     message:
       '<div id="toast-message"><p id="msg-text"></p><div class="flex justify-end mt-2"><button id="zip-cancel-btn">Cancel</button></div></div>'
   });
-  // let testOutput;
 
   try {
     const zipMsg = document.getElementById('msg-text');
@@ -35,7 +34,6 @@ export default async (images, toast) => {
     let zip = initZip();
     const count = await zipImages();
     await finishZip(count);
-    console.log('output:', output);
     return output;
 
     // ------------------ //
@@ -59,7 +57,6 @@ export default async (images, toast) => {
               encoding: null
             }
           );
-          // console.log('response:', response);
           // Check if zip file will exceed size limit by adding latest downloaded file
           if (zipSize + response.data.size < zipSizeLimit) {
             // Will not exceed limit; add file to zip and continue
@@ -70,7 +67,6 @@ export default async (images, toast) => {
             zipSize = 0;
             finishZip(count);
             count++;
-            // zip = startZip();
             folder = createFolder(count);
             folder.file(
               file.fileName.slice(file.fileName.indexOf('/')),
@@ -113,8 +109,6 @@ export default async (images, toast) => {
           if (keepZipping === false) {
             return;
           }
-          // output = data;
-          console.log('data:', data);
           if (process.env.NODE_ENV != 'test') {
             saveAs(
               data,
@@ -126,10 +120,6 @@ export default async (images, toast) => {
           }
         });
 
-      // zipMsg.innerText = 'Complete';
-      // setTimeout(() => {
-      //   toast.dismiss(zipToast);
-      // }, 2000);
     }
 
     function cancelZip() {

@@ -60,7 +60,7 @@ module.exports.create = [
     const errors = validationResult(req);
     // Print error messages to console
     if (!errors.isEmpty()) {
-      /**/ error('Validation failed:');
+      error('Validation failed:');
       for (let i = 0; i < errors.array().length; i++) {
         if (errors.array()[i].msg) {
           error('::' + errors.array()[i].param + ': ' + errors.array()[i].msg);
@@ -84,11 +84,11 @@ module.exports.create = [
       });
     }
     if (errors.isEmpty()) {
-      /**/ console.log('validation passed');
+      console.log('validation passed');
       // Takes req.body.password and hashes it
       // then saves hashed password to db instead of plain text password
       bcrypt.hash(req.body.password, 10, async (err, hashedPassword) => {
-        /**/ console.log('hashing password...');
+        console.log('hashing password...');
 
         if (err) return next(err);
 
