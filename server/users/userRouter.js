@@ -9,6 +9,7 @@ const emailController = require('./emailController');
 router.post('/create-owner', ownerController.create);
 router.post('/choose-plan', ownerController.choosePlan);
 router.post('/get-owner', ownerController.getOwner);
+router.post('/delete-account', ownerController.DELETE_ACCOUNT);
 
 // Guest routers
 router.post('/subscribe-email', guestController.subscribeEmail);

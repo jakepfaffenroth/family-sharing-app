@@ -3,6 +3,8 @@ const bcrypt = require('bcryptjs');
 const { body, validationResult } = require('express-validator');
 const { sanitizeBody } = require('express-validator');
 const db = require('../db').pgPromise;
+const { ParameterizedQuery: PQ } = require('pg-promise');
+const pgpHelpers = require('../db').pgpHelpers;
 const { confirmOwnerEmailSender } = require('../tasks');
 const { v4: uuidv4 } = require('uuid');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
@@ -98,14 +100,14 @@ module.exports.create = [
         });
 
         const owner = await db.one(
-          'INSERT INTO owners (owner_id, username, first_name, last_name, password, guest_id, customer_id) VALUES (${ownerId}, ${username}, ${firstName}, ${lastName}, ${password}, ${guestId}, ${customerId}) RETURNING owner_id, username, first_name, last_name',
+          'INSERT INTO owners (owner_id, username, first_name, last_name, password, guest_id, customer_id) VALUES (DEFAULT, ${username}, ${firstName}, ${lastName}, ${password}, DEFAULT, ${customerId}) RETURNING owner_id, username, first_name, last_name',
           {
-            ownerId: uuidv4(),
+            // ownerId: uuidv4(),
             username: req.body.username,
             firstName: req.body.firstName,
             lastName: req.body.lastName,
             password: hashedPassword,
-            guestId: uuidv4(),
+            // guestId: uuidv4(),
             customerId: customer.id,
           }
         );
@@ -183,4 +185,41 @@ module.exports.getOwner = async (req, res) => {
     error(err);
     return res.end();
   }
+};
+
+module.exports.DELETE_ACCOUNT = async (req, res) => {
+  const values = {
+    ownerId: req.body.ownerId,
+    deletedTS: 'deleted_' + Date.now(),
+    blank: '###',
+  };
+
+  // const cs = new pgp.helpers.ColumnSet();
+
+  const ownerQuery =
+    'UPDATE owners SET username = gen_random_uuid(), first_name = ${blank}, last_name = ${blank}, email = ${blank}, password = ${blank}, deleted = current_timestamp, active = FALSE WHERE owner_id = ${ownerId} RETURNING *';
+
+  const imagesQuery =
+    "UPDATE images SET file_name = 'deleted', file_id = gen_random_uuid(), src = ${blank}, thumbnail = ${blank}, exif = '{}'::jsonb, thumb_file_id = ${blank} WHERE owner_id = ${ownerId} RETURNING *";
+
+  const albumQuery =
+    "UPDATE albums SET album_name = 'deleted' WHERE owner_id = ${ownerId} RETURNING *";
+
+  const subscriberQuery =
+    "UPDATE subscribers SET email = ${blank}, browser = '{}'::jsonb, first_name = ${blank}, last_name = ${blank} WHERE guest_id = (SELECT guest_id FROM owners WHERE owner_id = ${ownerId}) RETURNING *";
+
+  const query = [ownerQuery, imagesQuery, albumQuery, subscriberQuery].join(
+    '; '
+  );
+  // const update = pgpHelpers.update()
+
+  // const anonOwner = new PQ({
+  //   text: query,
+  //   values: values,
+  // });
+  // console.log('anonOwner:', anonOwner);
+
+  const result = await db.any(query, values);
+  console.log('result:', result);
+  res.status(200).end();
 };

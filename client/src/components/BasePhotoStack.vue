@@ -3,7 +3,6 @@
     id="wrapper"
     ref="stack"
     class="photo-stack relative m-auto w-20 sm:w-24 h-12 sm:h-20 cursor-pointer sm:cursor-default"
-    :class="{ 'cursor-pointer': clickEnabled }"
     @click="
       clickEnabled ? $emit('submit') : null,
         $refs.stack.classList.toggle('expand')
@@ -13,6 +12,7 @@
       <div
         v-if="imagesArr.length === 0"
         class="w-full h-full mx-auto border border-gray-500 transition transform rotate-0 hover:scale-105"
+        :class="{ 'cursor-pointer': clickEnabled }"
       />
     </div>
     <img
@@ -22,6 +22,7 @@
       :key="imgIndex"
       class="absolute top-0 max-h-9/10 border border-white shadow-sm transition"
       :class="{
+        'cursor-pointer': clickEnabled,
         'left-1/2 transform -translate-x-1/2': image.h > image.w,
         'left-0': image.h < image.w,
         'top-2': image.h / image.w < 0.6,

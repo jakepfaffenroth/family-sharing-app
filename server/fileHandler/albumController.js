@@ -4,7 +4,7 @@ const db = require('../db').pgPromise;
 
 module.exports.createAlbum = async (req, res) => {
   const newAlbum = await db.oneOrNone(
-    'INSERT INTO albums (album_name, owner_id) VALUES (${name}, ${ownerId}) RETURNING *',
+    'INSERT INTO albums VALUES (DEFAULT, ${name}, ${ownerId}) RETURNING *',
     req.body
   );
   if (newAlbum) verbose('Album created');

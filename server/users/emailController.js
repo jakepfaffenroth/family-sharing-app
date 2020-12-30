@@ -5,7 +5,6 @@ const db = require('../db').pgPromise;
 const { encrypt, decrypt } = require('../utils/encryptDecrypt');
 const sendEmail = require('../utils/sendEmail');
 const AWS = require('aws-sdk');
-const { IoTSecureTunneling } = require('aws-sdk');
 const credentials = {
   accessKeyId: process.env.AWS_ACCESS_KEY_ID,
   secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
@@ -98,8 +97,7 @@ const sendGuestVerificationEmail = async (data) => {
   }
 
   // Email not found in DB (guest hasn't subscribed yet)
-  const sender =
-    'Carousel Email Verification <notification@carousel.jakepfaf.dev>';
+  const sender = 'Carousel Email Verification';
   const recipient = guest.email;
   const subject = `Verify your subscription to ${owner.firstName}'s photos`;
   const queryParam = encodeURI(JSON.stringify(encrypt(guest)));
@@ -111,7 +109,7 @@ const sendGuestVerificationEmail = async (data) => {
     <body>
       <h1>Verify your subscription to ${owner.firstName}'s photos</h1>
       <p>Please verify your email subscription by clicking this link or pasting it into your browser:</p>
-        <a href='${verifyLink}'>${verifyLink}</a>
+        <a href='${verifyLink}'><button style="border: 0.25rem black solid, padding:0.25rem, background-color:red">Verify</button></a>
     </body>
     </html>`;
 

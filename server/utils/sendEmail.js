@@ -7,7 +7,7 @@ const ses = new AWS.SES({ credentials: credentials, region: 'us-west-2' });
 
 module.exports = ({ sender, recipient, subject, body_text, body_html }) => {
   const params = {
-    Source: sender +  '<notification@carousel.jakepfaf.dev>',
+    Source: sender + ' ' + '<notification@carousel.jakepfaf.dev>',
     Destination: {
       ToAddresses: [recipient],
     },
@@ -28,11 +28,12 @@ module.exports = ({ sender, recipient, subject, body_text, body_html }) => {
       },
     },
   };
+  console.log('params:', params.Message.Body.Html);
   //Try to send the email.
   ses.sendEmail(params, function (err, data) {
     // If something goes wrong, print an error message.
     if (err) {
-      error(err.message);
+      error(err);
     } else {
       success('Verification email sent: Message ID: ', data.MessageId);
     }

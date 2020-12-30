@@ -9,23 +9,28 @@
       <p class="mb-6">
         This
         <span class="font-bold text-purple-500">cannot</span>
-        be undone. All data,
+        be undone. All personal data,
         <span class="font-bold text-purple-500">including images</span>
         , will be immediately and permanently deleted.
       </p>
-      <p>
-        Please type
-        <span class="font-bold text-teal-500 select-none">
-          {{ ownerEmail }}
-        </span>
-        to confirm.
+      <div v-if="ownerEmail">
+        <p>
+          Please type
+          <span class="font-bold text-teal-500 select-none">
+            {{ ownerEmail }}
+          </span>
+          to confirm.
+        </p>
+        <input
+          v-model="deletionText"
+          type="text"
+          class="w-full mt-2 mb-3 px-2 pt-1 pb-0.5 rounded text-gray-700 focus:ring"
+          @input="checkInput"
+        />
+      </div>
+      <p v-else>
+        You must verify your email before your account can be deleted.
       </p>
-      <input
-        v-model="deletionText"
-        type="text"
-        class="w-full mt-2 mb-3 px-2 pt-1 pb-0.5 rounded text-gray-700 focus:ring"
-        @input="checkInput"
-      />
     </template>
     <template #footer>
       <base-button-cancel @click.prevent="$emit('close-modal')">
@@ -66,6 +71,9 @@ export default {
   computed: {
     ownerEmail() {
       return this.$store.state.ownerStore.owner.email;
+    },
+    ownerId() {
+      return this.$store.getters.ownerId;
     }
   },
   methods: {
@@ -79,6 +87,15 @@ export default {
 
       this.$emit('close-modal');
       const server = process.env.VUE_APP_SERVER;
+
+      const { data, status } = await axios.post(
+        server + '/user/delete-account',
+        { ownerId: this.ownerId }
+      );
+
+      if (status >= 200 && status < 300) {
+        window.location = server;
+      }
       // Delete individual images
 
       // const response = await axios.post(`${server}/files/delete-image`, {

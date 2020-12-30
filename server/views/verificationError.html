@@ -1,8 +1,46 @@
-<h1>Validation link expired: Please try subscribing again.</h1>
-<form action="{{subscribeLink}}" method="post">
-  <input type="text" name="firstName" placeholder="First name" />
-  <input type="text" name="lastName" placeholder="Last name" />
-  <input type="text" name="email" placeholder="email" />
-  <input type="hidden" name="guestId" value="{{guestId}}" />
-  <input type="submit" value="Subscribe" />
-</form>
+{{> menuMain logo="true"}}
+
+<div class="flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+  <div class="max-w-lg w-full mx-auto text-center">
+    <h1 class="text-2xl mb-6">
+      Validation link expired
+      <br />
+      Please try subscribing again.
+    </h1>
+    <form action="{{subscribeLink}}" method="post">
+      <div class="flex w-full justify-between mb-2 rounded-md shadow">
+        <input
+          aria-label="First Name"
+          name="firstName"
+          type="text"
+          required
+          class="appearance-none rounded-none relative w-1/2 px-3 py-2 border border-gray-300 border-r-0 placeholder-gray-500 text-gray-900 rounded-l-md focus:outline-none focus:ring-blue focus:border-blue-300 focus:z-10 sm:text-sm sm:leading-5"
+          placeholder="First Name"
+        />
+
+        <input
+          aria-label="Last Name"
+          name="lastName"
+          type="text"
+          required
+          class="appearance-none rounded-none relative w-1/2 -ml-px px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-r-md focus:outline-none focus:ring-blue focus:border-blue-300 focus:z-10 sm:text-sm sm:leading-5"
+          placeholder="Last Name"
+        />
+      </div>
+      <input
+        type="email"
+        name="email"
+        required
+        placeholder="Email"
+        class="appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue focus:border-blue-300 focus:z-10 sm:text-sm sm:leading-5 shadow"
+      />
+      <input type="hidden" name="guestId" value="{{guestId}}" />
+      <button
+        type="submit"
+        class="w-36 px-3 mt-6 py-1 bg-teal-600 rounded shadow text-center text-white hover:shadow-lg hover:bg-teal-500 transition duration-200 ease-in-out"
+      >
+        Submit
+      </button>
+    </form>
+  </div>
+</div>

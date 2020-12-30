@@ -231,7 +231,7 @@ module.exports = {
         );
         req.body.customerId = customer.customerId;
         const quota = savePlanToDb(req, res);
-        res.send({ subUpdated: true, msg: 'none'});
+        res.send({ subUpdated: true, msg: 'none' });
       }
     } catch (err) {
       console.log('err:', err);
@@ -251,12 +251,12 @@ module.exports = {
       customer: customer.customerId,
       type: 'card',
     });
-    
+
     const planDetails = {
-      cardBrand:
-        capitalizeFirstLetter(response.data[0].card.brand),
-      lastFour:
-        response.data[0].card.last4,
+      cardBrand: response.data[0]
+        ? capitalizeFirstLetter(response.data[0].card.brand)
+        : null,
+      lastFour: response.data[0] ? response.data[0].card.last4 : null,
       plan:
         customer.plan.charAt(0).toUpperCase() +
         customer.plan

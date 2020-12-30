@@ -95,7 +95,7 @@
                     Payment method
                   </h3>
                   <div>
-                    <p class="Xflex Xflex-wrap text-right">
+                    <p v-if="planDetails.lastFour" class="text-right">
                       <span
                         id="credit-card-brand"
                         class="inline-block pl-2 text-lg font-semibold text-right"
@@ -108,6 +108,9 @@
                       >
                         •••••••• {{ planDetails.lastFour }}
                       </span>
+                    </p>
+                    <p v-else class="italic text-right">
+                      No payment info
                     </p>
                     <button
                       class="setting"
@@ -157,7 +160,7 @@
               </h2>
               <p>
                 This action will immediately and permanently delete your account
-                and all data, including images.
+                and all personal data, including images.
               </p>
               <p class="font-semibold">
                 They cannot be recovered after deletion.

@@ -51,6 +51,7 @@
                   :date="group.date"
                   :index="index"
                   :group="group"
+                  :is-select-mode="isSelectMode"
                   :is-album="isAlbum"
                   :position="'right'"
                   @click.stop

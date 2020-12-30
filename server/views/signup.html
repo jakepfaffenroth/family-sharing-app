@@ -1,6 +1,4 @@
-<div
-  class="flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8"
->
+<div class="flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
   <div class="max-w-md w-full">
     <div>
       <!--             
@@ -34,85 +32,78 @@
     </div>
     <form class="mt-8" action="/user/create-owner" method="POST">
       <input type="hidden" name="remember" value="true" />
-      <div class="rounded-md shadow-sm">
-        <div class="flex justify-between mb-2">
-          <input
-            aria-label="First Name"
-            name="firstName"
-            type="text"
-            value="{{firstName}}"
-            required
-            class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-l-md focus:outline-none focus:ring-blue focus:border-blue-300 focus:z-10 sm:text-sm sm:leading-5"
-            placeholder="First Name"
-          />
+      <div class="flex w-full justify-between mb-2 rounded-md shadow">
+        <input
+          aria-label="First Name"
+          name="firstName"
+          type="text"
+          value="{{firstName}}"
+          required
+          class="appearance-none rounded-none relative w-1/2 px-3 py-2 border border-gray-300 border-r-0 placeholder-gray-500 text-gray-900 rounded-l-md focus:outline-none focus:ring-blue focus:border-blue-300 focus:z-10 sm:text-sm sm:leading-5"
+          placeholder="First Name"
+        />
 
-          <input
-            aria-label="Last Name"
-            name="lastName"
-            type="text"
-            value="{{lastName}}"
-            required
-            class="appearance-none rounded-none relative block w-full -ml-px px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-r-md focus:outline-none focus:ring-blue focus:border-blue-300 focus:z-10 sm:text-sm sm:leading-5"
-            placeholder="Last Name"
-          />
-        </div>
-        <div class="mb-2">
-          <input
-            aria-label="Username"
-            name="username"
-            type="text"
-            value="{{username}}"
-            required
-            class="appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-none rounded-t-md focus:outline-none focus:ring-blue focus:border-blue-300 focus:z-10 sm:text-sm sm:leading-5"
-            placeholder="Username"
-          />
-          <input
-            aria-label="Email"
-            name="email"
-            type="email"
-            value="{{email}}"
-            required
-            class="appearance-none relative block w-full -mt-px px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-none rounded-b-md focus:outline-none focus:ring-blue focus:border-blue-300 focus:z-10 sm:text-sm sm:leading-5"
-            placeholder="Email"
-          />
-        </div>
-        <div class="-mt-px">
-          <div
-            class="appearance-none relative block w-full border border-gray-300 rounded-t-md"
-          >
-            <input
-              id="pw-input"
-              aria-label="Password"
-              name="password"
-              type="password"
-              required
-              class="w-full px-3 py-2 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-blue focus:border-blue-300 focus:z-10 sm:text-sm sm:leading-5"
-              placeholder="Password (minimum 6 characters)"
-            />
-          </div>
-        </div>
-        <div class="-mt-px">
-          <input
-            aria-label="Confirm Password"
-            name="confirmPassword"
-            type="password"
-            required
-            class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-blue focus:border-blue-300 focus:z-10 sm:text-sm sm:leading-5"
-            placeholder="Confirm Password"
-          />
-        </div>
+        <input
+          aria-label="Last Name"
+          name="lastName"
+          type="text"
+          value="{{lastName}}"
+          required
+          class="appearance-none rounded-none relative w-1/2 -ml-px px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-r-md focus:outline-none focus:ring-blue focus:border-blue-300 focus:z-10 sm:text-sm sm:leading-5"
+          placeholder="Last Name"
+        />
       </div>
+      <div class="mb-2 rounded-md shadow">
+        <input
+          aria-label="Username"
+          name="username"
+          type="text"
+          value="{{username}}"
+          required
+          class="appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-none rounded-t-md focus:outline-none focus:ring-blue focus:border-blue-300 focus:z-10 sm:text-sm sm:leading-5"
+          placeholder="Username"
+        />
+        <input
+          aria-label="Email"
+          name="email"
+          type="email"
+          value="{{email}}"
+          required
+          class="appearance-none relative block w-full -mt-px px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-none rounded-b-md focus:outline-none focus:ring-blue focus:border-blue-300 focus:z-10 sm:text-sm sm:leading-5"
+          placeholder="Email"
+        />
+      </div>
+      <div class="rounded-md shadow">
+        <input
+          id="pw-input"
+          aria-label="Password"
+          name="password"
+          type="password"
+          required
+          class="appearance-none relative block w-full border border-gray-300 border-b-0 px-3 py-2 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-blue focus:border-blue-300 focus:z-10 sm:text-sm sm:leading-5"
+          placeholder="Password (minimum 6 characters)"
+        />
+        <input
+          aria-label="Confirm Password"
+          name="confirmPassword"
+          type="password"
+          required
+          class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-blue focus:border-blue-300 focus:z-10 sm:text-sm sm:leading-5"
+          placeholder="Confirm Password"
+        />
+      </div>
+      <div class="-mt-px"></div>
 
       <div class="mx-2 mt-4 space-y-2">
         <p class="block text-sm font-medium leading-5 text-gray-700">
           Password strength
         </p>
         <div id="strength-bar" class="relative flex h-2 mx-auto space-x-1">
-          <div class="w-1/5 border rounded-sm"></div>
-          <div class="w-1/5 border rounded-sm"></div>
-          <div class="w-1/5 border rounded-sm"></div>
-          <div class="w-1/5 border rounded-sm"></div>
-          <div class="w-1/5 border rounded-sm"></div>
+          <div class="w-1/5 border rounded-sm shadow-sm"></div>
+          <div class="w-1/5 border rounded-sm shadow-sm"></div>
+          <div class="w-1/5 border rounded-sm shadow-sm"></div>
+          <div class="w-1/5 border rounded-sm shadow-sm"></div>
+          <div class="w-1/5 border rounded-sm shadow-sm"></div>
         </div>
         <p id="pw-tips" class="text-sm font-light leading-5 text-gray-700"></p>
       </div>
@@ -149,7 +140,7 @@
         <button
           id="submit-btn"
           type="submit"
-          class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm leading-5 font-medium rounded-md text-white bg-teal-600 hover:bg-teal-500 focus:outline-none focus:border-teal-700 focus:ring-teal active:bg-teal-700 transition duration-150 ease-in-out"
+          class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm leading-5 font-medium rounded-md text-white bg-teal-600 hover:bg-teal-500 focus:outline-none focus:border-teal-700 focus:ring-teal active:bg-teal-700 shadow transition duration-150 ease-in-out"
         >
           <span class="absolute left-0 inset-y-0 flex items-center pl-3">
             <svg

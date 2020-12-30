@@ -2,6 +2,7 @@
   <button
     data-test="imgSelectBtn"
     class="absolute right-1 w-8 h-8 rounded-full shadow overflow-hidden"
+    :class="{ 'opacity-100': isSelectMode || isSelected }"
     @click.stop="toggleImgSelection"
   >
     <!-- Circle and colored background (when selected) -->
@@ -37,7 +38,8 @@ export default {
   name: 'SelectButton',
   props: {
     item: { type: Object, default: () => {} },
-    group: { type: Object, default: () => {} }
+    group: { type: Object, default: () => {} },
+    isSelectMode: { type: Boolean, default: false }
   },
   computed: {
     isSelected() {

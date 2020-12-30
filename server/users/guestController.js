@@ -74,7 +74,7 @@ module.exports.subscribeBrowser = async (req, res) => {
       "SELECT * FROM subscribers WHERE guest_id = ${guestId} AND browser -> 'keys' ->> 'auth' = ${browser.keys.auth}",
       guest
     );
-    if (subscription) return res.status(200).json({ alreadySubscribed: true });
+    if (subscription) return res.render();
     else {
       (async function () {
         const newSub = await db.one(

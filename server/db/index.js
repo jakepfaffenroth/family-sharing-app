@@ -72,5 +72,5 @@ function camelizeColumns(data) {
 // monitor.attach(initOptions);
 monitor.setTheme('dimmed');
 
-module.exports.pgpHelpers = pgp.helpers
+module.exports.pgpHelpers = pgp.helpers;
 module.exports.pgPromise = pgp(cn);

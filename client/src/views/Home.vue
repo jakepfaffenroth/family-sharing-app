@@ -66,6 +66,8 @@
     ></home-uploader>
     <div id="uploader"></div>
 
+    <!-- <home-modal-photo-picker /> -->
+
     <!-- Modals -->
     <component
       :is="visibleModal"
@@ -117,6 +119,7 @@ const HomeMenuGuest = defineAsyncComponent(() =>
 import HomeModalShare from '../components/HomeModalShare';
 // import HomeModalImageShare from '../components/HomeModalImageShare';
 import HomeModalAlbumPicker from '../components/HomeModalAlbumPicker';
+import HomeModalPhotoPicker from '../components/HomeModalPhotoPicker';
 import HomeModalNewAlbum from '../components/HomeModalNewAlbum';
 import HomeModalDeleteAlbum from '../components/HomeModalDeleteAlbum';
 
@@ -141,6 +144,7 @@ export default {
     HomeModalShare,
     // HomeModalImageShare,
     HomeModalAlbumPicker,
+    HomeModalPhotoPicker,
     HomeModalNewAlbum,
     HomeModalDeleteAlbum,
     HomeModalGuestSubscribe,
