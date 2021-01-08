@@ -1,6 +1,6 @@
 <template>
   <div
-    class="flex flex-col w-full p-2 text-gray-900 sm:px-4 sm:py-4 xl:px-12 xl:py-6"
+    class="flex flex-col w-full mb-16 p-2 text-gray-900 sm:px-4 sm:py-4 xl:px-12 xl:py-6"
   >
     <div id="subscription-settings">
       <div class="flex flex-wrap justify-center mt-4">
@@ -71,9 +71,9 @@
                         data-test="currentPlanInSummary"
                         class="font-semibold text-lg"
                         :class="{
-                          'font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-teal-400 to-orange-400 via-purple-400': planDetails.plan
-                            .toLowerCase()
-                            .includes('premium')
+                          'font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-teal-400 to-orange-400 via-purple-400':
+                            planDetails.plan &&
+                            planDetails.plan.includes('premium')
                         }"
                       >
                         {{ planDetails.plan }}

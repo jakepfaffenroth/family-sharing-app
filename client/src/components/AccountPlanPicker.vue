@@ -8,7 +8,7 @@
     >
       <div class="flex flex-col w-full px-4 pr-3 sm:px-8 md:px-8 py-6">
         <h2 class="mb-6 text-center text-lg sm:text-2xl font-semibold">
-          Change your plan
+          Choose a plan
         </h2>
         <transition appear name="slide" mode="out-in">
           <div
@@ -70,7 +70,9 @@
           >
             <div class="flex flex-col w-2/3 md:w-full">
               <div class="flex md:flex-col">
-                <p class="mr-6 md:mr-0 mb-1 text-lg sm:text-xl font-semibold text-left md:text-center leading-tight">
+                <p
+                  class="mr-6 md:mr-0 mb-1 text-lg sm:text-xl font-semibold text-left md:text-center leading-tight"
+                >
                   {{ plan.heading }}
                 </p>
                 <div class="flex flex-wrap md:block">
@@ -79,7 +81,7 @@
                   </p>
                   <p
                     v-if="plan.paymentSchedule"
-                    class="my-auto md:mb-4 leading-none text-gray-400 text-xs font-thin text-left sm:text-center"
+                    class="my-auto leading-none text-gray-400 text-xs font-thin text-left sm:text-center"
                   >
                     {{ plan.paymentSchedule[0] }}
                   </p>
@@ -145,10 +147,10 @@ export default {
         id: 'basic',
         heading: 'Basic',
         price: 'Free!',
-        paymentSchedule: null,
+        paymentSchedule: ['Upgrade anytime'],
         features: [
-          '2 GB storage',
-          'Reduced size images',
+          '500 photos',
+          'Compressed images',
           'One album',
           'Private sharing link'
         ]
@@ -159,9 +161,9 @@ export default {
         price: '$5',
         paymentSchedule: ['Per month', 'Billed monthly'],
         features: [
-          '10 GB storage',
-          'Full size images',
-          'Unlimited album',
+          '5,000 photos',
+          'Compressed images',
+          'Unlimited albums',
           'Private sharing link',
           'Guest downloads'
         ]
@@ -172,9 +174,9 @@ export default {
         price: '$10',
         paymentSchedule: ['Per month', 'Billed monthly'],
         features: [
-          '1 TB storage',
-          'Full size images',
-          'Unlimited album',
+          '10,000 photos',
+          'Full resolution images',
+          'Unlimited albums',
           'Private sharing link',
           'Guest downloads'
         ]

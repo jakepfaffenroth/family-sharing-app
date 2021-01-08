@@ -1,7 +1,9 @@
 <nav
   class="relative flex justify-between p-2 pl-4 Xsm:pt-6 sm:px-6 lg:px-8 sm:items-center Xsm:h-10 lg:justify-start"
 >
-  {{#if logo}} {{> colorfulLogo textSize="Xsm:mb-4 text-5xl"}} {{/if}}
+  {{#if logo}}
+  <a href="/">{{> colorfulLogo textSize="Xsm:mb-4 text-5xl"}}</a>
+  {{/if}}
   <div class="hidden md:block md:ml-auto md:pr-4 md:mt-auto">
     <a
       href="/"
@@ -31,7 +33,7 @@
 
 <script>
   const mobileMenuBtn = document.getElementById('mobileMenuBtn');
-  const hamburger = document.getElementById('hamburger')
+  const hamburger = document.getElementById('hamburger');
   const hamburgerParts = hamburger.children;
   const mobileMenuList = document.getElementById('mobileMenuList');
 

@@ -2,7 +2,6 @@ const server = process.env.VUE_APP_SERVER;
 import axios from 'axios';
 import getCookie from '../utils/getCookie';
 
-
 export default {
   state: {
     ownerIdCookie: '',
@@ -12,6 +11,7 @@ export default {
   },
   getters: {
     owner: state => state.owner,
+    isAuth: state => state.owner.isAuth,
     ownerId: state => state.owner.ownerId,
     guestId: state => state.owner.guestId
   },
@@ -27,8 +27,7 @@ export default {
       state.subscribers = subscribers;
     },
     updateQuota(state, quota) {
-      console.log('quota:', quota);
-      state.owner.quota = quota
+      state.owner.quota = quota;
     }
   },
   actions: {
@@ -55,15 +54,18 @@ export default {
           await dispatch('getUsageData', id);
         }
         // Fetch owner data
-        const response = await axios.post(url, id);
+        const { data } = await axios.post(url, id);
         // Redirect to login page if owner is not signed in
-        if (userType === 'owner' && !response.data.isLoggedIn) {
+        if (userType === 'owner' && !data.isLoggedIn) {
           window.location.assign(`${server}/login`);
-          return
+          return;
         }
-        commit('updateOwner', response.data.owner);
-        commit('updateImages', response.data.images);
-        dispatch('updateAlbums', response.data.albums)
+        if (userType === 'owner' && data.owner.plan === null) {
+          window.location.assign(server + '/complete-signup');
+        }
+        commit('updateOwner', data.owner);
+        commit('updateImages', data.images);
+        dispatch('updateAlbums', data.albums);
       } catch (err) {
         console.error(err, state);
       }
@@ -77,7 +79,7 @@ export default {
       commit('updateSubscribers', response.data);
     },
     updateQuota({ commit }, quota) {
-      commit('updateQuota', quota)
+      commit('updateQuota', quota);
     }
   }
 };

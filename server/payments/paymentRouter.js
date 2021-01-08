@@ -14,11 +14,11 @@ router.get('/config', async (req, res) => {
     publishableKey: process.env.STRIPE_PUBLISHABLE_KEY,
   });
 });
-router.get('/checkout', (req, res) => {
-  res.render('payment', { planSelected: req.body.planSelected });
-});
+// router.get('/checkout', (req, res) => {
+//   res.render('payment', { planSelected: req.body.planSelected });
+// });
 
-router.post('/save-basic', paymentController.savePlanToDb);
+router.post('/save-basic', paymentController.saveBasic);
 
 router.post('/charge', (req, res) => {
   try {
@@ -45,26 +45,33 @@ router.post('/charge', (req, res) => {
 
 router.post('/create-customer', paymentController.createCustomer);
 
-router.post('/create-subscription', paymentController.createSubscription);
+// router.post('/create-subscription', paymentController.createSubscription);
 
-router.post('/retry-invoice', paymentController.retryInvoice);
+router.post(
+  '/create-checkout-session',
+  paymentController.createCheckoutSession
+);
 
-router.post('/retrieve-upcoming-invoice', paymentController.upcomingInvoice);
+router.get(
+  '/finalize-checkout/:customerId',
+  paymentController.finalizeCheckout
+);
+
+// router.post('/retry-invoice', paymentController.retryInvoice);
+
+// router.post('/retrieve-upcoming-invoice', paymentController.upcomingInvoice);
 
 router.post('/cancel-subscription', paymentController.cancelSubscription);
 
 router.post('/update-subscription', paymentController.updateSubscription);
 
-router.post(
-  '/retrieve-payment-method',
-  paymentController.paymentMethod
-);
+router.post('/retrieve-payment-method', paymentController.paymentMethod);
 
 // Webhook handler for asynchronous events.
-router.post(
-  '/stripe-webhook',
-  bodyParser.raw({ type: 'application/json' }),
-  paymentController.stripeWebhook
-);
+// router.post(
+//   '/stripe-webhook',
+//   bodyParser.raw({ type: 'application/json' }),
+//   paymentController.stripeWebhook
+// );
 
 module.exports = router;

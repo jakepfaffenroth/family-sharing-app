@@ -28,7 +28,8 @@ import {
   computed,
   shallowRef,
   inject,
-  onBeforeMount
+  onBeforeMount,
+  onUpdated
 } from 'vue';
 import { useRoute } from 'vue-router';
 import { useStore } from 'vuex';
@@ -39,7 +40,7 @@ export default {
   inheritAttrs: false,
   setup(props) {
     const store = useStore();
-    const accountView = shallowRef(AccountSummary);
+    const accountView = shallowRef();
     const route = useRoute();
     const server = process.env.VUE_APP_SERVER;
     const toast = inject('toast');
@@ -58,7 +59,15 @@ export default {
 
     // Open straight into plan picker if goToChangePlan is true
     onBeforeMount(async () => {
-      goToChangePlan ? openPlanChange() : null;
+      if (goToChangePlan) {
+        openPlanChange();
+      }
+    });
+
+    onUpdated(() => {
+      if (planDetails.value && planDetails.value.plan === null) {
+        openPlanChange();
+      } else accountView.value = AccountSummary;
     });
 
     function openPlanChange() {
@@ -70,12 +79,12 @@ export default {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    async function confirmPlanChange(newPriceId) {
+    async function confirmPlanChange(newPlan) {
       const { data } = await axios.post(
         server + '/payment/update-subscription',
         {
           ownerId: owner.value.ownerId,
-          newPriceId: newPriceId
+          newPlan
         }
       );
       if (

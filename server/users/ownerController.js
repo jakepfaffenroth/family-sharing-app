@@ -6,7 +6,6 @@ const db = require('../db').pgPromise;
 const { ParameterizedQuery: PQ } = require('pg-promise');
 const pgpHelpers = require('../db').pgpHelpers;
 const { confirmOwnerEmailSender } = require('../tasks');
-const { v4: uuidv4 } = require('uuid');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const { error } = require('winston');
 
@@ -94,32 +93,54 @@ module.exports.create = [
 
         if (err) return next(err);
 
-        const customer = await stripe.customers.create({
-          name: `${req.body.lastName}, ${req.body.firstName}`,
-          email: req.body.email,
+        const owner = await db.task(async (t) => {
+          const newOwner = await t.one(
+            'INSERT INTO owners (owner_id, username, first_name, last_name, email,password, guest_id, is_active, is_auth, auth_token) VALUES (DEFAULT, ${username}, ${firstName}, ${lastName}, ${email}, ${password}, DEFAULT, TRUE, FALSE, DEFAULT) RETURNING owner_id, username, first_name, last_name, auth_token',
+            {
+              // ownerId: uuidv4(),
+              username: req.body.username,
+              firstName: req.body.firstName,
+              lastName: req.body.lastName,
+              email: req.body.email,
+              password: hashedPassword,
+              // guestId: uuidv4(),
+            }
+          );
+
+          const customer = await stripe.customers.create({
+            name: `${req.body.lastName}, ${req.body.firstName}`,
+            email: req.body.email,
+            metadata: { ownerId: newOwner.ownerId },
+          });
+
+          return await t.one(
+            'UPDATE owners SET customer_id = ${customerId} WHERE owner_id = ${ownerId} RETURNING *',
+            {
+              customerId: customer.id,
+              ownerId: newOwner.ownerId,
+            }
+          );
         });
 
-        const owner = await db.one(
-          'INSERT INTO owners (owner_id, username, first_name, last_name, password, guest_id, customer_id) VALUES (DEFAULT, ${username}, ${firstName}, ${lastName}, ${password}, DEFAULT, ${customerId}) RETURNING owner_id, username, first_name, last_name',
-          {
-            // ownerId: uuidv4(),
-            username: req.body.username,
-            firstName: req.body.firstName,
-            lastName: req.body.lastName,
-            password: hashedPassword,
-            // guestId: uuidv4(),
-            customerId: customer.id,
-          }
-        );
-        confirmOwnerEmailSender.add({ ...owner, email: req.body.email });
+        confirmOwnerEmailSender.add({
+          owner: { ...owner, email: req.body.email },
+          // res,
+        });
         success('User ' + owner.username + ' created');
 
         //Account created; redirect to account completion screen (choose plan)
         // res.render('/complete-signup' + '?owner=' + owner.ownerId, {name: owner.firstName});
+        res.cookie('ownerId', owner.ownerId, {
+          maxAge: 1000 * 60 * 60 * 24 * 7,
+        });
+        res.cookie('customerId', owner.customerId, {
+          maxAge: 1000 * 60 * 60 * 24 * 7,
+        });
         res.render('accountCompletion', {
           name: owner.firstName,
-          customerId: customer.id,
-          OwnerId: owner.id,
+          customerId: owner.customerId,
+          ownerId: owner.id,
+          server: process.env.SERVER,
         });
 
         // Account created; redirect to login screen
@@ -161,9 +182,14 @@ module.exports.getOwner = async (req, res) => {
   try {
     db.task(async (t) => {
       const owner = await t.oneOrNone(
-        'SELECT first_name, last_name, owner_id, guest_id, plan FROM owners WHERE guest_id = ${guestId}',
+        'SELECT * FROM owners WHERE guest_id = ${guestId}',
         req.body
       );
+
+      if (owner.deleted) {
+        console.log('Owner deleted account');
+        return res.redirect(process.env.SERVER);
+      }
 
       if (!owner) {
         console.log('Could not find user - incorrect guestId?');
@@ -197,7 +223,7 @@ module.exports.DELETE_ACCOUNT = async (req, res) => {
   // const cs = new pgp.helpers.ColumnSet();
 
   const ownerQuery =
-    'UPDATE owners SET username = gen_random_uuid(), first_name = ${blank}, last_name = ${blank}, email = ${blank}, password = ${blank}, deleted = current_timestamp, active = FALSE WHERE owner_id = ${ownerId} RETURNING *';
+    'UPDATE owners SET username = gen_random_uuid(), first_name = ${blank}, last_name = ${blank}, email = ${blank}, password = ${blank}, deleted = current_timestamp, is_active = FALSE WHERE owner_id = ${ownerId} RETURNING *';
 
   const imagesQuery =
     "UPDATE images SET file_name = 'deleted', file_id = gen_random_uuid(), src = ${blank}, thumbnail = ${blank}, exif = '{}'::jsonb, thumb_file_id = ${blank} WHERE owner_id = ${ownerId} RETURNING *";

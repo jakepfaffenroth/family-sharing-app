@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-col flex-grow">
     <!-- Header and Menu -->
-    <header class="fixed w-full z-40 bg-white pt-2 xl:pt-4">
+    <header class="fixed w-full z-40 bg-white">
       <component
         :is="userType === 'owner' ? 'HomeMenuOwner' : 'HomeMenuGuest'"
         :data-test="userType === 'owner' ? 'ownerMenu' : 'guestMenu'"
@@ -26,7 +26,8 @@
     </header>
 
     <main
-      class="flex flex-grow mt-28 md:pt-6 py-2 px-1 sm:px-3 sm:py-4 md:px-4 lg:px-6 xl:pt-8 xl:px-8 xl:pb-6"
+      class="flex flex-grow md:pt-6 py-2 px-1 sm:px-3 sm:py-4 md:px-4 lg:px-6 xl:pt-8 xl:px-8 xl:pb-6"
+      :class="userType === 'owner' ? 'mt-28' : 'mt-32'"
     >
       <loading-text v-if="view.ownerLoading" />
       <!-- Image gallery -->
@@ -49,9 +50,11 @@
           :active-gallery="activeGallery"
           @reload-uppy="forceUppyReloadKey++"
         >
-          {{ activeGallery === 'All' ? 'Upload some images!' : 'Empty Album' }}
-          <h4 v-if="activeGallery !== 'All'" class="text-lg">
-            Add some images
+          {{ activeGallery === 'All' ? 'Empty' : 'Empty Album' }}
+          <h4 v-if="userType === 'owner'" class="text-lg">
+            {{
+              activeGallery === 'All' ? 'Upload some images' : 'Add some images'
+            }}
           </h4>
         </home-gallery-empty>
       </transition>

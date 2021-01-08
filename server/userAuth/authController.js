@@ -10,7 +10,7 @@ const db = require('../db').pgPromise;
 passport.use(
   new LocalStrategy(async (username, password, done) => {
     const owner = await db.oneOrNone(
-      'SELECT * FROM owners WHERE username = $1',
+      'UPDATE owners SET last_login = CURRENT_TIMESTAMP WHERE username = $1 RETURNING *',
       [username]
     );
 
@@ -58,7 +58,7 @@ module.exports.login = (req, res, next) => {
       if (err) {
         return next(err);
       }
-      const response = { owner: owner, b2Credentials: res.locals.credentials };
+      // const response = { owner: owner, b2Credentials: res.locals.credentials };
 
       // Send owner info back to client as JSON
       // res.status(200).json(response);
@@ -87,7 +87,7 @@ module.exports.logout = (req, res) => {
 module.exports.checkSession = async (req, res, next) => {
   try {
     let [owner, images, albums] = await db.multi(
-      'SELECT username, first_name, last_name, owner_id, guest_id, email, plan, quota FROM owners WHERE owner_id = ${ownerId};SELECT images.*, album_images.album_id FROM images LEFT JOIN album_images ON images.file_id=album_images.file_id WHERE images.owner_id=${ownerId} ORDER BY upload_time ASC; SELECT album_id, album_name FROM albums WHERE owner_id = ${ownerId}',
+      'SELECT * FROM owners WHERE owner_id = ${ownerId}; SELECT images.*, album_images.album_id FROM images LEFT JOIN album_images ON images.file_id = album_images.file_id WHERE images.owner_id = ${ownerId} ORDER BY upload_time ASC; SELECT album_id, album_name FROM albums WHERE owner_id = ${ownerId}',
       req.body
     );
 

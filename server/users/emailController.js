@@ -9,19 +9,17 @@ const credentials = {
   accessKeyId: process.env.AWS_ACCESS_KEY_ID,
   secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
 };
-const ses = new AWS.SES({ credentials: credentials, region: 'us-west-2' });
+// const ses = new AWS.SES({ credentials: credentials, region: 'us-west-2' });
 
-const sendOwnerConfirmationEmail = async (owner) => {
+const sendOwnerConfirmationEmail = async (input) => {
   // Handle form data if coming from invalid link re-subscribe page
-  if (owner.owner) {
-    owner = owner.owner;
-  }
+  owner = input.owner || input;
+  let res = input.res || null;
 
   const sender = 'Carousel Account Confirmation';
   const recipient = owner.email;
   const subject = 'Confirm your email';
-  const queryParam = encodeURI(JSON.stringify(encrypt(owner)));
-  const verifyLink = `${process.env.SERVER}/user/verify-email/?owner=${queryParam}&id=${owner.ownerId}`;
+  const verifyLink = `${process.env.SERVER}/user/verify-email/?owner=true&token=${owner.authToken}&id=${owner.ownerId}`;
   const body_text = 'Confirm your email using this link: \n' + verifyLink;
   // The HTML body of the email.
   const body_html = `<html>
@@ -40,48 +38,46 @@ const sendOwnerConfirmationEmail = async (owner) => {
     body_text,
     body_html,
   };
+  const emailSent = await sendEmail(params, res);
 
-  sendEmail(params);
-
-  // //Try to send the email.
-  // ses.sendEmail(params, function (err, data) {
-  //   // If something goes wrong, print an error message.
-  //   if (err) {
-  //     error(err.message);
-  //   } else {
-  //     success('Account confirmation email sent: Message ID: ', data.MessageId);
-  //   }
-  // });
+  if (emailSent) {
+    res.status(204).end();
+  } else {
+    res.status(500).end();
+  }
 };
 
 const confirmOwnerEmail = async (req, res, next) => {
-  let ownerInfo = JSON.parse(req.query.owner);
-  ownerInfo = decrypt(ownerInfo);
+  // let ownerInfo = JSON.parse(req.query.owner);
+  // ownerInfo = decrypt(ownerInfo);
+  const token = req.query.token;
   // If decrypt fails (node probably restarted, or other link error) try subscribing again.
-  if (!ownerInfo) {
-    const oId = req.query.id;
-    const subscribeLink = `${process.env.SERVER}/user/subscribe-email`;
-    return res.status(418).render('verificationError', {
-      ownerId: oId,
-      subscribeLink: subscribeLink,
-    });
-  }
+  // if (!ownerInfo) {
+  //   const oId = req.query.id;
+  //   const subscribeLink = `${process.env.SERVER}/user/subscribe-email`;
+  //   return res.status(418).render('verificationError', {
+  //     ownerId: oId,
+  //     subscribeLink: subscribeLink,
+  //   });
+  // }
 
-  const owner = await db.oneOrNone(
-    'SELECT * FROM owners WHERE owner_id = ${ownerId}',
-    ownerInfo
+  // const owner = await db.oneOrNone(
+  //   'SELECT * FROM owners WHERE auth_token = ${token}',
+  //   { token }
+  // );
+
+  // if (owner.email) {
+  //   res.status(200).send('Already confirmed email');
+  // }
+
+  const [
+    email,
+    updatedOwner,
+  ] = await db.multi(
+    'SELECT email FROM owners WHERE auth_token = ${token}; UPDATE owners SET is_auth = TRUE WHERE auth_token = ${token} AND is_auth = FALSE RETURNING email',
+    { token }
   );
-
-  if (owner.email) {
-    res.status(200).send('Already confirmed email');
-  }
-
-  const updatedOwner = await db.one(
-    'UPDATE owners SET email = ${email} WHERE owner_id = ${ownerId} RETURNING email',
-    ownerInfo
-  );
-
-  success(updatedOwner.email + ' saved.');
+  success(email + ' confirmed.');
 
   res.status(200).redirect('/login?emailconfirmed=true');
 };

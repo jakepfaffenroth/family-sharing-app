@@ -1,9 +1,10 @@
 <div
-  class="fixed inset-0 z-30 flex items-end bg-black bg-opacity-25 sm:items-center sm:justify-center"
+  id="modal-wrapper"
+  class="okToClose fixed inset-0 z-30 flex items-end bg-black bg-opacity-25 invisible opacity-0 sm:items-center sm:justify-center"
 >
   <div
-    id="modal"
-    class="w-full px-6 py-4 overflow-hidden bg-white rounded-t-lg shadow-lg dark:bg-gray-800 sm:rounded-lg sm:m-4 sm:max-w-xl transform -translate-y-2 invisible opacity-0 transition-all duration-200 ease-in"
+    id="modal-box"
+    class="w-full px-6 py-4 overflow-hidden rounded-t-lg shadow-lg bg-gray-800 sm:rounded-lg sm:m-4 sm:max-w-xl transform -translate-y-2 invisible opacity-0 transition-all duration-200 ease-in"
     role="dialog"
   >
     <!-- Remove header if you don't want a close icon. Use modal body to place modal tile. -->
@@ -31,38 +32,36 @@
     <!-- Modal body -->
     <div class="mt-2 mb-6">
       <!-- Modal title -->
-      <p
-        id="modal-header"
-        class="mb-4 text-lg font-semibold text-gray-700 dark:text-gray-300"
-      >
+      <p id="modal-header" class="mb-4 text-lg font-semibold text-gray-300">
         {{header}}
       </p>
       <p
         id="modal-text"
-        class="my-2 w-full text-sm text-gray-700 dark:text-gray-300 bg-transparent outline-none"
+        class="my-2 w-full text-gray-300 bg-transparent outline-none"
       >
         {{text}}
       </p>
-      <!-- Modal description -->
-      <textarea
-        :id="shareUrl || singleImgUrl"
-        class="w-full text-sm text-gray-700 dark:text-gray-300 bg-transparent outline-none resize-none"
-        readonly="readonly"
-        :value="shareUrl || singleImgUrl"
-      ></textarea>
     </div>
     <footer
-      class="flex flex-col items-center justify-end px-6 py-3 -mx-6 -mb-4 space-y-4 sm:space-y-0 sm:space-x-6 sm:flex-row bg-gray-50 dark:bg-gray-800"
+      id="modal-footer"
+      class="flex flex-col items-center justify-end px-6 py-3 -mx-6 -mb-4 space-y-4 sm:space-y-0 sm:space-x-6 sm:flex-row bg-gray-800"
     >
-      <button
-        id="cancel-btn"
-        class="btn text-gray-700 border-gray-300 dark:text-gray-400 sm:px-4 active:bg-transparent hover:border-gray-500 focus:border-gray-500 active:text-gray-500 focus:ring-gray"
-      >
-        Cancel
-      </button>
-      <button id="ok-btn" class="btn text-white border-transparent">
+      {{> buttonCancel}} {{> buttonPurple}}
+      <!-- <button id="ok-btn" class="btn text-white border-transparent">
         {{ btnText }}
-      </button>
+      </button> -->
     </footer>
   </div>
 </div>
+
+<script>
+  function closeModal(e) {
+    const modalWrapper = document.getElementById('modal-wrapper');
+    const modalBox = modalWrapper.querySelector('#modal-box');
+    modalBox.classList.toggle('-translate-y-2');
+    modalBox.classList.toggle('invisible');
+    modalBox.classList.toggle('opacity-0');
+    modalWrapper.classList.toggle('invisible');
+    modalWrapper.classList.toggle('opacity-0');
+  }
+</script>

@@ -1,9 +1,12 @@
 // window.location =
 //   '/prices?customerId=' + document.getElementById('customer-id').innerText;
 
-let stripe, customer, price, card;
+// const stripe = Stripe(
+//   'pk_test_51HYjdCCto9koSaMfB1vfa2yKqEHrKbyEg0CHfL31Xck4Kom1QgvYSYhEy0G27aSwa2Ydy3RSmX9YxDFvdVNEIHz40032As5FXu'
+// ); // Publishable Key
+let customer, price, card;
 
-const toggleCheckbox = document.getElementById('toggle-checkbox');
+const server = document.getElementById('id').dataset.server;
 
 const btns = {
   basic: document.getElementById('btn-basic'),
@@ -12,48 +15,85 @@ const btns = {
 };
 let subscriptionTerm;
 
-function toggleSubscriptionTerm() {
-  toggleCheckbox.checked
-    ? (subscriptionTerm = 'Mo')
-    : (subscriptionTerm = 'Yr');
-}
+// const toggleCheckbox = document.getElementById('toggle-checkbox');
+// function toggleSubscriptionTerm() {
+//   toggleCheckbox.checked
+//     ? (subscriptionTerm = 'Mo')
+//     : (subscriptionTerm = 'Yr');
+// }
 
-toggleSubscriptionTerm();
+// toggleSubscriptionTerm();
 
 Object.keys(btns).forEach((key) => {
   if (btns[key].value.includes('basic')) {
     btns[key].addEventListener('click', () => {
       showSubscriptionCompleteModal(btns[key].value);
-      // toggleSuccessModal(document.getElementById('success-modal'));
     });
   } else {
-    btns[key].addEventListener('click', () => {
-      goToPaymentPage(btns[key].value + subscriptionTerm, subscriptionTerm);
-    });
+    btns[key].addEventListener(
+      'click',
+      () =>
+        openPaymentForm(
+          btns[key].value
+          // subscriptionTerm
+        )
+      // checkout()
+    );
   }
 });
 
-function stripeElements() {
-  stripe = Stripe(
-    'pk_test_51HYjdCCto9koSaMfB1vfa2yKqEHrKbyEg0CHfL31Xck4Kom1QgvYSYhEy0G27aSwa2Ydy3RSmX9YxDFvdVNEIHz40032As5FXu'
-  ); // Your Publishable Key
+function checkout() {
+  console.log('checkout start');
+  fetch(server + '/payment/create-checkout-session', {
+    method: 'POST',
+  })
+    .then(function (response) {
+      return response.json();
+    })
+    .then(function (session) {
+      return stripe.redirectToCheckout({ sessionId: session.id });
+    })
+    .then(function (result) {
+      console.log('result:', result);
+      if (result.error) {
+        alert(result.error.message);
+      }
+    })
+    .catch(function (error) {
+      console.error('Error:', error);
+    });
+}
 
+function stripeElements() {
   if (document.getElementById('card-element')) {
     const elements = stripe.elements();
 
     // Create our card inputs
     const style = {
       base: {
-        color: '#fff',
+        color: '#374152',
+        fontFamily: '"Helvetica Neue", Helvetica, sans-serif',
+        fontSmoothing: 'antialiased',
+        fontSize: '16px',
+        '::placeholder': {
+          color: '#afb3bb',
+        },
+      },
+      invalid: {
+        color: '#fa755a',
+        iconColor: '#fa755a',
       },
     };
 
     const classes = {
       base:
-        'rounded-md relative px-3 py-2 border border-gray-400 placeholder-gray-500 text-gray-900  focus:outline-none focus:ring-blue focus:border-blue-300 focus:z-10 sm:text-sm sm:leading-5',
+        'rounded-md relative px-3 py-2 border border-gray-400 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue focus:border-blue-300 focus:z-10 sm:text-sm sm:leading-5',
     };
 
-    card = elements.create('card', { style, classes });
+    card = elements.create('card', {
+      style,
+      classes,
+    });
     card.mount('#card-element');
 
     card.on('focus', function () {
@@ -69,6 +109,8 @@ function stripeElements() {
     card.on('change', function (event) {
       displayError(event);
     });
+  } else {
+    console.error('no card-element');
   }
 
   let signupForm = document.getElementById('signup-form');
@@ -85,11 +127,11 @@ function stripeElements() {
     });
   }
 
-  let paymentForm = document.getElementById('payment-form');
-  if (paymentForm) {
-    paymentForm.addEventListener('submit', function (e) {
+  let paymentModal = document.getElementById('payment-form');
+  if (paymentModal) {
+    paymentModal.addEventListener('submit', function (e) {
       e.preventDefault();
-      changeLoadingStatePrices(true);
+      // changeLoadingStatePrices(true);
 
       // If a previous payment was attempted, get the lastest invoice
       const latestInvoicePaymentIntentStatus = localStorage.getItem(
@@ -137,46 +179,28 @@ form.addEventListener('submit', (e) => {
 // ! =================================================== ! //
 
 let priceInfo = {
-  basicMo: {
+  basic: {
     amount: '0',
     name: 'Basic',
     interval: '',
     currency: '',
   },
-  basicYr: {
-    amount: '0',
-    name: 'Basic',
-    interval: '',
-    currency: '',
-  },
-  premiumMo: {
+  premium: {
     amount: '5',
     name: 'Premium',
     interval: 'monthly',
     currency: 'USD',
   },
-  premiumYr: {
-    amount: '45',
-    name: 'Premium',
-    interval: 'yearly',
-    currency: 'USD',
-  },
-  premiumPlusMo: {
-    amount: '10',
+  premiumPlus: {
+    amount: '8',
     name: 'Premium Plus',
     interval: 'monthly',
-    currency: 'USD',
-  },
-  premiumPlusYr: {
-    amount: '95',
-    name: 'Premium Plus',
-    interval: 'yearly',
     currency: 'USD',
   },
 };
 
 function displayError(event) {
-  changeLoadingStatePrices(false);
+  // changeLoadingStatePrices(false);
   let displayError = document.getElementById('card-element-errors');
   if (event.error) {
     displayError.textContent = event.error.message;
@@ -191,11 +215,12 @@ function createPaymentMethod({ card, isPaymentRetry, invoiceId }) {
   // Set up payment method for recurring usage
   let billingName = document.querySelector('#name').value;
 
-  let priceId = (
-    document.getElementById('priceId').innerHTML +
-    '_' +
-    subscriptionTerm
-  ).toUpperCase();
+  let priceId = document
+    .getElementById('priceId')
+    .innerHTML // +
+    // '_' +
+    // subscriptionTerm
+    .toUpperCase();
 
   stripe
     .createPaymentMethod({
@@ -233,11 +258,11 @@ function updatePlan(priceId, subscriptionTerm) {
   document.getElementById('total-due-now').innerText = getFormattedAmount(
     priceInfo[priceId].amount
   );
-  document.getElementById(
-    'subscription-term'
-  ).innerText = subscriptionTerm
-    .replace('Mo', 'monthly')
-    .replace('Yr', 'yearly');
+  // document.getElementById(
+  //   'subscription-term'
+  // ).innerText = subscriptionTerm
+  //   .replace('Mo', 'monthly')
+  //   .replace('Yr', 'yearly');
 
   // Add the price selected
   document.getElementById('price-selected').innerHTML =
@@ -247,9 +272,10 @@ function updatePlan(priceId, subscriptionTerm) {
     '</span>';
 }
 
-function goToPaymentPage(priceId, subscriptionTerm) {
-  // Show the payment screen
-  const paymentForm = document.querySelector('#payment-form');
+function openPaymentForm(priceId, subscriptionTerm) {
+  // Show the payment form
+  const paymentModal = document.querySelector('#payment-modal');
+  const modalBox = paymentModal.querySelector('#modal-box');
 
   if (priceId.toLowerCase().includes('basic')) {
     const successModal = document.getElementById('success-modal');
@@ -257,8 +283,11 @@ function goToPaymentPage(priceId, subscriptionTerm) {
     toggleSuccessModal(successModal);
   }
 
-  paymentForm.classList.remove('hidden');
-  paymentForm.scrollIntoView({
+  paymentModal.classList.toggle('hidden');
+  paymentModal.classList.toggle('flex');
+  // modalBox.classList.toggle('invisible');
+  // modalBox.classList.toggle('opacity-0');
+  paymentModal.scrollIntoView({
     behavior: 'smooth',
   });
 
@@ -299,10 +328,6 @@ function goToPaymentPage(priceId, subscriptionTerm) {
   changePriceSelection(priceId);
 }
 
-// function changePrice() {
-//   demoChangePrice();
-// }
-
 function switchPrices(newPriceIdSelected) {
   const params = new URLSearchParams(document.location.search.substring(1));
   const currentSubscribedpriceId = params.get('priceId');
@@ -311,7 +336,7 @@ function switchPrices(newPriceIdSelected) {
   // Update the border to show which price is selected
   changePriceSelection(newPriceIdSelected);
 
-  changeLoadingStatePrices(true);
+  // changeLoadingStatePrices(true);
 
   // Retrieve the upcoming invoice to display details about
   // the price change
@@ -337,7 +362,7 @@ function switchPrices(newPriceIdSelected) {
         'new-price-start-date'
       ).innerHTML = nextPaymentAttemptDateToDisplay;
 
-      changeLoadingStatePrices(false);
+      // changeLoadingStatePrices(false);
     }
   );
 
@@ -413,6 +438,7 @@ function handlePaymentThatRequiresCustomerAction({
       })
       .then((result) => {
         if (result.error) {
+          alert(result.error);
           // start code flow to handle updating the payment details
           // Display error message in your UI.
           // The card was declined (i.e. insufficient funds, card has expired, etc)
@@ -464,7 +490,6 @@ function handleRequiresPaymentMethod({
 }
 
 function onSubscriptionComplete(result) {
-  // console.log('result:', result);
   // Payment was successful. Provision access to your service.
   // Remove invoice from localstorage because payment is now complete.
   clearCache();
@@ -663,8 +688,8 @@ function updateSubscription(priceId, subscriptionId) {
 //     });
 // }
 
-function getConfig() {
-  return fetch('/payment/config', {
+async function getConfig() {
+  return await fetch('/payment/config', {
     method: 'get',
     headers: {
       'Content-Type': 'application/json',
@@ -884,50 +909,53 @@ function changePriceSelection(priceId) {
     .classList.add('border-pasha');
 }
 
-// Show a spinner on subscription submission
 function changeLoadingState(isLoading) {
+  const modal = document.getElementById('payment-modal');
+  const btnText = modal.querySelector('#button-text');
   if (isLoading) {
-    document.querySelector('#button-text').classList.add('hidden');
-    document.querySelector('#loading').classList.remove('hidden');
+    btnText.innerText = 'Subscribing...';
+    // document.querySelector('#button-text').classList.add('hidden');
+    // document.querySelector('#loading').classList.remove('hidden');
     document.querySelector('#signup-form button').disabled = true;
   } else {
-    document.querySelector('#button-text').classList.remove('hidden');
-    document.querySelector('#loading').classList.add('hidden');
+    btnText.innerText = 'Subscribe';
+    // document.querySelector('#button-text').classList.remove('hidden');
+    // document.querySelector('#loading').classList.add('hidden');
     document.querySelector('#signup-form button').disabled = false;
   }
 }
 
 // Show a spinner on subscription submission
-function changeLoadingStatePrices(isLoading) {
-  if (isLoading) {
-    document.querySelector('#button-text').classList.add('hidden');
-    document.querySelector('#loading').classList.remove('hidden');
+// function changeLoadingStatePrices(isLoading) {
+//   if (isLoading) {
+//     document.querySelector('#button-text').classList.add('hidden');
+//     document.querySelector('#loading').classList.remove('hidden');
 
-    document.querySelector('#btn-basic').classList.add('invisible');
-    document.querySelector('#btn-premium').classList.add('invisible');
-    document.querySelector('#btn-premium-plus').classList.add('invisible');
-    if (document.getElementById('confirm-price-change-cancel')) {
-      document
-        .getElementById('confirm-price-change-cancel')
-        .classList.add('invisible');
-    }
-  } else {
-    document.querySelector('#button-text').classList.remove('hidden');
-    document.querySelector('#loading').classList.add('hidden');
+//     document.querySelector('#btn-basic').classList.add('invisible');
+//     document.querySelector('#btn-premium').classList.add('invisible');
+//     document.querySelector('#btn-premium-plus').classList.add('invisible');
+//     if (document.getElementById('confirm-price-change-cancel')) {
+//       document
+//         .getElementById('confirm-price-change-cancel')
+//         .classList.add('invisible');
+//     }
+//   } else {
+//     document.querySelector('#button-text').classList.remove('hidden');
+//     document.querySelector('#loading').classList.add('hidden');
 
-    document.querySelector('#btn-basic').classList.remove('invisible');
-    document.querySelector('#btn-premium').classList.remove('invisible');
-    document.querySelector('#btn-premium-plus').classList.remove('invisible');
-    if (document.getElementById('confirm-price-change-cancel')) {
-      document
-        .getElementById('confirm-price-change-cancel')
-        .classList.remove('invisible');
-      document
-        .getElementById('confirm-price-change-submit')
-        .classList.remove('invisible');
-    }
-  }
-}
+//     document.querySelector('#btn-basic').classList.remove('invisible');
+//     document.querySelector('#btn-premium').classList.remove('invisible');
+//     document.querySelector('#btn-premium-plus').classList.remove('invisible');
+//     if (document.getElementById('confirm-price-change-cancel')) {
+//       document
+//         .getElementById('confirm-price-change-cancel')
+//         .classList.remove('invisible');
+//       document
+//         .getElementById('confirm-price-change-submit')
+//         .classList.remove('invisible');
+//     }
+//   }
+// }
 
 function clearCache() {
   localStorage.clear();

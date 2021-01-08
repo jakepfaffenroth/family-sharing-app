@@ -7,6 +7,26 @@ module.exports = {
   },
   darkMode: 'media',
   theme: {
+    fontFamily: {
+      display: ['Work Sans', 'Helvetica Neue', 'ui-sans-serif'],
+      sans: [
+        'Lato',
+        'ui-sans-serif',
+        'system-ui',
+        '-apple-system',
+        'BlinkMacSystemFont',
+        'Segoe UI',
+        'Roboto',
+        'Helvetica Neue',
+        'Arial',
+        'Noto Sans',
+        'sans-serif',
+        'Apple Color Emoji',
+        'Segoe UI Emoji',
+        'Segoe UI Symbol',
+        'Noto Color Emoji'
+      ]
+    },
     extend: {
       spacing: { '46': '11rem', '90vw': '90vw', '70vw': '70vw' },
       padding: { '1/3': '33.33333%', '1/4': '25%', '1/5': '20%' },

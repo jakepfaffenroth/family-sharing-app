@@ -10,6 +10,9 @@ router.post('/create-owner', ownerController.create);
 router.post('/choose-plan', ownerController.choosePlan);
 router.post('/get-owner', ownerController.getOwner);
 router.post('/delete-account', ownerController.DELETE_ACCOUNT);
+router.post('/resend-owner-verification', async (req, res) => {
+  emailController.sendOwnerConfirmationEmail({ owner: req.body.owner, res });
+});
 
 // Guest routers
 router.post('/subscribe-email', guestController.subscribeEmail);

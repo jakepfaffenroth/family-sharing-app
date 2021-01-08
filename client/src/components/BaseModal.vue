@@ -13,7 +13,7 @@
         <div class="mb-4 text-white text-xl font-bold">
           <slot name="header"></slot>
         </div>
-        <div class="flex-shrink mb-4 w-full text-white">
+        <div class="flex-shrink mb-4 text-white">
           <slot name="content"></slot>
         </div>
         <div

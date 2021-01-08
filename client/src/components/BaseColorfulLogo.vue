@@ -1,6 +1,6 @@
 <template>
   <h1
-    class="text-4xl tracking-tight leading-10 font-extrabold text-gray-900 sm:text-5xl sm:leading-none md:text-6xl"
+    class="text-4xl tracking-tight leading-10 font-display font-extrabold text-gray-900 sm:text-5xl sm:leading-none md:text-6xl"
     data-test="logo"
   >
     <span

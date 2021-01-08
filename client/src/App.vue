@@ -1,5 +1,28 @@
 <template>
   <div class="flex flex-col min-h-screen w-full ">
+    <banner
+      :show-banner="owner.ownerId && !isAuth"
+      :btn-action="resendVerification"
+    >
+      <template #text>
+        <svg
+          class="w-5 mr-1"
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 20 20"
+          fill="currentColor"
+        >
+          <path
+            fill-rule="evenodd"
+            d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+            clip-rule="evenodd"
+          />
+        </svg>
+        Please verify your email
+      </template>
+      <template #button>
+        Resend verification email
+      </template>
+    </banner>
     <router-view v-slot="{ Component }">
       <transition name="slide">
         <component :is="Component" :user-type="userType" />
@@ -9,18 +32,21 @@
 </template>
 
 <script>
-// import axios from 'axios';
+import axios from 'axios';
 import getCookie from './utils/getCookie';
 import toast from './utils/Toast';
-import { ref, reactive, computed, provide, onErrorCaptured } from 'vue';
+import { ref, reactive, computed, provide, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import { useStore, mapState, mapGetters } from 'vuex';
 
 import Home from './views/Home';
 import Account from './views/Account';
+import Banner from './components/BaseBanner';
+import Toast from './utils/Toast';
 
 export default {
   name: 'App',
+  components: { Banner },
   provide: { toast },
   setup() {
     const store = useStore();
@@ -63,65 +89,38 @@ export default {
       window.location.assign(server);
     }
 
+    const isAuth = computed(() => store.getters.isAuth);
     async function getOwnerData(id, userType) {
       await store.dispatch('getOwnerData', { id, userType });
       store.dispatch('getPlanDetails');
     }
 
-    // document.addEventListener('click', event => closeDropMenus(event));
+    const owner = computed(() => store.state.ownerStore.owner);
 
-    // function getDropListEl(target) {
-    //   // console.log('target:', target ? target.classList.value : 'null');
-    //   try {
-    //     if (target === null) {
-    //       return null;
-    //     }
-    //     if (!target.classList.value.includes('dropMenu')) {
-    //       getDropListEl(target.parentElement);
-    //     }
-    //     return target;
-    //   } catch (err) {
-    //     // console.error(err);
-    //     return null;
-    //   }
-    // }
-
-    // // Close drop menus
-    // let menuToClose = null;
-    // function closeDropMenus(event, menuId) {
-    //   console.log('event:', event);
-
-    //   const dropList = getDropListEl(event.target);
-    //   console.log('dropList:', dropList);
-    //   // console.log('event.target:', event.target);
-    //   // // First find any open menus
-    //   if (menuToClose) {
-    //     console.log('now close');
-    //     menuToClose = parseInt(openMenu[0].dataset.menu_id);
-    //   } else {
-    //     console.log('no menu open');
-    //   }
-    //   const openMenu = document.getElementsByClassName('menuOpen');
-
-    //   // console.log(
-    //   //   'open menu:',
-    //   //   openMenu.length ? parseInt(openMenu[0].dataset.menu_id) : 'null'
-    //   // );
-    //   // console.log('clicked menu:', menuId);
-
-    //   // If open menu found, return it
-    //   // if (openMenu.length) {
-    //   //   return openMenu;
-    //   // } else {
-    //   //   return null;
-    //   // }
-    // }
-    // provide('closeDropMenus', closeDropMenus);
-    // provide('menuToClose', () => menuToClose);
+    if (owner.value.deleted) {
+      console.error('User deleted account - redirect');
+      window.location.assign(server);
+    }
+    async function resendVerification() {
+      const { status } = await axios.post(
+        server + '/user/resend-owner-verification',
+        {
+          owner: owner.value
+        }
+      );
+      if (status >= 200 && status < 300) {
+        toast.success('Email sent');
+      } else {
+        toast.error('An error occured');
+      }
+    }
 
     return {
       route,
-      userType
+      userType,
+      owner,
+      isAuth,
+      resendVerification
     };
   }
 };

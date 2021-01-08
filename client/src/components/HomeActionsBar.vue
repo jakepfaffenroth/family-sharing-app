@@ -1,6 +1,6 @@
 <template>
   <div
-    class="Xrelative sm:static flex px-2 pb-1 sm:p-0 sm:pt-2 whitespace-nowrap transition-all duration-100"
+    class="Xsm:static flex flex-wrap px-2 pb-1 sm:p-0 sm:pt-2 whitespace-nowrap transition-all duration-100"
     :class="{
       'border-b-2 border-purple-200 mx-0 sm:mx-3 md:mx-4 lg:mx-6 xl:mx-8 ease-out':
         view.atTopOfPage,
@@ -8,23 +8,22 @@
     }"
   >
     <!-- Skeletons -->
-    <div v-if="view.ownerLoading" class="flex w-full mt-1">
-      <div class="flex">
-        <skeleton class="w-20 pr-5 h-3 mb-2"></skeleton>
-        <skeleton class="w-6 h-3 ml-2 mb-2"></skeleton>
-        <skeleton class="w-28 pl-1 pr-3 h-3 ml-16 mb-2"></skeleton>
-        <!-- <toolbar-button>test</toolbar-button> -->
-        <!-- <skeleton class="w-12 h-3 mb-1"></skeleton> -->
-      </div>
-      <skeleton class="ml-auto w-12 h-3 mb-2"></skeleton>
+    <div v-if="view.ownerLoading" class="flex flex-grow w-full mt-1X">
+      <skeleton class="w-3.5 h-3.5 ml-0.5 my-auto"></skeleton>
+      <skeleton class="w-24 ml-2 pr-7 h-3 my-auto mr-auto"></skeleton>
+      <skeleton
+        v-if="userType === 'owner'"
+        class="w-10 h-3 my-auto mr-2"
+      ></skeleton>
+      <skeleton class="w-6 h-6 mb-0.5 mr-1" :shape="'circle'"></skeleton>
     </div>
 
     <div
       v-else
-      class="Xrelative flex flex-wrap md:flex-nowrap flex-grow w-full text-sm font-medium"
+      class=" flex flex-wrap md:flex-nowrap flex-grow w-full text-sm font-medium"
     >
       <!-- Album picker drop down -->
-      <div class="Xrelative Xflex Xflex-grow h-7 sm:mr-12">
+      <div class="my-auto mr-auto">
         <!-- Non-mobile -->
         <drop-menu
           :passed-classes="'w-screen max-w-90vw md:max-w-50vw'"
@@ -32,9 +31,8 @@
         >
           <template #button>
             <toolbar-button
-              class="flex flex-grow text-base sm:font-lg font-bold my-auto pl-0"
+              class="flex flex-grow text-base sm:font-lg font-bold pl-0"
             >
-              <!-- <span> -->
               <svg
                 class="w-4 my-0.5 mr-1 ml-0.5"
                 xmlns="http://www.w3.org/2000/svg"
@@ -49,7 +47,6 @@
                   d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"
                 />
               </svg>
-              <!-- </span> -->
               {{ activeGallery }}
               {{ activeGallery === 'All' ? 'Photos' : '' }}
             </toolbar-button>
@@ -97,7 +94,7 @@
       </div>
 
       <!-- Album or Selection Tools -->
-      <div
+      <!-- <div
         v-if="userType === 'owner'"
         class="hidden Xmd:block md:relative flex flex-grow w-full md:mr-6"
       >
@@ -115,13 +112,13 @@
             ></component>
           </transition>
         </div>
-      </div>
+      </div> -->
 
       <!-- Select Mode Btn -->
       <toolbar-button
         v-if="userType === 'owner'"
         data-test="selectModeBtn"
-        class="ml-auto mr-1 text-right mb-auto text-base sm:text-sm focus:outline-none transition font-medium"
+        class="md:mt-auto my-auto text-right text-base sm:text-sm focus:outline-none transition font-medium"
         :class="{
           'text-teal-600': isSelectMode
         }"
@@ -133,7 +130,7 @@
       <mobile-drop-menu>
         <template #button="{isMenuVisible}">
           <button
-            class="w-6 h-6 ml-2 mr-1 rounded-full border-2 border-gray-800"
+            class="w-6 h-6 ml-2 mr-1 my-auto sm:mb-0.5 rounded-full border-2 border-gray-800"
             :class="{ 'bg-purple-600 border-purple-600': isMenuVisible }"
           >
             <div
@@ -162,22 +159,6 @@
               ></div>
             </div>
           </button>
-          <!-- <toolbar-button>
-            <svg
-              class="w-6 sm:w-6 ml-2 mr-1"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M8 12h.01M12 12h.01M16 12h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
-            </svg>
-          </toolbar-button> -->
         </template>
         <template #listItems>
           <component

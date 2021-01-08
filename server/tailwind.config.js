@@ -1,8 +1,31 @@
 const colors = require('tailwindcss/colors');
 
 module.exports = {
-  purge: {enabled:true, content:['./views/**/*.html', './views/**/*.js']},
+  purge: {
+    enabled: true,
+    content: ['./views/**/*.html', './views/**/*.js'],
+  },
   theme: {
+    fontFamily: {
+      display: ['"Work Sans"', 'Helvetica Neue', 'ui-sans-serif'],
+      sans: [
+        'Lato',
+        'ui-sans-serif',
+        'system-ui',
+        '-apple-system',
+        'BlinkMacSystemFont',
+        'Segoe UI',
+        'Roboto',
+        'Helvetica Neue',
+        'Arial',
+        'Noto Sans',
+        'sans-serif',
+        'Apple Color Emoji',
+        'Segoe UI Emoji',
+        'Segoe UI Symbol',
+        'Noto Color Emoji',
+      ],
+    },
     extend: {
       spacing: { 46: '11rem', '90vw': '90vw', '70vw': '70vw' },
       maxHeight: { '9/10': '90%' },

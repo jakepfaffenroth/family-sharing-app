@@ -47,6 +47,7 @@ export default {
   },
   actions: {
     async getPlanDetails({ commit, dispatch, rootState, rootGetters }) {
+      // This action retrieves plan name, card brand, and last four digits
       const { data, status } = await axios.post(
         server + '/payment/retrieve-payment-method',
         {

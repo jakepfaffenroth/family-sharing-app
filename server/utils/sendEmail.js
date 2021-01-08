@@ -5,7 +5,10 @@ const credentials = {
 };
 const ses = new AWS.SES({ credentials: credentials, region: 'us-west-2' });
 
-module.exports = ({ sender, recipient, subject, body_text, body_html }) => {
+module.exports = async (
+  { sender, recipient, subject, body_text, body_html },
+  res
+) => {
   const params = {
     Source: sender + ' ' + '<notification@carousel.jakepfaf.dev>',
     Destination: {
@@ -28,14 +31,25 @@ module.exports = ({ sender, recipient, subject, body_text, body_html }) => {
       },
     },
   };
-  console.log('params:', params.Message.Body.Html);
+  // //Try to send the email.
+  // ses.sendEmail(params, function (err, data) {
+  //   // If something goes wrong, print an error message.
+  //   if (err) {
+  //     error(err);
+  //     // res.status(500).send(err);
+  //     return false;
+  //   } else {
+  //     success('Email sent');
+  //     // res.status(204).end();
+  //     return true;
+  //   }
+  // });
+
   //Try to send the email.
-  ses.sendEmail(params, function (err, data) {
-    // If something goes wrong, print an error message.
-    if (err) {
-      error(err);
-    } else {
-      success('Verification email sent: Message ID: ', data.MessageId);
-    }
-  });
+  let err = null;
+  const AWSResponse = await ses
+    .sendEmail(params)
+    .promise((error) => (err = error));
+  if (err) console.error(err);
+  return !!AWSResponse;
 };

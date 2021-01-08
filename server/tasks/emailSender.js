@@ -3,7 +3,6 @@ const { sendEmailNotifications } = require('../notifications/emailController');
 const { sendGuestVerificationEmail } = require('../users/emailController');
 
 const ownerConfirmation = async (job) => {
-  console.log('typeof sendConfirmEmail:', typeof sendOwnerConfirmationEmail);
   return await sendOwnerConfirmationEmail(job.data);
 };
 

@@ -1,5 +1,5 @@
 <template>
-  <div class="flex pb-2 justify-between">
+  <div class="flex py-2 xl:pt-4 justify-between">
     <div>
       <a href="/">
         <base-colorful-logo class="self-center sm:self-start" />

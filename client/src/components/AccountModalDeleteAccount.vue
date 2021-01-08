@@ -13,7 +13,7 @@
         <span class="font-bold text-purple-500">including images</span>
         , will be immediately and permanently deleted.
       </p>
-      <div v-if="ownerEmail">
+      <div v-if="isAuth">
         <p>
           Please type
           <span class="font-bold text-teal-500 select-none">
@@ -74,6 +74,9 @@ export default {
     },
     ownerId() {
       return this.$store.getters.ownerId;
+    },
+    isAuth() {
+      return this.$store.getters.isAuth;
     }
   },
   methods: {
