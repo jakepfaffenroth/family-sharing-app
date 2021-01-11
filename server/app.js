@@ -1,6 +1,7 @@
 const express = require('express');
 const createError = require('http-errors');
 const compression = require('compression');
+const bodyParser = require('body-parser');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const morgan = require('morgan');
@@ -59,9 +60,16 @@ app.use((req, res, next) => {
   // logger.info(makeHttpLog(res.statusCode));
   next();
 });
+app.use((req, res, next) => {
+  if (req.originalUrl === '/payment/stripe-webhook') {
+    bodyParser.raw({ type: '*/*' })(req, res, next);
+  } else {
+    bodyParser.json()(req, res, next);
+  }
+});
 app.use(compression());
 app.use(cors());
-app.use(require('body-parser').json());
+// Use JSON parser for all non-webhook routes
 
 const ws = require('ws');
 const wsConfig = {

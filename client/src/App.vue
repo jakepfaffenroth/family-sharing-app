@@ -24,7 +24,7 @@
       </template>
     </banner>
     <router-view v-slot="{ Component }">
-      <transition name="slide">
+      <transition name="slide" mode="out-in">
         <component :is="Component" :user-type="userType" />
       </transition>
     </router-view>

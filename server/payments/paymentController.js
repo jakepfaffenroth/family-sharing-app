@@ -1,5 +1,6 @@
 const db = require('../db').pgPromise;
 const { debug, info } = require('winston');
+const stripeWebhook = require('./stripeWebhook');
 
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
@@ -119,7 +120,7 @@ module.exports = {
 
   saveBasic: async (req, res) => {
     const customer = req.body.customerId;
-    const plan = req.body.plan;
+    const plan = lowercaseFirstLetter(req.body.plan);
     const price = prices[plan].id;
     const subscription = await stripe.subscriptions.create({
       customer,
@@ -131,36 +132,67 @@ module.exports = {
       : res.status(500).end();
   },
 
-  createCheckoutSession: async (req, res) => {
+  createCheckoutSession: async function (req, res) {
+    const { referrer, type } = req.body;
+    console.log('type:', type);
+
     const {
       customerId,
-    } = await db.one('SELECT customer_id FROM owners WHERE owner_id = $1', [
-      req.body.ownerId,
-    ]);
+      subscriptionId,
+    } = await db.one(
+      'SELECT customer_id, subscription_id FROM owners WHERE owner_id = $1',
+      [req.body.ownerId]
+    );
 
-    const plan = req.body.plan;
-    const priceId = prices[plan].id;
-
-    const session = await stripe.checkout.sessions.create({
+    const sessionParams = {
       customer: customerId,
       payment_method_types: ['card'],
-      line_items: [{ price: priceId, quantity: 1 }],
-      mode: 'subscription',
-      subscription_data: {
-        metadata: {
-          isPremium: plan.includes('premium'),
-        },
-      },
-      allow_promotion_codes: true,
+
       success_url:
-        process.env.SERVER + '/payment/finalize-checkout/' + customerId,
-      cancel_url: process.env.SERVER + '/complete-signup',
-    });
-    res.json({ id: session.id });
+        process.env.SERVER +
+        `/payment/finalize-checkout?id=${customerId}&referrer=${referrer}`,
+      cancel_url: req.get('referrer'),
+    };
+
+    switch (type) {
+      case 'new':
+        const plan = req.body.plan || req.body.newPlan;
+        const priceId = prices[plan].id;
+
+        sessionParams.mode = 'subscription';
+        sessionParams.line_items = [{ price: priceId, quantity: 1 }];
+        sessionParams.subscription_data = {
+          metadata: {
+            planName: plan,
+            isPremium: plan.includes('premium'),
+          },
+        };
+        sessionParams.allow_promotion_codes = true;
+        sessionParams.expand = ['customer.sources.data'];
+
+        break;
+      case 'update':
+        sessionParams.mode = 'setup';
+        sessionParams.setup_intent_data = {
+          metadata: {
+            customer_id: customerId,
+            subscription_id: subscriptionId,
+          },
+        };
+        break;
+
+      default:
+        res.status(500).end();
+        break;
+    }
+    const session = await stripe.checkout.sessions.create(sessionParams);
+    console.log('session:', session);
+    res.json({ id: session.id, customer: session.customer });
   },
 
   finalizeCheckout: async (req, res) => {
-    const customer = req.params.customerId;
+    const customer = req.query.customerId;
+    const referrer = req.query.referrer;
 
     const subscriptions = (
       await stripe.subscriptions.list({
@@ -171,13 +203,20 @@ module.exports = {
     ).data;
 
     const subscription = subscriptions[0];
-    const plan = subscription.metadata.isPremium ? 'premium' : 'basic';
+    const plan = subscription.metadata.planName;
+    const quota = prices[plan].quota;
+
     try {
       await db.none(
-        'UPDATE owners SET subscription_id = ${id}, plan = ${plan} WHERE customer_id = ${customer}',
-        { ...subscription, plan }
+        'UPDATE owners SET subscription_id = ${id}, plan = ${plan}, quota = ${quota} WHERE customer_id = ${customer}',
+        { ...subscription, plan, quota }
       );
-      res.redirect('/login');
+
+      if (referrer === 'client') {
+        res.redirect(process.env.CLIENT + 'account');
+      } else {
+        res.redirect('/login');
+      }
     } catch (err) {
       error(err);
     }
@@ -255,32 +294,36 @@ module.exports = {
     }
   },
 
-  updateSubscription: async (req, res) => {
-    const { ownerId, newPlan } = req.body;
-
+  updateSubscription: async function (req, res) {
+    const { ownerId } = req.body;
+    const newPlan = lowercaseFirstLetter(req.body.newPlan);
+    const newPriceId = prices[newPlan].id;
+    console.log('ownerId:', ownerId);
     const {
       customerId,
       subscriptionId,
     } = await db.one(
       'SELECT customer_id, subscription_id FROM owners WHERE owner_id = ${ownerId}',
-      { ownerId, newPlan }
+      { ownerId }
     );
-
+    console.log('customerId:', customerId);
+    console.log('subscriptionId:', subscriptionId);
+    console.log('newPlan:', newPlan);
     const subscription = await stripe.subscriptions.retrieve(subscriptionId);
 
-    const prices = await stripe.prices.list();
+    // if (newPlan.includes('premium')) {
+    //   res.locals.customerId = customerId;
+    //   const session = await module.exports.createCheckoutSession(req, res);
 
-    const newPriceId = prices[newPlan].id;
-
-    // let newPriceId = '';
-    // prices.data.forEach((price) => {
-    //   if (
-    //     price.lookup_key.split(' ').slice(0, -1).join(' ') ==
-    //     req.body.newPriceId
-    //   ) {
-    //     newPriceId = price.id;
+    //   const result = await stripe.redirectToCheckout({
+    //     // sessionId: session.json().id,
+    //     sessionId: session.id,
+    //     clientReferenceId: customerId,
+    //   });
+    //   if (result.error) {
+    //     res.status(500).end();
     //   }
-    // });
+    // }
 
     try {
       const updatedSubscription = await stripe.subscriptions.update(
@@ -295,8 +338,9 @@ module.exports = {
           ],
         }
       );
+      console.log('updatedSubscription:', updatedSubscription);
       if (updatedSubscription) {
-        const savedToDb = savePlanToDb(customerId, newPlan);
+        const savedToDb = savePlanToDb(customerId, newPlan, subscriptionId);
         if (savedToDb) {
           res.send({ subUpdated: true, msg: 'none' });
         }
@@ -309,7 +353,7 @@ module.exports = {
     }
   },
 
-  paymentMethod: async (req, res) => {
+  retrievePaymentMethod: async (req, res) => {
     // Retrieves plan name, card brand, and last four digits and sends to client
     const customer = await db.one(
       'SELECT customer_id, plan FROM owners WHERE owner_id = ${ownerId}',
@@ -321,10 +365,11 @@ module.exports = {
       type: 'card',
     });
 
-    // Set plan to 'none' if one hasn't been picked yet
+    // Set plan to null if one hasn't been picked yet
     customer.plan = customer.plan || null;
 
     const planDetails = {
+      paymentMethodOnFile: response.data.length > 0,
       cardBrand: response.data[0]
         ? capitalizeFirstLetter(response.data[0].card.brand)
         : null,
@@ -334,73 +379,95 @@ module.exports = {
     res.send(planDetails);
   },
 
-  // stripeWebhook: async (req, res) => {
-  //   // Retrieve the event by verifying the signature using the raw body and secret.
-  //   let event;
+  stripeWebhook: async (req, res) => {
+    // Retrieve the event by verifying the signature using the raw body and secret.
+    let event;
 
-  //   try {
-  //     event = stripe.webhooks.constructEvent(
-  //       req.body,
-  //       req.header('Stripe-Signature'),
-  //       process.env.STRIPE_WEBHOOK_SECRET
-  //     );
-  //   } catch (err) {
-  //     console.log(err);
-  //     console.log(`⚠️  Webhook signature verification failed.`);
-  //     console.log(
-  //       `⚠️  Check the env file and enter the correct webhook secret.`
-  //     );
-  //     return res.sendStatus(400);
-  //   }
-  //   // Extract the object from the event.
-  //   const dataObject = event.data.object;
+    try {
+      event = stripe.webhooks.constructEvent(
+        req.body,
+        req.header('Stripe-Signature'),
+        process.env.STRIPE_WEBHOOK_SECRET
+      );
+    } catch (err) {
+      console.log(err);
+      console.log(`⚠️  Webhook signature verification failed.`);
+      console.log(
+        `⚠️  Check the env file and enter the correct webhook secret.`
+      );
+      return res.sendStatus(500);
+    }
+    // Extract the object from the event.
+    const dataObject = event.data.object;
 
-  //   // Handle the event
-  //   // Review important events for Billing webhooks
-  //   // https://stripe.com/docs/billing/webhooks
-  //   // Remove comment to see the various objects sent for this sample
-  //   switch (event.type) {
-  //     case 'invoice.paid':
-  //       // Used to provision services after the trial has ended.
-  //       // The status of the invoice will show up as paid. Store the status in your
-  //       // database to reference when a user accesses your service to avoid hitting rate limits.
-  //       break;
-  //     case 'invoice.payment_failed':
-  //       // If the payment fails or the customer does not have a valid payment method,
-  //       //  an invoice.payment_failed event is sent, the subscription becomes past_due.
-  //       // Use this webhook to notify your user that their payment has
-  //       // failed and to retrieve new card details.
-  //       break;
-  //     case 'invoice.finalized':
-  //       // If you want to manually send out invoices to your customers
-  //       // or store them locally to reference to avoid hitting Stripe rate limits.
-  //       break;
-  //     case 'customer.subscription.deleted':
-  //       if (event.request != null) {
-  //         // handle a subscription cancelled by your request
-  //         // from above.
-  //       } else {
-  //         // handle subscription cancelled automatically based
-  //         // upon your subscription settings.
-  //       }
-  //       break;
-  //     case 'customer.subscription.trial_will_end':
-  //       // Send notification to your user that the trial will end
-  //       break;
-  //     default:
-  //     // Unexpected event type
-  //   }
-  //   res.sendStatus(200);
-  // },
+    // Handle the event
+    // Review important events for Billing webhooks
+    // https://stripe.com/docs/billing/webhooks
+    // Remove comment to see the various objects sent for this sample
+    switch (event.type) {
+      case 'checkout.session.completed':
+        const session = await stripe.checkout.sessions.retrieve(
+          event.data.object.id,
+          { expand: ['setup_intent'] }
+        );
+        console.log('sessionX:', session);
+        const {
+          customer,
+          metadata,
+          payment_method,
+        } = await stripe.customers.update(session.customer, {
+          invoice_settings: {
+            default_payment_method: session.setup_intent.payment_method,
+          },
+        });
+        break;
+      case 'account.updated':
+        console.log('event:', event);
+        break;
+      case 'invoice.paid':
+        // Used to provision services after the trial has ended.
+        // The status of the invoice will show up as paid. Store the status in your
+        // database to reference when a user accesses your service to avoid hitting rate limits.
+        break;
+      case 'invoice.payment_failed':
+        // If the payment fails or the customer does not have a valid payment method,
+        //  an invoice.payment_failed event is sent, the subscription becomes past_due.
+        // Use this webhook to notify your user that their payment has
+        // failed and to retrieve new card details.
+        break;
+      case 'invoice.finalized':
+        console.log('event:', event);
+        // If you want to manually send out invoices to your customers
+        // or store them locally to reference to avoid hitting Stripe rate limits.
+        break;
+      case 'customer.subscription.deleted':
+        if (event.request != null) {
+          // handle a subscription cancelled by your request
+          // from above.
+        } else {
+          // handle subscription cancelled automatically based
+          // upon your subscription settings.
+        }
+        break;
+      case 'customer.subscription.trial_will_end':
+        // Send notification to your user that the trial will end
+        break;
+      default:
+      // Unexpected event type
+    }
+    res.sendStatus(200);
+  },
 };
 
 async function savePlanToDb(customerId, plan, subscriptionId) {
   const quota = prices[plan].quota;
+  const values = { customerId, plan, quota };
+  if (subscriptionId) values.subscriptionId = subscriptionId;
 
   try {
     await db.one(
       'UPDATE owners SET plan = ${plan}, quota = ${quota}, subscription_id = ${subscriptionId} WHERE customer_id = ${customerId} RETURNING owner_id, plan',
-      { customerId, plan, quota, subscriptionId }
+      values
     );
     return;
   } catch (err) {
@@ -416,10 +483,8 @@ async function savePlanToDb(customerId, plan, subscriptionId) {
 // }
 
 function capitalizeFirstLetter(string) {
-  let tempString = string.toLowerCase();
-  return tempString.charAt(0).toUpperCase() + tempString.slice(1);
+  return string.charAt(0).toUpperCase() + string.slice(1);
 }
-// function lowercaseFirstLetter(string) {
-//   // let tempString = string
-//   return string.charAt(0).toLowerCase() + string.slice(1);
-// }
+function lowercaseFirstLetter(string) {
+  return string.charAt(0).toLowerCase() + string.slice(1);
+}

@@ -167,12 +167,12 @@ async function saveBasicSubscription() {
 }
 
 function checkout() {
-  const plan = this.plan
+  const plan = this.plan;
   const ownerId = getCookie('ownerId');
 
   fetch('/payment/create-checkout-session', {
     method: 'POST',
-    body: JSON.stringify({ plan, ownerId }),
+    body: JSON.stringify({ plan, ownerId, source: 'server', type: 'new' }),
     headers: {
       'Content-Type': 'application/json',
     },

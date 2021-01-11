@@ -17,6 +17,7 @@ export default {
   name: 'PlanPickerBtn',
   components: { BaseButtonTeal },
   props: {
+    plan: { type: String, default: '' },
     currentPlan: { type: String, default: '' },
     btnValue: { type: String, default: '' },
     resetBtnsExcept: { type: String, default: null }

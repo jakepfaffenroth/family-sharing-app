@@ -52,10 +52,7 @@ router.post(
   paymentController.createCheckoutSession
 );
 
-router.get(
-  '/finalize-checkout/:customerId',
-  paymentController.finalizeCheckout
-);
+router.get('/finalize-checkout', paymentController.finalizeCheckout);
 
 // router.post('/retry-invoice', paymentController.retryInvoice);
 
@@ -65,13 +62,16 @@ router.post('/cancel-subscription', paymentController.cancelSubscription);
 
 router.post('/update-subscription', paymentController.updateSubscription);
 
-router.post('/retrieve-payment-method', paymentController.paymentMethod);
+router.post(
+  '/retrieve-payment-method',
+  paymentController.retrievePaymentMethod
+);
 
 // Webhook handler for asynchronous events.
-// router.post(
-//   '/stripe-webhook',
-//   bodyParser.raw({ type: 'application/json' }),
-//   paymentController.stripeWebhook
-// );
+router.post(
+  '/stripe-webhook',
+  // bodyParser.raw({ type: 'application/json' }),
+  paymentController.stripeWebhook
+);
 
 module.exports = router;

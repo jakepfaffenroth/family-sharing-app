@@ -19,7 +19,7 @@
             :class="showChangeConfirmation"
           >
             <div class="p-4">
-              <h3 class="pb-2 font-bold text-lg">
+              <!-- <h3 class="pb-2 font-bold text-lg">
                 Are you sure you want to change plans?
               </h3>
               <p>
@@ -31,12 +31,41 @@
                       : 'font-semibold text-teal-400'
                   "
                 >
-                  {{ newPlan || 'new' }}
+                  {{ capitalizedPlanName }}
                 </span>
                 plan immediately.
               </p>
               <p>
                 Your bill will be prorated accordingly.
+              </p> -->
+              <h3 class="pb-2 font-bold text-lg">
+                Ready to switch to
+                <span
+                  :class="
+                    newPlan.name.toLowerCase().includes('premium')
+                      ? 'font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-teal-400 to-orange-400 via-purple-400'
+                      : 'font-semibold text-teal-400'
+                  "
+                >
+                  Carousel {{ capitalizedPlanName }}
+                </span>
+                ?
+              </h3>
+              <p v-if="newPlan.name.includes('premium')">
+                {{ newPlan.price }}
+                {{ newPlan.paymentSchedule[0].toLowerCase() }},
+                {{ newPlan.paymentSchedule[1].toLowerCase() }}
+              </p>
+              <p>
+                Your bill will be prorated.
+              </p>
+              <p
+                v-if="
+                  newPlan.name.includes('premium') &&
+                    !planDetails.paymentMethodOnFile
+                "
+              >
+                Continue to enter payment details.
               </p>
             </div>
             <div
@@ -51,9 +80,9 @@
               </base-button-cancel>
               <base-button-purple
                 data-test="confirmPlanChangeBtn"
-                @click="$emit('confirm-plan-change', newPlan)"
+                @click="$emit('confirm-plan-change', newPlan.name)"
               >
-                Confirm
+                Continue
               </base-button-purple>
             </div>
           </div>
@@ -64,8 +93,8 @@
         >
           <div
             v-for="plan in plans"
-            :id="plan.id"
-            :key="plan.id"
+            :id="plan.name"
+            :key="plan.name"
             class="flex md:flex-col mb-8 md:mb-0 md:w-1/3 md:mx-3 justify-between items-start md:items-center"
           >
             <div class="flex flex-col w-2/3 md:w-full">
@@ -100,10 +129,11 @@
               </div>
             </div>
             <account-plan-picker-button
-              :btn-value="plan.heading"
+              :plan="plan.heading"
+              :btn-value="plan.name"
               :reset-btns-except="resetBtnsExcept"
               :current-plan="planDetails.plan"
-              :data-test="plan.id + 'Btn'"
+              :data-test="plan.name + 'Btn'"
               @reset-other-btns="resetOtherBtns"
               @show-confirmation="showConfirmation"
             ></account-plan-picker-button>
@@ -124,7 +154,7 @@
 </template>
 
 <script>
-import { ref, computed, defineAsyncComponent } from 'vue';
+import { ref, computed, reactive } from 'vue';
 import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
 import BaseButtonPurple from '../components/BaseButtonPurple';
@@ -142,9 +172,9 @@ export default {
     const store = useStore();
     const router = useRouter();
 
-    const plans = {
-      basic: {
-        id: 'basic',
+    const plans = [
+      {
+        name: 'basic',
         heading: 'Basic',
         price: 'Free!',
         paymentSchedule: ['Upgrade anytime'],
@@ -155,8 +185,8 @@ export default {
           'Private sharing link'
         ]
       },
-      premium: {
-        id: 'premium',
+      {
+        name: 'premiumMo',
         heading: 'Premium',
         price: '$5',
         paymentSchedule: ['Per month', 'Billed monthly'],
@@ -168,8 +198,8 @@ export default {
           'Guest downloads'
         ]
       },
-      premiumPlus: {
-        id: 'premium-plus',
+      {
+        name: 'premiumYr',
         heading: 'Premium Plus',
         price: '$10',
         paymentSchedule: ['Per month', 'Billed monthly'],
@@ -181,12 +211,17 @@ export default {
           'Guest downloads'
         ]
       }
-    };
+    ];
+
     const confirmationBox = ref('');
-    const newPlan = ref('');
+    const newPlan = ref({ name: '' });
+    const capitalizedPlanName = ref('');
 
     const planDetails = computed(() => store.getters.planDetails);
     store.dispatch('getPlanDetails');
+    const currentPlan = computed(() => {
+      plans.find(x => x.heading.toLowerCase() === '');
+    });
 
     function closeModal() {
       emit('close-plan-change');
@@ -196,9 +231,17 @@ export default {
       'transform -translate-y-2 invisible opacity-0 h-0'
     );
 
-    function showConfirmation(newPriceId) {
+    function showConfirmation(plan) {
       // showChangeConfirmation.value += 'block';
-      newPlan.value = newPriceId;
+      console.log('plan:', plan);
+      newPlan.value = plans.find(x => x.name === plan);
+
+      if (plan.includes('basic')) {
+        capitalizedPlanName.value = 'Basic';
+      } else if (plan.includes('premium')) {
+        capitalizedPlanName.value = 'Premium';
+      }
+
       showChangeConfirmation.value =
         'transform -translate-y-0 visible opacity-100';
       if (window.innerWidth < 640) {
@@ -221,6 +264,7 @@ export default {
       planDetails,
       plans,
       newPlan,
+      capitalizedPlanName,
       closeModal,
       showConfirmation,
       showChangeConfirmation,

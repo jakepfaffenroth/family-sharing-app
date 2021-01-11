@@ -76,7 +76,9 @@
                             planDetails.plan.includes('premium')
                         }"
                       >
-                        {{ planDetails.plan }}
+                        {{
+                          planDetails.plan.replace('Mo', '').replace('Yr', '')
+                        }}
                       </span>
                       plan
                     </p>
@@ -240,6 +242,9 @@ export default {
   setup() {
     const store = useStore();
     const server = process.env.VUE_APP_SERVER;
+    const stripe = Stripe(
+      'pk_test_51HYjdCCto9koSaMfB1vfa2yKqEHrKbyEg0CHfL31Xck4Kom1QgvYSYhEy0G27aSwa2Ydy3RSmX9YxDFvdVNEIHz40032As5FXu'
+    ); // Publishable Key
     const toast = inject('toast');
 
     const owner = computed(() => store.state.ownerStore.owner);
@@ -267,7 +272,19 @@ export default {
         type: 'info',
         duration: 3000,
         dismissible: true,
-        message: 'Coming soon!'
+        message: 'Redirecting...'
+      });
+
+      const session = (
+        await axios.post(server + '/payment/create-checkout-session', {
+          ownerId: owner.value.ownerId,
+          referrer: 'client',
+          type: 'update'
+        })
+      ).data;
+
+      await stripe.redirectToCheckout({
+        sessionId: session.id
       });
     }
 

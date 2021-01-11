@@ -40,10 +40,14 @@ export default {
   inheritAttrs: false,
   setup(props) {
     const store = useStore();
-    const accountView = shallowRef();
     const route = useRoute();
     const server = process.env.VUE_APP_SERVER;
     const toast = inject('toast');
+    const stripe = Stripe(
+      'pk_test_51HYjdCCto9koSaMfB1vfa2yKqEHrKbyEg0CHfL31Xck4Kom1QgvYSYhEy0G27aSwa2Ydy3RSmX9YxDFvdVNEIHz40032As5FXu'
+    ); // Publishable Key
+
+    const accountView = ref('AccountSummary');
 
     const owner = computed(() => store.state.ownerStore.owner);
     const usage = computed(() => store.state.planStore.usage);
@@ -59,37 +63,90 @@ export default {
 
     // Open straight into plan picker if goToChangePlan is true
     onBeforeMount(async () => {
-      if (goToChangePlan) {
+      if (
+        (planDetails.value && planDetails.value.plan === null) ||
+        goToChangePlan
+      ) {
         openPlanChange();
       }
     });
 
-    onUpdated(() => {
-      if (planDetails.value && planDetails.value.plan === null) {
-        openPlanChange();
-      } else accountView.value = AccountSummary;
-    });
+    // onUpdated(() => {
+    //   console.log('updated');
+    //   if (planDetails.value && planDetails.value.plan === null) {
+    //     openPlanChange();
+    //   } else accountView.value = 'AccountSummary';
+    // });
 
     function openPlanChange() {
-      accountView.value = AccountPlanPicker;
+      accountView.value = 'AccountPlanPicker';
     }
 
     function closePlanChange() {
-      accountView.value = AccountSummary;
+      accountView.value = 'AccountSummary';
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     async function confirmPlanChange(newPlan) {
-      const { data } = await axios.post(
-        server + '/payment/update-subscription',
-        {
+      const session = (
+        await axios.post(server + '/payment/create-checkout-session', {
           ownerId: owner.value.ownerId,
-          newPlan
-        }
-      );
+          plan: newPlan,
+          referrer: 'client',
+          type: planDetails.value.paymentMethodOnFile ? 'update' : 'new'
+        })
+      ).data;
+
+      let result;
       if (
-        !data.subUpdated &&
-        data.msg.toLowerCase().includes('no such subscription')
+        newPlan.includes('premium') &&
+        !planDetails.value.paymentMethodOnFile
+      ) {
+        result = await stripe.redirectToCheckout({
+          sessionId: session.id
+        });
+      } else {
+        result = (
+          await axios.post(server + '/payment/update-subscription', {
+            ownerId: owner.value.ownerId,
+            newPlan,
+            referrer: 'client'
+          })
+        ).data;
+      }
+      // newPlan.includes('basic') || session.customer.default_source
+      //   ? await axios.post(server + '/payment/update-subscription', {
+      //       ownerId: owner.value.ownerId,
+      //       newPlan
+      //     })
+      //   : await stripe.redirectToCheckout({
+      //       sessionId: session.id
+      //     });
+      console.log('result:', result);
+      // const { data } = await axios.post(
+      //   server + '/payment/update-subscription',
+      //   {
+      //     ownerId: owner.value.ownerId,
+      //     newPlan,
+      //     referrer: 'client'
+      //   }
+      // );
+      //   data = response.data;
+      // } else if (newPlan.includes('premium')) {
+      //   const response = await axios.post(
+      //     server + '/payment/create-checkout-session',
+      //     {
+      //       ownerId: owner.value.ownerId,
+      //       plan: newPlan,
+      //       source: 'client'
+      //     }
+      //   );
+      //   data = response.data;
+      // }
+      // console.log('data:', data);
+      if (
+        !result.subUpdated &&
+        result.msg.toLowerCase().includes('no such subscription')
       ) {
         toast.open({
           type: 'error',
@@ -98,7 +155,7 @@ export default {
           message:
             'Your subscription was not found. Please contact support or try again.'
         });
-      } else if (!data.subUpdated) {
+      } else if (!result.subUpdated) {
         toast.open({
           type: 'error',
           duration: 0,
@@ -107,8 +164,8 @@ export default {
             'Your subscription could not be changed right now.\nPlease contact support or try again.'
         });
       }
-      console.log('data:', data);
-      if (data.subUpdated) {
+
+      if (result.subUpdated) {
         store.dispatch('getPlanDetails');
         store.commit('updatePlanDetails');
         // store.dispatch('updateQuota', data.quota)
@@ -118,10 +175,10 @@ export default {
           type: 'success',
           duration: 5000,
           // dismissible: true,
-          message: 'Subscription updated to ' + newPriceId
+          message: 'Subscription updated to ' + newPlan
         });
       }
-      return data;
+      return result;
     }
 
     // async function cancelSubscription() {
