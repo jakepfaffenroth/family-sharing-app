@@ -1,6 +1,4 @@
 const db = require('../db').pgPromise;
-const { debug, info } = require('winston');
-const stripeWebhook = require('./stripeWebhook');
 
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
@@ -63,85 +61,27 @@ const prices = {
 };
 
 module.exports = {
-  createCustomer: async (req, res) => {
-    // Create a new customer object
-    const customer = await stripe.customers.create({
-      email: req.body.email,
-      metadata: { ownerId: req.body.ownerId },
-    });
-    // save the customer.id as stripeCustomerId
-    // in your database.
-
-    res.send({ customer });
-  },
-
-  // createSubscription: async (req, res) => {
-  //   const priceId = req.body.priceId.replace(' ', '_');
-
-  //   const customerId = req.body.customerId
-  //   const plan = Object.keys(prices).find(key => prices[key].id === priceId)
-
-  //   // Set the default payment method on the customer
-  //   try {
-  //     await stripe.paymentMethods.attach(req.body.paymentMethodId, {
-  //       customer: customerId,
-  //     });
-  //   } catch (error) {
-  //     return res.status('402').send({ error: { message: error.message } });
-  //   }
-
-  //   let updateCustomerDefaultPaymentMethod = await stripe.customers.update(
-  //     req.body.customerId,
-  //     {
-  //       invoice_settings: {
-  //         default_payment_method: req.body.paymentMethodId,
-  //       },
-  //     }
-  //   );
-  //   try {
-  //     console.log(
-  //       'process.env[req.body.priceId]:',
-  //       process.env[req.body.priceId]
-  //     );
-  //     // Create the subscription
-  //     const subscription = await stripe.subscriptions.create({
-  //       customer: customerId,
-  //       items: [{ price: process.env[req.body.priceId] }],
-  //       expand: ['latest_invoice.payment_intent'],
-  //     });
-  //     console.log('subscription:', subscription);
-  //     const savedToDb = await savePlanToDb(customerId, plan);
-  //     saveSubscriptionToDb(subscription.customer, subscription.id);
-  //     res.send(subscription);
-  //   } catch (err) {
-  //     console.log('err:', err);
-  //   }
-  // },
-
   saveBasic: async (req, res) => {
-    const customer = req.body.customerId;
-    const plan = lowercaseFirstLetter(req.body.plan);
-    const price = prices[plan].id;
-    const subscription = await stripe.subscriptions.create({
-      customer,
-      items: [{ price }],
-    });
+    const { customerId, plan } = req.body;
 
-    savePlanToDb(customer, plan, subscription.id)
+    const subscription = await createSubscription(customerId, plan);
+
+    saveToDb(customerId, plan, subscription.id)
       ? res.status(200).end()
       : res.status(500).end();
   },
 
+  // Creates checkout session to collect payment info
   createCheckoutSession: async function (req, res) {
-    const { referrer, type } = req.body;
-    console.log('type:', type);
+    const { ownerId, referrer, type } = req.body;
+    const plan = req.body.plan || req.body.newPlan;
 
     const {
       customerId,
       subscriptionId,
     } = await db.one(
       'SELECT customer_id, subscription_id FROM owners WHERE owner_id = $1',
-      [req.body.ownerId]
+      [ownerId]
     );
 
     const sessionParams = {
@@ -150,13 +90,12 @@ module.exports = {
 
       success_url:
         process.env.SERVER +
-        `/payment/finalize-checkout?id=${customerId}&referrer=${referrer}`,
+        `/payment/finalize-checkout?sesId={CHECKOUT_SESSION_ID}&cusId=${customerId}&subid=${subscriptionId}&plan=${plan}&referrer=${referrer}&type=${type}`,
       cancel_url: req.get('referrer'),
     };
 
     switch (type) {
       case 'new':
-        const plan = req.body.plan || req.body.newPlan;
         const priceId = prices[plan].id;
 
         sessionParams.mode = 'subscription';
@@ -185,120 +124,50 @@ module.exports = {
         res.status(500).end();
         break;
     }
+
     const session = await stripe.checkout.sessions.create(sessionParams);
-    console.log('session:', session);
+
     res.json({ id: session.id, customer: session.customer });
   },
 
+  // After payment, redirected here
+  // Saves default method method if none exists
+  // Updates subscription if type === update
+  // Saves new subscription info to DB
+  // Redirects client back to account or login
   finalizeCheckout: async (req, res) => {
-    const customer = req.query.customerId;
-    const referrer = req.query.referrer;
+    const {
+      sesId: sessionId,
+      cusId: customerId,
+      subid: subscriptionId,
+      plan,
+      referrer,
+      type,
+    } = req.query;
 
-    const subscriptions = (
-      await stripe.subscriptions.list({
-        customer,
-        status: 'active',
-        limit: 1,
-      })
-    ).data;
+    // Check for a default payment method and if none, save it
+    await saveDefaultPaymentMethod(sessionId);
 
-    const subscription = subscriptions[0];
-    const plan = subscription.metadata.planName;
-    const quota = prices[plan].quota;
+    const price = prices[plan].id;
 
-    try {
-      await db.none(
-        'UPDATE owners SET subscription_id = ${id}, plan = ${plan}, quota = ${quota} WHERE customer_id = ${customer}',
-        { ...subscription, plan, quota }
-      );
+    if (type === 'update') {
+      await updateSubscription(subscriptionId, price);
+    }
 
-      if (referrer === 'client') {
-        res.redirect(process.env.CLIENT + 'account');
-      } else {
-        res.redirect('/login');
-      }
-    } catch (err) {
-      error(err);
+    await saveToDb(customerId, plan, subscriptionId);
+
+    if (referrer === 'client') {
+      res.redirect(process.env.CLIENT + 'account');
+    } else {
+      res.redirect('/login');
     }
   },
 
-  // retryInvoice: async (req, res) => {
-  //   // Set the default payment method on the customer
-
-  //   try {
-  //     await stripe.paymentMethods.attach(req.body.paymentMethodId, {
-  //       customer: req.body.customerId,
-  //     });
-  //     await stripe.customers.update(req.body.customerId, {
-  //       invoice_settings: {
-  //         default_payment_method: req.body.paymentMethodId,
-  //       },
-  //     });
-  //   } catch (error) {
-  //     // in case card_decline error
-  //     return res
-  //       .status('402')
-  //       .send({ result: { error: { message: error.message } } });
-  //   }
-
-  //   const invoice = await stripe.invoices.retrieve(req.body.invoiceId, {
-  //     expand: ['payment_intent'],
-  //   });
-  //   res.send(invoice);
-  // },
-
-  // upcomingInvoice: async (req, res) => {
-  //   const subscription = await stripe.subscriptions.retrieve(
-  //     req.body.subscriptionId
-  //   );
-
-  //   const invoice = await stripe.invoices.retrieveUpcoming({
-  //     subscription_prorate: true,
-  //     customer: req.body.customerId,
-  //     subscription: req.body.subscriptionId,
-  //     subscription_items: [
-  //       {
-  //         id: subscription.items.data[0].id,
-  //         deleted: true,
-  //       },
-  //       {
-  //         price: process.env[req.body.newPriceId],
-  //         deleted: false,
-  //       },
-  //     ],
-  //   });
-  //   res.send(invoice);
-  // },
-
-  cancelSubscription: async (req, res) => {
-    const customer = await db.one(
-      'SELECT customer_id, subscription_id FROM owners WHERE owner_id = ${ownerId}',
-      { ownerId: req.body.ownerId }
-    );
-    try {
-      // Delete the subscription
-      const deletedSubscription = await stripe.subscriptions.del(
-        customer.subscriptionId
-      );
-
-      savePlanToDb(deletedSubscription.customer, 'basic')
-        ? res.status(200).end()
-        : res.status(500).end();
-
-      res.send({ subCancelled: true, msg: 'none' });
-    } catch (err) {
-      console.log('err:', err);
-      if (err.message.toLowerCase().includes('no such subscription')) {
-        res.send({ subCancelled: false, msg: err.message });
-      }
-    }
-  },
-
+  // Retrieves subscription from Stripe, updates it with new plan, calls saveToDb()
   updateSubscription: async function (req, res) {
-    const { ownerId } = req.body;
-    const newPlan = lowercaseFirstLetter(req.body.newPlan);
+    const { ownerId, newPlan } = req.body;
     const newPriceId = prices[newPlan].id;
-    console.log('ownerId:', ownerId);
+
     const {
       customerId,
       subscriptionId,
@@ -306,44 +175,17 @@ module.exports = {
       'SELECT customer_id, subscription_id FROM owners WHERE owner_id = ${ownerId}',
       { ownerId }
     );
-    console.log('customerId:', customerId);
-    console.log('subscriptionId:', subscriptionId);
-    console.log('newPlan:', newPlan);
-    const subscription = await stripe.subscriptions.retrieve(subscriptionId);
-
-    // if (newPlan.includes('premium')) {
-    //   res.locals.customerId = customerId;
-    //   const session = await module.exports.createCheckoutSession(req, res);
-
-    //   const result = await stripe.redirectToCheckout({
-    //     // sessionId: session.json().id,
-    //     sessionId: session.id,
-    //     clientReferenceId: customerId,
-    //   });
-    //   if (result.error) {
-    //     res.status(500).end();
-    //   }
-    // }
 
     try {
-      const updatedSubscription = await stripe.subscriptions.update(
+      const updatedSubscription = updateSubscription(
         subscriptionId,
-        {
-          cancel_at_period_end: false,
-          items: [
-            {
-              id: subscription.items.data[0].id,
-              price: newPriceId,
-            },
-          ],
-        }
+        newPriceId
       );
-      console.log('updatedSubscription:', updatedSubscription);
+
       if (updatedSubscription) {
-        const savedToDb = savePlanToDb(customerId, newPlan, subscriptionId);
-        if (savedToDb) {
-          res.send({ subUpdated: true, msg: 'none' });
-        }
+        saveToDb(customerId, newPlan, subscriptionId)
+          ? res.send({ subUpdated: true, msg: 'none' })
+          : res.send({ subUpdated: false, msg: 'none' });
       }
     } catch (err) {
       console.error('err:', err);
@@ -353,8 +195,8 @@ module.exports = {
     }
   },
 
+  // Retrieves plan name, card brand, and last four digits and sends to client
   retrievePaymentMethod: async (req, res) => {
-    // Retrieves plan name, card brand, and last four digits and sends to client
     const customer = await db.one(
       'SELECT customer_id, plan FROM owners WHERE owner_id = ${ownerId}',
       { ownerId: req.body.ownerId }
@@ -379,6 +221,7 @@ module.exports = {
     res.send(planDetails);
   },
 
+  // Event listeners for Stripe events
   stripeWebhook: async (req, res) => {
     // Retrieve the event by verifying the signature using the raw body and secret.
     let event;
@@ -399,37 +242,17 @@ module.exports = {
     }
     // Extract the object from the event.
     const dataObject = event.data.object;
+    console.log('dataObject:', dataObject);
 
     // Handle the event
-    // Review important events for Billing webhooks
-    // https://stripe.com/docs/billing/webhooks
-    // Remove comment to see the various objects sent for this sample
     switch (event.type) {
       case 'checkout.session.completed':
-        const session = await stripe.checkout.sessions.retrieve(
-          event.data.object.id,
-          { expand: ['setup_intent'] }
-        );
-        console.log('sessionX:', session);
-        const {
-          customer,
-          metadata,
-          payment_method,
-        } = await stripe.customers.update(session.customer, {
-          invoice_settings: {
-            default_payment_method: session.setup_intent.payment_method,
-          },
-        });
-        break;
-      case 'account.updated':
-        console.log('event:', event);
-        break;
-      case 'invoice.paid':
-        // Used to provision services after the trial has ended.
-        // The status of the invoice will show up as paid. Store the status in your
-        // database to reference when a user accesses your service to avoid hitting rate limits.
+        await saveDefaultPaymentMethod(dataObject.id);
         break;
       case 'invoice.payment_failed':
+        await db.one(
+          "UPDATE owners SET payment_status = 'failed' WHERE owner_id"
+        );
         // If the payment fails or the customer does not have a valid payment method,
         //  an invoice.payment_failed event is sent, the subscription becomes past_due.
         // Use this webhook to notify your user that their payment has
@@ -459,11 +282,36 @@ module.exports = {
   },
 };
 
-async function savePlanToDb(customerId, plan, subscriptionId) {
+async function createSubscription(customerId, plan) {
+  const priceId = prices[plan].id;
+
+  return await stripe.subscriptions.create({
+    customer: customerId,
+    items: [{ price: priceId }],
+  });
+}
+
+async function updateSubscription(subscriptionId, price) {
+  const subscription = await stripe.subscriptions.retrieve(subscriptionId);
+  
+  return await stripe.subscriptions.update(subscriptionId, {
+    cancel_at_period_end: false,
+    items: [
+      {
+        id: subscription.items.data[0].id,
+        price,
+      },
+    ],
+  });
+}
+
+// Save new plan, quota, and subscriptionId to DB
+async function saveToDb(customerId, plan, subscriptionId) {
   const quota = prices[plan].quota;
   const values = { customerId, plan, quota };
+  
   if (subscriptionId) values.subscriptionId = subscriptionId;
-
+  
   try {
     await db.one(
       'UPDATE owners SET plan = ${plan}, quota = ${quota}, subscription_id = ${subscriptionId} WHERE customer_id = ${customerId} RETURNING owner_id, plan',
@@ -475,16 +323,24 @@ async function savePlanToDb(customerId, plan, subscriptionId) {
   }
 }
 
-// async function saveSubscriptionToDb(customerId, subscriptionId) {
-//   await db.one(
-//     'UPDATE owners SET subscription_id = ${subscriptionId} WHERE customer_id = ${customerId} RETURNING owner_id, subscription_id',
-//     { customerId, subscriptionId }
-//   );
-// }
+// Save customer default payment method
+async function saveDefaultPaymentMethod(sessionId) {
+  const session = await stripe.checkout.sessions.retrieve(sessionId, {
+    expand: ['setup_intent', 'customer'],
+  });
+
+  if (session.customer.default_source) return;
+
+  const { customer, metadata, payment_method } = await stripe.customers.update(
+    session.customer.id,
+    {
+      invoice_settings: {
+        default_payment_method: session.setup_intent.payment_method,
+      },
+    }
+  );
+}
 
 function capitalizeFirstLetter(string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
-}
-function lowercaseFirstLetter(string) {
-  return string.charAt(0).toLowerCase() + string.slice(1);
 }

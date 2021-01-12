@@ -1,19 +1,14 @@
 const express = require('express');
 const router = express.Router();
-const bodyParser = require('body-parser');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 const paymentController = require('./paymentController');
 
-router.get('/test-create-customer', (req, res) => {
-  res.render('payment');
-});
-
-router.get('/config', async (req, res) => {
-  res.send({
-    publishableKey: process.env.STRIPE_PUBLISHABLE_KEY,
-  });
-});
+// router.get('/config', async (req, res) => {
+//   res.send({
+//     publishableKey: process.env.STRIPE_PUBLISHABLE_KEY,
+//   });
+// });
 // router.get('/checkout', (req, res) => {
 //   res.render('payment', { planSelected: req.body.planSelected });
 // });
@@ -43,9 +38,7 @@ router.post('/charge', (req, res) => {
   }
 });
 
-router.post('/create-customer', paymentController.createCustomer);
-
-// router.post('/create-subscription', paymentController.createSubscription);
+// router.post('/create-customer', paymentController.createCustomer);
 
 router.post(
   '/create-checkout-session',
@@ -58,7 +51,7 @@ router.get('/finalize-checkout', paymentController.finalizeCheckout);
 
 // router.post('/retrieve-upcoming-invoice', paymentController.upcomingInvoice);
 
-router.post('/cancel-subscription', paymentController.cancelSubscription);
+// router.post('/cancel-subscription', paymentController.cancelSubscription);
 
 router.post('/update-subscription', paymentController.updateSubscription);
 
@@ -70,7 +63,6 @@ router.post(
 // Webhook handler for asynchronous events.
 router.post(
   '/stripe-webhook',
-  // bodyParser.raw({ type: 'application/json' }),
   paymentController.stripeWebhook
 );
 

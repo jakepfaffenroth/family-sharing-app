@@ -220,8 +220,6 @@ module.exports.DELETE_ACCOUNT = async (req, res) => {
     blank: '###',
   };
 
-  // const cs = new pgp.helpers.ColumnSet();
-
   const ownerQuery =
     'UPDATE owners SET username = gen_random_uuid(), first_name = ${blank}, last_name = ${blank}, email = ${blank}, password = ${blank}, deleted = current_timestamp, is_active = FALSE WHERE owner_id = ${ownerId} RETURNING *';
 
@@ -234,18 +232,28 @@ module.exports.DELETE_ACCOUNT = async (req, res) => {
   const subscriberQuery =
     "UPDATE subscribers SET email = ${blank}, browser = '{}'::jsonb, first_name = ${blank}, last_name = ${blank} WHERE guest_id = (SELECT guest_id FROM owners WHERE owner_id = ${ownerId}) RETURNING *";
 
-  const query = [ownerQuery, imagesQuery, albumQuery, subscriberQuery].join(
-    '; '
-  );
-  // const update = pgpHelpers.update()
+  // const query = [ownerQuery, imagesQuery, albumQuery, subscriberQuery].join(
+  //   '; '
+  // );
 
-  // const anonOwner = new PQ({
-  //   text: query,
-  //   values: values,
-  // });
-  // console.log('anonOwner:', anonOwner);
+  // const result = await db.any(query, values);
+  const [owner] = await db.tx(async (tx) => {
+    const queries = [
+      tx.one(ownerQuery, values),
+      tx.any(imagesQuery, values),
+      tx.any(albumQuery, values),
+      tx.any(subscriberQuery, values),
+    ];
 
-  const result = await db.any(query, values);
-  console.log('result:', result);
+    return Promise.all(queries);
+  });
+  console.log('owner:', owner);
+  try {
+    const deleted = await stripe.customers.del(owner.customerId);
+    console.log('deleted:', deleted);
+  } catch (err) {
+    console.error(err);
+  }
+
   res.status(200).end();
 };

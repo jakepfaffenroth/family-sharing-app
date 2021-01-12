@@ -93,20 +93,25 @@ export default {
           ownerId: owner.value.ownerId,
           plan: newPlan,
           referrer: 'client',
-          type: planDetails.value.paymentMethodOnFile ? 'update' : 'new'
+          type: 'update' // creates session using setup mode
         })
       ).data;
 
-      let result;
+      let updateResult;
+
       if (
         newPlan.includes('premium') &&
         !planDetails.value.paymentMethodOnFile
       ) {
-        result = await stripe.redirectToCheckout({
+        const checkoutResult = await stripe.redirectToCheckout({
           sessionId: session.id
         });
+        if (checkoutResult.error) {
+          toast.error('An error occurred. Try again later.');
+          console.error(checkoutResult.error);
+        }
       } else {
-        result = (
+        updateResult = (
           await axios.post(server + '/payment/update-subscription', {
             ownerId: owner.value.ownerId,
             newPlan,
@@ -114,39 +119,10 @@ export default {
           })
         ).data;
       }
-      // newPlan.includes('basic') || session.customer.default_source
-      //   ? await axios.post(server + '/payment/update-subscription', {
-      //       ownerId: owner.value.ownerId,
-      //       newPlan
-      //     })
-      //   : await stripe.redirectToCheckout({
-      //       sessionId: session.id
-      //     });
-      console.log('result:', result);
-      // const { data } = await axios.post(
-      //   server + '/payment/update-subscription',
-      //   {
-      //     ownerId: owner.value.ownerId,
-      //     newPlan,
-      //     referrer: 'client'
-      //   }
-      // );
-      //   data = response.data;
-      // } else if (newPlan.includes('premium')) {
-      //   const response = await axios.post(
-      //     server + '/payment/create-checkout-session',
-      //     {
-      //       ownerId: owner.value.ownerId,
-      //       plan: newPlan,
-      //       source: 'client'
-      //     }
-      //   );
-      //   data = response.data;
-      // }
-      // console.log('data:', data);
+
       if (
-        !result.subUpdated &&
-        result.msg.toLowerCase().includes('no such subscription')
+        !updateResult.subUpdated &&
+        updateResult.msg.toLowerCase().includes('no such subscription')
       ) {
         toast.open({
           type: 'error',
@@ -155,7 +131,7 @@ export default {
           message:
             'Your subscription was not found. Please contact support or try again.'
         });
-      } else if (!result.subUpdated) {
+      } else if (!updateResult.subUpdated) {
         toast.open({
           type: 'error',
           duration: 0,
@@ -165,10 +141,9 @@ export default {
         });
       }
 
-      if (result.subUpdated) {
+      if (updateResult.subUpdated) {
         store.dispatch('getPlanDetails');
         store.commit('updatePlanDetails');
-        // store.dispatch('updateQuota', data.quota)
         closePlanChange();
 
         toast.open({
@@ -178,67 +153,14 @@ export default {
           message: 'Subscription updated to ' + newPlan
         });
       }
-      return result;
+      return updateResult;
     }
-
-    // async function cancelSubscription() {
-    //   const response = await axios(
-    //     process.env.VUE_APP_SERVER + '/payment/cancel-subscription',
-    //     {
-    //       method: 'post',
-    //       headers: {
-    //         'Content-Type': 'application/json'
-    //       },
-    //       data: JSON.stringify({
-    //         ownerId: owner.value.ownerId
-    //       })
-    //     }
-    //   );
-    //   const data = response.data;
-    //   if (
-    //     !data.subCancelled &&
-    //     data.msg.toLowerCase().includes('no such subscription')
-    //   ) {
-    //     toast.open({
-    //       type: 'error',
-    //       duration: 0,
-    //       dismissible: true,
-    //       message:
-    //         'Your subscription was not found. Please contact support or try again.'
-    //     });
-    //     // document.getElementById('toast-message').innerText =
-    //     //   'Your subscription was not found. Please contact support or try again.';
-    //   } else if (!data.subCancelled) {
-    //     toast.open({
-    //       type: 'error',
-    //       duration: 0,
-    //       dismissible: true,
-    //       message:
-    //         'Your subscription could not be cancelled right now.\nPlease contact support or try again.'
-    //     });
-    //     // document.getElementById('msg-text').innerText =
-    //     //   'Your subscription could not be cancelled right now.\nPlease contact support or try again.';
-    //   }
-    //   if (data.subCancelled) {
-    //     toast.open({
-    //       type: 'success',
-    //       duration: 5000,
-    //       // dismissible: true,
-    //       message: 'Subscription cancelled\n' + response
-    //     });
-    //     // document.getElementById('msg-text').innerText =
-    //     //   'Subscription cancelled\n' + response;
-    //     // subscriptionCancelled(response);
-    //   }
-    // }
 
     return {
       accountView,
       openPlanChange,
       closePlanChange,
       confirmPlanChange,
-      // cancelSubscription,
-      // elementClasses,
       planDetails
     };
   }
