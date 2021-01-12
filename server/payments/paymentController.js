@@ -1,19 +1,10 @@
 const db = require('../db').pgPromise;
-
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 if (
   !process.env.STRIPE_SECRET_KEY ||
   !process.env.STRIPE_PUBLISHABLE_KEY ||
-  !process.env.PREMIUM_MO ||
-  !process.env.PREMIUM_YR ||
-  !process.env.PREMIUM_PLUS_MO ||
-  !process.env.PREMIUM_PLUS_YR
-  // !process.env.STATIC_DIR
 ) {
-  console.log(
-    'The .env file is not configured. Follow the instructions in the readme to configure the .env file. https://github.com/stripe-samples/subscription-use-cases'
-  );
   console.log('');
   process.env.STRIPE_SECRET_KEY
     ? ''
@@ -22,34 +13,6 @@ if (
   process.env.STRIPE_PUBLISHABLE_KEY
     ? ''
     : console.log('Add STRIPE_PUBLISHABLE_KEY to your .env file.');
-
-  process.env.PREMIUM_MO
-    ? ''
-    : console.log(
-        'Add PREMIUM_MO priceID to your .env file. See repo readme for setup instructions.'
-      );
-  process.env.PREMIUM_YR
-    ? ''
-    : console.log(
-        'Add PREMIUM_YR priceID to your .env file. See repo readme for setup instructions.'
-      );
-
-  process.env.PREMIUM_PLUS_MO
-    ? ''
-    : console.log(
-        'Add PREMIUM_PLUS_MO priceID to your .env file. See repo readme for setup instructions.'
-      );
-  process.env.PREMIUM_PLUS_YR
-    ? ''
-    : console.log(
-        'Add PREMIUM_PLUS_YR priceID to your .env file. See repo readme for setup instructions.'
-      );
-
-  // process.env.STATIC_DIR
-  //   ? ''
-  //   : console.log(
-  //       'Add STATIC_DIR to your .env file. Check .env.example in the root folder for an example'
-  //     );
 
   process.exit();
 }
@@ -298,7 +261,6 @@ async function createSubscription(customerId, plan) {
 }
 
 async function updateSubscription(subscriptionId, price) {
-  console.log('***** subscriptionId:', subscriptionId);
   const subscription = await stripe.subscriptions.retrieve(subscriptionId);
 
   return await stripe.subscriptions.update(subscriptionId, {

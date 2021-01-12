@@ -173,48 +173,7 @@
                 </base-button-red>
               </div>
             </div>
-            <!-- <div class="space-y-1">
-              <div class="space-y-1 text-gray-900 font-semibold text-xl">
-                <div
-                  class="setting flex justify-between mt-2 mb-2 cursor-pointer"
-                  data-test="changePlanBtn"
-                  @click="$emit('open-plan-change')"
-                >
-                  <span>
-                    Change plan
-                    <span>→</span>
-                  </span>
-                </div>
-                <div
-                  class="setting flex justify-between cursor-pointer"
-                  @click="updateBilling"
-                >
-                  <span>
-                    Update billing
-                    <span>→</span>
-                  </span>
-                </div>
-                <div
-                  class="setting flex justify-between mt-2 mb-2 cursor-pointer"
-                  @click="deleteAccount"
-                >
-                  <span>
-                    Delete account
-                    <span>→</span>
-                  </span>
-                </div>
-              </div>
-            </div> -->
           </div>
-          <!-- <div
-              class="flex justify-between mt-2 mb-2 text-gray-900 font-bold text-xl cursor-pointer"
-              @click="cancelSubscription"
-            >
-              <span>
-                Cancel subscription
-                <span>→</span>
-              </span>
-            </div> -->
         </div>
       </div>
     </div>
@@ -266,7 +225,6 @@ export default {
       }
     }
 
-    // TODO - Add update billing functionality
     async function updateBilling() {
       toast.open({
         type: 'info',
@@ -288,59 +246,9 @@ export default {
       });
     }
 
-    // TODO - Add delete account functionality
     async function deleteAccount() {
       visibleModal.value = 'DeleteAccountModal';
     }
-
-    // async function cancelSubscription() {
-    //   const response = await axios(
-    //     process.env.VUE_APP_SERVER + '/payment/cancel-subscription',
-    //     {
-    //       method: 'post',
-    //       headers: {
-    //         'Content-Type': 'application/json'
-    //       },
-    //       data: JSON.stringify({
-    //         ownerId: owner.value.ownerId
-    //       })
-    //     }
-    //   );
-
-    //   const data = response.data;
-    //   if (
-    //     !data.subCancelled &&
-    //     data.msg.toLowerCase().includes('no such subscription')
-    //   ) {
-    //     toast.open({
-    //       type: 'error',
-    //       duration: 0,
-    //       dismissible: true,
-    //       message: '<div id="toast-message"><p id="msg-text"></p></div>'
-    //     });
-    //     document.getElementById('toast-message').innerText =
-    //       'Your subscription was not found. Please contact support or try again.';
-    //   } else if (!data.subCancelled) {
-    //     toast.open({
-    //       type: 'error',
-    //       duration: 0,
-    //       dismissible: true,
-    //       message: '<div id="toast-message"><p id="msg-text"></p></div>'
-    //     });
-    //     document.getElementById('msg-text').innerText =
-    //       'Your subscription could not be cancelled right now.\nPlease contact support or try again.';
-    //   }
-    //   if (data.subCancelled) {
-    //     toast.open({
-    //       type: 'success',
-    //       duration: 5000,
-    //       // dismissible: true,
-    //       message: '<div id="toast-message"><p id="msg-text"></p></div>'
-    //     });
-    //     document.getElementById('msg-text').innerText =
-    //       'Subscription cancelled\n' + response;
-    //   }
-    // }
 
     return {
       owner,
@@ -355,7 +263,6 @@ export default {
       deleteAccount,
       visibleModal,
       ENABLED: false
-      // cancelSubscription
     };
   }
 };

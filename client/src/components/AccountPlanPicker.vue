@@ -19,25 +19,6 @@
             :class="showChangeConfirmation"
           >
             <div class="p-4">
-              <!-- <h3 class="pb-2 font-bold text-lg">
-                Are you sure you want to change plans?
-              </h3>
-              <p>
-                You will switch to the
-                <span
-                  :class="
-                    newPlan.toLowerCase().includes('premium')
-                      ? 'font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-teal-400 to-orange-400 via-purple-400'
-                      : 'font-semibold text-teal-400'
-                  "
-                >
-                  {{ capitalizedPlanName }}
-                </span>
-                plan immediately.
-              </p>
-              <p>
-                Your bill will be prorated accordingly.
-              </p> -->
               <h3 class="pb-2 font-bold text-lg">
                 Ready to switch to
                 <span
@@ -57,7 +38,7 @@
                 {{ newPlan.paymentSchedule[1].toLowerCase() }}
               </p>
               <p>
-                Your bill will be prorated.
+                You plan will change immediately and your next bill will be prorated.
               </p>
               <p
                 v-if="
@@ -232,8 +213,6 @@ export default {
     );
 
     function showConfirmation(plan) {
-      // showChangeConfirmation.value += 'block';
-      console.log('plan:', plan);
       newPlan.value = plans.find(x => x.name === plan);
 
       if (plan.includes('basic')) {

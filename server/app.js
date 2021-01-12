@@ -21,33 +21,6 @@ const fileRouter = require('./fileHandler/fileRouter');
 const albumRouter = require('./fileHandler/albumRouter');
 const paymentRouter = require('./payments/paymentRouter');
 
-// const pino = require('express-pino-logger')({
-//   logger: logger,
-//   autoLogging: false,
-//   customLogLevel: function (res, err) {
-//     if (res.statusCode >= 400 && res.statusCode < 500) {
-//       return 'warn';
-//     } else if (res.statusCode >= 500 || err) {
-//       return 'error';
-//     }
-//     return 'info';
-//   },
-//   // Define a custom success message
-//   customSuccessMessage: function (res) {
-//     if (res.statusCode === 404) {
-//       return 'resource not found';
-//     }
-//     return 'request completed';
-//   },
-
-//   // Define a custom error message
-//   customErrorMessage: function (error, res) {
-//     return 'request errored with status code: ' + res.statusCode;
-//   },
-// });
-// // var pino = require('express-pino-logger')({ logger });
-// app.use(pino);
-
 app.use((req, res, next) => {
   function makeHttpLog(statusCode) {
     const statusColor =
@@ -56,10 +29,9 @@ app.use((req, res, next) => {
         : '\033[38;2;255;97;136m';
     return `t ${req.method} ${req.url} ${statusColor}${res.statusCode}`;
   }
-  // console.log('req:', req);
-  // logger.info(makeHttpLog(res.statusCode));
   next();
 });
+// Use JSON parser for all non-webhook routes
 app.use((req, res, next) => {
   if (req.originalUrl === '/payment/stripe-webhook') {
     bodyParser.raw({ type: '*/*' })(req, res, next);
@@ -69,7 +41,6 @@ app.use((req, res, next) => {
 });
 app.use(compression());
 app.use(cors());
-// Use JSON parser for all non-webhook routes
 
 const ws = require('ws');
 const wsConfig = {
@@ -173,7 +144,6 @@ app.use(
   )
 );
 app.use(express.json());
-// app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json({ limit: '50mb' }));
@@ -184,12 +154,6 @@ app.use(
 //add routes
 app.use(
   '/',
-  // (req, res, next) => {
-  //   pino(req, res)
-  //   // logger.info(`${req.method}`);
-  //   req.log.info();
-  //   next();
-  // },
   indexRouter
 );
 app.use('/user', userRouter);

@@ -118,10 +118,5 @@ for (const key in queues) {
       file: job.data.image,
       ownerId: job.data.ownerId,
     });
-    // job.moveToFailed();
   });
-
-  // queue.whenCurrentJobsFinished().then(() => {
-  //   console.log('~~~~ ALL DONE :) ~~~')
-  // });
 }

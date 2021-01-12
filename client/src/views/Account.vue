@@ -71,13 +71,6 @@ export default {
       }
     });
 
-    // onUpdated(() => {
-    //   console.log('updated');
-    //   if (planDetails.value && planDetails.value.plan === null) {
-    //     openPlanChange();
-    //   } else accountView.value = 'AccountSummary';
-    // });
-
     function openPlanChange() {
       accountView.value = 'AccountPlanPicker';
     }
@@ -149,7 +142,6 @@ export default {
         toast.open({
           type: 'success',
           duration: 5000,
-          // dismissible: true,
           message: 'Subscription updated to ' + newPlan
         });
       }

@@ -51,8 +51,6 @@ router.get('/finalize-checkout', paymentController.finalizeCheckout);
 
 // router.post('/retrieve-upcoming-invoice', paymentController.upcomingInvoice);
 
-// router.post('/cancel-subscription', paymentController.cancelSubscription);
-
 router.post('/update-subscription', paymentController.updateSubscription);
 
 router.post(

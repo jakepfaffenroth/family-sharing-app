@@ -53,7 +53,6 @@ module.exports.create = [
       return true;
     })
     .bail(),
-  //
 
   // Process request after validation and sanitization
 
@@ -97,13 +96,11 @@ module.exports.create = [
           const newOwner = await t.one(
             'INSERT INTO owners (owner_id, username, first_name, last_name, email,password, guest_id, is_active, is_auth, auth_token) VALUES (DEFAULT, ${username}, ${firstName}, ${lastName}, ${email}, ${password}, DEFAULT, TRUE, FALSE, DEFAULT) RETURNING owner_id, username, first_name, last_name, auth_token',
             {
-              // ownerId: uuidv4(),
               username: req.body.username,
               firstName: req.body.firstName,
               lastName: req.body.lastName,
               email: req.body.email,
               password: hashedPassword,
-              // guestId: uuidv4(),
             }
           );
 
@@ -124,12 +121,10 @@ module.exports.create = [
 
         confirmOwnerEmailSender.add({
           owner: { ...owner, email: req.body.email },
-          // res,
         });
         success('User ' + owner.username + ' created');
 
         //Account created; redirect to account completion screen (choose plan)
-        // res.render('/complete-signup' + '?owner=' + owner.ownerId, {name: owner.firstName});
         res.cookie('ownerId', owner.ownerId, {
           maxAge: 1000 * 60 * 60 * 24 * 7,
         });
@@ -142,40 +137,10 @@ module.exports.create = [
           ownerId: owner.id,
           server: process.env.SERVER,
         });
-
-        // Account created; redirect to login screen
-        // res.redirect('/login');
       });
     }
   },
 ];
-// TODO - debug this module
-module.exports.choosePlan = async (req, res) => {
-  const quota = setQuota(req.body.plan);
-  function setQuota(plan) {
-    switch (plan) {
-      case 'basic':
-        return 2000;
-      case 'premium':
-        return 10000;
-      case 'premium plus':
-        return 200000;
-    }
-  }
-
-  const obj = { ...req.body, quota };
-
-  try {
-    const owner = await db.oneOrNone(
-      'UPDATE owners SET plan = ${plan}, quota = ${quota} WHERE owner_id = ${ownerId} RETURNING *',
-      { ...req.body, quota }
-    );
-
-    res.redirect('/login');
-  } catch (err) {
-    error('err:', err);
-  }
-};
 
 // For GUESTS - fetches owner info and images
 module.exports.getOwner = async (req, res) => {
@@ -232,11 +197,6 @@ module.exports.DELETE_ACCOUNT = async (req, res) => {
   const subscriberQuery =
     "UPDATE subscribers SET email = ${blank}, browser = '{}'::jsonb, first_name = ${blank}, last_name = ${blank} WHERE guest_id = (SELECT guest_id FROM owners WHERE owner_id = ${ownerId}) RETURNING *";
 
-  // const query = [ownerQuery, imagesQuery, albumQuery, subscriberQuery].join(
-  //   '; '
-  // );
-
-  // const result = await db.any(query, values);
   const [owner] = await db.tx(async (tx) => {
     const queries = [
       tx.one(ownerQuery, values),

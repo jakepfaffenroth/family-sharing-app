@@ -57,8 +57,6 @@ module.exports.authenticate = (req, res, next) => {
       const response = { owner: owner, b2Credentials: res.locals.credentials };
 
       // Send owner info back to client as JSON
-      // res.status(200).json(response);
-      // return res.redirect(client + '/private-space');
       const ownerId = JSON.stringify(req.session.passport.user.ownerId).replace(
         /"/g,
         ''

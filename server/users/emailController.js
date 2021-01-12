@@ -4,12 +4,6 @@ const { body, validationResult } = require('express-validator');
 const db = require('../db').pgPromise;
 const { encrypt, decrypt } = require('../utils/encryptDecrypt');
 const sendEmail = require('../utils/sendEmail');
-const AWS = require('aws-sdk');
-const credentials = {
-  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-};
-// const ses = new AWS.SES({ credentials: credentials, region: 'us-west-2' });
 
 const sendOwnerConfirmationEmail = async (input) => {
   // Handle form data if coming from invalid link re-subscribe page
@@ -48,27 +42,7 @@ const sendOwnerConfirmationEmail = async (input) => {
 };
 
 const confirmOwnerEmail = async (req, res, next) => {
-  // let ownerInfo = JSON.parse(req.query.owner);
-  // ownerInfo = decrypt(ownerInfo);
   const token = req.query.token;
-  // If decrypt fails (node probably restarted, or other link error) try subscribing again.
-  // if (!ownerInfo) {
-  //   const oId = req.query.id;
-  //   const subscribeLink = `${process.env.SERVER}/user/subscribe-email`;
-  //   return res.status(418).render('verificationError', {
-  //     ownerId: oId,
-  //     subscribeLink: subscribeLink,
-  //   });
-  // }
-
-  // const owner = await db.oneOrNone(
-  //   'SELECT * FROM owners WHERE auth_token = ${token}',
-  //   { token }
-  // );
-
-  // if (owner.email) {
-  //   res.status(200).send('Already confirmed email');
-  // }
 
   const [
     email,
@@ -85,9 +59,6 @@ const confirmOwnerEmail = async (req, res, next) => {
 const sendGuestVerificationEmail = async (data) => {
   let { guest, owner } = data;
   // Handle form data if coming from invalid link re-subscribe page
-  // if (req.body && !req.body.guest) {
-  //   guest = req.body;
-  // }
   if (guest.guest) {
     guest = guest.guest;
   }
@@ -235,21 +206,6 @@ const submitPasswordReset = [
           { ownerId, hashedPassword }
         );
         res.redirect('/login');
-        // bcrypt.compare(
-        //   req.body.password,
-        //   updatedOwner.password,
-        //   (err, result) => {
-        //     if (validationResult) {
-        //       // passwords match! log user in
-        //       verbose('passwords match!');
-        //       return;
-        //     } else {
-        //       verbose('password dont match...');
-        //       // passwords do not match!
-        //       return;
-        //     }
-        //   }
-        // );
       });
     }
   },

@@ -31,19 +31,6 @@ module.exports = async (
       },
     },
   };
-  // //Try to send the email.
-  // ses.sendEmail(params, function (err, data) {
-  //   // If something goes wrong, print an error message.
-  //   if (err) {
-  //     error(err);
-  //     // res.status(500).send(err);
-  //     return false;
-  //   } else {
-  //     success('Email sent');
-  //     // res.status(204).end();
-  //     return true;
-  //   }
-  // });
 
   //Try to send the email.
   let err = null;
