@@ -83,14 +83,13 @@ module.exports = {
       'SELECT customer_id, subscription_id FROM owners WHERE owner_id = $1',
       [ownerId]
     );
-
     const sessionParams = {
       customer: customerId,
       payment_method_types: ['card'],
 
       success_url:
         process.env.SERVER +
-        `/payment/finalize-checkout?sesId={CHECKOUT_SESSION_ID}&cusId=${customerId}&subid=${subscriptionId}&plan=${plan}&referrer=${referrer}&type=${type}`,
+        `/payment/finalize-checkout?sesId={CHECKOUT_SESSION_ID}&cusId=${customerId}&subId=${subscriptionId}&plan=${plan}&referrer=${referrer}&type=${type}`,
       cancel_url: req.get('referrer'),
     };
 
@@ -139,11 +138,16 @@ module.exports = {
     const {
       sesId: sessionId,
       cusId: customerId,
-      subid: subscriptionId,
       plan,
       referrer,
       type,
     } = req.query;
+
+    // Get subId from query; If null, fetch from Stripe API
+    let subscriptionId = req.query.subId;
+    if (!subscriptionId) {
+      subscriptionId = await stripe.checkout.sessions.retrieve(sessionId);
+    }
 
     // Check for a default payment method and if none, save it
     await saveDefaultPaymentMethod(sessionId);
@@ -157,7 +161,7 @@ module.exports = {
     await saveToDb(customerId, plan, subscriptionId);
 
     if (referrer === 'client') {
-      res.redirect(process.env.CLIENT + 'account');
+      res.redirect(process.env.CLIENT + '/account');
     } else {
       res.redirect('/login');
     }
@@ -168,13 +172,15 @@ module.exports = {
     const { ownerId, newPlan } = req.body;
     const newPriceId = prices[newPlan].id;
 
-    const {
-      customerId,
-      subscriptionId,
-    } = await db.one(
+    const owner = await db.one(
       'SELECT customer_id, subscription_id FROM owners WHERE owner_id = ${ownerId}',
       { ownerId }
     );
+
+    const customerId = owner.customerId;
+    const subscriptionId =
+      owner.subscriptionId ||
+      (await stripe.checkout.sessions.retrieve(sessionId)).subscription;
 
     try {
       const updatedSubscription = updateSubscription(
@@ -292,8 +298,9 @@ async function createSubscription(customerId, plan) {
 }
 
 async function updateSubscription(subscriptionId, price) {
+  console.log('***** subscriptionId:', subscriptionId);
   const subscription = await stripe.subscriptions.retrieve(subscriptionId);
-  
+
   return await stripe.subscriptions.update(subscriptionId, {
     cancel_at_period_end: false,
     items: [
@@ -309,9 +316,9 @@ async function updateSubscription(subscriptionId, price) {
 async function saveToDb(customerId, plan, subscriptionId) {
   const quota = prices[plan].quota;
   const values = { customerId, plan, quota };
-  
+
   if (subscriptionId) values.subscriptionId = subscriptionId;
-  
+
   try {
     await db.one(
       'UPDATE owners SET plan = ${plan}, quota = ${quota}, subscription_id = ${subscriptionId} WHERE customer_id = ${customerId} RETURNING owner_id, plan',
@@ -326,16 +333,26 @@ async function saveToDb(customerId, plan, subscriptionId) {
 // Save customer default payment method
 async function saveDefaultPaymentMethod(sessionId) {
   const session = await stripe.checkout.sessions.retrieve(sessionId, {
-    expand: ['setup_intent', 'customer'],
+    expand: ['setup_intent', 'customer', 'subscription'],
   });
 
   if (session.customer.default_source) return;
+
+  let paymentMethod;
+
+  if (session.setup_intent) {
+    paymentMethod = session.setup_intent.payment_method;
+  } else if (session.subscription) {
+    paymentMethod =
+      session.subscription.default_payment_method ||
+      session.subscription.default_source;
+  }
 
   const { customer, metadata, payment_method } = await stripe.customers.update(
     session.customer.id,
     {
       invoice_settings: {
-        default_payment_method: session.setup_intent.payment_method,
+        default_payment_method: paymentMethod,
       },
     }
   );
