@@ -1,10 +1,7 @@
 const db = require('../db').pgPromise;
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
-if (
-  !process.env.STRIPE_SECRET_KEY ||
-  !process.env.STRIPE_PUBLISHABLE_KEY ||
-) {
+if (!process.env.STRIPE_SECRET_KEY || !process.env.STRIPE_PUBLISHABLE_KEY) {
   console.log('');
   process.env.STRIPE_SECRET_KEY
     ? ''
