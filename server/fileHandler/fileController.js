@@ -193,23 +193,24 @@ module.exports.deleteImage = async (req, res, next) => {
   }
 };
 
-module.exports.getUsage = async (req, res) => {
-  const files = await this.listFiles(req, res);
-  let totalStorageUsed = files.reduce(
-    (accumulator, currentValue) => accumulator + currentValue.contentLength,
-    0
-  );
+// UNUSED - calculating on client instead
+// module.exports.getUsage = async (req, res) => {
+//   const files = await this.listFiles(req, res);
+//   let totalStorageUsed = files.reduce(
+//     (accumulator, currentValue) => accumulator + currentValue.contentLength,
+//     0
+//   );
 
-  let kilobytes = parseFloat((totalStorageUsed / 1024).toFixed(2));
-  let megabytes = parseFloat((kilobytes / 1024).toFixed(2));
-  let gigabytes = parseFloat((megabytes / 1024).toFixed(2));
+//   let kilobytes = parseFloat((totalStorageUsed / 1024).toFixed(2));
+//   let megabytes = parseFloat((kilobytes / 1024).toFixed(2));
+//   let gigabytes = parseFloat((megabytes / 1024).toFixed(2));
 
-  res.json({
-    kb: kilobytes,
-    mb: megabytes,
-    gb: gigabytes,
-  });
-};
+//   res.json({
+//     kb: kilobytes,
+//     mb: megabytes,
+//     gb: gigabytes,
+//   });
+// };
 
 module.exports.addToAlbums = async (req, res) => {
   const newPairs = req.body.imgAlbumPairs;

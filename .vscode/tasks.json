@@ -83,7 +83,7 @@
       "options": {
         "cwd": "${workspaceFolder}/server"
       }
-    }
+    },
   ],
   "inputs": [
     {

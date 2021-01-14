@@ -1,90 +1,16 @@
-<div
-  class="flex flex-col items-center xl:mx-24 h-full pt-12 px-4 sm:px-6 lg:px-8 space-y-4"
+<main
+  class="flex flex-col items-center xl:mx-24 h-full mt-8 mb-20 px-4 sm:px-6 lg:px-8 space-y-4"
 >
   {{> colorfulLogo}}
   <h2 class="text-2xl font-bold">Welcome{{#if name}}, {{name}}{{/if}}!</h2>
   <h2 class="text-xl font-semibold">Complete your account</h2>
+
   {{> pricingComponent btnText="Select"}}
-</div>
+</main>
+<button onClick="console.log(document.cookie);">Print</button>
 {{> modal}}
-<!-- Subscribe to Basic Modal -->
-<div id="Xbasic-modal" class="transition-all duration-200 ease-in z-50">
-  {{> modal }}
-</div>
 
-<!-- Payment modal -->
-<div id="Xpayment-modal" class="transition-all duration-200 ease-in z-50">
-  {{> modal }}
-</div>
-<div
-  id="Xpayment-modal"
-  class="okToClose fixed inset-0 items-center justify-center bg-black bg-opacity-50 z-50 hidden"
->
-  <div
-    id="modal-box"
-    class="flex flex-col w-full max-w-2xl m-1 sm:m-10 px-4 py-3 sm:px-6 sm:py-4 rounded-lg shadow-lg bg-gray-800 z-50"
-    role="dialog"
-  >
-    <!-- header -->
-    <div class="mb-4 text-white text-xl font-bold">
-      Enter your card details.
-      <br />
-      Your subscription will start now.
-    </div>
-    <!-- body -->
-    <div class="flex-shrink mb-4 w-full text-white">
-      <p>
-        → Total due now
-        <span id="total-due-now">$0.00</span>
-        <span class="italic">
-          billed
-          <span id="subscription-term"></span>
-        </span>
-      </p>
-      <p id="price-selected" class="mb-4"></p>
-      <div class="flex flex-wrap -mx-3 mb-2">
-        <div class="w-full px-3 md:mb-0">
-          <label class="block uppercase tracking-wide text-xs font-bold mb-2">
-            Full name
-          </label>
-          <input
-            class="appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue focus:border-blue-300 focus:z-10 sm:text-sm sm:leading-5"
-            id="name"
-            type="text"
-            placeholder="First and last name"
-            required
-          />
-        </div>
-      </div>
-      <form>
-        <div class="flex flex-wrap -mx-3 mb-3">
-          <div class="w-full px-3 md:mb-0">
-            <label class="block uppercase tracking-wide text-xs font-bold mb-2">
-              Card
-            </label>
-            <div
-              id="card-element"
-              class="appearance-none relative block w-full px-3 py-2 bg-white border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue focus:border-blue-300 focus:z-10 sm:text-sm sm:leading-5"
-            ></div>
-            <div
-              id="card-element-errors"
-              class="text-gray-700 text-base mt-2"
-              role="alert"
-            ></div>
-          </div>
-        </div>
-        <div class="flex justify-between sm:justify-end space-x-6">
-          {{> buttonCancel}} {{> buttonPurple label="Subscribe"}}
-        </div>
-      </form>
-    </div>
-  </div>
-</div>
-
-<!-- Success Modal -->
-<div id="Xsuccess-modal" class="transition-all duration-200 ease-in z-50">
-  {{> modal header="Payment successful" text="Thank you for subscribing!
-  Continue to log in." btnText="Log in"}}
-</div>
+<!-- hidden data -->
+<div id="hiddenData" data-server="{{server}}" class="hidden"></div>
 
 <script src="/javascripts/subscriptions.js" defer></script>

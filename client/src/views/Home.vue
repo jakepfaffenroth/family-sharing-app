@@ -24,16 +24,21 @@
         @set-active-gallery="activeGallery = $event"
       ></actions-bar>
     </header>
-
+    <!-- <iframe
+      v-if="finishSignup"
+      class="Q w-full h-full md:pt-6 py-2 px-1 sm:px-3 sm:py-4 md:px-4 lg:px-6 xl:pt-8 xl:px-8 xl:pb-6"
+      :class="userType === 'owner' ? 'mt-28' : 'mt-32'"
+      :src="server + '/complete-signup'"
+    ></iframe> -->
     <main
       class="flex flex-grow md:pt-6 py-2 px-1 sm:px-3 sm:py-4 md:px-4 lg:px-6 xl:pt-8 xl:px-8 xl:pb-6"
       :class="userType === 'owner' ? 'mt-28' : 'mt-32'"
     >
-      <loading-text v-if="view.ownerLoading" />
+      <loading-text v-if="view.ownerLoading || !owner.plan" />
       <!-- Image gallery -->
       <transition appear name="album" mode="out-in">
         <home-gallery
-          v-if="view.ownerLoading || filteredImages.length"
+          v-if="view.ownerLoading || !owner.plan || filteredImages.length"
           :key="activeGallery"
           :data-test="'albumGallery-' + activeGallery"
           :user-type="userType"
@@ -345,7 +350,7 @@ export default {
           `Deletion error: ${response.status} - ${response.statusText}`
         );
       }
-      store.dispatch('getUsageData', { ownerId: owner.value.ownerId });
+      // store.dispatch('getUsageData', { ownerId: owner.value.ownerId });
     };
 
     // Nuke images for dev purposes OR ACCOUNT DELETION
@@ -364,7 +369,7 @@ export default {
           `Nuking error: ${response.status} - ${response.statusText}`
         );
       }
-      store.dispatch('getUsageData', { ownerId: owner.value.ownerId });
+      // store.dispatch('getUsageData', { ownerId: owner.value.ownerId });
     };
     provide('NUKE', NUKE);
 
@@ -382,7 +387,9 @@ export default {
       imgInfo,
       forceUppyReloadKey,
       downloadZip,
-      view
+      view,
+      finishSignup: inject('finishSignup'),
+      server
     };
   }
 };

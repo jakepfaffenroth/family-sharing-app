@@ -78,9 +78,9 @@ export default {
       });
       if (response.status == 200) {
         this.$store.dispatch('updateImages', response.data);
-        this.$store.dispatch('getUsageData', {
-          ownerId: this.$store.getters.ownerId
-        });
+        // this.$store.dispatch('getUsageData', {
+        //   ownerId: this.$store.getters.ownerId
+        // });
 
         this.toast.open({
           type: 'success',

@@ -369,7 +369,7 @@ export default {
 };
 </script>
 
-<style scoped>
+<style >
 .main-menu-link {
   @apply block px-4 py-2 text-sm rounded cursor-pointer text-gray-800 hover:bg-purple-500 hover:text-white transition;
 }

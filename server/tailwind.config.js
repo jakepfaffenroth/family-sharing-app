@@ -39,7 +39,13 @@ module.exports = {
       },
     },
   },
-  variants: {},
+  variants: {
+    extend: {
+      translate: ['group-hover'],
+      fontWeight: ['group-hover'],
+      backgroundImage: ['hover', 'group-hover'],
+    },
+  },
   plugins: [require('@tailwindcss/custom-forms')],
   // experimental: 'all',
 };

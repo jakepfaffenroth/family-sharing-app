@@ -9,8 +9,10 @@ export default {
     premiumUser: (state, getters, rootState) =>
       rootState.ownerStore.owner.premiumUser,
     planDetails: state => state.planDetails,
+    usage: (state, getters) => getters.allImages.length,
     storagePercentage: (state, getters, rootState) => {
-      return (state.usage.mb / rootState.ownerStore.owner.quota) * 100;
+      // return (state.usage.mb / rootState.ownerStore.owner.quota) * 100;
+      return (getters.usage / getters.quota) * 100;
     },
     usageValue: state => {
       if (state.usage.gb >= 1)
@@ -59,14 +61,15 @@ export default {
         return;
       }
       commit('updatePlanDetails', data);
-    },
-    async getUsageData({ commit, state }, id) {
-      try {
-        const response = await axios.post(`${server}/files/get-usage`, id);
-        commit('updateUsage', response.data);
-      } catch (err) {
-        console.error(new Error(err));
-      }
     }
+    // Unused - See usage getter above
+    // async getUsageData({ commit, state }, id) {
+    //   try {
+    //     const response = await axios.post(`${server}/files/get-usage`, id);
+    //     commit('updateUsage', response.data);
+    //   } catch (err) {
+    //     console.error(new Error(err));
+    //   }
+    // }
   }
 };

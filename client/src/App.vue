@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-col min-h-screen w-full ">
     <banner
-      :show-banner="owner.ownerId && !isAuth"
+      :show-banner="owner.plan && !isAuth"
       :btn-action="resendVerification"
     >
       <template #text>
@@ -52,6 +52,7 @@ export default {
     const store = useStore();
     const route = useRoute();
     const server = process.env.VUE_APP_SERVER;
+    const owner = computed(() => store.state.ownerStore.owner);
 
     // owner or guest id is passed as query param from server after login
     // set cookie with id and clear query from url & history
@@ -95,8 +96,6 @@ export default {
       store.dispatch('getPlanDetails');
     }
 
-    const owner = computed(() => store.state.ownerStore.owner);
-
     if (owner.value.deleted) {
       console.error('User deleted account - redirect');
       window.location.assign(server);
@@ -114,6 +113,8 @@ export default {
         toast.error('An error occured');
       }
     }
+
+    provide('finishSignup', true);
 
     return {
       route,

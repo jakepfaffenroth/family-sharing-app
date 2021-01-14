@@ -68,7 +68,10 @@ module.exports.login = (req, res, next) => {
         ''
       );
       // Set cookie on client with owner.ownerId
-      res.cookie('ownerId', ownerId, { maxAge: 1000 * 60 * 60 * 24 * 7 });
+      res.cookie('ownerId', ownerId, {
+        secure: true,
+        maxAge: 1000 * 60 * 60 * 24 * 7,
+      });
       res.redirect(process.env.CLIENT + '?owner=' + ownerId);
     });
   })(req, res, next);

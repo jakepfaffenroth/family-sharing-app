@@ -126,9 +126,13 @@ module.exports.create = [
 
         //Account created; redirect to account completion screen (choose plan)
         res.cookie('ownerId', owner.ownerId, {
+          // domain: process.env.SERVER,
+          secure: true,
           maxAge: 1000 * 60 * 60 * 24 * 7,
         });
         res.cookie('customerId', owner.customerId, {
+          // domain: process.env.SERVER,
+          secure: true,
           maxAge: 1000 * 60 * 60 * 24 * 7,
         });
         res.render('accountCompletion', {

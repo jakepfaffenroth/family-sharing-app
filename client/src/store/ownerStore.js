@@ -1,6 +1,5 @@
 const server = process.env.VUE_APP_SERVER;
 import axios from 'axios';
-import getCookie from '../utils/getCookie';
 
 export default {
   state: {
@@ -12,6 +11,8 @@ export default {
   getters: {
     owner: state => state.owner,
     isAuth: state => state.owner.isAuth,
+    isPremium: state =>
+      state.owner.plan ? state.owner.plan.includes('premium') : null,
     ownerId: state => state.owner.ownerId,
     guestId: state => state.owner.guestId
   },
@@ -50,18 +51,19 @@ export default {
       try {
         // console.log('id, usertype:', id, userType);
         // Fetch usage data
-        if (userType === 'owner') {
-          await dispatch('getUsageData', id);
-        }
+        // if (userType === 'owner') {
+        //   await dispatch('getUsageData', id);
+        // }
         // Fetch owner data
         const { data } = await axios.post(url, id);
+        // Redirect to accountCompletion page if no plan was chosen
+        if (userType === 'owner' && data.owner.plan === null) {
+          window.location.assign(server + '/complete-signup');
+        }
         // Redirect to login page if owner is not signed in
         if (userType === 'owner' && !data.isLoggedIn) {
           window.location.assign(`${server}/login`);
           return;
-        }
-        if (userType === 'owner' && data.owner.plan === null) {
-          window.location.assign(server + '/complete-signup');
         }
         commit('updateOwner', data.owner);
         commit('updateImages', data.images);

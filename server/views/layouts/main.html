@@ -3,6 +3,10 @@
   <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <!-- <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self' https://*.stripe.com https://*.googleapis.com; style-src 'self'; img-src 'self'; prefetch-src https://*.gstatic.com"
+    /> -->
     <title>{{title}}</title>
     <meta name="description" content="" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -22,6 +26,5 @@
   <body>
     {{{body}}}
     <script src="https://js.stripe.com/v3/"></script>
-    ;
   </body>
 </html>

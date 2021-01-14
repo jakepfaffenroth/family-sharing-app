@@ -161,10 +161,10 @@ export default {
     };
 
     rws.onmessage = async msg => {
-      if (msg.data === 'uploadsComplete') {
-        store.dispatch('getUsageData', { ownerId: ownerId.value });
-        return;
-      }
+      // if (msg.data === 'uploadsComplete') {
+      //   store.dispatch('getUsageData', { ownerId: ownerId.value });
+      //   return;
+      // }
 
       // ----- TURN OFF STATUS UPDATES ----- //
       // return

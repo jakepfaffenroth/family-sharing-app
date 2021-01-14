@@ -139,10 +139,28 @@ export default {
         store.commit('updatePlanDetails');
         closePlanChange();
 
+        const updateMsg = `<p>Subscription updated to <span class="font-semibold">${newPlan
+          .charAt(0)
+          .toUpperCase() +
+          newPlan
+            .slice(1)
+            .replace('Mo', '')
+            .replace('Yr', '')}</span></p>
+            <p class="font-normal italic">
+              ${
+                newPlan.includes('Mo')
+                  ? 'Billed monthly'
+                  : newPlan.includes('Yr')
+                  ? 'Billed annually'
+                  : ''
+              }
+                </p>
+              `;
+
         toast.open({
           type: 'success',
           duration: 5000,
-          message: 'Subscription updated to ' + newPlan
+          message: updateMsg
         });
       }
       return updateResult;

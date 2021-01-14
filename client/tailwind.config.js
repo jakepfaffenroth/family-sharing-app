@@ -43,7 +43,8 @@ module.exports = {
   },
   variants: {
     extend: {
-      translate: ['group-hover']
+      translate: ['group-hover'],
+      fontWeight: ['group-hover']
     }
   },
   plugins: []

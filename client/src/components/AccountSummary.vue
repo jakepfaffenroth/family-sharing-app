@@ -11,7 +11,7 @@
           >
             Account settings
           </h1>
-          <div class="mt-4 Xborder roundedX Xp-2 space-y-4">
+          <div class="mt-4 space-y-4">
             <div class="settings-block">
               <h2 class="font-bold text-xl">
                 Personal Info
@@ -45,12 +45,12 @@
                 </span>
               </div>
               <div class="flex justify-between">
-                <h3 class="ineline-block align-baseline text-lg text-gray-800">
+                <h3 class="inline-block align-baseline text-lg text-gray-800">
                   Password
                 </h3>
                 <button class="setting" @click="resetPassword">
-                  Reset
-                  <span class="pl-1 not-italic">→</span>
+                  Reset password
+                  <span class="not-italic">→</span>
                 </button>
               </div>
             </div>
@@ -63,13 +63,11 @@
                   <h3 class="text-lg text-gray-700">
                     Plan
                   </h3>
-                  <div>
-                    <p class="inline-block w-full text-right">
-                      You are currently on the
+                  <div class="">
+                    <span class="inline-block w-full text-right">
                       <span
-                        id="subscribed-price"
                         data-test="currentPlanInSummary"
-                        class="font-semibold text-lg"
+                        class="inline-block font-semibold text-lg capitalize"
                         :class="{
                           'font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-teal-400 to-orange-400 via-purple-400':
                             planDetails.plan &&
@@ -80,15 +78,34 @@
                           planDetails.plan.replace('Mo', '').replace('Yr', '')
                         }}
                       </span>
-                      plan
-                    </p>
+                    </span>
+                    <!-- <button
+                      v-if="planDetails.plan === 'basic'"
+                      Xclass="flex justify-self-end px-3 py-1 rounded cursor-pointer hover:text-white transition-all bg-gradient-to-r hover:from-teal-400 hover:to-orange-400 hover:via-purple-400 group"
+                    >
+                      <span
+                        class="bg-clip-text text-transparent bg-gradient-to-r from-teal-400 to-orange-400 via-purple-400 text-sm font-bold tracking-wide transition group-hover:text-white group-hover:font-semibold"
+                      >
+                        Get Premium
+                      </span>
+                    </button> -->
                     <button
-                      class="setting "
+                      Xv-else
+                      class="setting"
                       data-test="changePlanBtn"
                       @click="$emit('open-plan-change')"
                     >
-                      Change plan
-                      <span class="pl-1 not-italic">→</span>
+                      <span
+                        v-if="planDetails.plan === 'basic'"
+                        class="bg-clip-text text-transparent bg-gradient-to-r from-teal-400 to-orange-400 via-purple-400 text-sm font-bold tracking-wide transition group-hover:text-white group-hover:font-semibold"
+                      >
+                        Get Premium
+                        <span class="not-italic text">→</span>
+                      </span>
+                      <span v-else>
+                        Change plan
+                        <span class="not-italic text">→</span>
+                      </span>
                     </button>
                   </div>
                 </div>
@@ -97,67 +114,145 @@
                     Payment method
                   </h3>
                   <div>
-                    <p v-if="planDetails.lastFour" class="text-right">
-                      <span
-                        id="credit-card-brand"
+                    <!-- <p class="text-right"> -->
+                    <span
+                      v-if="planDetails.lastFour"
+                      class="flex pl-2 text-lg font-semibold text-right Xjustify-between"
+                    >
+                      <svg
+                        class="w-5 mr-1"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="1.5"
+                          d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"
+                        />
+                      </svg>
+                      {{ planDetails.cardBrand }} {{ planDetails.lastFour }}
+                    </span>
+                    <!-- <span
                         class="inline-block pl-2 text-lg font-semibold text-right"
                       >
-                        {{ planDetails.cardBrand }}
-                      </span>
-                      <span
-                        id="credit-card-last-four"
-                        class="inline-block pl-2 text-lg font-semibold text-right"
-                      >
-                        •••••••• {{ planDetails.lastFour }}
-                      </span>
-                    </p>
-                    <p v-else class="italic text-right">
+                        
+                      </span> -->
+                    <!-- </p> -->
+                    <span v-else class="italic text-right">
                       No payment info
-                    </p>
+                    </span>
                     <button
                       class="setting"
                       data-test="changePlanBtn"
                       @click="updateBilling"
                     >
                       Update billing
-                      <span class="pl-1 not-italic">→</span>
+                      <span class="not-italic">→</span>
                     </button>
                   </div>
                 </div>
               </div>
             </div>
             <div class="settings-block">
-              <h3 class="font-bold text-xl">
-                Usage
-              </h3>
-              <p>
+              <h2 class="font-bold text-xl">
+                Stats
+              </h2>
+              <!-- <p>
                 {{ imageCount }} image{{ imageCount != 1 ? 's' : '' }} uploaded
-              </p>
-              <p>
-                You've used {{ usageValue.num }} {{ usageValue.unit }} of
-                {{ quota / 1000 }} GB
-              </p>
-              <div
-                class="relative flex h-2 my-2 mx-auto rounded-sm overflow-hidden"
-              >
-                <div
-                  class="left-0 h-full border rounded-l-sm"
-                  :class="{
-                    'bg-green-400 border-green-400': usageBarColor === 'green',
-                    'bg-orange-400 border-orange-400':
-                      usageBarColor === 'orange',
-                    'bg-red-500 border-red-500': usageBarColor === 'red'
-                  }"
-                  :style="usageBarWidth"
-                ></div>
-                <div
-                  class="flex-grow border-t border-b border-r border-gray-400 rounded-r-sm"
-                ></div>
+              </p> -->
+              <div class="flex justify-between">
+                <h3 class="text-lg text-gray-700">
+                  Images uploaded
+                </h3>
+                <div class="mt-0.5">
+                  <span class="text-xl font-semibold">{{ usage }}</span>
+                  <span class="inline-block pl-0.5 text-gray-600">
+                    /{{ quota }}
+                  </span>
+                </div>
               </div>
+
+              <!-- Usage bar -->
+              <div>
+                <div
+                  class="relative flex h-2 mt-2 mb-3 mx-auto rounded-sm overflow-hidden"
+                >
+                  <div
+                    class="left-0 h-full border rounded-l-sm"
+                    :class="{
+                      'bg-green-400 border-green-400':
+                        usageBarColor === 'green',
+                      'bg-orange-400 border-orange-400':
+                        usageBarColor === 'orange',
+                      'bg-red-500 border-red-500': usageBarColor === 'red'
+                    }"
+                    :style="usageBarWidth"
+                  ></div>
+                  <div
+                    class="flex-grow border-t border-b border-r border-gray-400 rounded-r-sm"
+                  ></div>
+                </div>
+              </div>
+              <div class="flex justify-between">
+                <h3 class="text-lg text-gray-700">
+                  Albums
+                </h3>
+                <div class="mt-0.5 text-right">
+                  <span class="inline-block text-xl font-semibold">
+                    {{ albumCount }}
+                  </span>
+                  <span class="inline-block pl-0.5 text-gray-600 ">/</span>
+                  <span
+                    class="inline-block relative text-gray-600"
+                    :class="{ 'top-0.5': isPremium }"
+                  >
+                    {{ isPremium ? '∞' : 0 }}
+                  </span>
+                </div>
+              </div>
+              <div class="flex justify-between">
+                <h3 class="text-lg text-gray-700">
+                  Subscribers
+                </h3>
+                <div>
+                  <div class="mt-0.5 text-right">
+                    <span class="inline-block text-xl font-semibold">
+                      {{ subscriberCount }}
+                    </span>
+                    <span class="inline-block pl-0.5 text-gray-600">/</span>
+                    <span class="inline-block relative top-0.5 text-gray-600">
+                      ∞
+                    </span>
+                  </div>
+                  <button
+                    class="setting"
+                    data-test="changePlanBtn"
+                    @click="manageSubscribers"
+                  >
+                    Manage subscribers
+                    <span class="not-italic">→</span>
+                  </button>
+                </div>
+              </div>
+              <!-- <p class="italic">
+                {{ quota - usage }} upload{{
+                  quota - usage === 1 ? '' : 's'
+                }}
+                remaining
+              </p> -->
+              <!-- <div class="flex text-sm">
+                <p class="mr-auto">
+                  0
+                </p>
+                <p class="ml-auto">{{ quota }}</p>
+              </div> -->
             </div>
 
-            <div class="settings-block">
-              <h2 class="font-bold text-xl">
+            <div class="settings-block text-gray-700">
+              <h2 class="font-bold text-xl text-gray-700">
                 Delete Your Account
               </h2>
               <p>
@@ -193,10 +288,11 @@ import { ref, inject, computed } from 'vue';
 import { useStore } from 'vuex';
 import BaseButtonRed from './BaseButtonRed';
 import DeleteAccountModal from './AccountModalDeleteAccount';
+import GetPremiumButton from './BaseButtonGetPremium';
 
 export default {
   name: 'AccountSummary',
-  components: { BaseButtonRed, DeleteAccountModal },
+  components: { BaseButtonRed, DeleteAccountModal, GetPremiumButton },
   emits: ['open-plan-change'],
   setup() {
     const store = useStore();
@@ -246,6 +342,15 @@ export default {
       });
     }
 
+    async function manageSubscribers() {
+      toast.open({
+        type: 'info',
+        duration: 2000,
+        dismissible: true,
+        message: 'Coming soon...'
+      });
+    }
+
     async function deleteAccount() {
       visibleModal.value = 'DeleteAccountModal';
     }
@@ -254,12 +359,19 @@ export default {
       owner,
       imageCount: computed(() => store.getters.imageCount),
       planDetails: computed(() => store.getters.planDetails),
+      usage: computed(() => store.getters.usage),
       quota: computed(() => store.getters.quota),
-      usageValue: computed(() => store.getters.usageValue),
+      // usageValue: computed(() => store.getters.usageValue),
       usageBarWidth: computed(() => store.getters.usageBarWidth),
       usageBarColor: computed(() => store.getters.usageBarColor),
+      albumCount: computed(() => store.getters.albums.length),
+      isPremium: computed(() => store.getters.isPremium),
+      subscriberCount: computed(
+        () => store.state.ownerStore.subscribers.length
+      ),
       resetPassword,
       updateBilling,
+      manageSubscribers,
       deleteAccount,
       visibleModal,
       ENABLED: false
