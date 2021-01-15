@@ -42,6 +42,7 @@ router.post('/charge', (req, res) => {
 
 router.post(
   '/create-checkout-session',
+  require('../users/demoController'),
   paymentController.createCheckoutSession
 );
 
@@ -51,7 +52,11 @@ router.get('/finalize-checkout', paymentController.finalizeCheckout);
 
 // router.post('/retrieve-upcoming-invoice', paymentController.upcomingInvoice);
 
-router.post('/update-subscription', paymentController.updateSubscription);
+router.post(
+  '/update-subscription',
+  require('../users/demoController'),
+  paymentController.updateSubscription
+);
 
 router.post(
   '/retrieve-payment-method',
@@ -59,9 +64,6 @@ router.post(
 );
 
 // Webhook handler for asynchronous events.
-router.post(
-  '/stripe-webhook',
-  paymentController.stripeWebhook
-);
+router.post('/stripe-webhook', paymentController.stripeWebhook);
 
 module.exports = router;

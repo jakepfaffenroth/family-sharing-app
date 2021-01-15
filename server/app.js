@@ -152,10 +152,7 @@ app.use(
 );
 
 //add routes
-app.use(
-  '/',
-  indexRouter
-);
+app.use('/', indexRouter);
 app.use('/user', userRouter);
 app.use('/auth', authRouter);
 app.use('/files', fileRouter);
