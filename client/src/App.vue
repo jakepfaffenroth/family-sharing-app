@@ -43,12 +43,28 @@ import Home from './views/Home';
 import Account from './views/Account';
 import Banner from './components/BaseBanner';
 import Toast from './utils/Toast';
+import interceptorSetup from './utils/interceptorSetup'
 
 export default {
   name: 'App',
   components: { Banner },
   provide: { toast },
   setup() {
+    axios.interceptors.response.use(
+      response => {
+        if (response.data.demo) {
+          toast.open({
+            type: 'info',
+            message: 'This action is disabled in demo mode'
+          });
+        }
+        return response;
+      },
+      err => {
+        return Promise.reject(err);
+      }
+    );
+
     const store = useStore();
     const route = useRoute();
     const server = process.env.VUE_APP_SERVER;
