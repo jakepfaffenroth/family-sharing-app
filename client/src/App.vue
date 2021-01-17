@@ -56,20 +56,6 @@ export default {
         message: 'This action is disabled in demo mode'
       });
     addInterceptor({ demoToast });
-    // axios.interceptors.response.use(
-    //   response => {
-    //     if (response.data.demo) {
-    //       toast.open({
-    //         type: 'info',
-    //         message: 'This action is disabled in demo mode'
-    //       });
-    //     }
-    //     return response;
-    //   },
-    //   err => {
-    //     return Promise.reject(err);
-    //   }
-    // );
 
     const store = useStore();
     const route = useRoute();
