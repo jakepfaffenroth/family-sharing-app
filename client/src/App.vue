@@ -34,8 +34,8 @@
 <script>
 import getCookie from './utils/getCookie';
 import toast from './utils/Toast';
-import { ref, reactive, computed, provide, onMounted } from 'vue';
-import { useRoute } from 'vue-router';
+import { ref, reactive, computed, provide, watch, onMounted } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 import { useStore, mapState, mapGetters } from 'vuex';
 
 import Home from './views/Home';
@@ -73,6 +73,7 @@ export default {
 
     const store = useStore();
     const route = useRoute();
+    const router = useRouter();
     const server = process.env.VUE_APP_SERVER;
     const owner = computed(() => store.state.ownerStore.owner);
 
@@ -80,19 +81,24 @@ export default {
     // set cookie with id and clear query from url & history
     // if there's no query param (user went to site directly) then
     // don't change the cookie
-    const params = new URLSearchParams(window.location.search);
-    const uId = params.get('owner');
-    const gId = params.get('guest');
-    if (uId) {
-      document.cookie = `ownerId=${uId}`;
-      window.history.replaceState(null, '', '/');
-    }
+    // let uId, gId;
+    watch(
+      () => route.query,
+      ({ owner: uId, guest: gId }, prevQuery) => {
+        console.log('route.query:', route.query);
+        if (uId) {
+          console.log('uId:', uId);
+          document.cookie = `ownerId=${uId}`;
+          router.replace('/');
+        }
 
-    if (gId) {
-      document.cookie = `guestId=${gId}`;
-      window.history.replaceState(null, '', '/');
-    }
-
+        if (gId) {
+          document.cookie = `guestId=${gId}`;
+          router.replace('/');
+        }
+      }
+    );
+    
     const ownerId = getCookie('ownerId') || null;
     const guestId = getCookie('guestId') || null;
     let userType = ref('');
@@ -109,7 +115,7 @@ export default {
     // Prevent users from viewing app without login or guestId
     if (!guestId && !ownerId) {
       console.error('No cookies found - redirect');
-      window.location.assign(server);
+      router.replace(server);
     }
 
     const isAuth = computed(() => store.getters.isAuth);
@@ -120,7 +126,7 @@ export default {
 
     if (owner.value.deleted) {
       console.error('User deleted account - redirect');
-      window.location.assign(server);
+      router.replace(server);
     }
     async function resendVerification() {
       const { status } = await http.post('/user/resend-owner-verification', {

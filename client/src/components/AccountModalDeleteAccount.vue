@@ -95,7 +95,7 @@ export default {
       });
 
       if (status >= 200 && status < 300) {
-        window.location = process.env.VUE_APP_SERVER;
+        this.$route.push(process.env.VUE_APP_SERVER);
       }
       // Delete individual images
 
