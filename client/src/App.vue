@@ -85,7 +85,6 @@ export default {
     watch(
       () => route.query,
       ({ owner: uId, guest: gId }, prevQuery) => {
-        console.log('route.query:', route.query);
         if (uId) {
           console.log('uId:', uId);
           document.cookie = `ownerId=${uId}`;

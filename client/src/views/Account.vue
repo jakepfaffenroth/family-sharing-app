@@ -89,6 +89,8 @@ export default {
         })
       ).data;
 
+      if (session.demo) return;
+
       let updateResult;
 
       if (
