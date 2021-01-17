@@ -67,7 +67,7 @@
 </template>
 
 <script>
-import axios from 'axios';
+import http from '../utils/http';
 import BaseModal from './BaseModal';
 import BaseButtonCancel from './BaseButtonCancel';
 import BaseButtonPurple from './BaseButtonPurple';
@@ -92,7 +92,6 @@ export default {
   setup(props, { emit }) {
     const store = useStore();
     const toast = inject('toast');
-    const server = process.env.VUE_APP_SERVER;
     const images = computed(() => store.getters.allImages);
     const selectedImages = computed(() => store.getters.selectedImages);
     const albums = computed(() =>

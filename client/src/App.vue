@@ -32,7 +32,6 @@
 </template>
 
 <script>
-import axios from 'axios';
 import getCookie from './utils/getCookie';
 import toast from './utils/Toast';
 import { ref, reactive, computed, provide, onMounted } from 'vue';
@@ -43,27 +42,34 @@ import Home from './views/Home';
 import Account from './views/Account';
 import Banner from './components/BaseBanner';
 import Toast from './utils/Toast';
-import interceptorSetup from './utils/interceptorSetup'
+import http, { addInterceptor } from './utils/http.js';
+// import interceptorSetup from './utils/interceptorSetup';
 
 export default {
   name: 'App',
   components: { Banner },
   provide: { toast },
   setup() {
-    axios.interceptors.response.use(
-      response => {
-        if (response.data.demo) {
-          toast.open({
-            type: 'info',
-            message: 'This action is disabled in demo mode'
-          });
-        }
-        return response;
-      },
-      err => {
-        return Promise.reject(err);
-      }
-    );
+    const demoToast = () =>
+      toast.open({
+        type: 'info',
+        message: 'This action is disabled in demo mode'
+      });
+    addInterceptor({ demoToast });
+    // axios.interceptors.response.use(
+    //   response => {
+    //     if (response.data.demo) {
+    //       toast.open({
+    //         type: 'info',
+    //         message: 'This action is disabled in demo mode'
+    //       });
+    //     }
+    //     return response;
+    //   },
+    //   err => {
+    //     return Promise.reject(err);
+    //   }
+    // );
 
     const store = useStore();
     const route = useRoute();
@@ -117,12 +123,9 @@ export default {
       window.location.assign(server);
     }
     async function resendVerification() {
-      const { status } = await axios.post(
-        server + '/user/resend-owner-verification',
-        {
-          owner: owner.value
-        }
-      );
+      const { status } = await http.post('/user/resend-owner-verification', {
+        owner: owner.value
+      });
       if (status >= 200 && status < 300) {
         toast.success('Email sent');
       } else {

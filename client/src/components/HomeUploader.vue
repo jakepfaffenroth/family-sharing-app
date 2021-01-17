@@ -10,7 +10,7 @@ import Dashboard from '@uppy/dashboard';
 import EmptyDashboard from '@uppy/dashboard';
 import XHRUpload from '@uppy/xhr-upload';
 import ReconnectingWebSocket from 'reconnecting-websocket';
-import axios from 'axios';
+import http from '../utils/http';
 
 import '@uppy/core/dist/style.css';
 import '@uppy/dashboard/dist/style.css';
@@ -137,7 +137,7 @@ export default {
 
     uppy.on('upload', async () => {
       const files = await uppy.getFiles();
-      axios.post(`${process.env.VUE_APP_SERVER}/files/initialize-upload`, {
+      http.post('/files/initialize-upload', {
         initializeUpload: true,
         ownerId: ownerId.value,
         guestId: guestId.value,

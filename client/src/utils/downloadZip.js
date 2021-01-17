@@ -1,6 +1,6 @@
 import JSZip from 'jszip';
-import axios from 'axios';
-import {saveAs} from 'file-saver'
+import http from './http';
+import { saveAs } from 'file-saver';
 // import FileSaver from 'file-saver';
 import path from 'path';
 
@@ -50,7 +50,7 @@ export default async (images, toast) => {
             images.length
           }`;
 
-          const response = await axios.get(
+          const response = await http.get(
             `https://cdn.jakepfaf.dev/file/JFP001/${escape(file.fileName)}`,
             {
               responseType: 'blob',
@@ -110,16 +110,12 @@ export default async (images, toast) => {
             return;
           }
           if (process.env.NODE_ENV != 'test') {
-            saveAs(
-              data,
-              `images${count === 1 ? '' : ` part${count}`}.zip`
-            );
+            saveAs(data, `images${count === 1 ? '' : ` part${count}`}.zip`);
             downloadProgress = null;
             toast.dismiss(zipToast);
             toast.success('Download complete');
           }
         });
-
     }
 
     function cancelZip() {

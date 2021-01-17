@@ -95,7 +95,7 @@
 </template>
 
 <script>
-import axios from 'axios';
+import http from '../utils/http';
 import BaseModal from './BaseModal';
 import BaseButtonCancel from './BaseButtonCancel';
 import BaseButtonPurple from './BaseButtonPurple';
@@ -121,7 +121,6 @@ export default {
   setup(props, { emit }) {
     const store = useStore();
     const toast = inject('toast');
-    const server = process.env.VUE_APP_SERVER;
     const images = computed(() => store.getters.images);
     const albums = computed(() =>
       store.getters.albums.filter(x => x.albumName !== 'All')
@@ -158,7 +157,7 @@ export default {
         return;
       }
       try {
-        const response = await axios.post(server + '/albums/create-album', {
+        const response = await http.post('/albums/create-album', {
           name: newAlbumName.value,
           ownerId: ownerId.value
         });

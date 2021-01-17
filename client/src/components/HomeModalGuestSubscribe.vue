@@ -84,7 +84,7 @@
 </template>
 
 <script>
-import axios from 'axios';
+import http from '../utils/http';
 import BaseModal from './BaseModal';
 import BaseButtonPurple from './BaseButtonPurple';
 import BaseButtonCancel from './BaseButtonCancel';
@@ -101,7 +101,6 @@ export default {
   emits: ['close-modal'],
   setup(props, { emit }) {
     const store = useStore();
-    const server = process.env.VUE_APP_SERVER;
     const toast = inject('toast');
     const subOptions = reactive({ browser: null, email: null, sms: null });
 
@@ -158,8 +157,8 @@ export default {
           })
         );
 
-        const response = await axios({
-          url: `${server}/user/subscribe-browser`,
+        const response = await http({
+          url: '/user/subscribe-browser',
           method: 'POST',
           data: guest,
           headers: {
@@ -178,10 +177,7 @@ export default {
 
     async function subscribeEmail() {
       if (!guest.firstName || !guest.lastName || !guest.email) return;
-      const response = await axios.post(
-        `${server}/user/subscribe-email`,
-        guest
-      );
+      const response = await http.post('/user/subscribe-email', guest);
       if (response.data.alreadySubscribed) {
         toast.error("You've already subscribed with that email");
       } else if (response.status === 200) {

@@ -28,7 +28,7 @@
       v-if="finishSignup"
       class="Q w-full h-full md:pt-6 py-2 px-1 sm:px-3 sm:py-4 md:px-4 lg:px-6 xl:pt-8 xl:px-8 xl:pb-6"
       :class="userType === 'owner' ? 'mt-28' : 'mt-32'"
-      :src="server + '/complete-signup'"
+      :src="'/complete-signup'"
     ></iframe> -->
     <main
       class="flex flex-grow md:pt-6 py-2 px-1 sm:px-3 sm:py-4 md:px-4 lg:px-6 xl:pt-8 xl:px-8 xl:pb-6"
@@ -102,7 +102,7 @@ import {
 } from 'vue';
 import { useRoute } from 'vue-router';
 import { useStore } from 'vuex';
-import axios from 'axios';
+import http from '../utils/http';
 
 import HomeAlbum from '../components/HomeAlbum';
 import HomeGallery from '../components/HomeGallery';
@@ -164,7 +164,6 @@ export default {
   setup(props) {
     const store = useStore();
     const route = useRoute();
-    const server = process.env.VUE_APP_SERVER;
 
     const owner = computed(() => store.state.ownerStore.owner);
     const images = computed(() => store.state.imageStore.images);
@@ -337,7 +336,7 @@ export default {
 
       forceUppyReloadKey.value++; //force Uppy to reload
 
-      const response = await axios.post(`${server}/files/delete-image`, {
+      const response = await http.post('/files/delete-image', {
         multipleImages: true,
         images: imagesArr.map(x => {
           const { fileId, thumbFileId, fileName, ownerId } = x;
@@ -359,7 +358,7 @@ export default {
 
       forceUppyReloadKey.value++; //force Uppy to reload
 
-      const response = await axios.post(`${server}/files/delete-image`, {
+      const response = await http.post('/files/delete-image', {
         NUKE: true,
         ownerId: owner.value.ownerId
       });
@@ -388,8 +387,7 @@ export default {
       forceUppyReloadKey,
       downloadZip,
       view,
-      finishSignup: inject('finishSignup'),
-      server
+      finishSignup: inject('finishSignup')
     };
   }
 };

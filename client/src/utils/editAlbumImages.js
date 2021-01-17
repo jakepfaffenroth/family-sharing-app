@@ -1,4 +1,4 @@
-import axios from 'axios';
+import http from './http';
 import toast from './Toast';
 
 function pushImgAlbumPairs(imgInfo, album, ownerId) {
@@ -19,13 +19,10 @@ export async function addToAlbum(imgInfo, album, ownerId, store) {
     const imgsToAdd = pushImgAlbumPairs(imgInfo, album, ownerId);
     // Send array of fileIds and albumIds to server to be added to DB
     try {
-      const response = await axios.post(
-        process.env.VUE_APP_SERVER + '/albums/add-image',
-        {
-          ownerId,
-          imgsToAdd
-        }
-      );
+      const response = await http.post('/albums/add-image', {
+        ownerId,
+        imgsToAdd
+      });
 
       if (response.status === 200 && response.data.length === 0) {
         toast.open({
@@ -51,13 +48,10 @@ export async function removeFromAlbum(imgInfo, album, ownerId, store) {
     const imgsToRemove = pushImgAlbumPairs(imgInfo, album, ownerId);
     // Send array of fileIds and albumIds to server to be removed from DB
     try {
-      const response = await axios.post(
-        process.env.VUE_APP_SERVER + '/albums/remove-image',
-        {
-          ownerId,
-          imgsToRemove
-        }
-      );
+      const response = await http.post('/albums/remove-image', {
+        ownerId,
+        imgsToRemove
+      });
 
       if (response.status === 200 && response.data.length === 0) {
         toast.open({

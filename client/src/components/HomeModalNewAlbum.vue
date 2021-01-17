@@ -30,7 +30,7 @@
 </template>
 
 <script>
-import axios from 'axios';
+import http from '../utils/http';
 import { useStore } from 'vuex';
 import { ref, computed, inject } from 'vue';
 import BaseModal from './BaseModal';
@@ -43,7 +43,6 @@ export default {
   emits: ['close-modal'],
   setup(props, { emit }) {
     const store = useStore();
-    const server = process.env.VUE_APP_SERVER;
     const toast = inject('toast');
     const setActiveGallery = inject('setActiveGallery');
     let newAlbumName = ref('');
@@ -75,7 +74,7 @@ export default {
         return;
       }
       try {
-        const {status, data} = await axios.post(server + '/albums/create-album', {
+        const { status, data } = await http.post('/albums/create-album', {
           name: newAlbumName.value,
           ownerId: ownerId.value
         });
@@ -105,5 +104,3 @@ export default {
   }
 };
 </script>
-
-<style scoped></style>
