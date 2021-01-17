@@ -33,7 +33,7 @@
 </template>
 
 <script>
-import axios from 'axios';
+import http from '../utils/http';
 import BaseMenu from './BaseMenu';
 import BaseButtonPurple from './BaseButtonPurple';
 import BaseModal from './BaseModal';

@@ -48,7 +48,6 @@ export default {
   emits: ['close-modal'],
   setup(props, { emit }) {
     const store = useStore();
-    const server = process.env.VUE_APP_SERVER;
     const toast = inject('toast');
     const owner = computed(() => store.getters.owner);
     store.dispatch('getSubscribers');

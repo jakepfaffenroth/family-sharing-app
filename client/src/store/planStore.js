@@ -1,5 +1,4 @@
-const server = process.env.VUE_APP_SERVER;
-import axios from 'axios';
+import http from '../utils/http';
 import getCookie from '../utils/getCookie';
 
 export default {
@@ -50,8 +49,8 @@ export default {
   actions: {
     async getPlanDetails({ commit, dispatch, rootState, rootGetters }) {
       // This action retrieves plan name, card brand, and last four digits
-      const { data, status } = await axios.post(
-        server + '/payment/retrieve-payment-method',
+      const { data, status } = await http.post(
+        '/payment/retrieve-payment-method',
         {
           ownerId: rootGetters.ownerId || getCookie('ownerId')
         }
@@ -65,7 +64,7 @@ export default {
     // Unused - See usage getter above
     // async getUsageData({ commit, state }, id) {
     //   try {
-    //     const response = await axios.post(`${server}/files/get-usage`, id);
+    //     const response = await http.post('/files/get-usage', id);
     //     commit('updateUsage', response.data);
     //   } catch (err) {
     //     console.error(new Error(err));

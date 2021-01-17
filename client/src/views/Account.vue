@@ -16,7 +16,7 @@
 </template>
 
 <script>
-import axios from 'axios';
+import http from '../utils/http';
 import AccountMenu from '../components/AccountMenu';
 import AccountSummary from '../components/AccountSummary';
 import AccountPlanPicker from '../components/AccountPlanPicker';
@@ -41,7 +41,6 @@ export default {
   setup(props) {
     const store = useStore();
     const route = useRoute();
-    const server = process.env.VUE_APP_SERVER;
     const toast = inject('toast');
     const stripe = Stripe(
       'pk_test_51HYjdCCto9koSaMfB1vfa2yKqEHrKbyEg0CHfL31Xck4Kom1QgvYSYhEy0G27aSwa2Ydy3RSmX9YxDFvdVNEIHz40032As5FXu'
@@ -82,7 +81,7 @@ export default {
 
     async function confirmPlanChange(newPlan) {
       const session = (
-        await axios.post(server + '/payment/create-checkout-session', {
+        await http.post('/payment/create-checkout-session', {
           ownerId: owner.value.ownerId,
           plan: newPlan,
           referrer: 'client',
@@ -105,7 +104,7 @@ export default {
         }
       } else {
         updateResult = (
-          await axios.post(server + '/payment/update-subscription', {
+          await http.post('/payment/update-subscription', {
             ownerId: owner.value.ownerId,
             newPlan,
             referrer: 'client'

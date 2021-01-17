@@ -1,6 +1,6 @@
-import axios from 'axios';
-import MockAdapter from 'axios-mock-adapter';
-const mockAxios = new MockAdapter(axios, { onNoMatch: 'throwException' });
+import http from '.../utils/http';
+import MockAdapter from 'http-mock-adapter';
+const mockAxios = new MockAdapter(http, { onNoMatch: 'throwException' });
 import { owner, images, albums } from './mockState.setup';
 import { store } from './jest.setup';
 

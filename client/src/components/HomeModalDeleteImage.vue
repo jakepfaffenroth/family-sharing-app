@@ -36,7 +36,7 @@
 </template>
 
 <script>
-import axios from 'axios';
+import http from '../utils/http';
 import BaseModal from './BaseModal';
 import PhotoStack from './BasePhotoStack';
 import BaseButtonPurple from './BaseButtonPurple';
@@ -60,7 +60,6 @@ export default {
   methods: {
     async deleteAndCloseModal() {
       this.$emit('close-modal');
-      const server = process.env.VUE_APP_SERVER;
       // Delete individual images
       const {
         date,
@@ -71,7 +70,7 @@ export default {
         index
       } = this.imgInfo;
 
-      const response = await axios.post(`${server}/files/delete-image`, {
+      const response = await http.post('/files/delete-image', {
         singleImage: true,
         images: [{ fileId, thumbFileId, fileName, ownerId }],
         ownerId

@@ -322,7 +322,7 @@
 </template>
 
 <script>
-import axios from 'axios';
+import http from '../utils/http';
 import BaseMenu from './BaseMenu';
 import BaseDropMenu from './BaseDropMenu';
 import BaseDropMobile from './BaseDropMobile';
@@ -369,7 +369,7 @@ export default {
 };
 </script>
 
-<style >
+<style>
 .main-menu-link {
   @apply block px-4 py-2 text-sm rounded cursor-pointer text-gray-800 hover:bg-purple-500 hover:text-white transition;
 }

@@ -1,5 +1,4 @@
-const server = process.env.VUE_APP_SERVER;
-import axios from 'axios';
+import http from '../utils/http';
 
 export default {
   state: {
@@ -39,11 +38,11 @@ export default {
       let url = '';
       switch (userType) {
         case 'owner':
-          url = `${server}/auth/check-session`;
+          url = 'auth/check-session';
           id = { ownerId: id };
           break;
         case 'guest':
-          url = `${server}/user/get-owner`;
+          url = 'user/get-owner';
           id = { guestId: id };
           break;
       }
@@ -55,14 +54,14 @@ export default {
         //   await dispatch('getUsageData', id);
         // }
         // Fetch owner data
-        const { data } = await axios.post(url, id);
+        const { data } = await http.post(url, id);
         // Redirect to accountCompletion page if no plan was chosen
         if (userType === 'owner' && data.owner.plan === null) {
-          window.location.assign(server + '/complete-signup');
+          window.location.assign('/complete-signup');
         }
         // Redirect to login page if owner is not signed in
         if (userType === 'owner' && !data.isLoggedIn) {
-          window.location.assign(`${server}/login`);
+          window.location.assign(`${process.env.VUE_APP_SERVER}/login`);
           return;
         }
         commit('updateOwner', data.owner);
@@ -73,7 +72,7 @@ export default {
       }
     },
     async getSubscribers({ commit, rootGetters }) {
-      const response = await axios.post(server + '/user/get-subscribers', {
+      const response = await http.post('/user/get-subscribers', {
         ownerId: rootGetters.ownerId
       });
       console.log('subscribers:', response);

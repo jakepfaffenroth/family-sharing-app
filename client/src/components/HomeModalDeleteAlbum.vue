@@ -21,7 +21,7 @@
 </template>
 
 <script>
-import axios from 'axios';
+import http from '../utils/http';
 import { useStore } from 'vuex';
 import { ref, computed, inject } from 'vue';
 import BaseModal from './BaseModal';
@@ -36,7 +36,6 @@ export default {
   emits: ['close-modal'],
   setup(props, { emit }) {
     const store = useStore();
-    const server = process.env.VUE_APP_SERVER;
     const toast = inject('toast');
     const setActiveGallery = inject('setActiveGallery');
     const album = computed(() =>
@@ -52,10 +51,7 @@ export default {
         return;
       }
       try {
-        const response = await axios.post(
-          server + '/albums/delete-album',
-          album.value
-        );
+        const response = await http.post('/albums/delete-album', album.value);
 
         if (response.status === 200) {
           setActiveGallery('All');
@@ -82,5 +78,3 @@ export default {
   }
 };
 </script>
-
-<style scoped></style>

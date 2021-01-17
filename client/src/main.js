@@ -6,10 +6,10 @@ import './assets/styles/tailwind.css';
 import store from './store';
 import keepInViewPortDirective from './utils/keepInViewportDirective.js';
 
-const app = createApp(App).use(store);
+const app = createApp(App)
+  .use(store)
+  .use(router);
 
 app.directive('keepInViewport', keepInViewPortDirective);
-
-app.use(router);
 
 app.mount('#app');

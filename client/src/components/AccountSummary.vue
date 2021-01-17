@@ -283,7 +283,7 @@
 </template>
 
 <script>
-import axios from 'axios';
+import http from '../utils/http';
 import { ref, inject, computed } from 'vue';
 import { useStore } from 'vuex';
 import BaseButtonRed from './BaseButtonRed';
@@ -296,7 +296,6 @@ export default {
   emits: ['open-plan-change'],
   setup() {
     const store = useStore();
-    const server = process.env.VUE_APP_SERVER;
     const stripe = Stripe(
       'pk_test_51HYjdCCto9koSaMfB1vfa2yKqEHrKbyEg0CHfL31Xck4Kom1QgvYSYhEy0G27aSwa2Ydy3RSmX9YxDFvdVNEIHz40032As5FXu'
     ); // Publishable Key
@@ -308,12 +307,9 @@ export default {
     const visibleModal = ref(null);
 
     async function resetPassword() {
-      const response = await axios.post(
-        process.env.VUE_APP_SERVER + '/auth/reset-password',
-        {
-          email: owner.value.email
-        }
-      );
+      const response = await http.post('/auth/reset-password', {
+        email: owner.value.email
+      });
       if (response.status === 200) {
         toast.success('A reset link has been emailed to you');
       } else {
@@ -330,7 +326,7 @@ export default {
       });
 
       const session = (
-        await axios.post(server + '/payment/create-checkout-session', {
+        await http.post('/payment/create-checkout-session', {
           ownerId: owner.value.ownerId,
           referrer: 'client',
           type: 'update'

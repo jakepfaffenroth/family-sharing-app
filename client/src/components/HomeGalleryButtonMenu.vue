@@ -110,7 +110,7 @@
 </template>
 
 <script>
-import axios from 'axios';
+import http from '../utils/http';
 import { toRefs, computed, inject } from 'vue';
 import { useStore } from 'vuex';
 
@@ -127,7 +127,6 @@ export default {
   },
   setup(props, { emit }) {
     const store = useStore();
-    const server = process.env.VUE_APP_SERVER;
     const toast = inject('toast');
     const openModal = inject('openModal');
 
@@ -147,7 +146,7 @@ export default {
         modalSwitch: 'removeFromAlbum'
       });
       // try {
-      //   const response = await axios.post(server + '/albums/remove-image', {
+      //   const response = await http.post('/albums/remove-image', {
       //     ownerId: ownerId.value,
       //     imgsToRemove: [
       //       {

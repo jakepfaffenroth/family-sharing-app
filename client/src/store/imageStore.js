@@ -1,5 +1,4 @@
-const server = process.env.VUE_APP_SERVER;
-import axios from 'axios';
+import http from '../utils/http';
 
 export default {
   state: { images: [], albums: [], selectedImages: [] },
@@ -61,12 +60,12 @@ export default {
   },
   actions: {
     async fetchImages({ commit }, ids) {
-      const response = await axios.post(server + '/files/fetch-images', ids);
+      const response = await http.post('/files/fetch-images', ids);
       commit('updateImages', response.data);
     },
     NUKE({ commit }) {
       commit('updateImages', []);
-      commit('updateAlbums', [])
+      commit('updateAlbums', []);
     },
     updateImages({ commit }, imagesArr) {
       commit('updateImages', imagesArr);
