@@ -333,6 +333,8 @@ export default {
         })
       ).data;
 
+      if (session.demo) return;
+
       await stripe.redirectToCheckout({
         sessionId: session.id
       });
