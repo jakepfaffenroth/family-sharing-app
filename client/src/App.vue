@@ -83,7 +83,7 @@ export default {
         }
       }
     );
-    
+
     const ownerId = getCookie('ownerId') || null;
     const guestId = getCookie('guestId') || null;
     let userType = ref('');
@@ -100,7 +100,7 @@ export default {
     // Prevent users from viewing app without login or guestId
     if (!guestId && !ownerId) {
       console.error('No cookies found - redirect');
-      router.replace(server);
+      window.history.replaceState(null, '', process.env.VUE_APP_SERVER);
     }
 
     const isAuth = computed(() => store.getters.isAuth);
